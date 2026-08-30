@@ -920,15 +920,15 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
   initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
     hashedPhoneNumber: string,
   ): Promise<void> {
-    if (isE164PhoneNumber(hashedPhoneNumber)) {
-      throw new Error(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
-      );
-    }
-
     if (!isString(hashedPhoneNumber)) {
       throw new Error(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
+      );
+    }
+
+    if (isE164PhoneNumber(hashedPhoneNumber)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a 64-character SHA-256 hex string of a phone number in E.164 format, not an E.164 number.",
       );
     }
 
