@@ -97,8 +97,21 @@
     // message.sentTime
     if ([key isEqualToString:@"google.c.a.ts"]) {
       id timestamp = userInfo[key];
-      if ([timestamp respondsToSelector:@selector(longLongValue)]) {
-        long long sentTimeSeconds = [timestamp longLongValue];
+      NSString *timestampString = nil;
+      if ([timestamp isKindOfClass:[NSString class]]) {
+        timestampString = timestamp;
+      } else if ([timestamp isKindOfClass:[NSNumber class]]) {
+        timestampString = [timestamp stringValue];
+      }
+
+      BOOL isDecimalInteger = timestampString.length > 0;
+      for (NSUInteger i = 0; i < timestampString.length && isDecimalInteger; i++) {
+        unichar character = [timestampString characterAtIndex:i];
+        isDecimalInteger = character >= '0' && character <= '9';
+      }
+
+      if (isDecimalInteger) {
+        long long sentTimeSeconds = timestampString.longLongValue;
         if (sentTimeSeconds > 0 && sentTimeSeconds <= LLONG_MAX / 1000) {
           message[@"sentTime"] = @(sentTimeSeconds * 1000);
         }
