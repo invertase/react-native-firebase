@@ -27,7 +27,7 @@ type FirebaseAppConfig = ReactNativeFirebase.FirebaseAppConfig;
 type FirebaseAppOptions = ReactNativeFirebase.FirebaseAppOptions;
 type ReactNativeAsyncStorage = ReactNativeFirebase.ReactNativeAsyncStorage;
 
-const APP_REGISTRY: Record<string, FirebaseApp> = {};
+const APP_REGISTRY: Record<string, FirebaseApp> = Object.create(null);
 let onAppCreateFn: ((app: FirebaseApp) => void) | null = null;
 const onAppDestroyCallbacks: Array<(app: FirebaseApp) => void> = [];
 let initializedNativeApps = false;

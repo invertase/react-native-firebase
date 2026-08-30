@@ -31,7 +31,7 @@ type ModularModuleClass<T extends FirebaseModule> = new (
 ) => T;
 
 // app.name -> instanceKey -> module instance
-const MODULAR_INSTANCES: Record<string, Record<string, FirebaseModule>> = {};
+const MODULAR_INSTANCES: Record<string, Record<string, FirebaseModule>> = Object.create(null);
 
 let destroyHookRegistered = false;
 function ensureDestroyHook(): void {
@@ -82,7 +82,7 @@ export function getOrCreateModularInstance<T extends FirebaseModule>(
   const key = customUrlOrRegion ? `${customUrlOrRegion}:${namespace}` : namespace;
 
   if (!MODULAR_INSTANCES[_app.name]) {
-    MODULAR_INSTANCES[_app.name] = {};
+    MODULAR_INSTANCES[_app.name] = Object.create(null);
   }
 
   if (!MODULAR_INSTANCES[_app.name]![key]) {
