@@ -7,15 +7,15 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import java.io.File
 
-class RNFBTestingCoverageModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
-
-  override fun getName(): String = "RNFBTestingCoverage"
+class RNFBTestingCoverageModule(
+  reactContext: ReactApplicationContext,
+) : ReactContextBaseJavaModule(reactContext) {
+  override fun getName(): String = BuildConfig.RNFB_COVERAGE_NATIVE_MODULE_NAME
 
   @ReactMethod
   fun flush(promise: Promise) {
     try {
-      val coverageFile = File(reactApplicationContext.filesDir, "coverage.ec")
+      val coverageFile = File(reactApplicationContext.filesDir, BuildConfig.RNFB_COVERAGE_FILE_NAME)
       val emmaRT = Class.forName("com.vladium.emma.rt.RT")
       val dump =
         emmaRT.getMethod(

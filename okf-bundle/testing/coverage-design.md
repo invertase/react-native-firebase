@@ -387,6 +387,14 @@ The Detox host has **two** native modules. Do **not** conflate them.
 
 **Probe hits in native LCOV:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `getRNFBTesting().messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). Android e2e `getRNFBTesting().messagingStoreSupportsDisabledStorage()` exercises `ReactNativeFirebaseMessagingStoreImpl` disabled-storage paths. After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, those lines appear as hits in `coverage/ios-native/lcov.info`. Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that LCOV.
 
+# Config-driven neutralization (in place)
+
+Native coverage knobs for the dedicated test app live in `tests/react-native-coverage.config.js`
+(package-aligned shape). Node scripts load that file; iOS/Android native copies are generated via
+`yarn tests:coverage:generate-native-config` (`tests/ios/testing/RNFBTestingCoverageConfig.h`,
+`tests/android/coverage.properties`). **No coverage source tree moves** — extraction/migration can
+later swap implementations by config.
+
 # Critical invariants
 
 | Invariant | Enforced |

@@ -46,9 +46,22 @@ buildscript {
   }
 }
 
+// In-place coverage neutralization: library matchers from coverage.properties
+// (generated from tests/react-native-coverage.config.js).
+def coverageProps = new Properties()
+def coveragePropsFile = file('coverage.properties')
+if (coveragePropsFile.exists()) {
+  coveragePropsFile.withInputStream { coverageProps.load(it) }
+}
+def coverageLibraryMatchers = (coverageProps.getProperty('coverage.libraryProjectMatchers', 'react-native-firebase')
+  .split(',')
+  .collect { it.trim() }
+  .findAll { !it.isEmpty() })
+rootProject.ext.coverageLibraryProjectMatchers = coverageLibraryMatchers
+
 // collect all our modules for reporting
 subprojects.forEach { project ->
-  if (project.name.contains('react-native-firebase')) {
+  if (coverageLibraryMatchers.any { matcher -> project.name.contains(matcher) }) {
     rootProject.ext.firebaseModulePaths << project.projectDir
   }
 }
@@ -76,7 +89,7 @@ subprojects {
     }
 
     // Configure testing settings - if set in module build.gradle files they affect library consumers
-    if (project.name.contains('react-native-firebase')
+    if (rootProject.ext.coverageLibraryProjectMatchers.any { matcher -> project.name.contains(matcher) }
       && project.hasProperty('android')) {
       // Jacoco plugin for JVM unit .exec (AGP enableUnitTestCoverage on libraries yields
       // exec files without product-class probes — see jacoco#1265). Keep androidTest

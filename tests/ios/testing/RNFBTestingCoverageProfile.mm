@@ -1,4 +1,5 @@
 #import "RNFBTestingCoverageProfile.h"
+#import "RNFBTestingCoverageConfig.h"
 
 #import <mach-o/dyld.h>
 #import <mach-o/loader.h>
@@ -34,7 +35,7 @@ static uint32_t gRNFBTrackedProfileImageCount = 0;
 static NSString *RNFBTestingCoverageProfilePattern(void)
 {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  return [[paths firstObject] stringByAppendingPathComponent:@"coverage-%m.profraw"];
+  return [[paths firstObject] stringByAppendingPathComponent:@RNFB_COVERAGE_PROFILE_FILE_PATTERN];
 }
 
 /**
@@ -99,13 +100,16 @@ static const void *RNFBTestingFindSymbolInHeader(
   return NULL;
 }
 
-static bool RNFBTestingIsRNFBFrameworkImage(const char *imageName)
+static bool RNFBTestingIsConfiguredFrameworkImage(const char *imageName)
 {
-  // Match the framework *basename* (RNFBApp.framework), not a path segment like
-  // ".../RNFB-worktrees/.../PackageFrameworks/FirebaseCore.framework/...".
+  // Match the framework *basename* against config prefixes (default RNFB), not a
+  // path segment like ".../RNFB-worktrees/.../PackageFrameworks/FirebaseCore...".
   if (imageName == NULL) {
     return false;
   }
+#if !RNFB_COVERAGE_ENABLED
+  return false;
+#endif
   const char *framework = strstr(imageName, ".framework");
   if (framework == NULL) {
     return false;
@@ -114,7 +118,17 @@ static bool RNFBTestingIsRNFBFrameworkImage(const char *imageName)
   while (basename > imageName && basename[-1] != '/') {
     basename -= 1;
   }
-  return strncmp(basename, "RNFB", 4) == 0;
+  for (int i = 0; i < RNFB_COVERAGE_FRAMEWORK_PREFIX_COUNT; i++) {
+    const char *prefix = RNFB_COVERAGE_FRAMEWORK_PREFIXES[i];
+    if (prefix == NULL) {
+      continue;
+    }
+    size_t prefixLen = strlen(prefix);
+    if (prefixLen > 0 && strncmp(basename, prefix, prefixLen) == 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 static const char *RNFBTestingImageNameForHeader(const struct mach_header *header)
@@ -131,7 +145,7 @@ static const char *RNFBTestingImageNameForHeader(const struct mach_header *heade
 static void RNFBTestingTrackProfileImage(const struct mach_header *header, intptr_t slide)
 {
   const char *imageName = RNFBTestingImageNameForHeader(header);
-  if (!RNFBTestingIsRNFBFrameworkImage(imageName)) {
+  if (!RNFBTestingIsConfiguredFrameworkImage(imageName)) {
     return;
   }
 

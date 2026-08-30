@@ -275,7 +275,11 @@ function loadTests(_) {
       }
 
       const { NativeModules } = require('react-native');
-      const coverageModule = NativeModules.RNFBTestingCoverage;
+      const coverageConfig = require('./coverage-runtime-config');
+      if (!coverageConfig.enabled) {
+        return;
+      }
+      const coverageModule = NativeModules[coverageConfig.nativeModuleName];
       if (coverageModule?.flush) {
         console.log(`[native-coverage] flushing ${Platform.OS} coverage from Jet after hook`);
         try {
@@ -291,7 +295,7 @@ function loadTests(_) {
         }
       } else {
         console.warn(
-          '[native-coverage] RNFBTestingCoverage native module not available; skipping flush',
+          `[native-coverage] ${coverageConfig.nativeModuleName} native module not available; skipping flush`,
         );
       }
     });

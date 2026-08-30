@@ -71,6 +71,17 @@ def enableProguardInReleaseBuilds = true
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
+// In-place coverage neutralization: knobs from tests/android/coverage.properties
+// (generated from tests/react-native-coverage.config.js — no source tree moves).
+def coverageProps = new Properties()
+def coveragePropsFile = rootProject.file('coverage.properties')
+if (coveragePropsFile.exists()) {
+  coveragePropsFile.withInputStream { coverageProps.load(it) }
+}
+def coverageNativeModuleName = coverageProps.getProperty('coverage.nativeModuleName', 'RNFBTestingCoverage')
+def coverageFileName = coverageProps.getProperty('coverage.coverageFileName', 'coverage.ec')
+def coverageEnabled = coverageProps.getProperty('coverage.enabled', 'true')
+
 android {
   ndkVersion = rootProject.ext.ndkVersion
   buildToolsVersion = rootProject.ext.buildToolsVersion
@@ -92,6 +103,10 @@ android {
     testBuildType = System.getProperty('testBuildType', 'debug')
     testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
     missingDimensionStrategy 'detox', 'full'
+
+    buildConfigField 'String', 'RNFB_COVERAGE_NATIVE_MODULE_NAME', "\"${coverageNativeModuleName}\""
+    buildConfigField 'String', 'RNFB_COVERAGE_FILE_NAME', "\"${coverageFileName}\""
+    buildConfigField 'boolean', 'RNFB_COVERAGE_ENABLED', coverageEnabled
   }
 
   buildFeatures {
