@@ -50,6 +50,7 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
     expect(methodB).toHaveBeenCalledTimes(1);
     expect(Object.keys(wrapped)).toContain('methodA');
     expect(Object.keys(wrapped)).toContain('methodB');
+    expect(wrapped.toString).toBeUndefined();
   });
 
   it('routes methods through a 2-host merge composite Proxy (NewArch-AD-14a)', function () {

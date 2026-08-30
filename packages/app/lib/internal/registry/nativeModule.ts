@@ -80,9 +80,9 @@ function createRoutingCompositeProxy(
   hosts: Array<{ module: Record<string, unknown> | undefined; argToPrepend: unknown[] }>,
   isTurboModule: boolean,
 ): WrappedNativeModule {
-  const routingMap: Record<string, RouteEntry> = {};
-  const memoizedMethods: Record<string, (...args: unknown[]) => unknown> = {};
-  const memoizedConstants: Record<string, unknown> = {};
+  const routingMap: Record<string, RouteEntry> = Object.create(null);
+  const memoizedMethods: Record<string, (...args: unknown[]) => unknown> = Object.create(null);
+  const memoizedConstants: Record<string, unknown> = Object.create(null);
 
   for (const { module, argToPrepend } of hosts) {
     if (!module) {
