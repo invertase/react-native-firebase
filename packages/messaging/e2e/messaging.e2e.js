@@ -78,11 +78,28 @@ describe('messaging()', function () {
     }
 
     const { getRNFBTesting } = require('../../app/e2e/helpers');
-    const message = await getRNFBTesting().serializeMessagingUserInfo({
-      'google.c.a.ts': '1522880044',
-    });
+    for (const timestamp of ['1522880044', 1522880044]) {
+      const message = await getRNFBTesting().serializeMessagingUserInfo({
+        'google.c.a.ts': timestamp,
+      });
 
-    message.sentTime.should.equal(1522880044000);
+      message.sentTime.should.equal(1522880044000);
+    }
+  });
+
+  it('ignores malformed iOS sent times', async function () {
+    if (!Platform.ios) {
+      this.skip();
+    }
+
+    const { getRNFBTesting } = require('../../app/e2e/helpers');
+    for (const timestamp of ['', '-1', '1.5', '1522880044invalid']) {
+      const message = await getRNFBTesting().serializeMessagingUserInfo({
+        'google.c.a.ts': timestamp,
+      });
+
+      message.should.not.have.property('sentTime');
+    }
   });
 
   before(async function () {
