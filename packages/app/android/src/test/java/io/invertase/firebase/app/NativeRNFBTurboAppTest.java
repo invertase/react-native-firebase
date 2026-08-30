@@ -37,6 +37,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseJSON;
@@ -207,6 +208,28 @@ public class NativeRNFBTurboAppTest {
   }
 
   @Test
+  public void firebaseAppToMap_includesOnlyConfiguredAuthDomain() {
+    FirebaseApp firebaseApp = mock(FirebaseApp.class);
+    FirebaseOptions options = mock(FirebaseOptions.class);
+    when(firebaseApp.getName()).thenReturn("secondary");
+    when(firebaseApp.getOptions()).thenReturn(options);
+
+    NativeRNFBTurboApp.configureAuthDomain("secondary", "example.firebaseapp.com");
+    Map<String, Object> appWithAuthDomain = RCTConvertFirebase.firebaseAppToMap(firebaseApp);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> optionsWithAuthDomain =
+        (Map<String, Object>) appWithAuthDomain.get("options");
+    assertEquals("example.firebaseapp.com", optionsWithAuthDomain.get("authDomain"));
+
+    NativeRNFBTurboApp.configureAuthDomain("secondary", null);
+    Map<String, Object> appWithoutAuthDomain = RCTConvertFirebase.firebaseAppToMap(firebaseApp);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> optionsWithoutAuthDomain =
+        (Map<String, Object>) appWithoutAuthDomain.get("options");
+    assertFalse(optionsWithoutAuthDomain.containsKey("authDomain"));
+  }
+
+  @Test
   public void setAutomaticDataCollectionEnabled_delegatesToFirebaseApp() {
     FirebaseApp firebaseApp = mock(FirebaseApp.class);
     try (MockedStatic<FirebaseApp> firebaseApps = mockStatic(FirebaseApp.class)) {
@@ -223,6 +246,7 @@ public class NativeRNFBTurboAppTest {
   public void deleteApp_deletesWhenInstancePresent() {
     FirebaseApp firebaseApp = mock(FirebaseApp.class);
     Promise promise = mock(Promise.class);
+    NativeRNFBTurboApp.configureAuthDomain("secondary", "example.firebaseapp.com");
     try (MockedStatic<FirebaseApp> firebaseApps = mockStatic(FirebaseApp.class)) {
       firebaseApps.when(() -> FirebaseApp.getInstance("secondary")).thenReturn(firebaseApp);
 
@@ -230,6 +254,7 @@ public class NativeRNFBTurboAppTest {
       module.deleteApp("secondary", promise);
 
       verify(firebaseApp).delete();
+      assertFalse(NativeRNFBTurboApp.authDomains.containsKey("secondary"));
       verify(promise).resolve(null);
     }
   }

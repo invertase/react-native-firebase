@@ -35,11 +35,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec implements LifecycleEventListener {
   private static final String TAG = "App";
 
-  public static Map<String, String> authDomains = new HashMap<>();
+  public static final Map<String, String> authDomains = new ConcurrentHashMap<>();
 
   NativeRNFBTurboApp(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -134,6 +135,7 @@ public class NativeRNFBTurboApp extends NativeRNFBTurboAppSpec implements Lifecy
 
     if (firebaseApp != null) {
       firebaseApp.delete();
+      authDomains.remove(appName);
     }
 
     promise.resolve(null);
