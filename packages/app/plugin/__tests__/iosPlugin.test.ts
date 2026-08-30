@@ -110,4 +110,36 @@ describe('Config Plugin iOS Tests', function () {
     expect(twiceModifiedAppDelegate).toContain(singleImport);
     expect(twiceModifiedAppDelegate).not.toContain(doubleImport);
   });
+
+  it('adds the Firebase import to an Objective-C AppDelegate without the standard header import', function () {
+    const appDelegate = `#import <UIKit/UIKit.h>
+
+@implementation AppDelegate
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  return YES;
+}
+@end
+`;
+
+    const result = modifyObjcAppDelegate(appDelegate);
+    expect(result).toContain('#import <Firebase/Firebase.h>');
+    expect(result).toContain('[FIRApp configure];');
+  });
+
+  it('adds the Firebase import to a Swift AppDelegate without Expo', function () {
+    const appDelegate = `import UIKit
+import React
+
+class AppDelegate {
+  func configure() {
+    self.moduleName = "App"
+  }
+}
+`;
+
+    const result = modifySwiftAppDelegate(appDelegate);
+    expect(result).toContain('import FirebaseCore');
+    expect(result).toContain('FirebaseApp.configure()');
+  });
 });

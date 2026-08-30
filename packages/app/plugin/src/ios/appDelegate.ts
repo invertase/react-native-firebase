@@ -3,6 +3,36 @@ import { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import fs from 'fs';
 
+function addImport(
+  contents: string,
+  importLine: string,
+  existingImportMatcher: RegExp,
+  preferredAnchorMatcher: RegExp,
+  anyImportMatcher: RegExp,
+): string {
+  if (existingImportMatcher.test(contents)) {
+    return contents;
+  }
+
+  const newline = contents.includes('\r\n') ? '\r\n' : '\n';
+  const preferredAnchor = preferredAnchorMatcher.exec(contents);
+  if (preferredAnchor?.index !== undefined) {
+    const insertionPoint = preferredAnchor.index + preferredAnchor[0].length;
+    return `${contents.slice(0, insertionPoint)}${newline}${importLine}${contents.slice(
+      insertionPoint,
+    )}`;
+  }
+
+  const firstImport = anyImportMatcher.exec(contents);
+  if (firstImport?.index !== undefined) {
+    return `${contents.slice(0, firstImport.index)}${importLine}${newline}${contents.slice(
+      firstImport.index,
+    )}`;
+  }
+
+  return `${importLine}${newline}${contents}`;
+}
+
 export function modifyObjcAppDelegate(contents: string): string {
   const methodInvocationBlock = `[FIRApp configure];`;
   // https://regex101.com/r/mPgaq6/1
@@ -15,13 +45,13 @@ export function modifyObjcAppDelegate(contents: string): string {
     /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
 
   // Add import
-  if (!contents.includes('#import <Firebase/Firebase.h>')) {
-    contents = contents.replace(
-      /#import "AppDelegate.h"/g,
-      `#import "AppDelegate.h"
-#import <Firebase/Firebase.h>`,
-    );
-  }
+  contents = addImport(
+    contents,
+    '#import <Firebase/Firebase.h>',
+    /^[ \t]*#import\s+<Firebase\/Firebase\.h>[ \t]*$/m,
+    /^[ \t]*#import\s+"AppDelegate\.h"[ \t]*$/m,
+    /^[ \t]*#import\b[^\r\n]*$/m,
+  );
 
   // To avoid potential issues with existing changes from older plugin versions
   if (contents.includes(methodInvocationBlock)) {
@@ -74,13 +104,13 @@ export function modifySwiftAppDelegate(contents: string): string {
     /(?:self\.moduleName\s*=\s*"([^"]*)")|(?:factory\.startReactNative\()/;
 
   // Add import
-  if (!contents.includes('import FirebaseCore')) {
-    contents = contents.replace(
-      /import Expo/g,
-      `import Expo
-import FirebaseCore`,
-    );
-  }
+  contents = addImport(
+    contents,
+    'import FirebaseCore',
+    /^[ \t]*import\s+FirebaseCore[ \t]*$/m,
+    /^[ \t]*import\s+Expo[ \t]*$/m,
+    /^[ \t]*import\b[^\r\n]*$/m,
+  );
 
   // To avoid potential issues with existing changes from older plugin versions
   if (contents.includes(methodInvocationBlock)) {
