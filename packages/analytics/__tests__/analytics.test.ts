@@ -270,12 +270,96 @@ describe('Analytics', function () {
       );
     });
 
+    it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` throws if not a string before E.164', function () {
+      expect(() =>
+        // @ts-ignore
+        initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), true),
+      ).toThrow(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
+      );
+    });
+
     it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` should throw if the value is in E.164 format', function () {
       expect(() =>
         initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), '+1234567890'),
       ).toThrow(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a 64-character SHA-256 hex string of a phone number in E.164 format, not an E.164 number.",
       );
+    });
+
+    describe('SHA-256 hex validation for hashed on-device conversion', function () {
+      const validLower = '0123456789abcdef'.repeat(4);
+      const validUpper = '0123456789ABCDEF'.repeat(4);
+      const empty = '';
+      const shortEven = validLower.slice(0, 32);
+      const oddLength = validLower.slice(0, 63);
+      const tooLong = `${validLower}aa`;
+      const nonHex = 'g'.repeat(64);
+
+      const hashedEmailHexError =
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a 64-character SHA-256 hex string.";
+      const hashedPhoneHexError =
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a 64-character SHA-256 hex string.";
+
+      it.each([
+        ['empty', empty],
+        ['short', shortEven],
+        ['odd-length', oddLength],
+        ['too long', tooLong],
+        ['non-hex', nonHex],
+      ])(
+        '`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` rejects a %s value',
+        function (_label, hashedEmailAddress) {
+          expect(() =>
+            initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+              getAnalytics(),
+              hashedEmailAddress,
+            ),
+          ).toThrow(hashedEmailHexError);
+        },
+      );
+
+      it.each([
+        ['empty', empty],
+        ['short', shortEven],
+        ['odd-length', oddLength],
+        ['too long', tooLong],
+        ['non-hex', nonHex],
+      ])(
+        '`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` rejects a %s value',
+        function (_label, hashedPhoneNumber) {
+          expect(() =>
+            initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+              getAnalytics(),
+              hashedPhoneNumber,
+            ),
+          ).toThrow(hashedPhoneHexError);
+        },
+      );
+
+      it('`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` accepts a lowercase 64-character hex string', async function () {
+        await expect(
+          initiateOnDeviceConversionMeasurementWithHashedEmailAddress(getAnalytics(), validLower),
+        ).resolves.toBeUndefined();
+      });
+
+      it('`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` accepts an uppercase 64-character hex string', async function () {
+        await expect(
+          initiateOnDeviceConversionMeasurementWithHashedEmailAddress(getAnalytics(), validUpper),
+        ).resolves.toBeUndefined();
+      });
+
+      it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` accepts a lowercase 64-character hex string', async function () {
+        await expect(
+          initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), validLower),
+        ).resolves.toBeUndefined();
+      });
+
+      it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` accepts an uppercase 64-character hex string', async function () {
+        await expect(
+          initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), validUpper),
+        ).resolves.toBeUndefined();
+      });
     });
 
     it('`initiateOnDeviceConversionMeasurementWithPhoneNumber` function is properly exposed to end user', function () {

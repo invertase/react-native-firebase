@@ -593,6 +593,144 @@ describe('analytics()', function () {
       });
     });
 
+    describe('on-device conversion measurement with hashed credentials', function () {
+      const validLower = '0123456789abcdef'.repeat(4);
+      const validUpper = '0123456789ABCDEF'.repeat(4);
+      const empty = '';
+      const shortEven = validLower.slice(0, 32);
+      const oddLength = validLower.slice(0, 63);
+      const tooLong = `${validLower}aa`;
+      const nonHex = 'g'.repeat(64);
+
+      function expectHexContractError(error, apiLabel) {
+        const message = error + '';
+        if (!message.includes('64-character SHA-256 hex string')) {
+          fail(`Should have returned a hex-length error for ${apiLabel}: ${message}`);
+        }
+      }
+
+      [
+        ['empty', empty],
+        ['short', shortEven],
+        ['odd-length', oddLength],
+        ['too long', tooLong],
+        ['non-hex', nonHex],
+      ].forEach(function ([label, value]) {
+        it(`rejects a ${label} hashed email via JS validation`, async function () {
+          try {
+            const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedEmailAddress } =
+              analyticsModular;
+            await initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+              getAnalytics(),
+              value,
+            );
+            fail(`Should have returned an error for ${label} hashed email`);
+          } catch (e) {
+            expectHexContractError(e, `hashed email (${label})`);
+          }
+        });
+
+        it(`rejects a ${label} hashed phone via JS validation`, async function () {
+          try {
+            const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedPhoneNumber } =
+              analyticsModular;
+            await initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), value);
+            fail(`Should have returned an error for ${label} hashed phone`);
+          } catch (e) {
+            expectHexContractError(e, `hashed phone (${label})`);
+          }
+        });
+      });
+
+      it('rejects an E.164 phone number used as a hashed phone', async function () {
+        try {
+          const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedPhoneNumber } =
+            analyticsModular;
+          await initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+            getAnalytics(),
+            '+14155551212',
+          );
+          fail('Should have returned an error for an E.164 hashed phone');
+        } catch (e) {
+          const message = e + '';
+          if (!message.includes('64-character SHA-256 hex string') || !message.includes('E.164')) {
+            fail(`Should have returned an E.164 hashed-phone error: ${message}`);
+          }
+        }
+      });
+
+      it('accepts a lowercase 64-character hashed email (reaches native on iOS)', async function () {
+        const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedEmailAddress } =
+          analyticsModular;
+        await initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+          getAnalytics(),
+          validLower,
+        );
+      });
+
+      it('accepts an uppercase 64-character hashed email (reaches native on iOS)', async function () {
+        const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedEmailAddress } =
+          analyticsModular;
+        await initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+          getAnalytics(),
+          validUpper,
+        );
+      });
+
+      it('accepts a lowercase 64-character hashed phone (reaches native on iOS)', async function () {
+        const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedPhoneNumber } =
+          analyticsModular;
+        await initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+          getAnalytics(),
+          validLower,
+        );
+      });
+
+      it('accepts an uppercase 64-character hashed phone (reaches native on iOS)', async function () {
+        const { getAnalytics, initiateOnDeviceConversionMeasurementWithHashedPhoneNumber } =
+          analyticsModular;
+        await initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+          getAnalytics(),
+          validUpper,
+        );
+      });
+
+      // Bypass JS validation so iOS decoder reject paths actually execute.
+      [
+        ['empty', empty],
+        ['odd-length', oddLength],
+        ['non-hex', nonHex],
+      ].forEach(function ([label, value]) {
+        it(`iOS native decoder rejects a ${label} hashed email`, async function () {
+          if (!Platform.ios) {
+            this.skip();
+          }
+          try {
+            await NativeModules.NativeRNFBTurboAnalytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+              value,
+            );
+            fail(`Native hashed email should have rejected ${label}`);
+          } catch (e) {
+            expectHexContractError(e, `native hashed email (${label})`);
+          }
+        });
+
+        it(`iOS native decoder rejects a ${label} hashed phone`, async function () {
+          if (!Platform.ios) {
+            this.skip();
+          }
+          try {
+            await NativeModules.NativeRNFBTurboAnalytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+              value,
+            );
+            fail(`Native hashed phone should have rejected ${label}`);
+          } catch (e) {
+            expectHexContractError(e, `native hashed phone (${label})`);
+          }
+        });
+      });
+    });
+
     // Test this last so it does not stop delivery to DebugView
     describe('setAnalyticsCollectionEnabled()', function () {
       it('false', async function () {
