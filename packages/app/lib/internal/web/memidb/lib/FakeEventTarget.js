@@ -66,7 +66,9 @@ class FakeEventTarget {
         listener.type === type && listener.callback === callback && listener.capture === capture
       );
     });
-    this.listeners.splice(i, 1);
+    if (i >= 0) {
+      this.listeners.splice(i, 1);
+    }
   }
 
   // http://www.w3.org/TR/dom/#dispatching-events
