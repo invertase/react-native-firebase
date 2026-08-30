@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 import { TurboModuleRegistry } from 'react-native';
+import { createNativeModuleDebugProxy } from './nativeModuleDebug';
 
 const DYNAMIC_CONSTANT_KEYS = new Set(['androidPlayServices']);
 
@@ -64,45 +64,7 @@ export function getReactNativeModule(moduleName: string): Record<string, unknown
     return debugProxy;
   }
 
-  debugProxy = new Proxy(nativeModule as Record<string, unknown>, {
-    ownKeys(target) {
-      const keys: string[] = [];
-      for (const key in target) {
-        keys.push(key);
-      }
-      return keys;
-    },
-    get: (_, name) => {
-      const prop = (nativeModule as Record<string, unknown>)[name as string];
-      if (typeof prop !== 'function') return prop;
-      return (...args: unknown[]) => {
-        console.debug(
-          `[RNFB->Native][🔵] ${moduleName}.${String(name)} -> ${JSON.stringify(args)}`,
-        );
-        const result: unknown = (prop as (...args: unknown[]) => unknown).apply(nativeModule, args);
-        if (result && typeof result === 'object' && 'then' in result) {
-          return (result as Promise<unknown>).then(
-            (res: unknown) => {
-              console.debug(
-                `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(res)}`,
-              );
-              return res;
-            },
-            (err: unknown) => {
-              console.debug(
-                `[RNFB<-Native][🔴] ${moduleName}.${String(name)} <- ${JSON.stringify(err)}`,
-              );
-              throw err;
-            },
-          );
-        }
-        console.debug(
-          `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(result)}`,
-        );
-        return result;
-      };
-    },
-  });
+  debugProxy = createNativeModuleDebugProxy(moduleName, nativeModule);
   memoizedDebugProxies.set(moduleName, debugProxy);
   return debugProxy;
 }
