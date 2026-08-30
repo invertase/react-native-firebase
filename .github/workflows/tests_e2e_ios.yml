@@ -409,16 +409,29 @@ jobs:
           ./.github/workflows/scripts/wait-for-load-settle.sh
 
       - name: Detox Test Debug
+        id: detox_debug
         if: contains(matrix.buildmode, 'debug')
         timeout-minutes: 82
         run: |
           yarn tests:ios:test-cover 2>&1 | tee detox-step.log
           exit ${PIPESTATUS[0]}
 
+      # Presence guard: empty packagesHits or missing profraw exits non-zero (prefer 2).
+      # Do not continue-on-error — silent empty coverage must fail CI when Detox passed.
+      # Mirror android-e2e-detox.sh: do not fail the job on coverage when Detox already failed.
       - name: Process iOS native coverage
         if: always() && contains(matrix.buildmode, 'debug')
-        continue-on-error: true
-        run: yarn tests:ios:test:process-coverage
+        run: |
+          set -uo pipefail
+          COVERAGE_EXIT=0
+          yarn tests:ios:test:process-coverage || COVERAGE_EXIT=$?
+          if [[ "${{ steps.detox_debug.outcome }}" == "success" && "$COVERAGE_EXIT" -ne 0 ]]; then
+            exit "$COVERAGE_EXIT"
+          fi
+          if [[ "$COVERAGE_EXIT" -ne 0 ]]; then
+            echo "Detox outcome=${{ steps.detox_debug.outcome }}; not failing job on coverage exit ${COVERAGE_EXIT}"
+          fi
+          exit 0
 
       - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')

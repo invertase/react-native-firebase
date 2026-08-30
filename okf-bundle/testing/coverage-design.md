@@ -276,7 +276,7 @@ reporter: ['lcov', 'html', 'text-summary'],
 1. `testCoverageEnabled` / Jacoco plugin on RNFB modules (`tests/android/build.gradle`) — e2e `*.ec` + unit `*.exec`.
 2. **JVM unit:** `yarn tests:android:unit` before or independent of Detox — produces module `*.exec`.
 3. Jet `after` in `tests/app.js` → `NativeModules.RNFBTestingCoverage.flush()` in **app** process → `coverage.ec` in `filesDir` **before** Detox SIGINT.
-4. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage --android-post-e2e`) → `emulator_coverage.ec` → **`jacocoTestReport`** (merged unit `*.exec` + e2e `*.ec`) → **delete local `.ec`**. Missing `.ec`: warning, not test/CI fail (`continue-on-error` on Codecov upload). Missing `.ec` on a later post-e2e without a new e2e run means the merge has no e2e execution data — by design; unit `*.exec` still merge if present.
+4. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage --android-post-e2e`) → `emulator_coverage.ec` → **`jacocoTestReport`** (merged unit `*.exec` + e2e `*.ec`) → **delete local `.ec`** → **presence assert** (invertase package LINE hits must be non-empty; exit **2** when strict). Missing `.ec` in strict mode (default): **exit 2** — silent empty e2e coverage must fail CI. Soft local: `--no-strict` / `RNFB_COVERAGE_STRICT=0`. Codecov upload may still use `continue-on-error`; the post-e2e yarn step itself is the blocking guard.
 5. XML uploaded to Codecov: `tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml`
 
 **Why app-process flush:** Detox SIGINT kills instrumentation after Jet; post-`Detox.runTests()` dump in `DetoxTest.java` never runs.
@@ -344,8 +344,8 @@ iOS release legs: no upload. macOS: TS only.
 | Workflow | Steps |
 |----------|-------|
 | `tests_jest.yml` | `yarn tests:jest-coverage` → Codecov `jest` |
-| `tests_e2e_ios.yml` (debug) | `yarn tests:ios:unit` → Detox → `yarn tests:ios:test:process-coverage` (e2e LCOV + merge unit; `continue-on-error: true` for now); **debug+spm:** `yarn tests:ios:ruby` → Codecov `ios-ruby` |
-| `tests_e2e_android.yml` | `yarn tests:android:build` → `yarn tests:android:unit` → Detox → `yarn tests:android:post-e2e-coverage` (merged `jacocoTestReport`) |
+| `tests_e2e_ios.yml` (debug) | `yarn tests:ios:unit` → Detox → `yarn tests:ios:test:process-coverage` (e2e LCOV + merge unit + presence assert; **no** `continue-on-error`; fails the job when Detox succeeded but coverage exited non-zero — same policy as Android); **debug+spm:** `yarn tests:ios:ruby` → Codecov `ios-ruby` |
+| `tests_e2e_android.yml` | `yarn tests:android:build` → `yarn tests:android:unit` → Detox → `yarn tests:android:post-e2e-coverage` (merged `jacocoTestReport` + presence assert; CI script fails the job when tests passed but coverage exited non-zero) |
 | `tests_e2e_other.yml` | macOS Jet e2e |
 
 **Paths:** JS `coverage/lcov.info`; iOS Ruby `coverage/ios-ruby/lcov.info`; iOS native `coverage/ios-native/lcov.info`; Android merged native `tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml`. Uploads tab: **Processed** = good; **Unusable** = fix format/paths.
@@ -430,7 +430,7 @@ The Detox host has **two** native modules. Do **not** conflate them.
 
 # Future cleanups
 
-- Drop `continue-on-error: true` on iOS process-coverage CI step when stable.
+- Replace interim `tests/scripts/assert-native-coverage-presence.js` with package `rn-coverage assert` once that CLI is wired into RNFB (same exit-2 contract).
 
 # Citations
 

@@ -28,6 +28,11 @@ yarn tests:android:test-cover --headless || TEST_EXIT=$?
 # Pull coverage.ec and run Jacoco while the emulator and app filesDir are still
 # intact. cleanup_android_e2e (emu kill) must run only after post-e2e — reordering
 # here regressed native uploads when this script replaced the inline CI script.
-yarn tests:android:post-e2e-coverage || true
+# Presence guard: do not swallow empty/missing native coverage when tests passed.
+COVERAGE_EXIT=0
+yarn tests:android:post-e2e-coverage || COVERAGE_EXIT=$?
+if [[ "$TEST_EXIT" -eq 0 && "$COVERAGE_EXIT" -ne 0 ]]; then
+  exit "$COVERAGE_EXIT"
+fi
 
 exit "$TEST_EXIT"
