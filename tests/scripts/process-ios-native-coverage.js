@@ -184,12 +184,21 @@ async function main() {
     ...walkFiles(profileDataDir, filePath => filePath.endsWith('.profraw')),
   ];
 
+  const argv = process.argv.slice(2);
+  const strict =
+    !argv.includes('--no-strict') &&
+    (argv.includes('--strict') || process.env.RNFB_COVERAGE_STRICT !== '0');
   if (profrawFiles.length === 0) {
+    const message = `[ios-native-coverage] No .profraw files under ${simulatorCoverageDir} or ${profileDataDir}.`;
+    if (strict) {
+      // eslint-disable-next-line no-console
+      console.error(message);
+      process.exit(2);
+    }
+    // Soft local: warn and exit 0 (match assert failEmpty soft contract).
     // eslint-disable-next-line no-console
-    console.error(
-      `[ios-native-coverage] No .profraw files under ${simulatorCoverageDir} or ${profileDataDir}.`,
-    );
-    process.exit(1);
+    console.warn(`${message} (soft; continuing)`);
+    process.exit(0);
   }
 
   // eslint-disable-next-line no-console
@@ -238,6 +247,17 @@ async function main() {
     console.log(
       `[ios-native-coverage] Wrote ${options.output} (${sourceFileCount} source file(s), ${packagesHits} under packages/)`,
     );
+
+    // packagesHits=0 is the classic silent multi-image failure (app-only export).
+    const {
+      assertIosLcov,
+      EXIT_OK,
+      EXIT_STRICT_EMPTY,
+    } = require('./assert-native-coverage-presence');
+    const assertCode = assertIosLcov(options.output, strict);
+    if (assertCode !== EXIT_OK) {
+      process.exit(assertCode === EXIT_STRICT_EMPTY ? EXIT_STRICT_EMPTY : assertCode);
+    }
 
     profrawFiles.forEach(profrawPath => {
       fs.rmSync(profrawPath, { force: true });

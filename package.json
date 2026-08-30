@@ -57,6 +57,7 @@
     "tests:android:pull-native-coverage": "node tests/scripts/pull-native-coverage.js --android-pull",
     "tests:android:post-e2e-coverage": "node tests/scripts/pull-native-coverage.js --android-post-e2e",
     "tests:android:test:jacoco-report": "cd tests/android && ./gradlew jacocoTestReport",
+    "tests:coverage:assert-presence": "node tests/scripts/assert-native-coverage-presence.js",
     "tests:ios:build": "bash -c 'source ./scripts/e2e/lib/e2e-slot-env.sh && e2e_sanitize_serial_env && cd tests && yarn detox build --configuration \"${RNFB_DETOX_IOS_CONFIG:-ios.sim.debug}\"'",
     "tests:ios:build:release": "cd tests && yarn detox build --configuration ios.sim.release",
     "tests:ios:detox-framework-cache:rebuild": "cd tests && yarn detox rebuild-framework-cache",

@@ -8,9 +8,7 @@ const IOS_TEST_APP_BUNDLE_ID = 'io.invertase.testing';
 const ANDROID_COVERAGE_RELATIVE_PATH = 'files/coverage.ec';
 
 function getAdbBinary() {
-  return process.env.ANDROID_HOME
-    ? `${process.env.ANDROID_HOME}/platform-tools/adb`
-    : 'adb';
+  return process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}/platform-tools/adb` : 'adb';
 }
 
 function resolveAndroidDeviceId(preferredDeviceId) {
@@ -176,13 +174,34 @@ function deleteProcessedAndroidCoverageEc(ecFilePath) {
   console.log(`[native-coverage] Removed processed coverage.ec: ${ecFilePath}`);
 }
 
+function isCoverageStrict(args = []) {
+  if (args.includes('--no-strict')) {
+    return false;
+  }
+  if (args.includes('--strict')) {
+    return true;
+  }
+  return process.env.RNFB_COVERAGE_STRICT !== '0';
+}
+
 async function main() {
   const args = process.argv.slice(2);
+  const strict = isCoverageStrict(args);
+  const {
+    assertAndroidJacoco,
+    DEFAULT_ANDROID_JACOCO,
+    EXIT_STRICT_EMPTY,
+  } = require('./assert-native-coverage-presence');
 
   if (args.includes('--android-pull')) {
     const deviceId = resolveAndroidDeviceId();
     console.log(`[native-coverage] Pulling Android coverage from ${deviceId}`);
-    await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
+    // Always softFail at retry layer so miss returns null; strict maps to exit 2 below.
+    const pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
+    if (!pulled && strict) {
+      console.error('[native-coverage] Android coverage.ec missing (strict)');
+      process.exit(EXIT_STRICT_EMPTY);
+    }
     return;
   }
 
@@ -193,35 +212,50 @@ async function main() {
       testsDir,
       'android/app/build/output/coverage/emulator_coverage.ec',
     );
-    console.log(`[native-coverage] Post-e2e Android coverage on ${deviceId}`);
+    console.log(`[native-coverage] Post-e2e Android coverage on ${deviceId} (strict=${strict})`);
     let pulled = null;
     if (fs.existsSync(localDestFile)) {
       console.log(`[native-coverage] Using existing ${localDestFile} from Jet-close pull`);
       pulled = localDestFile;
     } else {
+      // softFail so miss returns null; !pulled && strict → EXIT_STRICT_EMPTY (not throw→1).
       pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true, testsDir });
     }
     const reportOk = runJacocoTestReport();
     if (!pulled) {
-      console.warn(
-        '[native-coverage] Merged Jacoco report may lack e2e data (no coverage.ec pulled)',
-      );
+      const message = 'Merged Jacoco report lacks e2e data (no coverage.ec pulled)';
+      if (strict) {
+        console.error(`[native-coverage] ${message}`);
+        process.exit(EXIT_STRICT_EMPTY);
+      }
+      console.warn(`[native-coverage] ${message}`);
     } else if (reportOk) {
       deleteProcessedAndroidCoverageEc(pulled);
+    }
+
+    if (!reportOk) {
+      console.error('[native-coverage] jacocoTestReport failed');
+      process.exit(1);
+    }
+
+    // Presence guard: invertase package LINE hits must be non-empty.
+    const assertCode = assertAndroidJacoco(DEFAULT_ANDROID_JACOCO, strict);
+    if (assertCode !== 0) {
+      process.exit(assertCode);
     }
     return;
   }
 
   console.error(
-    'Usage: node tests/scripts/pull-native-coverage.js --android-pull|--android-post-e2e',
+    'Usage: node tests/scripts/pull-native-coverage.js --android-pull|--android-post-e2e [--strict|--no-strict]',
   );
   process.exit(1);
 }
 
 if (require.main === module) {
   main().catch(error => {
-    console.warn(`[native-coverage] ${error.message}`);
-    process.exit(0);
+    console.error(`[native-coverage] ${error.message}`);
+    process.exit(1);
   });
 }
 
