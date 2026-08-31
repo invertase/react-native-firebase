@@ -274,11 +274,24 @@ function loadTests(_) {
         return;
       }
 
-      const { NativeModules } = require('react-native');
       const coverageConfig = require('./coverage-runtime-config');
       if (!coverageConfig.enabled) {
         return;
       }
+
+      // Prefer portal-linked react-native-coverage TurboModule.
+      try {
+        const { flush } = require('react-native-coverage');
+        console.log(`[native-coverage] flushing ${Platform.OS} coverage via react-native-coverage`);
+        flush();
+        return;
+      } catch (error) {
+        console.warn(
+          `[native-coverage] react-native-coverage flush unavailable (${error?.message}); trying NativeModules fallback`,
+        );
+      }
+
+      const { NativeModules } = require('react-native');
       const coverageModule = NativeModules[coverageConfig.nativeModuleName];
       if (coverageModule?.flush) {
         console.log(`[native-coverage] flushing ${Platform.OS} coverage from Jet after hook`);

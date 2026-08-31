@@ -1,7 +1,21 @@
+#!/usr/bin/env node
+/**
+ * Android / iOS coverage pull orchestration for RNFB tests.
+ *
+ * Android pull + post-e2e use portal-linked `rn-coverage` CLI with RNFB
+ * artifact paths. iOS pull (Jet close) still copies profraw into
+ * tests/ios/build/output/coverage for the package export step.
+ *
+ * Interim assert / process scripts remain on disk (dormant wrappers) until
+ * later cleanup — yarn entrypoints now prefer package CLI.
+ */
+'use strict';
+
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { loadCoverageConfig, resolveStrict } = require('./load-coverage-config');
+const { runRnCoverage } = require('./resolve-rn-coverage');
 
 const coverageConfig = loadCoverageConfig();
 const ANDROID_TEST_APP_PACKAGE = coverageConfig.app.androidApplicationId;
@@ -147,8 +161,6 @@ function pullIosCoverage(deviceId, options = {}) {
   return destPaths;
 }
 
-// Merged unit (*.exec) + e2e (*.ec) report — Codecov android-native uploads this XML.
-// See tests/android/app/jacoco.gradle (jacocoTestReport) and okf-bundle/testing/coverage-design.md.
 function runJacocoTestReport() {
   const androidDir = path.resolve(__dirname, '../android');
   const result = spawnSync('./gradlew', ['jacocoTestReport'], {
@@ -187,63 +199,82 @@ async function main() {
     console.warn('[native-coverage] disabled via tests/react-native-coverage.config.js');
     return;
   }
-  const {
-    assertAndroidJacoco,
-    DEFAULT_ANDROID_JACOCO,
-    EXIT_STRICT_EMPTY,
-  } = require('./assert-native-coverage-presence');
+
+  const testsDir = path.resolve(__dirname, '..');
+  const localDestDir = path.join(testsDir, 'android/app/build/output/coverage');
+  const localDestFile = path.join(localDestDir, 'emulator_coverage.ec');
+  const deviceId = resolveAndroidDeviceId();
 
   if (args.includes('--android-pull')) {
-    const deviceId = resolveAndroidDeviceId();
-    console.log(`[native-coverage] Pulling Android coverage from ${deviceId}`);
-    // Always softFail at retry layer so miss returns null; strict maps to exit 2 below.
-    const pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true });
-    if (!pulled && strict) {
-      console.error('[native-coverage] Android coverage.ec missing (strict)');
-      process.exit(EXIT_STRICT_EMPTY);
-    }
-    return;
+    console.log(
+      `[native-coverage] Pulling Android coverage from ${deviceId} via rn-coverage (portal)`,
+    );
+    const { status } = runRnCoverage(
+      strict
+        ? ['--strict', 'android', 'pull', '--device', deviceId, '--output', localDestDir]
+        : ['--no-strict', 'android', 'pull', '--device', deviceId, '--output', localDestDir],
+    );
+    process.exit(status == null ? 1 : status);
   }
 
   if (args.includes('--android-post-e2e')) {
-    const deviceId = resolveAndroidDeviceId();
-    const testsDir = path.resolve(__dirname, '..');
-    const localDestFile = path.join(
-      testsDir,
-      'android/app/build/output/coverage/emulator_coverage.ec',
+    console.log(
+      `[native-coverage] Post-e2e Android coverage on ${deviceId} via rn-coverage (strict=${strict})`,
     );
-    console.log(`[native-coverage] Post-e2e Android coverage on ${deviceId} (strict=${strict})`);
     let pulled = null;
     if (fs.existsSync(localDestFile)) {
       console.log(`[native-coverage] Using existing ${localDestFile} from Jet-close pull`);
       pulled = localDestFile;
     } else {
-      // softFail so miss returns null; !pulled && strict → EXIT_STRICT_EMPTY (not throw→1).
-      pulled = await pullAndroidCoverageWithRetry(deviceId, { softFail: true, testsDir });
+      const pullResult = runRnCoverage([
+        strict ? '--strict' : '--no-strict',
+        'android',
+        'pull',
+        '--device',
+        deviceId,
+        '--output',
+        localDestDir,
+      ]);
+      if (pullResult.status === 0 && fs.existsSync(localDestFile)) {
+        pulled = localDestFile;
+      } else if (pullResult.status === 2 && strict) {
+        process.exit(2);
+      }
     }
-    const reportOk = runJacocoTestReport();
+
+    const reportResult = runRnCoverage([
+      strict ? '--strict' : '--no-strict',
+      'android',
+      'report',
+      '--android-dir',
+      path.join(testsDir, 'android'),
+      '--jacoco-xml',
+      path.resolve(path.resolve(__dirname, '../..'), coverageConfig.android.jacocoReportXml),
+    ]);
+
+    if (reportResult.status !== 0) {
+      process.exit(reportResult.status == null ? 1 : reportResult.status);
+    }
+
     if (!pulled) {
       const message = 'Merged Jacoco report lacks e2e data (no coverage.ec pulled)';
       if (strict) {
         console.error(`[native-coverage] ${message}`);
-        process.exit(EXIT_STRICT_EMPTY);
+        process.exit(2);
       }
       console.warn(`[native-coverage] ${message}`);
-    } else if (reportOk) {
+    } else {
       deleteProcessedAndroidCoverageEc(pulled);
     }
 
-    if (!reportOk) {
-      console.error('[native-coverage] jacocoTestReport failed');
-      process.exit(1);
-    }
-
-    // Presence guard: invertase package LINE hits must be non-empty.
-    const assertCode = assertAndroidJacoco(DEFAULT_ANDROID_JACOCO, strict);
-    if (assertCode !== 0) {
-      process.exit(assertCode);
-    }
-    return;
+    // Explicit presence assert via package CLI (belt-and-suspenders with report assert).
+    const assertResult = runRnCoverage([
+      strict ? '--strict' : '--no-strict',
+      'assert',
+      '--platform',
+      'android',
+    ]);
+    process.exit(assertResult.status == null ? 1 : assertResult.status);
   }
 
   console.error(

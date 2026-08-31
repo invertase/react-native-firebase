@@ -49,6 +49,13 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+# 05D0: portal-linked react-native-coverage CocoaPods helper (LLVM + CoverageConfig.h).
+# Resolves via tests/node_modules (Pattern C — tests app only).
+rn_coverage_post_install = Pod::Executable.execute_command('node', ['-p',
+  'require("path").join(require.resolve("react-native-coverage/package.json", {paths:[process.argv[1]]}), "..", "cocoapods", "coverage_post_install.rb")',
+  __dir__]).strip
+require rn_coverage_post_install
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -181,6 +188,19 @@ target 'testing' do
         end
       end
     end
+
+    # 05D0: apply package helper for Coverage pod + regenerate CoverageConfig.h with RNFB
+    # prefixes. Existing apply_ios_native_coverage lambda above remains for RNFB pods.
+    # force_dynamic_frameworks: host already uses use_frameworks! :linkage => :dynamic.
+    ReactNativeCoverage.apply_post_install!(
+      installer,
+      framework_name_prefixes: ['RNFB'],
+      force_dynamic_frameworks: true,
+      write_config_header: true,
+      # App LLVM flags already set by apply_ios_native_coverage above.
+      instrument_app: false,
+      quiet: false
+    )
   end
 end
 
