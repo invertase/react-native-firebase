@@ -1,18 +1,19 @@
 /**
  * RNFB dedicated-test-app coverage config (Pattern C).
  *
- * Shape mirrors `react-native-coverage` package config (INF-05A §8 / package
- * `src/config.ts`) so later migration can swap the implementation without
- * relocating coverage source trees. This file is the source of truth for
- * Node scripts; native/Gradle copies are generated via
- * `tests/scripts/generate-coverage-native-config.js`.
+ * Dry-run: tests app consumes local `react-native-coverage` via Yarn
+ * `portal:../../../react-native-coverage` (no npm registry). Host scripts
+ * prefer package `rn-coverage` CLI / `react-native-coverage/node`. Flush uses
+ * package TurboModule name `Coverage`. Dormant RNFBTesting*Coverage* sources
+ * remain on disk until a later delete step — do not remove them here.
  *
  * @type {import('./scripts/load-coverage-config').CoverageConfigInput}
  */
 module.exports = {
   /** Master enablement for native coverage plumbing in the test app. */
   enabled: true,
-  nativeModuleName: 'RNFBTestingCoverage',
+  /** Package TurboModule registry name (react-native-coverage). */
+  nativeModuleName: 'Coverage',
   app: {
     androidApplicationId: 'com.invertase.testing',
     iosBundleId: 'io.invertase.testing',

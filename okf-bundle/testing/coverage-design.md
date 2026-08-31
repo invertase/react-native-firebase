@@ -395,6 +395,19 @@ Native coverage knobs for the dedicated test app live in `tests/react-native-cov
 `tests/android/coverage.properties`). **No coverage source tree moves** — extraction/migration can
 later swap implementations by config.
 
+# Migration dry-run (portal, no registry)
+
+Pattern C: only the **tests** workspace depends on `react-native-coverage` via Yarn portal:
+
+```json
+"react-native-coverage": "portal:../../../react-native-coverage"
+```
+
+in `tests/package.json` (relative to the sibling `invertase/react-native-coverage` checkout).
+Host yarn scripts call package `rn-coverage` (`tests/scripts/rn-coverage-*.js`,
+`pull-native-coverage.js`). Runtime flush uses the package TurboModule (`Coverage`).
+Dormant `RNFBTesting*Coverage*` sources remain on disk until a later delete step.
+
 # Critical invariants
 
 | Invariant | Enforced |
@@ -402,14 +415,14 @@ later swap implementations by config.
 | LLVM profile flags (iOS) | `Podfile` `post_install` |
 | Profile path at launch (iOS) | `AppDelegate` → `RNFBTestingConfigureCoverageProfilePath()` |
 | Jacoco instrumentation (Android) | `testCoverageEnabled` + Jacoco plugin in `tests/android/build.gradle` |
-| Coverage flush module | `RNFBTestingCoverage` / `NativeModules.RNFBTestingCoverage.flush()` in `tests/app.js` — **not** `NativeRNFBTesting` ([§ two test native modules](#test-native-modules)) |
+| Module name | `Coverage` / `react-native-coverage` flush (portal dry-run); dormant `RNFBTestingCoverage*` sources retained |
 | Flush after Mocha | Jet `after` in `tests/app.js` |
 | Profraw pull before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
 | Android JVM unit before / with merge | `yarn tests:android:unit` → module `*.exec` |
 | iOS XCTest unit merged into ios-native | `yarn tests:ios:unit` → `coverage/ios-unit/lcov.info` merged into `coverage/ios-native/lcov.info` |
 | Android ec pull after Detox | `yarn tests:android:post-e2e-coverage` → **`jacocoTestReport`** (not e2e-only `jacocoAndroidTestReport`) |
 | Codecov android-native file | `jacocoTestReport/jacocoTestReport.xml` |
-| Fresh profraw processed (iOS) | `process-ios-native-coverage.js` deletes after export |
+| Fresh profraw processed (iOS) | `rn-coverage-ios-export.js` (package CLI) deletes after export |
 | Fresh ec processed (Android) | `pull-native-coverage.js` deletes local `.ec` after successful Jacoco report |
 | JVM unit ≠ e2e substitute | [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1); [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) still applies |
 | iOS XCTest ≠ e2e substitute | [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1); unit LCOV still merges into ios-native |
@@ -438,7 +451,11 @@ later swap implementations by config.
 
 # Future cleanups
 
-- Replace interim `tests/scripts/assert-native-coverage-presence.js` with package `rn-coverage assert` once that CLI is wired into RNFB (same exit-2 contract).
+- After registry migrate + second consumer green: delete dormant `RNFBTesting*Coverage*`
+  sources and interim `tests/scripts/assert-native-coverage-presence.js` /
+  `rn-coverage-ios-export.js` once yarn entrypoints stay on package CLI.
+- Restore package `ios/CoverageConfig.h` fixture prefixes after RNFB-only dry-run pod
+  installs if the portal checkout is shared with package example CI.
 
 # Citations
 

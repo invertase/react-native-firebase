@@ -28,6 +28,34 @@ PODS:
     - SocketRocket
     - Yoga
   - boost (1.84.0)
+  - Coverage (0.1.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - DoubleConversion (1.1.6)
   - fast_float (8.0.0)
   - FBLazyVector (0.86.2)
@@ -3005,6 +3033,7 @@ PODS:
 DEPENDENCIES:
   - "AsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - Coverage (from `../node_modules/react-native-coverage`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -3113,6 +3142,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  Coverage:
+    :path: "../node_modules/react-native-coverage"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   fast_float:
@@ -3310,6 +3341,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AsyncStorage: d7dcc63ec84ccd43e489b5dcdbd4bf93d12f04eb
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  Coverage: 89279de07bf9b18beddab5e3909bdffa8489402f
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: d153c0a7ab3a2c865dd311cb3a5418cd66b658e6
@@ -3408,6 +3440,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 24af75960dc03eceead31961827e7cecf3ea22a0
 
-PODFILE CHECKSUM: d5fa1110dfeb7772f6e5aeb06b0f28ccb6ac29a6
+PODFILE CHECKSUM: 4e743daa0164d387e5f42687a894490d997237f6
 
 COCOAPODS: 1.17.0
