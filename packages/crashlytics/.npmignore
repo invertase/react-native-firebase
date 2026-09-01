@@ -39,6 +39,7 @@ plugin/__tests__/
 *.xcuserstate
 ios/Pods
 ios/build
+ios/**/build
 *project.xcworkspace*
 *xcuserdata*
 
