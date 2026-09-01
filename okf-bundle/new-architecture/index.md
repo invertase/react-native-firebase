@@ -6,7 +6,7 @@ Durable architectural decisions for React Native Firebase TurboModules. Product 
 
 ## Documents
 
-* [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable decisions
+* [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable decisions ([NewArch-AD-5](architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted): library vs test-app codegen)
 
 ## Reference implementation
 

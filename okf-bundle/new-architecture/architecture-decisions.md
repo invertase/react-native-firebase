@@ -76,11 +76,15 @@ The deferral discriminator is **not** satisfied by structure alone: nothing in t
 
 ---
 
+<a id="newarch-ad-5--commit-generated-code--accepted"></a>
+
 ## NewArch-AD-5 — Commit generated code — **Accepted**
 
-`includesGeneratedCode: true`; commit Codegen output under `android/.../generated` and `ios/generated`, mirroring `packages/functions`.
+**Library packages only:** `includesGeneratedCode: true`; commit Codegen output under `packages/*/android/.../generated` and `packages/*/ios/generated`, mirroring `packages/functions`. CLI `--source library`.
 
-**Guard (NewArch-AD-17.3):** CI runs `yarn codegen:verify` — wipe-then-regen ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)) for every migrated package then `git diff --exit-code` on `**/generated/**` — so committed artifacts can't go stale.
+**Test app is not that contract.** `tests/package.json` must **not** set `includesGeneratedCode: true` — that makes CLI `--outputPath` the *final* dir and writes `tests/ios/ReactCodegen` / `tests/ios/Package.swift` while CocoaPods wants `tests/ios/build/generated/ios/ReactCodegen`. Test-app Codegen output is **build-time, not committed**. [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) `testing` entry: `--source app`; CLI `--outputPath` is the RN app *base* (`ios` / `.`) because app codegen appends `build/generated/ios` and `android/app/build/generated/source/codegen`. Wipe those derived dirs **and** scrub/gitignore dumps at `tests/ios/Package.swift`, `tests/ios/ReactCodegen/`, `tests/ios/ReactAppDependencyProvider/`. Do not flatten test-app iOS output (keep nested `ReactCodegen`). Skip `scrubAppOnlyIosArtifacts`. That entry does **not** change library codegen.
+
+**Guard (NewArch-AD-17.3):** CI runs `yarn codegen:verify` — wipe-then-regen ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)) then `git diff --exit-code` on the **library generated trees named above**. Test-app generated trees are not in that check.
 
 ---
 
@@ -280,7 +284,7 @@ yarn tests:jest -- packages/app/__tests__/turboModuleSpecNativeParity.test.ts
 
 **Helper:** [`specNativeParityHelper.ts`](../../../packages/app/__tests__/specNativeParityHelper.ts) — parses TS spec interfaces, Android generated `*Spec.java` `@ReactMethod` names, and iOS generated `@protocol NativeRNFBTurbo*Spec` method names.
 
-3. **Codegen-up-to-date CI** — **Accepted.** Root `yarn codegen:verify` runs [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) (codegen for every migrated package listed in that script’s `MIGRATED_PACKAGES` — currently 17 — via the `@react-native-firebase/app` React Native CLI context) then `git diff --exit-code` on `packages/*/android/**/generated/**` and `packages/*/ios/generated/**` (NewArch-AD-5 guard). Wired in the CI lint job ([`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml)).
+3. **Codegen-up-to-date CI** — **Accepted.** Root `yarn codegen:verify` runs [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs) (wipe-then-regen via [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) `--all`, including the test-app `testing` entry) then `git diff --exit-code` on the **library generated trees** ([NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted)). Test-app output is not committed and is not part of that diff. Wired in the CI lint job ([`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml)).
 
 <a id="newarch-ad-173--codegen-verify-ci--accepted"></a>
 
@@ -289,6 +293,8 @@ yarn tests:jest -- packages/app/__tests__/turboModuleSpecNativeParity.test.ts
 **Command:** `yarn codegen:verify`
 
 **When required:** any change to `packages/*/specs/**` or Codegen/RN version bumps that could regenerate native artifacts — run before closing `implementation_gate` or `review_gate`.
+
+**Git check:** library generated trees only — [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted) (globs owned there; do not restate).
 
 **Wipe-then-regen:** [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) (invoked by package `android:codegen` / `ios:codegen` and by [`scripts/codegen-verify.mjs`](../../../scripts/codegen-verify.mjs)) must **delete each package's configured `--outputPath`** before CLI codegen writes ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). ResultT inject is retired on the current mobile pin ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) superseded).
 
@@ -375,6 +381,7 @@ ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-withou
 **Scope / limits:**
 
 - Wipe targets **only** the configured `--outputPath` (e.g. `android/.../generated`, `ios/generated`). Hand-written sources outside that path (e.g. `RCTConvert+FIROptions`) are untouched.
+- **Test app (`--source app`):** CLI `--outputPath` is the RN app *base* (`tests/ios` / `tests/`), not the artifact dir. RN appends `build/generated/ios` and `android/app/build/generated/source/codegen` — those derived dirs are `OUTPUT_PATHS.testing` and **are** the wipe targets. Also wipe/gitignore dumps at the iOS project base (`Package.swift`, `ReactCodegen/`, `ReactAppDependencyProvider/`) — [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted). Do not wipe the whole `tests/ios/` tree.
 - Wipe removes orphans **on the same path**. A **sibling** wrong tree from a prior bad `outputPath` (e.g. `src/main/java/.../generated` vs `src/reactnative/java/.../generated`) still needs a one-time manual delete. Keep **one** canonical tree; align shell imports, `build.gradle` `sourceSets`, and `cmakeListsPath`.
 - After a `codegenConfig.name` rename ([NewArch-AD-7](#newarch-ad-7--codegenconfigname--aggregate-library-name-one-codegenconfig-per-package--accepted)), wipe clears the old library under `outputPath`; update `cmakeListsPath` / imports only when those paths embed the old name.
 

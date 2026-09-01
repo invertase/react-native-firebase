@@ -372,6 +372,19 @@ Optional Codecov CLI:
 
 No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-e2e.md)).
 
+<a id="test-native-modules"></a>
+
+# Two test native modules
+
+The Detox host has **two** native modules. Do **not** conflate them.
+
+| Module | Kind | Role |
+|--------|------|------|
+| **`RNFBTestingCoverage`** | Legacy `RCTBridgeModule` | **This doc.** Coverage flush only: `NativeModules.RNFBTestingCoverage.flush()` from Jet `after` in `tests/app.js`. |
+| **`NativeRNFBTesting`** | TurboModule | E2e **integration probes**, not flush — spec, native paths, JS accessor: [running e2e § test-app native modules](running-e2e.md#test-app-native-modules). |
+
+**Probe hits in native LCOV:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `getRNFBTesting().messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, those lines appear as hits in `coverage/ios-native/lcov.info`. Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that LCOV.
+
 # Critical invariants
 
 | Invariant | Enforced |
@@ -379,7 +392,7 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 | LLVM profile flags (iOS) | `Podfile` `post_install` |
 | Profile path at launch (iOS) | `AppDelegate` → `RNFBTestingConfigureCoverageProfilePath()` |
 | Jacoco instrumentation (Android) | `testCoverageEnabled` + Jacoco plugin in `tests/android/build.gradle` |
-| Module name | `RNFBTestingCoverage` / `NativeModules.RNFBTestingCoverage` in `tests/app.js` |
+| Coverage flush module | `RNFBTestingCoverage` / `NativeModules.RNFBTestingCoverage.flush()` in `tests/app.js` — **not** `NativeRNFBTesting` ([§ two test native modules](#test-native-modules)) |
 | Flush after Mocha | Jet `after` in `tests/app.js` |
 | Profraw pull before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
 | Android JVM unit before / with merge | `yarn tests:android:unit` → module `*.exec` |
