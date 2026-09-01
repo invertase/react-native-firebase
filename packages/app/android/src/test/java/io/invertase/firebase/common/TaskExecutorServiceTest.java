@@ -19,17 +19,42 @@ package io.invertase.firebase.common;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.mockito.MockedStatic;
 
-@RunWith(RobolectricTestRunner.class)
+/**
+ * Plain JUnit4 + Mockito (AndroidTest-AD-1). Constructor reads pool sizing from {@link
+ * ReactNativeFirebaseJSON}; stub that away so we never touch Android's unmocked {@code
+ * org.json.JSONObject}.
+ */
 public class TaskExecutorServiceTest {
+
+  private MockedStatic<ReactNativeFirebaseJSON> jsonStatic;
+
+  @Before
+  public void setUp() {
+    ReactNativeFirebaseJSON json = mock(ReactNativeFirebaseJSON.class);
+    when(json.getIntValue(anyString(), anyInt())).thenAnswer(inv -> inv.getArgument(1));
+    jsonStatic = mockStatic(ReactNativeFirebaseJSON.class);
+    jsonStatic.when(ReactNativeFirebaseJSON::getSharedInstance).thenReturn(json);
+  }
+
+  @After
+  public void tearDown() {
+    jsonStatic.close();
+  }
 
   @Test
   public void transactionalExecutorRunsSubmittedWork() throws Exception {
@@ -62,8 +87,11 @@ public class TaskExecutorServiceTest {
     TaskExecutorService service = new TaskExecutorService("TestPooledShutdown");
     ExecutorService executor = service.getExecutor(false, "");
     service.shutdown();
+    AtomicBoolean ran = new AtomicBoolean(false);
 
     // Exercises the executeInFallback handler's shutdown guard.
-    executor.execute(() -> {});
+    executor.execute(() -> ran.set(true));
+
+    assertFalse("work submitted after shutdown is discarded", ran.get());
   }
 }
