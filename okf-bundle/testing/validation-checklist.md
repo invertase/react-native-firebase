@@ -151,7 +151,7 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 **Docs lint gotchas** (`docs/**` only):
 
 - **Markdown tables:** `yarn lint:markdown` runs Prettier `--check` (exact column padding). No `lint:markdown:fix`; no allowlisted formatter for this tree ([agent command policy](agent-command-policy.md)). Wide tables: prefix `{/* prettier-ignore */}`, compact single-space cells — see `docs/migrating-to-v26.mdx`.
-- **Spellcheck frontmatter:** `yarn lint:spellcheck` exits **0** when YAML frontmatter fails to parse (`Failed to parse YAML frontmatter, ignoring it`); that page's frontmatter is not checked. Unquoted colons in values (e.g. `description: v27: Imagen API removal`) are a common trigger — quote the value. Read stdout, not exit code alone.
+- **Spellcheck frontmatter:** `spellchecker-cli` exits **0** when frontmatter fails to parse (`Failed to parse YAML frontmatter, ignoring it`) and skips checking that page's frontmatter. `yarn lint:spellcheck` runs it through `scripts/spellcheck.mjs`, which streams the output through unchanged and turns that case into exit **1** with a fix hint. Unquoted colons in values (e.g. `description: v27: Imagen API removal`) are the common trigger — quote the value. Keep that wrapper in place if the script is ever rewritten; a bare `spellchecker` invocation restores the silent pass.
 
 A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`).
 
@@ -206,6 +206,8 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
 | coverage                  | post-process + region table          | —    | [coverage evidence package](coverage-design.md#coverage-evidence-package); closes `coverage_evidence_gate` when lib/native bridge or `packages/app/**/*.rb` touched |
 ```
+
+Exit codes must be the **real** ones: the agent shell is zsh, where `${PIPESTATUS[0]}` silently expands to empty — [agent command policy § agent shell is zsh](agent-command-policy.md#agent-shell-is-zsh).
 
 **History rewrite invalidates** prior rows — re-run and replace the table after amend/rebase.
 
