@@ -74,6 +74,27 @@ Clean `:build` + `:test-cover` each time — not reuse variants.
 
 7. **No source edits during e2e** — wait/cancel cleanly before editing `packages/**`, `tests/**`, or bundle-affecting OKF docs. Saves can hot reload/rebundle and invalidate tests/coverage.
 
+<a id="test-app-native-modules"></a>
+
+## Test-app native modules (do not conflate)
+
+The Detox host exposes **two** native modules. Coverage flush is **not** this TurboModule.
+
+| Module | Kind | Purpose | Owner |
+|--------|------|---------|-------|
+| `RNFBTestingCoverage` | Legacy `RCTBridgeModule` | `NativeModules.RNFBTestingCoverage.flush()` only | [coverage design § two test native modules](coverage-design.md#test-native-modules) |
+| `NativeRNFBTesting` | TurboModule | E2e native integration probes | **this section** |
+
+**`NativeRNFBTesting` (this section)**
+
+- **Spec:** `tests/specs/NativeRNFBTesting.ts`
+- **iOS:** `tests/ios/testing/RNFBTestingTurboModule.{h,mm}`
+- **Android:** `tests/android/app/src/main/java/com/invertase/testing/NativeRNFBTesting.kt` — unsupported methods **resolve `false`**
+- **JS:** `getRNFBTesting()` in `packages/app/e2e/helpers.js` via `TurboModuleRegistry.get('NativeRNFBTesting')`
+- Production packages must **not** ship this TurboModule (test-app only).
+
+Probe hits in `coverage/ios-native/lcov.info`: [coverage design § two test native modules](coverage-design.md#test-native-modules). Test-app vs library codegen (not committed; wipe derived `tests/ios/build/generated/ios`; gitignore `tests/ios/Package.swift` and sibling app dumps): [NewArch-AD-5](../new-architecture/architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted).
+
 <a id="e2e-infrastructure-change-bar"></a>
 
 ## E2e infrastructure change bar
@@ -687,7 +708,7 @@ No second lifecycle (no host flock, no Metro-after-build, no slotted packager/te
 
 ### Full suite orchestrator (`yarn test:full`)
 
-`scripts/run-full-tests.sh` is the **prescribed full gate** for pre-merge validation in a single worktree. It runs install → Apple pods (ios ∥ macos) → parallel verify (builds, tsc, attw, lint, jest, android/ios unit) → `:test-cover` e2e with coverage post-process.
+`scripts/run-full-tests.sh` is the **prescribed full gate** for pre-merge validation in a single worktree. It runs install → Apple pods (ios ∥ macos) → parallel verify (builds, tsc, attw, lint, jest, android/ios unit) → `:test-cover` e2e with coverage post-process. attw ∥ ios unit: [Types-AD-5](architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted).
 
 **Deterministic by default:** every run performs scoped `yarn tests:e2e:release --devices` + check before e2e, and the same release after (pass or fail). That release clears Metro, Jet, Firebase emulator suite ports, test apps, and scoped AVD/sims — `--devices` adds physical device teardown on top of the default port wipe, not instead of it ([release script default](../../scripts/e2e/release-e2e-resources.sh)). Fast reuse / tight edit loops use the decomposed `yarn tests:*` commands in this doc — not `yarn test:full`.
 

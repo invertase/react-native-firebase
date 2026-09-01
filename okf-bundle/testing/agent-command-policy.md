@@ -196,8 +196,8 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - **`cd packages/<pkg> && yarn ios:codegen`** (or `yarn android:codegen`) often fails with **`unknown command 'codegen'`** after a clean `yarn` — `@react-native-community/cli` resolves from the **test app** workspace.
 - Package scripts **wipe then regen** the configured `--outputPath` ([NewArch-AD-22](../new-architecture/architecture-decisions.md#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)). Prefer those yarn scripts when CLI resolution works.
 - **Canonical (mobile toolchain from `tests/`):** use each package's `yarn android:codegen` / `yarn ios:codegen` script, which delegates to [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs). The shared runner wipes the configured output path and invokes the pinned mobile CLI from `tests/`; do not run the CLI manually. RN 0.86 emits `ResultT` natively, so the former inject script is retired ([NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted)).
-- **CI / all packages:** `yarn codegen:verify` (wipe + regen + `git diff --exit-code` on generated trees).
-- After regen: commit `android/.../generated` + `ios/generated`, then `:build` + Metro reset-cache before `:test-cover`.
+- **CI / library packages:** `yarn codegen:verify`. Library vs test-app codegen (committed trees, `includesGeneratedCode`, git-diff guard, test-app dump gitignore): [NewArch-AD-5](../new-architecture/architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted). Test-app iOS CLI `--outputPath` is `ios` (project base); wipe is `ios/build/generated/ios` plus `tests/ios/Package.swift` and sibling app dumps.
+- After **library** regen: commit the generated trees named in NewArch-AD-5, then `:build` + Metro reset-cache before `:test-cover`.
 
 ### fmt / Apple Clang 21 (unpatched React Native)
 
