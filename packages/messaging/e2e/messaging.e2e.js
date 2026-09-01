@@ -53,7 +53,8 @@ describe('messaging()', function () {
       this.skip();
     }
 
-    const completed = await NativeModules.RNFBTestingCoverage.completesNonFCMRemoteNotification();
+    const { getRNFBTesting } = require('../../app/e2e/helpers');
+    const completed = await getRNFBTesting().completesNonFCMRemoteNotification();
 
     completed.should.equal(true);
   });
@@ -318,11 +319,8 @@ describe('messaging()', function () {
           this.skip();
         }
 
-        const { NativeModules } = require('react-native');
-        should.equal(
-          await NativeModules.RNFBTestingCoverage.messagingPreservesExistingDelegate(),
-          true,
-        );
+        const { getRNFBTesting } = require('../../app/e2e/helpers');
+        should.equal(await getRNFBTesting().messagingPreservesExistingDelegate(), true);
       });
     });
 

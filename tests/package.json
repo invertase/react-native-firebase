@@ -2,9 +2,25 @@
   "name": "react-native-firebase-tests",
   "version": "26.3.3",
   "private": true,
+  "codegenConfig": {
+    "name": "RNFBTestingTurboModules",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "android": {
+      "javaPackageName": "com.invertase.testing"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeRNFBTesting": "RNFBTestingTurboModule"
+      }
+    }
+  },
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
-    "prepare": "patch-package"
+    "prepare": "patch-package",
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "node ../scripts/codegen-package.mjs testing android",
+    "ios:codegen": "node ../scripts/codegen-package.mjs testing ios"
   },
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.5.1",

@@ -547,6 +547,14 @@ reference/
 apidocs-out/
 tests/ios/Firebase
 tests/ios/resetXcode.sh
+
+# Test-app RN Codegen dumps (NewArch-AD-5: not committed). `--source app` uses
+# --outputPath tests/ios as the iOS project base; RN writes the CocoaPods tree
+# at tests/ios/build/generated/ios (already ignored via build/) but can also
+# emit Package.swift / ReactCodegen / ReactAppDependencyProvider at tests/ios/.
+tests/ios/Package.swift
+tests/ios/ReactCodegen/
+tests/ios/ReactAppDependencyProvider/
 .tmp
 
 google-services.json
