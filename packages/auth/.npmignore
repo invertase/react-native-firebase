@@ -36,6 +36,7 @@ android/*.iml
 *.xcuserstate
 ios/Pods
 ios/build
+ios/**/build
 *project.xcworkspace*
 *xcuserdata*
 
