@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
+
+### Reverts
+
+- Revert "chore(release): release packages" ([0a85268](https://github.com/invertase/react-native-firebase/commit/0a85268ae21c706cf1392eaa5b088e85c3273cb7))
+
 ## [26.3.2](https://github.com/invertase/react-native-firebase/compare/v26.3.1...v26.3.2) (2026-08-21)
 
 **Note:** Version bump only for package @react-native-firebase/app-distribution
