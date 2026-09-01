@@ -24,7 +24,11 @@ import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 // correct, independent of how `process.env` is populated at runtime.
 const helpers = require('../e2e/helpers');
 
+// Every literal process.env key read by packages/app/e2e/helpers.js — incomplete
+// lists leak slotted ambient env (export-slot-env) into "default when nothing is set"
+// cases. Keep in sync with helpers.js staticEmulatorPort / staticMetroPort / staticJetPort.
 const ENV_KEYS = [
+  'RNFB_E2E_DEBUG',
   'RNFB_ANDROID_METRO_PORT',
   'RNFB_IOS_METRO_PORT',
   'RNFB_MACOS_METRO_PORT',
@@ -32,8 +36,20 @@ const ENV_KEYS = [
   'RNFB_IOS_JET_PORT',
   'RNFB_MACOS_JET_PORT',
   'RNFB_ANDROID_EMULATOR_FIRESTORE_PORT',
+  'RNFB_ANDROID_EMULATOR_AUTH_PORT',
+  'RNFB_ANDROID_EMULATOR_DATABASE_PORT',
+  'RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT',
+  'RNFB_ANDROID_EMULATOR_STORAGE_PORT',
   'RNFB_IOS_EMULATOR_FIRESTORE_PORT',
+  'RNFB_IOS_EMULATOR_AUTH_PORT',
+  'RNFB_IOS_EMULATOR_DATABASE_PORT',
+  'RNFB_IOS_EMULATOR_FUNCTIONS_PORT',
+  'RNFB_IOS_EMULATOR_STORAGE_PORT',
   'RNFB_MACOS_EMULATOR_FIRESTORE_PORT',
+  'RNFB_MACOS_EMULATOR_AUTH_PORT',
+  'RNFB_MACOS_EMULATOR_DATABASE_PORT',
+  'RNFB_MACOS_EMULATOR_FUNCTIONS_PORT',
+  'RNFB_MACOS_EMULATOR_STORAGE_PORT',
   'JET_REMOTE_PORT',
   'JET_METRO_PORT',
   'RCT_METRO_PORT',
