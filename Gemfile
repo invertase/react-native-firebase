@@ -25,4 +25,4 @@ gem 'simplecov', '~> 1.0'
 gem 'simplecov-lcov', '~> 0.9'
 
 # Lint for packages/app Ruby helpers + __tests__ (yarn lint:ruby / tests:ios:ruby).
-gem 'rubocop', '~> 1.75'
+gem 'rubocop', '~> 1.90'
