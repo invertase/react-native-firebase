@@ -3,13 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
-
-### Bug Fixes
-
-- **ios:** align TurboModule constants return type with generated spec ([c79e1d2](https://github.com/invertase/react-native-firebase/commit/c79e1d2bc43b00a6ef61d38a294feceaed447740)), closes [#9212](https://github.com/invertase/react-native-firebase/issues/9212)
-- **messaging, ios:** emit onMessage for foreground pushes with content-available: 0 ([81beeca](https://github.com/invertase/react-native-firebase/commit/81beecac04b6b8b3a8a8d4efe58a4338febd7d28))
-
 ## [26.3.2](https://github.com/invertase/react-native-firebase/compare/v26.3.1...v26.3.2) (2026-08-21)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
