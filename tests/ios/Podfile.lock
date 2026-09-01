@@ -3385,7 +3385,7 @@ SPEC CHECKSUMS:
   React-viewtransitionnativemodule: 01530fbfcfb561a8c40258e11ef320d25f951113
   React-webperformancenativemodule: 03d2d86c1605a0b1ecbfb9fb6fb5b15826f27354
   ReactAppDependencyProvider: 0e13d430eadac8a2ef18515a860d5c59df05b475
-  ReactCodegen: 3df238732b558dd01320d47ed87e653945dd0fc6
+  ReactCodegen: b712fd0f322c4326dfeda9a2a6f2ec17cfbcd6f6
   ReactCommon: 00ae3f3b9351312ee73cc8439d8204148084547a
   RNAppleAuthentication: a89c9804592b38ed4ab11f0aee68d05ba12ad432
   RNDeviceInfo: 4c852998208b60dc192ae3529e5867817719ad1e

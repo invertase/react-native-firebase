@@ -90,7 +90,24 @@ const OUTPUT_PATHS = {
     android: 'android/src/reactnative/java/io/invertase/firebase/pnv/generated',
     ios: 'ios/generated',
   },
+  testing: {
+    android: 'android/app/build/generated/source/codegen',
+    ios: 'ios/build/generated/ios',
+  },
 };
+
+/**
+ * RN `--source app` iOS codegen uses `--outputPath` as the *iOS project dir*
+ * (tests/ios), then writes `{outputPath}/build/generated/ios`. It can also dump
+ * Package.swift / ReactCodegen / ReactAppDependencyProvider at that project dir.
+ * NewArch-AD-5: never commit those. NewArch-AD-22: wipe every path codegen writes.
+ */
+const TESTING_IOS_PROJECT_DIR = 'ios';
+const TESTING_IOS_APP_DUMPS = [
+  'Package.swift',
+  'ReactCodegen',
+  'ReactAppDependencyProvider',
+];
 
 const MIGRATED_PACKAGES = Object.keys(OUTPUT_PATHS);
 
@@ -152,6 +169,13 @@ function scrubAppOnlyIosArtifacts(outputAbs) {
   }
 }
 
+function scrubTestingIosAppDumps() {
+  const iosProject = path.join(TESTS_DIR, TESTING_IOS_PROJECT_DIR);
+  for (const name of TESTING_IOS_APP_DUMPS) {
+    rmrf(path.join(iosProject, name));
+  }
+}
+
 function runPackagePlatform(packageName, platform) {
   const paths = OUTPUT_PATHS[packageName];
   if (!paths) {
@@ -161,13 +185,27 @@ function runPackagePlatform(packageName, platform) {
     throw new Error(`platform must be android|ios, got ${platform}`);
   }
 
-  const packageDir = path.join(PACKAGES_ROOT, packageName);
+  const packageDir =
+    packageName === 'testing' ? TESTS_DIR : path.join(PACKAGES_ROOT, packageName);
   const relativeOutput = paths[platform];
   const outputAbs = path.join(packageDir, relativeOutput);
-  const outputFromTests = path.relative(TESTS_DIR, outputAbs);
-  const packageFromTests = path.relative(TESTS_DIR, packageDir);
+  // App codegen (`testing`): CLI `--outputPath` is the RN app *base* (iOS project
+  // dir / Android app root). RN then appends OUTPUT_PATHS.testing. Library
+  // packages pass the final generated dir (includesGeneratedCode).
+  const outputFromTests =
+    packageName === 'testing'
+      ? platform === 'ios'
+        ? TESTING_IOS_PROJECT_DIR
+        : '.'
+      : path.relative(TESTS_DIR, outputAbs);
+  const packageFromTests =
+    packageName === 'testing' ? '.' : path.relative(TESTS_DIR, packageDir);
 
-  // NewArch-AD-22: wipe configured outputPath before CLI codegen writes.
+  // NewArch-AD-22: wipe every path this invoke writes. For testing iOS that is
+  // the derived OUTPUT_PATHS dir *and* dumps at the CLI --outputPath base.
+  if (packageName === 'testing' && platform === 'ios') {
+    scrubTestingIosAppDumps();
+  }
   rmrf(outputAbs);
   fs.mkdirSync(outputAbs, { recursive: true });
 
@@ -175,7 +213,7 @@ function runPackagePlatform(packageName, platform) {
     'npx @react-native-community/cli codegen',
     `--path ${packageFromTests}`,
     `--platform ${platform}`,
-    `--source library`,
+    `--source ${packageName === 'testing' ? 'app' : 'library'}`,
     `--outputPath ${outputFromTests}`,
   ].join(' ');
 
@@ -183,8 +221,13 @@ function runPackagePlatform(packageName, platform) {
   execSync(command, { stdio: 'inherit', cwd: TESTS_DIR });
 
   if (platform === 'ios') {
-    flattenReactCodegen(outputAbs);
-    scrubAppOnlyIosArtifacts(outputAbs);
+    if (packageName === 'testing') {
+      // CocoaPods consumes tests/ios/build/generated/ios/ReactCodegen; do not flatten.
+      scrubTestingIosAppDumps();
+    } else {
+      flattenReactCodegen(outputAbs);
+      scrubAppOnlyIosArtifacts(outputAbs);
+    }
   }
   scrubStaleJsiCpp(outputAbs);
 }
