@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
+
+### Bug Fixes
+
+- **e2e:** ready-gate Firebase emulator startup ([9ca2aec](https://github.com/invertase/react-native-firebase/commit/9ca2aecc2aa9140c38749d68ab3c23ac23ca8f46))
+- **e2e:** restart Metro with a status gate ([4846e4e](https://github.com/invertase/react-native-firebase/commit/4846e4e345791cd95d7f7952c84a7c229a1f59aa))
+- **ios:** align TurboModule constants return type with generated spec ([c79e1d2](https://github.com/invertase/react-native-firebase/commit/c79e1d2bc43b00a6ef61d38a294feceaed447740)), closes [#9212](https://github.com/invertase/react-native-firebase/issues/9212)
+- **ios:** harden Expo linkage restore diagnostics ([c6e960b](https://github.com/invertase/react-native-firebase/commit/c6e960ba47e881a848e93d60cf09ea2064b24d1b))
+- **ios:** link FirebaseCore into Expo app target under SPM ([18f1d46](https://github.com/invertase/react-native-firebase/commit/18f1d4645ef2b59c03436cf7fa68e6ad39ba9805))
+- **ios:** persist Pods explicit-modules off after post_integrate ([54b3a4a](https://github.com/invertase/react-native-firebase/commit/54b3a4a9913d4601cc5562f559e8b9c8e799e105))
+- **ios:** point SPM Podfile fallbacks at post_integrate ([21191ac](https://github.com/invertase/react-native-firebase/commit/21191acd767b045150dd40af07192d6c735c918e))
+- **ios:** restore RNFB dynamic linkage after Expo prebuilt downgrade ([1d6d80d](https://github.com/invertase/react-native-firebase/commit/1d6d80de01592bd2f38a4270ab268fa40d27a16a))
+- **ios:** warn when Expo linkage restore cannot run ([fecb129](https://github.com/invertase/react-native-firebase/commit/fecb129418066ae035ae2a271cf11466e508db54))
+
 ## [26.3.2](https://github.com/invertase/react-native-firebase/compare/v26.3.1...v26.3.2) (2026-08-21)
 
 **Note:** Version bump only for package @react-native-firebase/app
