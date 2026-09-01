@@ -144,6 +144,12 @@ When a Shell command returns with **no exit status** (e.g. "execution backend un
 
 Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native builds, and host pre-flight probes that need real devices/simulators typically need unrestricted permissions on this host. A "no exit status" result on those commands is a sandbox artifact, not evidence the run failed or is incomplete — see [running e2e § running one iteration](running-e2e.md#running-one-iteration) for checking the tee log footer before concluding anything from a missing exit code. Startup-fail markers on the tee are immediate hard infra — [startup fail-fast poll](running-e2e.md#startup-fail-fast-poll) (`TELNET` / `emulator-16` / `ReactContext is null` / serial leftover `:12007`+`5554`; idle APP_STATUS is healthy; `currentStatus` / status-query timeout is latency, not a wave-kill).
 
+<a id="agent-shell-is-zsh"></a>
+
+### Agent shell is zsh (`PIPESTATUS` is bash-only)
+
+`${PIPESTATUS[0]}` is **bash**. zsh spells it `${pipestatus[1]}` (1-indexed), and the bash form expands to the **empty string** — `yarn <target> 2>&1 | tee /tmp/x.log; echo "EXIT=${PIPESTATUS[0]}"` prints `EXIT=` whether the target passed or failed. Tee-to-log is the normal pattern for long-running targets and every gate wants a per-command exit code, so a real exit 1 can be recorded as a pass and turn into a false finding. Use `${pipestatus[1]}`, or run the command bare and read `$?`.
+
 ### genversion / prepare paths
 
 - **`genversion` exists** at root `node_modules/.bin` after `yarn`.
@@ -241,6 +247,7 @@ TurboModule contract test (NewArch-AD-17.1): packages/app/__tests__/nativeModule
 Android JVM unit (AndroidTest-AD-1, JUnit-first; omit @Config/sdk unless proven): yarn tests:android:unit — not a substitute for platform e2e.
 iOS Ruby (SPM helpers): yarn tests:ios:ruby — never ad-hoc ruby packages/app/__tests__/…_test.rb as the gate. Never bundle install --gemfile=packages/app/__tests__/Gemfile. Host Ruby >= 3.3.1 (not 3.3.0); do not downgrade simplecov.
 JS lint vendor flood under packages/app/__tests__/vendor/: local Bundler tree, not product lint. Never invent delete-vendor as the lint gate. See #js-lint-bundler-vendor.
+Agent shell is zsh: capture exit codes with ${pipestatus[1]} or bare $? — ${PIPESTATUS[0]} is bash-only and expands to empty. See #agent-shell-is-zsh.
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native/Ruby helpers touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```

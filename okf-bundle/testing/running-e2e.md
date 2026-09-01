@@ -44,6 +44,10 @@ yarn tests:macos:packager:jet
 
 Do **not** use the mobile packager for macOS Jet (or vice versa): each app has its own Metro project root after the `tests-macos/` split.
 
+<a id="backgrounding-long-running-services"></a>
+
+**Backgrounding (agents):** a trailing `&` inside a single shell call does **not** survive that call returning — the command prints a PID and the process is gone (observed twice with `yarn tests:macos:packager:jet`: one `watchman watch-del` line in the log, nothing listening on `:8081`). Start the packager as a properly backgrounded long-running job instead. The packager script **exits 0 after daemonizing Metro**, so a *completed* job is the success case, not a crash — confirm with the `/status` check in [services ready](#2-services-ready) rather than restarting it.
+
 2. **Emulators** (background, always):
 
 ```bash
