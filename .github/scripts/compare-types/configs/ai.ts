@@ -142,6 +142,76 @@ const config: PackageConfig = {
       reason:
         'RN Firebase-specific schema helper interface used by the local schema-builder implementation and request typing.',
     },
+    {
+      name: 'getImagenModel',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'getTemplateImagenModel',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenImageFormat',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenModel',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'TemplateImagenModel',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenModelParams',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenGenerationConfig',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenSafetyFilterLevel',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenPersonFilterLevel',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenSafetySettings',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenAspectRatio',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenInlineImage',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenGCSImage',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
+    {
+      name: 'ImagenGenerationResponse',
+      reason:
+        'firebase-js-sdk 12.18.0 removed Imagen after the service shutdown. RN Firebase still exports the Imagen API until the dedicated removal lands.',
+    },
   ],
   differentShape: [
     {
