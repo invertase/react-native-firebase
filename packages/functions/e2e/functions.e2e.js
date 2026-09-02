@@ -104,6 +104,16 @@ function e2eCallableTimeoutOptions(extra = {}) {
   return { timeout: E2E_CALLABLE_TIMEOUT_MS, ...extra };
 }
 
+// firebase-js-sdk 12.18.0 appends " [<httpStatus>]" to FunctionsError.message on web/macos.
+function assertHttpsErrorMessage(actual, base) {
+  if (Platform.other) {
+    actual.should.startWith(`${base} [`);
+    actual.should.match(/ \[\d+\]$/);
+  } else {
+    actual.should.equal(base);
+  }
+}
+
 describe('functions() modular', function () {
   describe('modular', function () {
     describe('getFunctions', function () {
@@ -385,7 +395,7 @@ describe('functions() modular', function () {
         } catch (e) {
           should.equal(e.details, null);
           e.code.should.equal('invalid-argument');
-          e.message.should.equal('Invalid test requested.');
+          assertHttpsErrorMessage(e.message, 'Invalid test requested.');
         }
 
         return Promise.resolve();
@@ -411,7 +421,8 @@ describe('functions() modular', function () {
         } catch (e) {
           should.deepEqual(e.details, inputData);
           e.code.should.equal('cancelled');
-          e.message.should.equal(
+          assertHttpsErrorMessage(
+            e.message,
             'Response data was requested to be sent as part of an Error payload, so here we are!',
           );
         }
@@ -428,7 +439,8 @@ describe('functions() modular', function () {
         } catch (e) {
           should.deepEqual(e.details, inputData);
           e.code.should.equal('cancelled');
-          e.message.should.equal(
+          assertHttpsErrorMessage(
+            e.message,
             'Response data was requested to be sent as part of an Error payload, so here we are!',
           );
         }
@@ -455,7 +467,8 @@ describe('functions() modular', function () {
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
           e.code.should.equal('cancelled');
-          e.message.should.equal(
+          assertHttpsErrorMessage(
+            e.message,
             'Response data was requested to be sent as part of an Error payload, so here we are!',
           );
           should.deepEqual(e.details, inputData);
@@ -473,7 +486,8 @@ describe('functions() modular', function () {
         } catch (e) {
           should.deepEqual(e.details, inputData);
           e.code.should.equal('cancelled');
-          e.message.should.equal(
+          assertHttpsErrorMessage(
+            e.message,
             'Response data was requested to be sent as part of an Error payload, so here we are!',
           );
         }
@@ -490,7 +504,8 @@ describe('functions() modular', function () {
         } catch (e) {
           should.deepEqual(e.details, inputData);
           e.code.should.equal('cancelled');
-          e.message.should.equal(
+          assertHttpsErrorMessage(
+            e.message,
             'Response data was requested to be sent as part of an Error payload, so here we are!',
           );
         }
@@ -507,7 +522,8 @@ describe('functions() modular', function () {
         } catch (e) {
           should.deepEqual(e.details, inputData);
           e.code.should.equal('cancelled');
-          e.message.should.equal(
+          assertHttpsErrorMessage(
+            e.message,
             'Response data was requested to be sent as part of an Error payload, so here we are!',
           );
         }
@@ -884,7 +900,7 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('invalid-argument');
-            e.message.should.equal('Invalid test requested.');
+            assertHttpsErrorMessage(e.message, 'Invalid test requested.');
           }
 
           let type = 'deepObject';
@@ -900,7 +916,8 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('cancelled');
-            e.message.should.equal(
+            assertHttpsErrorMessage(
+              e.message,
               'Response data was requested to be sent as part of an Error payload, so here we are!',
             );
           }
@@ -918,7 +935,8 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('cancelled');
-            e.message.should.equal(
+            assertHttpsErrorMessage(
+              e.message,
               'Response data was requested to be sent as part of an Error payload, so here we are!',
             );
           }
@@ -936,7 +954,8 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('cancelled');
-            e.message.should.equal(
+            assertHttpsErrorMessage(
+              e.message,
               'Response data was requested to be sent as part of an Error payload, so here we are!',
             );
           }
@@ -960,7 +979,7 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('invalid-argument');
-            e.message.should.equal('Invalid test requested.');
+            assertHttpsErrorMessage(e.message, 'Invalid test requested.');
           }
 
           let type = 'number';
@@ -976,7 +995,8 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('cancelled');
-            e.message.should.equal(
+            assertHttpsErrorMessage(
+              e.message,
               'Response data was requested to be sent as part of an Error payload, so here we are!',
             );
           }
@@ -994,7 +1014,8 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('cancelled');
-            e.message.should.equal(
+            assertHttpsErrorMessage(
+              e.message,
               'Response data was requested to be sent as part of an Error payload, so here we are!',
             );
           }
@@ -1012,7 +1033,8 @@ describe('functions() modular', function () {
             return Promise.reject(new Error('Function did not reject with error.'));
           } catch (e) {
             e.code.should.equal('cancelled');
-            e.message.should.equal(
+            assertHttpsErrorMessage(
+              e.message,
               'Response data was requested to be sent as part of an Error payload, so here we are!',
             );
           }

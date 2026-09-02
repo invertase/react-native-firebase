@@ -23,7 +23,13 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [],
   extraInRN: [],
-  differentShape: [],
+  differentShape: [
+    {
+      name: 'CollectionStageOptions',
+      reason:
+        'RN Firebase types `collection` as `string | Query` because CollectionReference is a Query in the RN Firestore surface. firebase-js-sdk types it as `string | CollectionReference`.',
+    },
+  ],
 };
 
 export default config;
