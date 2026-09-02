@@ -26174,6 +26174,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"test-rn-bare@workspace:test-rn-bare":
+  version: 0.0.0-use.local
+  resolution: "test-rn-bare@workspace:test-rn-bare"
+  dependencies:
+    "@react-native-community/cli": "npm:20.1.0"
+    "@react-native-community/cli-platform-android": "npm:20.1.0"
+    "@react-native-community/cli-platform-ios": "npm:20.1.0"
+    "@react-native-firebase/app": "npm:26.3.3"
+    "@react-native/babel-preset": "npm:0.86.2"
+    "@react-native/metro-config": "npm:0.86.2"
+    react: "npm:19.2.3"
+    react-native: "npm:0.86.2"
+  languageName: unknown
+  linkType: soft
+
 "text-decoder@npm:^1.1.0":
   version: 1.2.3
   resolution: "text-decoder@npm:1.2.3"

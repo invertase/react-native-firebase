@@ -1,0 +1,38 @@
+# Vanilla RN CLI documented iOS path for GitHub #8883:
+# SPM on, use_frameworks! :linkage => :dynamic, prebuilt RNCore left at the
+# RN 0.86 default (on). Do not set RCT_USE_PREBUILT_RNCORE=0 / RCT_USE_RN_DEP=0
+# (that is the tests/ Issue 2 pin). Do not add a RNFB pre_install
+# Pod::BuildType.static_library hook.
+
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+Pod::UI.puts 'Configuring Pod with dynamically linked Frameworks'.green
+use_frameworks! :linkage => :dynamic
+
+target 'testrnbare' do
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+  end
+end

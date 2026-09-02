@@ -72,6 +72,7 @@
     "tests:ios:test-cover-and-process": "yarn tests:ios:test-cover && yarn tests:ios:test:process-coverage",
     "tests:ios:pod:install": "cd tests/ios && bundle exec pod install",
     "test-expo:ios:link": "bash .github/workflows/scripts/test-expo-ios-link.sh",
+    "test-rn-bare:ios:build": "bash .github/workflows/scripts/test-rn-bare-ios-build.sh",
     "lint:ruby": "bundle exec rubocop --config packages/app/__tests__/.rubocop.yml packages/app/firebase_spm.rb packages/app/firebase_json.rb packages/app/__tests__",
     "tests:ios:ruby": "yarn lint:ruby && bundle exec ruby packages/app/__tests__/run_with_coverage.rb",
     "tests:macos:build": "bash -c 'source ./scripts/e2e/lib/e2e-slot-env.sh && e2e_sanitize_serial_env && cd tests-macos && yarn build:macos'",
@@ -150,7 +151,8 @@
       "packages/*",
       "tests",
       "tests-macos",
-      "test-expo"
+      "test-expo",
+      "test-rn-bare"
     ]
   },
   "packageManager": "yarn@4.14.1",
