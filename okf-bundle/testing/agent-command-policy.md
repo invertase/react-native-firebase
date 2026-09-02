@@ -3,7 +3,7 @@ type: Reference
 title: Agent command policy
 description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, and Expo documented-path iOS link. Supersedes improvised diagnostics.
 tags: [testing, validation, agents, workflow, yarn]
-timestamp: 2026-08-24T00:00:00Z
+timestamp: 2026-09-02T00:00:00Z
 ---
 
 # Agent command policy
@@ -120,6 +120,7 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 | Ad-hoc `xcodebuild test` / CocoaPods `test_spec` / `tests/ios/testingTests` as the iOS unit gate                                                                                  | Misses LCOV merge — **only** `yarn tests:ios:unit` ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)) |
 | Ad-hoc `ruby packages/app/__tests__/…_test.rb` (or bare runner) as the validation gate                                                                                           | Misses SimpleCov / suite discovery — **only** `yarn tests:ios:ruby`                 |
 | Ad-hoc `expo prebuild`, `xcodebuild`, or `cd test-expo && …` as the Expo iOS link gate                                                                                            | **Only** `yarn test-expo:ios:link` from repo root — not Detox / `yarn tests:*`      |
+| `react-native init`, `npx @react-native-community/cli init`, `npx react-native init`                                                                                              | Not on the allowlist — seed checked-in RN CLI trees via [template gotcha](#react-native-community-template-checked-in-rn-cli-ios) |
 | `yarn jet`, `npx jet`, `cd tests && yarn jet …`                                                                                                                                  | [E2e agent rule](running-e2e.md#agent-rule-read-first)                              |
 | `detox test`, bare `detox`, `cd tests && detox …`                                                                                                                                | E2e agent rule                                                                      |
 | bare `bundle install` at repo root                                                                                              | Use **`yarn ruby:install`** or root **`yarn`** (`postinstallDev` includes ruby:install)                                                                         |
@@ -189,6 +190,15 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - Never `bundle install --gemfile=packages/app/__tests__/Gemfile`. That writes a gitignored vendor tree under `packages/app/__tests__/vendor/` and then `yarn lint:js` explodes. See [JS lint / Bundler vendor](#js-lint-bundler-vendor).
 - Blocking when Ruby sources or `*_test.rb` touched: [validation checklist § iOS Ruby](validation-checklist.md#ios-ruby-unit-tests).
 
+### `@react-native-community/template` (checked-in RN CLI `ios/`)
+
+<a id="react-native-community-template-checked-in-rn-cli-ios"></a>
+
+- **`@react-native-community/template` is not installed by root `yarn`.** It is not a `react-native` dependency, so a green install does **not** put the community template under `node_modules`.
+- Seeding or refreshing a **checked-in** RN CLI `ios/` tree (fixture app under the monorepo) after yarn **cannot** assume that package exists.
+- **Workaround:** one-shot pin `@react-native-community/template@<RN line>` on the fixture package, copy `ios/` + JS entry files from the template into the fixture, then **remove** the pin. Do not leave the template as a durable dependency.
+- **Never** `react-native init` / `npx @react-native-community/cli init` / `npx react-native init` — not on the agent allowlist (see [Forbidden](#forbidden-always)).
+
 ### TurboModule codegen
 
 <a id="turbomodule-codegen"></a>
@@ -214,6 +224,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 RNFB agent command policy: okf-bundle/testing/agent-command-policy.md ONLY.
 E2e: okf-bundle/testing/running-e2e.md yarn tests:* ONLY.
 Expo documented-path iOS link (not Detox): yarn test-expo:ios:link ONLY — never ad-hoc expo prebuild / xcodebuild / cd test-expo.
+Never react-native init / npx @react-native-community/cli init — @react-native-community/template is not installed by root yarn; one-shot pin + copy ios/ + JS, then remove pin — #react-native-community-template-checked-in-rn-cli-ios.
 Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/build for diagnostics.
 Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
 Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
