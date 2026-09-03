@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+const { getE2eEmulatorHost, getE2eEmulatorPort } = require('../../app/e2e/helpers');
 const COLLECTION = 'firestore';
 const COLLECTION_GROUP = 'collectionGroup';
 
@@ -176,6 +177,32 @@ describe('firestore()', function () {
           error.code.should.equal('firestore/unavailable');
           return Promise.resolve();
         }
+      });
+
+      // Regression for invertase/react-native-firebase#9280 — iOS terminate must evict
+      // instanceCache using native FIRApp.name so a later getFirestore() is a fresh client.
+      // Uses second-rnfb so the default suite instance stays intact. Path must be the
+      // second-database collection (allowed by that DB's rules) — not firestore/.
+      it('terminate then subsequent getDoc uses a fresh instance', async function () {
+        if (Platform.other) {
+          return;
+        }
+
+        const { getApp } = modular;
+        const { getFirestore, getDoc, terminate, doc, setDoc, connectFirestoreEmulator } =
+          firestoreModular;
+
+        const db = getFirestore(getApp(), 'second-rnfb');
+        const probePath = 'second-database/terminate-reuse-probe';
+        await setDoc(doc(db, probePath), { ok: true });
+
+        await terminate(db);
+
+        // Must not SIGABRT / FIRIllegalStateException from a cached terminated client.
+        const fresh = getFirestore(getApp(), 'second-rnfb');
+        connectFirestoreEmulator(fresh, getE2eEmulatorHost(), getE2eEmulatorPort('firestore'));
+        const snap = await getDoc(doc(fresh, probePath));
+        should(snap.exists()).equal(true);
       });
     });
 

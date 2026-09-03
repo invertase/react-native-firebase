@@ -38,6 +38,7 @@ NSMutableDictionary *instanceCache;
   if (instanceCache == nil) {
     instanceCache = [[NSMutableDictionary alloc] init];
   }
+  // Cache key uses native FIRApp.name (e.g. __FIRAPP_DEFAULT), not the JS bridge name.
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:[app name]
                                                                    databaseId:databaseId];
   FIRFirestore *cachedInstance = instanceCache[firestoreKey];

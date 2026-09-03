@@ -85,16 +85,12 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
   }
 
   Task<Void> useEmulator(String appName, String databaseId, String host, int port) {
-    return Tasks.call(
-        getExecutor(),
-        () -> {
-          String firestoreKey = createFirestoreKey(appName, databaseId);
-          if (emulatorConfigs.get(firestoreKey) == null) {
-            emulatorConfigs.put(firestoreKey, "true");
-            getFirestoreForApp(appName, databaseId).useEmulator(host, port);
-          }
-          return null;
-        });
+    String firestoreKey = createFirestoreKey(appName, databaseId);
+    if (emulatorConfigs.get(firestoreKey) == null) {
+      emulatorConfigs.put(firestoreKey, "true");
+      getFirestoreForApp(appName, databaseId).useEmulator(host, port);
+    }
+    return Tasks.forResult(null);
   }
 
   Task<Void> settings(String firestoreKey, Map<String, Object> settings) {
@@ -169,6 +165,10 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
       instanceCache.get(firestoreKey).clear();
       instanceCache.remove(firestoreKey);
     }
+
+    // Clear so a later connectFirestoreEmulator can attach the emulator to a freshly
+    // created FirebaseFirestore after terminate (mirrors iOS emulatorConfigs eviction).
+    emulatorConfigs.remove(firestoreKey);
 
     return firebaseFirestore.terminate();
   }
