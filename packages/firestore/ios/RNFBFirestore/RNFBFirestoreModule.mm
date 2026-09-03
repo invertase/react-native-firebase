@@ -225,13 +225,25 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
   FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                         databaseId:databaseId];
 
+  // Evict with native FIRApp.name before terminate — same key namespace as getFirestoreForApp.
+  // Using the JS bridge appName ([DEFAULT]) is a no-op for the default app (__FIRAPP_DEFAULT),
+  // leaving a terminated instance cached and causing later SIGABRT.
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:[firebaseApp name]
+                                                                   databaseId:databaseId];
+  [instanceCache removeObjectForKey:firestoreKey];
+
+  // emulatorConfigs is keyed by the JS bridge appName; clear so a later connectFirestoreEmulator
+  // can attach the emulator to a freshly created FIRFirestore after terminate.
+  if (emulatorConfigs != nil) {
+    NSString *emulatorKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                    databaseId:databaseId];
+    [emulatorConfigs removeObjectForKey:emulatorKey];
+  }
+
   [instance terminateWithCompletion:^(NSError *error) {
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
-                                                                       databaseId:databaseId];
-      [instanceCache removeObjectForKey:firestoreKey];
       resolve(nil);
     }
   }];
