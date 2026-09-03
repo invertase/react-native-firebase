@@ -20,9 +20,7 @@ class MainApplication :
   override val reactNativeHost: ReactNativeHost =
     object : DefaultReactNativeHost(this) {
       override fun getPackages(): List<ReactPackage> =
-        // Coverage TurboModule comes from portal-linked react-native-coverage
-        // via autolinking. RNFBTestingCoveragePackage remains on disk (dormant) until
-        // a later delete step — do not re-add it here.
+        // Coverage TurboModule comes from react-native-coverage via autolinking.
         PackageList(this).packages.apply {
           add(RNFBTestingPackage())
         }

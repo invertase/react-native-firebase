@@ -23313,11 +23313,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-coverage@portal:../../../react-native-coverage::locator=react-native-firebase-tests%40workspace%3Atests":
-  version: 0.0.0-use.local
-  resolution: "react-native-coverage@portal:../../../react-native-coverage::locator=react-native-firebase-tests%40workspace%3Atests"
+"react-native-coverage@npm:0.2.0":
+  version: 0.2.0
+  resolution: "react-native-coverage@npm:0.2.0"
   dependencies:
     commander: "npm:^13.1.0"
+    nyc: "npm:^17.1.0"
   peerDependencies:
     expo: ">=52.0.0"
     react: "*"
@@ -23326,9 +23327,10 @@ __metadata:
     expo:
       optional: true
   bin:
-    rn-coverage: ./bin/rn-coverage.js
+    rn-coverage: bin/rn-coverage.js
+  checksum: 10/f49cbf593981ce480ef83fcc0f9dbe00521b846dc2c1a8c59885e01719bea4243f8b5ef49c49dca40b1b1b0259577d03d58c84a9a2424fe17d601dbec5ae3b2c
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "react-native-device-info@npm:^15.0.2":
   version: 15.0.2
@@ -23450,7 +23452,7 @@ __metadata:
     qrcode-generator: "npm:^2.0.4"
     react: "npm:19.2.3"
     react-native: "npm:0.86.2"
-    react-native-coverage: "portal:../../../react-native-coverage"
+    react-native-coverage: "npm:0.2.0"
     react-native-device-info: "npm:^15.0.2"
     should: "npm:^13.2.3"
     should-sinon: "npm:0.0.6"

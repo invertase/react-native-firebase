@@ -319,8 +319,11 @@ describe('messaging()', function () {
           this.skip();
         }
 
-        const { getRNFBTesting } = require('../../app/e2e/helpers');
-        should.equal(await getRNFBTesting().messagingPreservesExistingDelegate(), true);
+        const { NativeModules } = require('react-native');
+        should.equal(
+          await NativeModules.RNFBTestingMessaging.messagingPreservesExistingDelegate(),
+          true,
+        );
       });
     });
 

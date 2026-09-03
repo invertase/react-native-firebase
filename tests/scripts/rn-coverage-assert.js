@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Presence guard via portal-linked `rn-coverage assert` (exit 2 on empty).
+ * Presence guard via `rn-coverage assert` (exit 2 on empty).
  * Keeps the yarn script name `tests:coverage:assert-presence` stable.
  */
 'use strict';

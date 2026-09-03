@@ -2,12 +2,9 @@
 /**
  * Android / iOS coverage pull orchestration for RNFB tests.
  *
- * Android pull + post-e2e use portal-linked `rn-coverage` CLI with RNFB
- * artifact paths. iOS pull (Jet close) still copies profraw into
+ * Android pull + post-e2e use `rn-coverage` CLI with RNFB artifact paths.
+ * iOS pull (Jet close) still copies profraw into
  * tests/ios/build/output/coverage for the package export step.
- *
- * Interim assert / process scripts remain on disk (dormant wrappers) until
- * later cleanup — yarn entrypoints now prefer package CLI.
  */
 'use strict';
 
@@ -18,6 +15,8 @@ const { loadCoverageConfig, resolveStrict } = require('./load-coverage-config');
 const { runRnCoverage } = require('./resolve-rn-coverage');
 
 const coverageConfig = loadCoverageConfig();
+const repoRoot = path.resolve(__dirname, '../..');
+const testsDir = path.join(repoRoot, 'tests');
 const ANDROID_TEST_APP_PACKAGE = coverageConfig.app.androidApplicationId;
 const IOS_TEST_APP_BUNDLE_ID = coverageConfig.app.iosBundleId;
 const ANDROID_COVERAGE_RELATIVE_PATH = coverageConfig.android.coverageRelativePath;
@@ -192,6 +191,42 @@ function isCoverageStrict(args = []) {
   return resolveStrict(args, coverageConfig);
 }
 
+function pullJsCoverage(platform, deviceId) {
+  const outputDir = path.join(repoRoot, 'coverage/js', platform);
+  const args = ['js', 'pull', '--platform', platform, '--output', outputDir];
+  if (platform === 'ios') {
+    args.push('--device', deviceId);
+  } else if (deviceId) {
+    args.push('--device', deviceId);
+  }
+
+  const { status } = runRnCoverage(args);
+  if (status !== 0) {
+    throw new Error(`rn-coverage js pull failed for ${platform} (exit ${status ?? 'unknown'})`);
+  }
+}
+
+function reportJsCoverage(platform) {
+  const outputDir = path.join(repoRoot, 'coverage/js', platform);
+  // cwd must be tests/ so rn-coverage can resolve tests/node_modules/nyc;
+  // tests/nyc.config.js sets cwd:'..' for monorepo include globs.
+  const { status } = runRnCoverage([
+    'js',
+    'report',
+    '--input',
+    path.join(outputDir, 'coverage-final.json'),
+    '--output',
+    outputDir,
+    '--cwd',
+    testsDir,
+    '--nyc-config',
+    path.join(testsDir, 'nyc.config.js'),
+  ]);
+  if (status !== 0) {
+    throw new Error(`rn-coverage js report failed for ${platform} (exit ${status ?? 'unknown'})`);
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const strict = isCoverageStrict(args);
@@ -200,15 +235,12 @@ async function main() {
     return;
   }
 
-  const testsDir = path.resolve(__dirname, '..');
   const localDestDir = path.join(testsDir, 'android/app/build/output/coverage');
   const localDestFile = path.join(localDestDir, 'emulator_coverage.ec');
   const deviceId = resolveAndroidDeviceId();
 
   if (args.includes('--android-pull')) {
-    console.log(
-      `[native-coverage] Pulling Android coverage from ${deviceId} via rn-coverage (portal)`,
-    );
+    console.log(`[native-coverage] Pulling Android coverage from ${deviceId} via rn-coverage`);
     const { status } = runRnCoverage(
       strict
         ? ['--strict', 'android', 'pull', '--device', deviceId, '--output', localDestDir]
@@ -274,7 +306,12 @@ async function main() {
       '--platform',
       'android',
     ]);
-    process.exit(assertResult.status == null ? 1 : assertResult.status);
+    if (assertResult.status !== 0) {
+      process.exit(assertResult.status == null ? 1 : assertResult.status);
+    }
+
+    reportJsCoverage('android');
+    return;
   }
 
   console.error(
@@ -294,6 +331,8 @@ module.exports = {
   pullAndroidCoverage,
   pullAndroidCoverageWithRetry,
   pullIosCoverage,
+  pullJsCoverage,
+  reportJsCoverage,
   resolveAndroidDeviceId,
   runJacocoTestReport,
 };

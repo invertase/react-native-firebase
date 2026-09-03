@@ -175,7 +175,7 @@ flowchart LR
     N --> T2[coverage/lcov.info]
   end
   subgraph android_native [Android native Jacoco]
-    D1[Detox e2e] --> FLA[RNFBTestingCoverage.flush]
+    D1[Detox e2e] --> FLA["react-native-coverage.flush"]
     FLA --> EC[coverage.ec in app filesDir]
     EC --> P1[pull-native-coverage.js]
     EXEC --> P1
@@ -183,10 +183,10 @@ flowchart LR
     JTR --> AX[jacocoTestReport.xml]
   end
   subgraph ios_native [iOS native LCOV]
-    D2[Detox e2e] --> FLI[RNFBTestingCoverage.flush]
+    D2[Detox e2e] --> FLI["react-native-coverage.flush"]
     FLI --> PR[coverage.profraw in Documents]
     PR --> P2[pull-native-coverage.js]
-    P2 --> LLVM[process-ios-native-coverage.js]
+    P2 --> LLVM[rn-coverage-ios-export.js]
     UNITLCOV --> LLVM
     LLVM --> I2[coverage/ios-native/lcov.info]
   end
@@ -218,7 +218,7 @@ yarn tests:ios:unit
 
 - Host/macOS-first in-package xcodeproj — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1).
 - Discovers `packages/*/ios/*UnitTests/*.xcodeproj`; LLVM export → `coverage/ios-unit/lcov.info`.
-- **Merges into** `coverage/ios-native/lcov.info` (create or max-hits merge per `SF:`/`DA:`). After e2e, `process-ios-native-coverage.js` merges the same unit file so e2e export does not drop XCTest hits.
+- **Merges into** `coverage/ios-native/lcov.info` (create or max-hits merge per `SF:`/`DA:`). After e2e, `rn-coverage-ios-export.js` merges the same unit file so e2e export does not drop XCTest hits.
 - **Counts toward** the 100% touched-line bar when allowlisted unit tests exercise those lines.
 - Not a substitute for e2e on platforms where the module loads ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
 
@@ -250,6 +250,10 @@ Jet self-wraps under NYC with `--coverage`.
 - Metro bundles `packages/*/dist/module/**` with inline source maps (`tests/.babelrc` and `tests-macos/.babelrc`: `useInlineSourceMaps: true`).
 - NYC (`tests/nyc.config.js` and `tests-macos/nyc.config.js`) remaps to `packages/*/lib/**` → **`coverage/lcov.info`** (`cwd: '..'`).
 - Jet re-invokes under the test-app `nyc` (checks `NYC_CONFIG`) — `tests/` for iOS/Android, `tests-macos/` for macOS. Detox/macOS need no extra `nyc` prefix; start Jet only via [running e2e](running-e2e.md) packager commands.
+- iOS/Android Jet-close also uses package `rn-coverage js pull`; their native post-processing
+  entrypoints run `rn-coverage js report` into `coverage/js/<platform>/lcov.info`, using
+  `tests/nyc.config.js` for source-map remap. This supplements rather than replaces the RNFB
+  Jet/NYC transport and its `coverage/lcov.info` artifact.
 - **Transfer:** patched test-runner/mocha-remote WS only (`coverage-ready` → `pull-coverage` → `coverage-data` → `coverage-ack`); HTTP POST `/coverage` deleted (`attachHttpServer` removed). Host launch/orchestrate control uses a **separate** HTTP server on **8091** (not the 8090 WS stack) — see [test-runner orchestration (log triage)](running-e2e.md#test-runner-host-orchestration-log-triage-only). Patches: `.yarn/patches/` (`jet`, `mocha-remote-client`, `mocha-remote-server`). See [iOS issues 6–6b](../ci-workflows/ios.md#6-jet-websocket-disconnect-1006--1001), [issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00), [jet patch workflow](../ci-workflows/detox-patches.md#updating-the-jet-patch-headless).
 
 **NYC settings:**
@@ -273,9 +277,9 @@ reporter: ['lcov', 'html', 'text-summary'],
 
 # Android native (Jacoco — unit + e2e merged)
 
-1. `testCoverageEnabled` / Jacoco plugin on RNFB modules (`tests/android/build.gradle`) — e2e `*.ec` + unit `*.exec`.
+1. Package `rn-coverage.gradle` on RNFB modules (applied from `tests/android/build.gradle`): `enableAndroidTestCoverage = true` (e2e `*.ec`); `enableUnitTestCoverage = false` (parity with package helper — AGP library unit probes are empty; JVM unit `*.exec` comes from the separate unit path).
 2. **JVM unit:** `yarn tests:android:unit` before or independent of Detox — produces module `*.exec`.
-3. Jet `after` in `tests/app.js` → `NativeModules.RNFBTestingCoverage.flush()` in **app** process → `coverage.ec` in `filesDir` **before** Detox SIGINT.
+3. Jet `after` in `tests/app.js` → `react-native-coverage.flush()` in **app** process → `coverage.ec` in `filesDir` **before** Detox SIGINT.
 4. After Detox: `yarn tests:android:post-e2e-coverage` (or `pull-native-coverage --android-post-e2e`) → `emulator_coverage.ec` → **`jacocoTestReport`** (merged unit `*.exec` + e2e `*.ec`) → **delete local `.ec`** → **presence assert** (invertase package LINE hits must be non-empty; exit **2** when strict). Missing `.ec` in strict mode (default): **exit 2** — silent empty e2e coverage must fail CI. Soft local: `--no-strict` / `RNFB_COVERAGE_STRICT=0`. Codecov upload may still use `continue-on-error`; the post-e2e yarn step itself is the blocking guard.
 5. XML uploaded to Codecov: `tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml`
 
@@ -297,23 +301,21 @@ reporter: ['lcov', 'html', 'text-summary'],
 1. **Build:** LLVM flags in **`tests/ios/Podfile` `post_install`** (`pod install` after checkout):
    - **`testing` target:** compile + link profile flags + Swift toolchain search paths (Firebase static pods on CI)
    - **`RNFB*` pods:** compile-only flags — **no** `-fprofile-instr-generate` on pod `OTHER_LDFLAGS` (breaks `swiftCompatibility56` on CI)
-2. **Runtime:** `RNFBTestingConfigureCoverageProfilePath()` at launch → `Documents/coverage-%m.profraw` (+ `LLVM_PROFILE_FILE`). Jet `after` → `RNFBTestingCoverage.flush()` (tracked RNFB frameworks, then app). **No custom URL scheme** (iOS "Open in 'testing'?" dialog blocks Detox).
+   - **Coverage pod:** `ReactNativeCoverage.apply_post_install!` (writes `CoverageConfig.h` with `RNFB` prefixes)
+2. **Runtime:** `react-native-coverage` constructor + TurboModule flush → `Documents/coverage-%m.profraw` (`LLVM_PROFILE_FILE`). Jet `after` → `flush()` (tracked RNFB frameworks, then app). **No custom URL scheme** (iOS "Open in 'testing'?" dialog blocks Detox).
 3. **Pull:** Jet exit 0 → `pull-native-coverage.js` → `simulator_coverage.profraw`. **Fails if missing.** Pull on Jet `close`, not `afterAll` (before Detox teardown).
-4. **Export:** `yarn tests:ios:test:process-coverage` / `process-ios-native-coverage.js`:
-   - exit **1** if no `.profraw`
-   - merge from `tests/ios/build/output/coverage/` (+ optional `Build/ProfileData/` for `xcodebuild test`, unused by Detox)
-   - `xcrun llvm-cov export -format=lcov` vs app binary → temp file (stdout buffer limit)
-   - rewrite `SF:` to repo-relative `packages/**` → **`coverage/ios-native/lcov.info`**
+4. **Export:** `yarn tests:ios:test:process-coverage` / `rn-coverage-ios-export.js`:
+   - delegates to `rn-coverage ios export` (llvm-cov + `SF:` rewrite + presence assert)
    - **merge** `coverage/ios-unit/lcov.info` when present (`tests/scripts/ios-native-lcov.js`) so XCTest counts for 100%
-   - **delete processed `.profraw`** (missing file next run = no fresh coverage)
+   - **delete processed `.profraw`** (package CLI; missing file next run = no fresh coverage)
 
 ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
 
 ### SPM + dynamic frameworks
 
-**Tests Podfile default (dynamic):** RNFB pods stay separate `RNFB*.framework` images. Compile-only instrumentation is not enough — those frameworks must **link** the profile runtime (`link_profile: true` for `RNFB*` when `linkage == dynamic`, including `-Wl,-u,___llvm_profile_set_filename` so set_filename is not dead-stripped), flush must dump **each** loaded RNFB image, and `process-ios-native-coverage.js` must pass every `RNFB*.framework` binary as an extra `llvm-cov -object`. App-only export → **`packagesHits=0`**.
+**Tests Podfile default (dynamic):** RNFB pods stay separate `RNFB*.framework` images. Compile-only instrumentation is not enough — those frameworks must **link** the profile runtime (`link_profile: true` for `RNFB*` when `linkage == dynamic`, including `-Wl,-u,___llvm_profile_set_filename` so set_filename is not dead-stripped), flush must dump **each** loaded RNFB image, and `rn-coverage ios export` must pass every `RNFB*.framework` binary as an extra `llvm-cov -object` (`ios.frameworkNamePrefixes: ['RNFB']`). App-only export → **`packagesHits=0`**.
 
-**Why per-image flush (not atexit alone):** each dynamic image links its own `clang_rt.profile` copy; `__llvm_profile_write_file` in the app only dumps the app image. `LLVM_PROFILE_FILE=…/coverage-%m.profraw` (set via `setenv` + `RNFBTestingConfigureCoverageProfilePath`) makes atexit dumps unique per image, but Jet pulls `Documents/*.profraw` on Jet **close** — before `terminateApp` — so atexit has not run yet. Detox SIGKILL can also skip atexit. `RNFBTestingCoverageProfile.mm` therefore discovers `RNFB*.framework` images at load via `_dyld_register_func_for_add_image`, resolves each image's local `___llvm_profile_write_file` through `__LINKEDIT`, flushes tracked images on Jet `after`, then writes the app image last (so flush-path counters land in the pulled app profraw). Static linkage still merges RNFB into the app binary (compile-only + app flush). Never put profile **link** flags on third-party/Firebase pods (`swiftCompatibility56`).
+**Why per-image flush (not atexit alone):** each dynamic image links its own `clang_rt.profile` copy; `__llvm_profile_write_file` in the app only dumps the app image. `LLVM_PROFILE_FILE=…/coverage-%m.profraw` (set via `setenv` in the package constructor) makes atexit dumps unique per image, but Jet pulls `Documents/*.profraw` on Jet **close** — before `terminateApp` — so atexit has not run yet. Detox SIGKILL can also skip atexit. `react-native-coverage` therefore discovers `RNFB*.framework` images at load via `_dyld_register_func_for_add_image`, resolves each image's local `___llvm_profile_write_file` through `__LINKEDIT`, flushes tracked images on Jet `after`, then writes the app image last (so flush-path counters land in the pulled app profraw). Static linkage still merges RNFB into the app binary (compile-only + app flush). Never put profile **link** flags on third-party/Firebase pods (`swiftCompatibility56`).
 
 # Codecov uploads (CI)
 
@@ -376,46 +378,48 @@ No `:test-cover-reuse` / `:test-reuse` — stale native risk ([runbook](running-
 
 <a id="test-native-modules"></a>
 
-# Two test native modules
+# Test-app native modules vs coverage flush
 
-The Detox host has **two** native modules. Do **not** conflate them.
+Do **not** conflate coverage flush with e2e probes.
 
 | Module | Kind | Role |
 |--------|------|------|
-| **`RNFBTestingCoverage`** | Legacy `RCTBridgeModule` | **This doc.** Coverage flush only: `NativeModules.RNFBTestingCoverage.flush()` from Jet `after` in `tests/app.js`. |
-| **`NativeRNFBTesting`** | TurboModule | E2e **integration probes**, not flush — spec, native paths, JS accessor: [running e2e § test-app native modules](running-e2e.md#test-app-native-modules). |
+| **`Coverage` (`react-native-coverage`)** | Package TurboModule | Flush only — [§ react-native-coverage](#react-native-coverage). |
+| **`NativeRNFBTesting`** | Test-app TurboModule | E2e probes (`completesNonFCMRemoteNotification`, `messagingStoreSupportsDisabledStorage`, …) — [running e2e](running-e2e.md#test-app-native-modules). |
+| **`RNFBTestingMessaging`** | Test-app `RCTBridgeModule` | iOS `messagingPreservesExistingDelegate` — [running e2e](running-e2e.md#test-app-native-modules). |
 
-**Probe hits in native LCOV:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `getRNFBTesting().messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). Android e2e `getRNFBTesting().messagingStoreSupportsDisabledStorage()` exercises `ReactNativeFirebaseMessagingStoreImpl` disabled-storage paths. After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, those lines appear as hits in `coverage/ios-native/lcov.info`. Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that LCOV.
+**Probe hits in native coverage:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `NativeModules.RNFBTestingMessaging.messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). Android e2e `getRNFBTesting().messagingStoreSupportsDisabledStorage()` exercises `ReactNativeFirebaseMessagingStoreImpl` disabled-storage paths. After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, iOS probe lines appear as hits in `coverage/ios-native/lcov.info` (Android probe hits land in Jacoco). Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that artifact.
 
-# Config-driven neutralization (in place)
+# Config-driven native coverage (Pattern C)
 
 Native coverage knobs for the dedicated test app live in `tests/react-native-coverage.config.js`
-(package-aligned shape). Node scripts load that file; iOS/Android native copies are generated via
-`yarn tests:coverage:generate-native-config` (`tests/ios/testing/RNFBTestingCoverageConfig.h`,
-`tests/android/coverage.properties`). **No coverage source tree moves** — extraction/migration can
-later swap implementations by config.
+(package-aligned shape). Node scripts load that file; Gradle copies are generated via
+`yarn tests:coverage:generate-native-config` (`tests/android/coverage.properties`). LLVM
+profile path and TurboModule flush come from **`react-native-coverage`**. Jacoco merge
+(unit `*.exec` + e2e `*.ec`, `src/reactnative/java`) stays in `tests/android/app/jacoco.gradle`.
 
-# Migration dry-run (portal, no registry)
+<a id="react-native-coverage"></a>
 
-Pattern C: only the **tests** workspace depends on `react-native-coverage` via Yarn portal:
+# react-native-coverage (tests app only)
+
+Pattern C: only the **tests** workspace depends on published `react-native-coverage`:
 
 ```json
-"react-native-coverage": "portal:../../../react-native-coverage"
+"react-native-coverage": "0.2.0"
 ```
 
-in `tests/package.json` (relative to the sibling `invertase/react-native-coverage` checkout).
-Host yarn scripts call package `rn-coverage` (`tests/scripts/rn-coverage-*.js`,
-`pull-native-coverage.js`). Runtime flush uses the package TurboModule (`Coverage`).
-Dormant `RNFBTesting*Coverage*` sources remain on disk until a later delete step.
+in `tests/package.json`. Host yarn scripts call package `rn-coverage` (`tests/scripts/rn-coverage-*.js`,
+`pull-native-coverage.js`). Runtime flush uses the package TurboModule (`Coverage` / `flush()`).
+Test-app probe modules (`NativeRNFBTesting`, `RNFBTestingMessaging`) are **not** flush — [running e2e § test-app native modules](running-e2e.md#test-app-native-modules).
 
 # Critical invariants
 
 | Invariant | Enforced |
 |-----------|----------|
-| LLVM profile flags (iOS) | `Podfile` `post_install` |
-| Profile path at launch (iOS) | `AppDelegate` → `RNFBTestingConfigureCoverageProfilePath()` |
-| Jacoco instrumentation (Android) | `testCoverageEnabled` + Jacoco plugin in `tests/android/build.gradle` |
-| Module name | `Coverage` / `react-native-coverage` flush (portal dry-run); dormant `RNFBTestingCoverage*` sources retained |
+| LLVM profile flags (iOS) | `Podfile` `post_install` + `ReactNativeCoverage.apply_post_install!` |
+| Profile path at launch (iOS) | `react-native-coverage` constructor (`CoverageConfigureProfilePath`) |
+| Jacoco instrumentation (Android) | package `rn-coverage.gradle` (`enableAndroidTestCoverage = true`, `enableUnitTestCoverage = false`) |
+| Module name | `Coverage` / `react-native-coverage.flush()` |
 | Flush after Mocha | Jet `after` in `tests/app.js` |
 | Profraw pull before Detox teardown (iOS) | `pull-native-coverage.js` on Jet `close` in `firebase.test.js` |
 | Android JVM unit before / with merge | `yarn tests:android:unit` → module `*.exec` |
@@ -446,16 +450,15 @@ Dormant `RNFBTesting*Coverage*` sources remain on disk until a later delete step
 | WS closed on `reconnect_recovered` | Handshake on dead socket | Client retry + server pull; `JET_COVERAGE_TEARDOWN_RE` — [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
 | Empty NYC / lcov | Environment or patch issue during `:test-cover` | Re-run per [running e2e](running-e2e.md) — do not invoke the test runner directly |
 | Codecov missing iOS native | Wrong path/name | `coverage/ios-native/lcov.info` |
-| Upload **Unusable** | Bad `SF:` paths | `process-ios-native-coverage.js` rewrite |
+| Upload **Unusable** | Bad `SF:` paths | package `sourcePathRewrite` + `ios-native-lcov.js` |
 | `ios-native` / `android-native` fail | Upload missing → 0% | Uploads tab; process/post-e2e steps |
 
 # Future cleanups
 
-- After registry migrate + second consumer green: delete dormant `RNFBTesting*Coverage*`
-  sources and interim `tests/scripts/assert-native-coverage-presence.js` /
-  `rn-coverage-ios-export.js` once yarn entrypoints stay on package CLI.
-- Restore package `ios/CoverageConfig.h` fixture prefixes after RNFB-only dry-run pod
-  installs if the portal checkout is shared with package example CI.
+- Host `rn-coverage-ios-export.js` still merges XCTest `coverage/ios-unit/lcov.info` after
+  package `ios export` — keep that until the package grows a unit-merge flag.
+- `tests/android/app/jacoco.gradle` stays RNFB-specific (firebase module paths,
+  `src/reactnative/java`). Do not replace it with the package Jacoco helper.
 
 # Citations
 

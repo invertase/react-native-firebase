@@ -80,12 +80,13 @@ Clean `:build` + `:test-cover` each time — not reuse variants.
 
 ## Test-app native modules (do not conflate)
 
-The Detox host exposes **two** native modules. Coverage flush is **not** this TurboModule.
+Coverage flush is **package-owned**. Test-app modules are **integration probes only** — do not call them for flush.
 
 | Module | Kind | Purpose | Owner |
 |--------|------|---------|-------|
-| `RNFBTestingCoverage` | Legacy `RCTBridgeModule` | `NativeModules.RNFBTestingCoverage.flush()` only | [coverage design § two test native modules](coverage-design.md#test-native-modules) |
-| `NativeRNFBTesting` | TurboModule | E2e native integration probes | **this section** |
+| `Coverage` (`react-native-coverage`) | Package TurboModule | `flush()` from Jet `after` only | [coverage design § react-native-coverage](coverage-design.md#react-native-coverage) |
+| `NativeRNFBTesting` | Test-app TurboModule | E2e probes (e.g. `completesNonFCMRemoteNotification`) | **this section** |
+| `RNFBTestingMessaging` | Test-app `RCTBridgeModule` | iOS messaging delegate probe (`messagingPreservesExistingDelegate`) | **this section** |
 
 **`NativeRNFBTesting` (this section)**
 
@@ -96,7 +97,12 @@ The Detox host exposes **two** native modules. Coverage flush is **not** this Tu
 - **Probes:** `messagingPreservesExistingDelegate`, `completesNonFCMRemoteNotification` (iOS); `messagingStoreSupportsDisabledStorage` (Android). Cross-platform methods resolve `false` on the unsupported platform.
 - Production packages must **not** ship this TurboModule (test-app only).
 
-Probe hits in `coverage/ios-native/lcov.info`: [coverage design § two test native modules](coverage-design.md#test-native-modules). Test-app vs library codegen (not committed; wipe derived `tests/ios/build/generated/ios`; gitignore `tests/ios/Package.swift` and sibling app dumps): [NewArch-AD-5](../new-architecture/architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted).
+**`RNFBTestingMessaging` (this section)**
+
+- **iOS:** `tests/ios/testing/RNFBTestingMessagingModule.m` — `NativeModules.RNFBTestingMessaging.messagingPreservesExistingDelegate()`
+- Standalone so the coverage TurboModule stays product-neutral ([coverage design § react-native-coverage](coverage-design.md#react-native-coverage)).
+
+**Probe hits in native coverage:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `NativeModules.RNFBTestingMessaging.messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). Android e2e `getRNFBTesting().messagingStoreSupportsDisabledStorage()` exercises `ReactNativeFirebaseMessagingStoreImpl` disabled-storage paths. After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, iOS probe lines appear as hits in `coverage/ios-native/lcov.info` (Android probe hits land in Jacoco). Record them in the [coverage evidence package](coverage-design.md#coverage-evidence-package); passing probes are not a substitute for that artifact. Test-app vs library codegen (not committed; wipe derived `tests/ios/build/generated/ios`; gitignore `tests/ios/Package.swift` and sibling app dumps): [NewArch-AD-5](../new-architecture/architecture-decisions.md#newarch-ad-5--commit-generated-code--accepted).
 
 <a id="e2e-infrastructure-change-bar"></a>
 

@@ -24,6 +24,7 @@ const path = require('path');
 const {
   pullIosCoverage,
   pullAndroidCoverageWithRetry,
+  pullJsCoverage,
 } = require('../scripts/pull-native-coverage');
 const { recordE2eCloudMetricFromHost } = require('../../packages/app/e2e/cloud-metrics');
 const {
@@ -1685,6 +1686,14 @@ describe('Jet Tests', function () {
       });
       if (!pulled) {
         console.warn('[native-coverage] Android .ec not pulled on Jet close; post-e2e will retry');
+      }
+    }
+
+    if (platform === 'ios' || platform === 'android') {
+      try {
+        pullJsCoverage(platform, deviceId);
+      } catch (e) {
+        throw new Error(`Failed to download JS coverage data: ${e.message}`);
       }
     }
   });

@@ -28,7 +28,7 @@ PODS:
     - SocketRocket
     - Yoga
   - boost (1.84.0)
-  - Coverage (0.1.0):
+  - Coverage (0.2.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3341,13 +3341,13 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AsyncStorage: d7dcc63ec84ccd43e489b5dcdbd4bf93d12f04eb
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  Coverage: 89279de07bf9b18beddab5e3909bdffa8489402f
+  Coverage: fe312aa4f98857198c4b3ec6fccc8c3f33a30405
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: d153c0a7ab3a2c865dd311cb3a5418cd66b658e6
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
   glog: 9c7bd858f1402a8e680d1637276210773c093b76
-  hermes-engine: 5907657e6f22cedb2cda0145ec001ca3a4d7e990
+  hermes-engine: 2d9f1db9769cae304727bd96f83a18ab44b5ffdd
   RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
   RCTDeprecation: debcd5d989dc39edd50d61566b56e96da1c167b0
   RCTRequired: f06ef156c6b0244ac76aa51ef2e830a1a13004c8
@@ -3440,6 +3440,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 24af75960dc03eceead31961827e7cecf3ea22a0
 
-PODFILE CHECKSUM: 4e743daa0164d387e5f42687a894490d997237f6
+PODFILE CHECKSUM: e89a560f3bb9e9caec91b4efa013b06b9a796417
 
 COCOAPODS: 1.17.0

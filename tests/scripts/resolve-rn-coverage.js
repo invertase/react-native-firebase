@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
- * Resolve portal-linked react-native-coverage from the tests workspace.
- * Pattern C: package lives only under tests/, never product packages.
+ * Resolve react-native-coverage from the tests workspace (Pattern C).
  */
 'use strict';
 

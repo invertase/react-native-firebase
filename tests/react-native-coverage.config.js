@@ -1,11 +1,10 @@
 /**
  * RNFB dedicated-test-app coverage config (Pattern C).
  *
- * Dry-run: tests app consumes local `react-native-coverage` via Yarn
- * `portal:../../../react-native-coverage` (no npm registry). Host scripts
- * prefer package `rn-coverage` CLI / `react-native-coverage/node`. Flush uses
- * package TurboModule name `Coverage`. Dormant RNFBTesting*Coverage* sources
- * remain on disk until a later delete step — do not remove them here.
+ * The tests workspace depends on published `react-native-coverage`. Host
+ * scripts call `rn-coverage` (`tests/scripts/rn-coverage-*.js`,
+ * `pull-native-coverage.js`). Runtime flush uses the package TurboModule
+ * (`Coverage`). LLVM profile path / multi-image flush live in the package.
  *
  * @type {import('./scripts/load-coverage-config').CoverageConfigInput}
  */
