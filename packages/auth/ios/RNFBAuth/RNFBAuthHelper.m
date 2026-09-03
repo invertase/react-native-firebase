@@ -315,7 +315,10 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
 + (void)configureAuthDomain:(NSString *)appName {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  NSString *authDomain = [RNFBAppModule getCustomDomain:firebaseApp.name];
+  // customAuthDomains is keyed by the JS app name ([DEFAULT]); FIRApp.name for the default app
+  // is __FIRAPP_DEFAULT. Look up with the existing JS-name converter (no parallel key helper).
+  NSString *authDomain =
+      [RNFBAppModule getCustomDomain:[RNFBSharedUtils getAppJavaScriptName:firebaseApp.name]];
   DLog(@"RNFBAuth app: %@ customAuthDomain: %@", firebaseApp.name, authDomain);
   if (authDomain != nil) {
     [FIRAuth authWithApp:firebaseApp].customAuthDomain = authDomain;
