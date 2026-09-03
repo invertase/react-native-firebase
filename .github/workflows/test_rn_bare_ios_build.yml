@@ -1,0 +1,66 @@
+name: Test RN CLI prebuilt RNCore iOS build (informational)
+
+# Informational, path-filtered check for the test-rn-bare/ fixture (GitHub #8883).
+# Not wired into branch protection as a required check. It keeps the
+# documented-default RN CLI SPM + dynamic + prebuilt-RNCore compile graph
+# visible on PRs that touch the fixture, without blocking merges on its own.
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'test-rn-bare/**'
+      - '.github/workflows/test_rn_bare_ios_build.yml'
+      - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
+      - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/ios/**'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+  push:
+    branches:
+      - main
+      - release-v*
+    paths:
+      - 'test-rn-bare/**'
+      - '.github/workflows/test_rn_bare_ios_build.yml'
+      - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
+      - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/ios/**'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-rn-bare-ios-build:
+    name: test-rn-bare iOS build
+    # macos-26 + latest-stable matches tests_e2e_ios.yml (firebase-ios-sdk requires Xcode 26.2+)
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      XCODE_VERSION: latest-stable
+    steps:
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Yarn Install
+        run: yarn
+
+      - name: test-rn-bare iOS build
+        run: yarn test-rn-bare:ios:build
