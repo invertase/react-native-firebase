@@ -449,6 +449,16 @@ Determine required platforms from committed [`tests/app.js`](../../tests/app.js)
 | **macOS** (`Platform.other`) | Module appears in the committed `if (Platform.other)` list (or overrides `modules` includes it)  |
 | **iOS** and **Android**      | Module appears in the committed `if (!Platform.other)` list (or overrides `modules` includes it) |
 
+**What in the frozen diff triggers this gate**
+
+| Frozen-diff touch                                                                                          | Required platforms                                                                                          |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Native bridge / podspec / TurboModule spec / **committed** `packages/*/ios/generated/**` or `…/android/**/generated/**` | Every platform where the module loads (table above); rebuild per [Rules §3](#rules) before `:test-cover` |
+| `packages/*/lib/**` (JS/TS runtime of a module that loads on native or macOS)                              | Same platform matrix as above for that module                                                               |
+| **`packages/*/e2e/**`** (Detox/Jet specs for a package module)                                             | **Same platform matrix** — area-narrowed `:test-cover` on **every** platform where that module loads, **even when the frozen diff has no native hunk for that OS** |
+
+E2e-only diffs still exercise the same host/native clients as product code. Skipping Android because “only iOS sources changed” (or the reverse) is an **invalid shortcut** when `packages/<module>/e2e/**` is in the frozen tree and the module is on that platform’s harness list. Authoring evidence note: [change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking).
+
 **Area-focused (`baseline-capture`, `independent-review`) — closes `review_gate` / baseline only when:**
 
 1. Full loaded package spec(s) with [area narrowing](#harness-narrowing-gate-blocking) (no `.only`).
@@ -460,13 +470,14 @@ Determine required platforms from committed [`tests/app.js`](../../tests/app.js)
 
 - “macOS + iOS minimum”; skipping **Android** when the module loads on Android.
 - “Skip Android if time tight” or “Android fallback only if iOS failures look env-related” without a fresh Android run.
+- Skipping a platform because the frozen diff has **no native sources for that OS** while `packages/*/e2e/**` (or `lib/**`) for a module that loads there **is** in the frozen tree.
 - Substituting a prior implementer log for `independent-review` on the frozen tree.
 - Treating **`yarn codegen:verify`** (or scripts/OKF-only Jest) as enough when `packages/*/ios/generated/**`, `packages/*/android/**/generated/**`, native shells, podspecs, or specs changed — those still need iOS + Android `:test-cover` ([Rules §3](#rules)).
 - Closing pre-flight on port/HTTP checks alone when Metro/emulators are owned by another worktree ([checkout ownership](#services-checkout-ownership-blocking)).
 
 **Module-specific skip:** only when the module is **absent** from that platform’s harness list (e.g. `messaging` is not on macOS). Record in the work-queue **Notes** — not an oral exception.
 
-**Unit-focused (`implementation`) — native touched:** macOS first when the path is TS/web-only; when the module loads on iOS **and** Android, run **both** before closing `implementation_gate` (same narrowing; `.only` OK locally; never commit).
+**Unit-focused (`implementation`) — native or package e2e touched:** macOS first when the path is TS/web-only; when the module loads on iOS **and** Android, run **both** before closing `implementation_gate` (same narrowing; `.only` OK locally; never commit). Package `e2e/**` edits follow the same matrix as native for that module.
 
 See also: [coverage design § platform parity](coverage-design.md#coverage-expectations-policy), [validation checklist § handoff](validation-checklist.md#handoff-checklist).
 
