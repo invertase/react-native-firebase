@@ -16,8 +16,7 @@
 		27DBE25D2594E43C00CEC69A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27DBE25C2594E43C00CEC69A /* LaunchScreen.storyboard */; };
 		3323F06104C7189BEC46D8B5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3323FFA47718EA67C36AD776 /* Images.xcassets */; };
 		984CE3B6B7A7A34D02E2DCD4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 927D484E6907CC4B1CC53CBB /* FirebaseCore */; };
-		A1B2C3D41E00000100000001 /* RNFBTestingCoverageProfile.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41E00000100000002 /* RNFBTestingCoverageProfile.mm */; };
-		A1B2C3D41E00000100000003 /* RNFBTestingCoverageModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41E00000100000004 /* RNFBTestingCoverageModule.m */; };
+		A1B2C3D41E00000100000003 /* RNFBTestingMessagingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41E00000100000004 /* RNFBTestingMessagingModule.m */; };
 		B2C3D4E51F00000100000001 /* RNFBTestingSwiftRuntimeStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E51F00000100000002 /* RNFBTestingSwiftRuntimeStub.swift */; };
 		D4E5F6720F00000100000001 /* RNFBTestingTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6720F00000100000002 /* RNFBTestingTurboModule.mm */; };
 /* End PBXBuildFile section */
@@ -53,9 +52,7 @@
 		327B0CEB26D00056AE09E0DA /* Pods_testing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_testing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3323FFA47718EA67C36AD776 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = testing/Images.xcassets; sourceTree = "<group>"; };
 		57FE9E835CE2D5A05E92A82C /* Pods-testing.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.debug.xcconfig"; path = "Target Support Files/Pods-testing/Pods-testing.debug.xcconfig"; sourceTree = "<group>"; };
-		A1B2C3D41E00000100000002 /* RNFBTestingCoverageProfile.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBTestingCoverageProfile.mm; path = testing/RNFBTestingCoverageProfile.mm; sourceTree = "<group>"; };
-		A1B2C3D41E00000100000004 /* RNFBTestingCoverageModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFBTestingCoverageModule.m; path = testing/RNFBTestingCoverageModule.m; sourceTree = "<group>"; };
-		A1B2C3D41E00000100000005 /* RNFBTestingCoverageProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFBTestingCoverageProfile.h; path = testing/RNFBTestingCoverageProfile.h; sourceTree = "<group>"; };
+		A1B2C3D41E00000100000004 /* RNFBTestingMessagingModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFBTestingMessagingModule.m; path = testing/RNFBTestingMessagingModule.m; sourceTree = "<group>"; };
 		B2C3D4E51F00000100000002 /* RNFBTestingSwiftRuntimeStub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNFBTestingSwiftRuntimeStub.swift; path = testing/RNFBTestingSwiftRuntimeStub.swift; sourceTree = "<group>"; };
 		B2C3D4E51F00000100000003 /* testing-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "testing-Bridging-Header.h"; path = "testing/testing-Bridging-Header.h"; sourceTree = "<group>"; };
 		D4E5F6720F00000100000002 /* RNFBTestingTurboModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBTestingTurboModule.mm; path = testing/RNFBTestingTurboModule.mm; sourceTree = "<group>"; };
@@ -100,11 +97,9 @@
 				271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
-				A1B2C3D41E00000100000002 /* RNFBTestingCoverageProfile.mm */,
-				A1B2C3D41E00000100000004 /* RNFBTestingCoverageModule.m */,
+				A1B2C3D41E00000100000004 /* RNFBTestingMessagingModule.m */,
 				D4E5F6720F00000100000002 /* RNFBTestingTurboModule.mm */,
 				D4E5F6720F00000100000003 /* RNFBTestingTurboModule.h */,
-				A1B2C3D41E00000100000005 /* RNFBTestingCoverageProfile.h */,
 				B2C3D4E51F00000100000002 /* RNFBTestingSwiftRuntimeStub.swift */,
 				B2C3D4E51F00000100000003 /* testing-Bridging-Header.h */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -439,8 +434,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				A1B2C3D41E00000100000001 /* RNFBTestingCoverageProfile.mm in Sources */,
-				A1B2C3D41E00000100000003 /* RNFBTestingCoverageModule.m in Sources */,
+				A1B2C3D41E00000100000003 /* RNFBTestingMessagingModule.m in Sources */,
 				D4E5F6720F00000100000001 /* RNFBTestingTurboModule.mm in Sources */,
 				B2C3D4E51F00000100000001 /* RNFBTestingSwiftRuntimeStub.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,

@@ -19,7 +19,6 @@
 
 #import "RNFBMessagingModule.h"
 #import "RNFBAppCheckModule.h"
-#import "RNFBTestingCoverageProfile.h"
 #import <Firebase.h>
 
 #import <React/RCTBundleURLProvider.h>
@@ -275,8 +274,6 @@ static void RNFBTestingRegisterJavaScriptLoadObservers(id observer)
 #endif
   RNFBTestingScheduleLifecycleProbes();
   RNFBTestingLogLifecycle(@"didFinishLaunching+before");
-
-  RNFBTestingConfigureCoverageProfilePath();
 
   // Initialize RNFBAppCheckModule, it sets the custom RNFBAppCheckProviderFactory
   // which lets us configure any of the available native platform providers,

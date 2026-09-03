@@ -4,7 +4,7 @@
  * `tests/react-native-coverage.config.js` (Node SoT for host scripts).
  * Do not import Node builtins here — this file is bundled into the app.
  *
- * Flush via portal-linked `react-native-coverage` TurboModule (`Coverage`).
+ * Flush via `react-native-coverage` TurboModule (`Coverage`).
  */
 module.exports = {
   enabled: true,

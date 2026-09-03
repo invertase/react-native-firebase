@@ -31,6 +31,15 @@ const firebaseModules = readdirSync(packagesDir)
   .map(name => join(packagesDir, name))
   .filter(isDirectory);
 
+let coverageWatchFolder = null;
+try {
+  coverageWatchFolder = dirname(
+    require.resolve('react-native-coverage/package.json', { paths: [__dirname] }),
+  );
+} catch (_) {
+  // Package missing until yarn; Metro will fail at bundle time if still absent.
+}
+
 const config = {
   projectRoot: __dirname,
   resolver: {
@@ -63,6 +72,11 @@ const config = {
           if (name && name.startsWith && name.startsWith('@react-native-firebase')) {
             const packageName = name.replace('@react-native-firebase/', '');
             return join(__dirname, `../packages/${packageName}`);
+          }
+          if (name === 'react-native-coverage') {
+            return dirname(
+              require.resolve('react-native-coverage/package.json', { paths: [__dirname] }),
+            );
           }
           return join(__dirname, `node_modules/${name}`);
         },
@@ -113,7 +127,11 @@ const config = {
       },
     }),
   },
-  watchFolders: [resolve(__dirname, '.'), ...firebaseModules],
+  watchFolders: [
+    resolve(__dirname, '.'),
+    ...firebaseModules,
+    ...(coverageWatchFolder ? [coverageWatchFolder] : []),
+  ],
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

@@ -46,8 +46,9 @@ buildscript {
   }
 }
 
-// In-place coverage neutralization: library matchers from coverage.properties
-// (generated from tests/react-native-coverage.config.js).
+// Library matchers from coverage.properties (generated from
+// tests/react-native-coverage.config.js). Feeds firebaseModulePaths and
+// react-native-coverage's rn-coverage.gradle instrumentation helper.
 def coverageProps = new Properties()
 def coveragePropsFile = file('coverage.properties')
 if (coveragePropsFile.exists()) {
@@ -58,6 +59,18 @@ def coverageLibraryMatchers = (coverageProps.getProperty('coverage.libraryProjec
   .collect { it.trim() }
   .findAll { !it.isEmpty() })
 rootProject.ext.coverageLibraryProjectMatchers = coverageLibraryMatchers
+
+def testsDir = rootProject.projectDir.parentFile
+def rnCoveragePackageJson = ["node", "--print", "require.resolve('react-native-coverage/package.json')"]
+  .execute(null, testsDir)
+  .text
+  .trim()
+if (!rnCoveragePackageJson) {
+  throw new GradleException(
+    'react-native-coverage/package.json not resolved from tests/. Run yarn at repo root.',
+  )
+}
+apply from: new File(new File(rnCoveragePackageJson).parentFile, 'android/rn-coverage.gradle')
 
 // collect all our modules for reporting
 subprojects.forEach { project ->
@@ -91,26 +104,7 @@ subprojects {
     // Configure testing settings - if set in module build.gradle files they affect library consumers
     if (rootProject.ext.coverageLibraryProjectMatchers.any { matcher -> project.name.contains(matcher) }
       && project.hasProperty('android')) {
-      // Jacoco plugin for JVM unit .exec (AGP enableUnitTestCoverage on libraries yields
-      // exec files without product-class probes — see jacoco#1265). Keep androidTest
-      // coverage for Detox on-device .ec instrumentation.
-      project.pluginManager.apply('jacoco')
-      project.jacoco {
-        toolVersion = '0.8.14'
-      }
-      project.tasks.withType(Test).configureEach { testTask ->
-        testTask.jacoco.includeNoLocationClasses = true
-        testTask.jacoco.excludes = ['jdk.internal.*']
-      }
-
       android {
-        buildTypes.debug {
-          // Detox / on-device coverage.ec needs instrumented library classes in the app.
-          enableAndroidTestCoverage = true
-          // Do not use enableUnitTestCoverage here — empty product probes on library modules.
-          enableUnitTestCoverage = false
-        }
-        jacoco.version = '0.8.14'
         testOptions.unitTests.includeAndroidResources = true
 
         // Make sure our projects are run through basic lint checks.
