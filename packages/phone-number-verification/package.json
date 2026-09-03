@@ -23,6 +23,7 @@
     "android:codegen": "node ../../scripts/codegen-package.mjs phone-number-verification android",
     "ios:codegen": "node ../../scripts/codegen-package.mjs phone-number-verification ios"
   },
+  "homepage": "https://rnfirebase.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase",

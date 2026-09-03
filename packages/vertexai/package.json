@@ -11,6 +11,7 @@
     "compile": "bob build",
     "prepare": "yarn run build && yarn compile"
   },
+  "homepage": "https://rnfirebase.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase",
