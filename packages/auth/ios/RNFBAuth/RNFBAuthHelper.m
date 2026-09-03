@@ -1100,8 +1100,7 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
                                   if (error) {
                                     [self promiseRejectAuthException:reject error:error];
                                   } else {
-                                    DLog(@"verificationID: %@", verificationID)
-                                        resolve(verificationID);
+                                    resolve(verificationID);
                                   }
                                 }];
 }
@@ -1115,8 +1114,6 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   DLog(@"verifyPhoneNumberForMultifactor using app: %@", firebaseApp.name);
-  DLog(@"verifyPhoneNumberForMultifactor phoneNumber: %@", phoneNumber);
-  DLog(@"verifyPhoneNumberForMultifactor sessionKey: %@", sessionKey);
   FIRMultiFactorSession *session = [cachedSessions get:sessionKey];
   if (session == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1155,8 +1152,6 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
       [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
           credentialWithVerificationID:verificationId
                       verificationCode:verificationCode];
-  DLog(@"credential: %@", credential);
-
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
 
@@ -1214,8 +1209,6 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
   DLog(@"using instance resolve generateTotpSecret: %@", firebaseApp.name);
 
   FIRMultiFactorSession *session = [cachedSessions get:sessionKey];
-  DLog(@"using sessionKey: %@", sessionKey);
-  DLog(@"using session: %@", session);
   [FIRTOTPMultiFactorGenerator
       generateSecretWithMultiFactorSession:session
                                 completion:^(FIRTOTPSecret *_Nullable totpSecret,
@@ -1225,9 +1218,7 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
                                   }
                                   else {
                                     NSString *secretKey = totpSecret.sharedSecretKey;
-                                    DLog(@"secretKey generated: %@", secretKey);
                                     [cachedTotpSecrets putReplacing:secretKey value:totpSecret];
-                                    DLog(@"cachedSecret: %@", [cachedTotpSecrets get:secretKey]);
                                     resolve(@{
                                       @"secretKey" : secretKey,
                                     });
@@ -1243,14 +1234,12 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   DLog(@"generateQrCodeUrl using instance resolve generateQrCodeUrl: %@", firebaseApp.name);
-  DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
   FIRTOTPSecret *totpSecret = [cachedTotpSecrets get:secretKey];
   if (!totpSecret) {
     RNFBAuthThrowSyncErrorWithCode(@"invalid-multi-factor-secret",
                                    @"can't find secret for provided key");
   }
   NSString *url = [totpSecret generateQRCodeURLWithAccountName:account issuer:issuer];
-  DLog(@"generateQrCodeUrl got QR Code URL %@", url);
   return url;
 }
 
@@ -1259,9 +1248,7 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
            qrCodeUri:(NSString *)qrCodeUri {
   [self initializeSharedStateOnce];
 
-  DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
   FIRTOTPSecret *totpSecret = [cachedTotpSecrets get:secretKey];
-  DLog(@"openInOtpApp using qrCodeUri: %@", qrCodeUri);
   [totpSecret openInOTPAppWithQRCodeURL:qrCodeUri];
 }
 
@@ -1348,8 +1335,6 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
   DLog(@"using instance finalizeTotpEnrollment: %@", firebaseApp.name);
 
   FIRTOTPSecret *cachedTotpSecret = [cachedTotpSecrets get:totpSecret];
-  DLog(@"using totpSecretKey: %@", totpSecret);
-  DLog(@"using cachedSecret: %@", cachedTotpSecret);
   FIRTOTPMultiFactorAssertion *assertion =
       [FIRTOTPMultiFactorGenerator assertionForEnrollmentWithSecret:cachedTotpSecret
                                                     oneTimePassword:verificationCode];
