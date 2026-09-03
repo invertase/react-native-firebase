@@ -411,6 +411,65 @@ Pattern C: only the **tests** workspace depends on published `react-native-cover
 in `tests/package.json`. Host yarn scripts call package `rn-coverage` (`tests/scripts/rn-coverage-*.js`,
 `pull-native-coverage.js`). Runtime flush uses the package TurboModule (`Coverage` / `flush()`).
 Test-app probe modules (`NativeRNFBTesting`, `RNFBTestingMessaging`) are **not** flush — [running e2e § test-app native modules](running-e2e.md#test-app-native-modules).
+Rollback if the cutover regresses: [§ coverage migration rollback](#coverage-migration-rollback).
+
+<a id="coverage-migration-rollback"></a>
+
+# Coverage migration rollback
+
+Playbook to leave published `react-native-coverage@0.2.0` and restore a known-good in-tree flush path when the cutover regresses. Prefer **git revert / checkout from the parent of the adopt cutover** over hand-edited file lists — patches rot.
+
+## What “migrated” means
+
+| Area | Migrated state |
+|------|----------------|
+| **Dependency** | `tests/package.json` pins published `react-native-coverage@0.2.0` (Pattern C — tests app only) |
+| **Build helpers** | Package Gradle (`rn-coverage.gradle`) + CocoaPods (`ReactNativeCoverage.apply_post_install!`) wire instrumentation |
+| **Flush sources** | In-tree `RNFBTestingCoverage*` (Android module/package, iOS module/profile/config) **deleted**; runtime is package `Coverage` / `flush()` |
+| **Host wrappers** | Thin RNFB scripts remain (`pull-native-coverage.js`, `rn-coverage-*.js`, Jacoco merge in `tests/android/app/jacoco.gradle`) |
+| **Probes** | Messaging / non-FCM probes stay on `NativeRNFBTesting` + `RNFBTestingMessaging` — not flush — [running e2e § test-app native modules](running-e2e.md#test-app-native-modules) |
+
+## When to rollback
+
+Treat as cutover regression only after a clean post-process cycle fails ([§ stale coverage](#stale-coverage-data)). Typical signals (details in [§ Troubleshooting](#troubleshooting) and [SPM + dynamic frameworks](#spm--dynamic-frameworks)):
+
+- Codecov `ios-native` / `android-native` uploads empty or **Unusable**
+- Presence assert exit **2** (`yarn tests:coverage:assert-presence` / post-e2e / iOS process-coverage)
+- iOS export `packagesHits=0` after dynamic multi-image flush
+- Android empty Jacoco XML / missing `.ec` despite green Detox
+
+Do **not** rollback for TS-only Jet/NYC gaps — [§ TS e2e coverage troubleshooting](#ts-e2e-coverage-troubleshooting).
+
+## Rollback steps (high level)
+
+1. **Identify cutover commits** in git history by subject: portal dry-run (`test(coverage): dry-run portal link to react-native-coverage`) then adopt (`test(coverage): adopt react-native-coverage@0.2.0`). The parent of the adopt commit (or the tree immediately before that series) is the known-good flush baseline for restore.
+2. **Prefer `git revert`** of the adopt cutover (and the portal commit if the revert does not restore a buildable tree) on a dedicated branch. If revert conflicts, **`git checkout <parent-tree> --`** the native flush sources and wiring paths the cutover removed/changed (in-tree `RNFBTestingCoverage*`, Podfile / Gradle / `AppDelegate` / `MainApplication` registration, related `tests/package.json` dep and lockfile hunks) — do not invent a new flusher.
+3. **Pin or remove** the published package version so Yarn no longer resolves `react-native-coverage@0.2.0` as the flush owner (revert the dep hunk, or leave the package unused only if the restored tree no longer imports it).
+4. **Reinstall and rebuild:** root `yarn` → (iOS only) `yarn tests:ios:pod:install` → `yarn tests:<platform>:build` → `:test-cover` → native post-process ([Local iteration](#local-iteration); e2e commands: [running e2e](running-e2e.md)).
+5. **Re-run presence assert** (`yarn tests:coverage:assert-presence` or the platform post-process that invokes it) — must not exit **2**.
+
+## What not to rollback
+
+Keep these even when restoring in-tree flush — they are independent of the published package:
+
+| Keep | Why |
+|------|-----|
+| Baseline harness (`tests/coverage-artifacts/`, `yarn tests:coverage:capture-baseline`) | Repeatability metrics, not flush ownership |
+| Empty-pipeline / presence guards (exit **2** on silent-empty) | CI safety for any flush implementation |
+| Config-driven plumbing (`tests/react-native-coverage.config.js`, `yarn tests:coverage:generate-native-config`, `coverage.properties`) | Knobs stay useful with either flusher |
+| Probe split (`NativeRNFBTesting` / `RNFBTestingMessaging`) | Product e2e probes, not coverage flush |
+| RNFB Jacoco merge (`tests/android/app/jacoco.gradle`) and iOS unit→native LCOV merge | Host-owned Codecov paths |
+
+## Post-rollback verification
+
+After fresh e2e + post-process, these Codecov paths must be **non-empty** again (flags in [§ Codecov uploads](#codecov-uploads-ci)):
+
+| Flag | Path |
+|------|------|
+| `ios-native` | `coverage/ios-native/lcov.info` (includes `packages/*/ios/**` hits; not `packagesHits=0`) |
+| `android-native` | `tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml` (merged unit+e2e; not empty / e2e-only) |
+
+Optional: TS e2e `coverage/lcov.info` for `e2e-ts-*` is unchanged by native flush ownership. Uploads tab: **Processed**, not **Unusable**.
 
 # Critical invariants
 
