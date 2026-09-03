@@ -10,7 +10,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Shared E2E dependencies
 
-* [Agent command policy](../testing/agent-command-policy.md) — allowlisted install/prepare/validation/e2e commands for agents; Expo documented-path iOS **link** is `yarn test-expo:ios:link` (not Detox)
+* [Agent command policy](../testing/agent-command-policy.md) — allowlisted install/prepare/validation/e2e commands for agents; Expo documented-path iOS **link** is `yarn test-expo:ios:link` (not Detox); RN CLI prebuilt RNCore iOS **build** is `yarn test-rn-bare:ios:build` (not Detox)
 * [Running e2e — agent rule](../testing/running-e2e.md#agent-rule-read-first) — e2e `yarn tests:*` detail; never invoke Jet/Detox/Metro directly
 * [Test-runner orchestration (log triage)](../testing/running-e2e.md#test-runner-host-orchestration-log-triage-only) — ports 8090/8091, defer-run launch gate markers
 * [Detox patches](detox-patches.md) — inventory, `ECOMPROMISED`, patch workflow

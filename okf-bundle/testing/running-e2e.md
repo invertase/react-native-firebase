@@ -18,7 +18,7 @@ Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI
 
 **Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
 
-Install, prepare, validation, and the workspace Expo documented-path iOS **link** fixture (`yarn test-expo:ios:link`) are **not** in this doc — they live in [agent command policy](agent-command-policy.md). That Expo command is **not** Detox e2e. **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
+Install, prepare, validation, the workspace Expo documented-path iOS **link** fixture (`yarn test-expo:ios:link`), and the RN CLI prebuilt RNCore iOS **build** fixture (`yarn test-rn-bare:ios:build`) are **not** in this doc — they live in [agent command policy](agent-command-policy.md). Those commands are **not** Detox e2e. E2e stays exclusively `yarn tests:*`. **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 ## Prerequisites (once per checkout)
 

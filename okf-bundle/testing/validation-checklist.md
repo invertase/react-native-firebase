@@ -158,6 +158,10 @@ Frozen review is [report/check-only except revert `.only`](change-authoring-work
 
 Workspace fixture `test-expo/`: **`yarn test-expo:ios:link`** only — [agent command policy](agent-command-policy.md). Not Detox; do not add `yarn tests:ios:*` or ad-hoc `expo prebuild` / `xcodebuild` as that closer. App package: [packages/app](../packages/app/index.md).
 
+## RN CLI prebuilt RNCore iOS compile (not e2e)
+
+Workspace fixture `test-rn-bare/`: **`yarn test-rn-bare:ios:build`** only — [agent command policy](agent-command-policy.md). Not Detox; not the Expo link closer; do not add `yarn tests:ios:*` or ad-hoc `pod` / `xcodebuild` as that closer. App package: [packages/app](../packages/app/index.md).
+
 ## E2e with coverage
 
 [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier) before every run — [agent command policy](agent-command-policy.md) and [e2e agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from [running e2e](running-e2e.md). Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).
