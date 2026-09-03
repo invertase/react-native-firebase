@@ -57,6 +57,7 @@ rnfb_tart_enable_ccache
 
 if ! command -v yeetd >/dev/null 2>&1; then
   wget -q https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg -O /tmp/yeetd-normal.pkg
+  echo "adb04eb720581a32d94daef3ea61108c74494083a79f00836556a36214f354be  /tmp/yeetd-normal.pkg" | shasum -a 256 -c -
   sudo installer -pkg /tmp/yeetd-normal.pkg -target /
 fi
 rnfb_tart_start_yeetd
