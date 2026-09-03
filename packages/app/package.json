@@ -32,6 +32,7 @@
     "compile": "bob build",
     "prepare": "npm run build && npm run build:plugin && npm run compile"
   },
+  "homepage": "https://rnfirebase.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase",

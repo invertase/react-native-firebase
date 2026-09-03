@@ -30,6 +30,7 @@
     "android:codegen": "node ../../scripts/codegen-package.mjs app-distribution android",
     "ios:codegen": "node ../../scripts/codegen-package.mjs app-distribution ios"
   },
+  "homepage": "https://rnfirebase.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase",

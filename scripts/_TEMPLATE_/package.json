@@ -10,6 +10,7 @@
     "build:clean": "rimraf android/build && rimraf ios/build",
     "prepare": "yarn run build"
   },
+  "homepage": "https://rnfirebase.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase",
