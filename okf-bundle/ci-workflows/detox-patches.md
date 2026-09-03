@@ -19,11 +19,12 @@ Patches are in-repo. Prefer direct patch-file edits or headless workflow; `yarn 
 | Change | File(s) | Platforms | Problem |
 |--------|---------|-----------|---------|
 | Disable network idling | `NetworkIdlingResource.kt` | Android | OkHttp never idle in RN Firebase tests → Detox sync timeout |
-| Disable timers idling | `TimersIdlingResource.kt` | Android | RN timer queue never drains → infinite idle wait |
+| Disable timers idling | `TimersIdlingResource.kt`, `FabricTimersIdlingResource.kt` | Android | RN timer queue never drains → infinite idle wait |
 | Disable Fabric UI idling | `FabricUIManagerIdlingResources.kt` | Android | Stuck mount items on API 36+ / edge-to-edge → false busy |
 | Raise Login / CurrentStatus timeouts | `src/client/actions/actions.js` | iOS, Android, macOS | Patch Login **15000ms** / CurrentStatus **30000ms** (Detox defaults 1000 / 5000). Status-query timeout under load is latency, not fail-fast. RNFB-side launch retries: [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) ([running e2e § slot lifecycle](../testing/running-e2e.md#slot-lifecycle)) |
 | Raise ADB `pm install` spawn timeout | `ADB.js` `DEFAULT_INSTALL_OPTIONS` | Android | Detox default **60000ms** hard-kills slow installs under 9-way load (`terminated with SIGTERM`). Patched to **300000ms** (same latency class as launchApp). Contract: `androidAdbInstallTimeoutMs()` in [`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js). **`RNFB_ANDROID_ADB_INSTALL_TIMEOUT_MS` is read by policy only** — the Detox patch hardcodes **300000** at yarn apply time; changing the env alone does not change Detox until the patch is regenerated |
-| Suppress emulator crash-report modal | `EmulatorExec.js` `LaunchCommand` | Android | Pass `-crash-report-mode never` so a crashed qemu cannot block unattended waves on the Google crash-report dialog |
+| Pin emulator console port | `FreePortFinder.js`, `EmulatorAllocDriver.js` | Android | Honor `RNFB_ANDROID_CONSOLE_PORT` instead of FreePortFinder **10000–20000** (outside adb's emulator range) |
+| Suppress emulator crash-report modal | `EmulatorExec.js` `LaunchCommand` | Android | Memoized `emulator -help` plus repo helper `emulatorSupportsFlag()`; append `-crash-report-mode never` only when that listing includes the flag. Hosts that omit it (e.g. emulator 36.2.12.0) skip the args so spawn does not `SPAWN_FAIL`, and log once with the omit reason (`empty help` / `helper missing` / `not listed`). Modal suppression then needs the one-time Mac `defaults write` fallback in the [wave-operator checklist](../testing/running-e2e.md#slot-lifecycle). CI `ubuntu-latest` is headless and does not use this flag. |
 | Buffer early `ready` | `AnonymousConnectionHandler.js` | iOS | App sends `ready` before Detox login → `launchApp` stuck |
 | Ignore missing adb reverse on teardown | `ADB.js` | Android | Jet WS 1006 triggers mid-run `reverse --remove` → adb exit 1 |
 | **2× device-registry lock stale** | `ExclusiveLockfile.js` | iOS, macOS, Android | `proper-lockfile` `ECOMPROMISED` before tests start |
@@ -112,10 +113,18 @@ SRC=tests/node_modules/detox
 /bin/cp -f "$SRC/src/client/actions/actions.js" "$PATCH_DIR/src/client/actions/actions.js"
 /bin/cp -f "$SRC/src/server/handlers/AnonymousConnectionHandler.js" "$PATCH_DIR/src/server/handlers/AnonymousConnectionHandler.js"
 /bin/cp -f "$SRC/src/devices/common/drivers/android/exec/ADB.js" "$PATCH_DIR/src/devices/common/drivers/android/exec/ADB.js"
+/bin/cp -f "$SRC/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js" \
+  "$PATCH_DIR/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js"
+/bin/cp -f "$SRC/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js" \
+  "$PATCH_DIR/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js"
+/bin/cp -f "$SRC/src/devices/allocation/drivers/android/emulator/FreePortFinder.js" \
+  "$PATCH_DIR/src/devices/allocation/drivers/android/emulator/FreePortFinder.js"
 /bin/cp -f "$SRC/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt" \
   "$PATCH_DIR/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt"
 /bin/cp -f "$SRC/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt" \
   "$PATCH_DIR/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt"
+/bin/cp -f "$SRC/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt" \
+  "$PATCH_DIR/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt"
 /bin/cp -f "$SRC/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt" \
   "$PATCH_DIR/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt"
 

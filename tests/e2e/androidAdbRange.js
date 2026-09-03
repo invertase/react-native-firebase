@@ -35,6 +35,17 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// Token match against `emulator -help` text. Not a version-string gate.
+// Malformed inputs (non-string help or flag) are unsupported.
+function emulatorSupportsFlag(helpOutput, flag) {
+  if (typeof helpOutput !== 'string' || typeof flag !== 'string' || flag.length === 0) {
+    return false;
+  }
+  const needle = flag.charAt(0) === '-' ? flag : `-${flag}`;
+  const token = new RegExp(`(?:^|[\\s])${escapeRegExp(needle)}(?:$|[\\s=<])`, 'm');
+  return token.test(helpOutput);
+}
+
 // Complete qemu @AVD identity: @name then whitespace or end.
 // `\b` after D still matches `@TestingAVD-0` (hyphen is a non-word char).
 function qemuAvdIdentityPattern(avdName) {
@@ -109,6 +120,7 @@ module.exports = {
   parseEmulatorConsolePort,
   isAdbEmulatorConsolePortInRange,
   emulatorConsolePortOutOfAdbRange,
+  emulatorSupportsFlag,
   shouldFailFastQemuWithoutAdb,
   qemuAvdIdentityPattern,
   qemuCmdlineMatchesAvd,

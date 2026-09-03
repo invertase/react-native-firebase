@@ -3,7 +3,7 @@ index be01a0dbeeaebbada21810269e4e30d114bf4476..88af8da4545e4458d340c3b0b4e37f13
 --- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
 @@ -50,23 +50,6 @@ class NetworkIdlingResource(private val dispatcher: Dispatcher) : DetoxIdlingRes
-
+ 
      @Synchronized
      override fun checkIdle(): Boolean {
 -        busyResources.clear()
@@ -32,7 +32,7 @@ index d71c007b729a09d0359a1f2dc8d2481b860ddae5..1489a0bc920f150ce9fe6c3f93166936
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
 @@ -11,15 +11,8 @@ class FabricTimersIdlingResource(
  ) : DetoxIdlingResource(), Choreographer.FrameCallback {
-
+ 
      override fun checkIdle(): Boolean {
 -        val hasActiveTimers = JavaTimersReflected.hasActiveTimers(reactContext)
 -
@@ -46,14 +46,14 @@ index d71c007b729a09d0359a1f2dc8d2481b860ddae5..1489a0bc920f150ce9fe6c3f93166936
 +        notifyIdle()
 +        return true
      }
-
+ 
      override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
 diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835a8b348ed 100644
 --- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 @@ -32,15 +32,8 @@ class TimersIdlingResource @JvmOverloads constructor(
-
+ 
      @SuppressLint("VisibleForTests")
      override fun checkIdle(): Boolean {
 -        val isIdle = !timingModule.hasActiveTimersInRange(BUSY_WINDOW_THRESHOLD)
@@ -68,7 +68,7 @@ index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835
 +        notifyIdle()
 +        return true
      }
-
+ 
      override fun doFrame(frameTimeNanos: Long) {
 diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
 index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6ff1caf97a 100644
@@ -76,7 +76,7 @@ index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6f
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
 @@ -20,47 +20,8 @@ class FabricUIManagerIdlingResources(
      private var isSteadyState: Boolean = false
-
+ 
      override fun checkIdle(): Boolean {
 -        val mountItemsCount = getMountItemsSize()
 -        val viewCommandMountItemsCount = getViewCommandMountItemsSize()
@@ -122,7 +122,7 @@ index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6f
 +        notifyIdle()
 +        return true
      }
-
+ 
      override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
 diff --git a/src/client/actions/actions.js b/src/client/actions/actions.js
 index cc5279636cf581fcd4a578e3aff073515d0502ae..1a2669a33d1c70ada9906c75513d76f5cd6aca1f 100644
@@ -130,43 +130,30 @@ index cc5279636cf581fcd4a578e3aff073515d0502ae..1a2669a33d1c70ada9906c75513d76f5
 +++ b/src/client/actions/actions.js
 @@ -41,7 +41,7 @@ class Login extends Action {
    }
-
+ 
    get timeout() {
 -    return 1000;
 +    return 15000;
    }
-
+ 
    async handle(response) {
 @@ -265,7 +265,7 @@ class CurrentStatus extends Action {
    }
-
+ 
    get timeout() {
 -    return 5000;
 +    return 30000;
    }
-
+ 
    async handle(response) {
-diff --git a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
-index 0000000000000000000000000000000000000000..0000000000000000000000000000000000000000 100644
---- a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
-+++ b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
-@@ -70,6 +70,8 @@ class LaunchCommand extends ExecCommand {
-       '-no-boot-anim',
-       headless ? '-no-window' : '',
-       readonly ? '-read-only' : '',
-+      '-crash-report-mode',
-+      'never',
-       gpuMode !== undefined ? '-gpu' : '',
-       gpuMode !== undefined ? `${gpuMode}` : '',
-       port ? '-port' : '',
 diff --git a/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js b/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
 index a9a7ec21421f4751343e9b4b397538e6a4091738..991484053811dbc8ec8ff6ad5345fd5d01ed43ac 100644
 --- a/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
 +++ b/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
 @@ -9,6 +9,20 @@ const AndroidAllocDriver = require('../AndroidAllocDriver');
-
+ 
  const { patchAvdSkinConfig } = require('./patchAvdSkinConfig');
-
+ 
 +function pinnedAndroidConsolePort() {
 +  const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
 +  if (raw === undefined || raw === '') {
@@ -186,7 +173,7 @@ index a9a7ec21421f4751343e9b4b397538e6a4091738..991484053811dbc8ec8ff6ad5345fd5d
     * @param {object} options
 @@ -57,6 +71,38 @@ class EmulatorAllocDriver extends AndroidAllocDriver {
      await this._fixAvdConfigIniSkinNameIfNeeded(avdName, deviceConfig.headless);
-
+ 
      const adbName = await this._deviceRegistry.registerDevice(async () => {
 +      const pinnedPort = pinnedAndroidConsolePort();
 +      if (pinnedPort != null) {
@@ -230,7 +217,7 @@ index 37263e87f18fb2cf0f7def74de6e4d13a486cd3c..68c4f79db9b5ec4d7c1e028a34bec746
 @@ -6,7 +6,32 @@ class FreePortFinder {
      this._max = max;
    }
-
+ 
 +  _pinnedConsolePort() {
 +    const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
 +    if (raw === undefined || raw === '') {
@@ -258,8 +245,98 @@ index 37263e87f18fb2cf0f7def74de6e4d13a486cd3c..68c4f79db9b5ec4d7c1e028a34bec746
 +    }
 +
      let port;
-
+ 
      do {
+diff --git a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
+index 6bd0f46519b970bfb8a268bc07134d58ae759b6d..b55a4962d94b9e5f447bc7da8056c0badac740cc 100644
+--- a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
++++ b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
+@@ -1,13 +1,77 @@
+ const os = require('os');
++const path = require('path');
++const { execFileSync } = require('child_process');
+ 
+ const _ = require('lodash');
+ 
+ const { getAndroidEmulatorPath } = require('../../../../../../utils/environment');
++const log = require('../../../../../../utils/logger').child({ cat: 'device' });
+ const {
+   BinaryExec,
+   ExecCommand,
+ } = require('../../exec/BinaryExec');
+ 
++let crashReportModeSupported;
++
++function loadEmulatorSupportsFlag() {
++  const candidates = [
++    path.join(process.cwd(), 'e2e/androidAdbRange'),
++    path.join(process.cwd(), 'tests/e2e/androidAdbRange'),
++  ];
++  for (const candidate of candidates) {
++    try {
++      const loaded = require(candidate);
++      if (typeof loaded.emulatorSupportsFlag === 'function') {
++        return loaded.emulatorSupportsFlag;
++      }
++    } catch (_err) {
++      // Detox Jest cwd is typically tests/; fall through to the next cwd-rooted path.
++    }
++  }
++  return null;
++}
++
++function emulatorSupportsCrashReportMode() {
++  if (typeof crashReportModeSupported === 'boolean') {
++    return crashReportModeSupported;
++  }
++
++  let helpOutput = '';
++  try {
++    helpOutput = execFileSync(getAndroidEmulatorPath(), ['-help'], {
++      encoding: 'utf8',
++      timeout: 10000,
++      maxBuffer: 8 * 1024 * 1024,
++    });
++  } catch (err) {
++    helpOutput = `${err && err.stdout ? err.stdout : ''}${err && err.stderr ? err.stderr : ''}`;
++  }
++
++  const emulatorSupportsFlag = loadEmulatorSupportsFlag();
++  let omitReason;
++  if (!emulatorSupportsFlag) {
++    omitReason = 'helper missing';
++    crashReportModeSupported = false;
++  } else if (!String(helpOutput).trim()) {
++    omitReason = 'empty help';
++    crashReportModeSupported = false;
++  } else {
++    crashReportModeSupported = emulatorSupportsFlag(helpOutput, '-crash-report-mode');
++    if (!crashReportModeSupported) {
++      omitReason = 'not listed';
++    }
++  }
++
++  if (omitReason) {
++    log.warn(
++      { event: 'CRASH_REPORT_MODE', omitReason },
++      `omitting -crash-report-mode (${omitReason})`,
++    );
++  }
++
++  return crashReportModeSupported;
++}
++
+ class EmulatorExec extends BinaryExec {
+   constructor() {
+     super(getAndroidEmulatorPath());
+@@ -71,6 +135,7 @@ class LaunchCommand extends ExecCommand {
+       '-no-boot-anim',
+       headless ? '-no-window' : '',
+       readonly ? '-read-only' : '',
++      ...(emulatorSupportsCrashReportMode() ? ['-crash-report-mode', 'never'] : []),
+       gpuMode !== undefined ? '-gpu' : '',
+       gpuMode !== undefined ? `${gpuMode}` : '',
+       port ? '-port' : '',
 diff --git a/src/devices/common/drivers/android/exec/ADB.js b/src/devices/common/drivers/android/exec/ADB.js
 index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..f2fd1ed5d1f0bfb981340ec27fa478ccbc439f9f 100644
 --- a/src/devices/common/drivers/android/exec/ADB.js
@@ -272,10 +349,10 @@ index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..f2fd1ed5d1f0bfb981340ec27fa478cc
 +  timeout: 300000,
    retries: 3,
  };
-
+ 
 @@ -380,7 +380,19 @@ class ADB {
    }
-
+ 
    async reverseRemove(deviceId, port) {
 -    return this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
 +    try {
@@ -292,7 +369,7 @@ index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..f2fd1ed5d1f0bfb981340ec27fa478cc
 +      throw error;
 +    }
    }
-
+ 
    async emuKill(deviceId) {
 diff --git a/src/server/handlers/AnonymousConnectionHandler.js b/src/server/handlers/AnonymousConnectionHandler.js
 index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a4bb9e738 100644
@@ -304,12 +381,12 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
      this._api = api;
 +    this._pendingEarlyReadyAction = null;
    }
-
+ 
    handle(action) {
 @@ -74,7 +75,17 @@ class AnonymousConnectionHandler {
        },
      });
-
+ 
 +    const pendingEarlyReadyAction = this._pendingEarlyReadyAction;
 +    this._pendingEarlyReadyAction = null;
 +
@@ -322,12 +399,12 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
 +      session.tester.sendAction(pendingEarlyReadyAction);
 +    }
    }
-
+ 
    _handleUnknownAction(action) {
 @@ -85,8 +96,11 @@ class AnonymousConnectionHandler {
      });
    }
-
+ 
 -  _handleEarlyReadyAction() {
 -    this._api.log.debug('The app has dispatched "ready" action too early.');
 +  _handleEarlyReadyAction(action) {
@@ -337,15 +414,15 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
 +    this._pendingEarlyReadyAction = action;
    }
  }
-
+ 
 diff --git a/src/utils/ExclusiveLockfile.js b/src/utils/ExclusiveLockfile.js
 index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c1b601815 100644
 --- a/src/utils/ExclusiveLockfile.js
 +++ b/src/utils/ExclusiveLockfile.js
 @@ -6,6 +6,9 @@ const DetoxRuntimeError = require('../errors/DetoxRuntimeError');
-
+ 
  const retry = require('./retry');
-
+ 
 +// proper-lockfile default stale is 10s; CI runners under load can miss lock heartbeats → ECOMPROMISED.
 +const DEVICE_REGISTRY_LOCK_STALE_MS = 20000;
 +
@@ -354,12 +431,12 @@ index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c
    read: { encoding: 'utf8' },
 @@ -107,7 +110,9 @@ class ExclusiveLockfile {
      this._ensureFileExists();
-
+ 
      await retry(this._options.retry, () => {
 -      const operationResult = plockfile.lockSync(this._lockFilePath);
 +      const operationResult = plockfile.lockSync(this._lockFilePath, {
 +        stale: DEVICE_REGISTRY_LOCK_STALE_MS,
 +      });
-
+ 
        this._isLocked = true;
        this._invalidate();

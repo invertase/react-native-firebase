@@ -11947,7 +11947,7 @@ __metadata:
 
 "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch":
   version: 20.51.0
-  resolution: "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch::version=20.51.0&hash=e5c5bb"
+  resolution: "detox@patch:detox@npm%3A20.51.0#~/.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch::version=20.51.0&hash=5f3487"
   dependencies:
     "@wix-pilot/core": "npm:^3.4.2"
     "@wix-pilot/detox": "npm:^1.0.13"
@@ -11993,7 +11993,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/5f1deaab0f83cd70718ff947ca0d620df8cb4a261b17b8cc8e2841a1a0ca7b4518c00c6941d886ae58c9a01c5230edcea89e6d678a442d92186afefaa636106d
+  checksum: 10/0fee6015323b84e58045d7429445654ea01ef45fbf5155886f636fc3919e674dcdc8200c86d40b7a57edb70f0cb195c92311dfb8eb795c20ac6d287baea67693
   languageName: node
   linkType: hard
 

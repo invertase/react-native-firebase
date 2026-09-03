@@ -11,6 +11,7 @@ const {
   adbRangeDiagnosis,
   isMetroWaitFailure,
   shouldColdBootAndroidOnLaunchRetry,
+  emulatorSupportsFlag,
 } = require('../../../tests/e2e/androidAdbRange');
 
 const repoRoot = path.resolve(__dirname, '../../..');
@@ -160,12 +161,60 @@ describe('shouldColdBootAndroidOnLaunchRetry', function () {
     expect(shouldColdBootAndroidOnLaunchRetry(new Error('Jet WS closed 1006'))).toBe(false);
     expect(shouldColdBootAndroidOnLaunchRetry(new Error('launchApp timed out'))).toBe(false);
   });
+});
 
-  it('suppresses the Android emulator crash-report modal', function () {
+describe('detox crash-report-mode patch shape', function () {
+  it('gates -crash-report-mode on a memoized emulator -help probe', function () {
     const detoxPatch = fs.readFileSync(
       path.join(repoRoot, '.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch'),
       'utf8',
     );
-    expect(detoxPatch).toMatch(/'-crash-report-mode',\s*\n\+\s*'never'/);
+    expect(detoxPatch).toMatch(/emulatorSupportsFlag/);
+    expect(detoxPatch).toMatch(/\['-help'\]/);
+    expect(detoxPatch).toMatch(/\? \['-crash-report-mode', 'never'\] : \[\]/);
+    expect(detoxPatch).not.toMatch(/'-crash-report-mode',\s*\n\+\s*'never'/);
+    expect(detoxPatch).toMatch(/omitting -crash-report-mode/);
+    expect(detoxPatch).toMatch(/helper missing/);
+    expect(detoxPatch).toMatch(/empty help/);
+    expect(detoxPatch).toMatch(/not listed/);
+  });
+});
+
+describe('emulatorSupportsFlag', function () {
+  const helpWithFlag = [
+    'Android Emulator usage: emulator [options] [-qemu args]',
+    '  -verbose                      Verbose output',
+    '  -crash-report-mode <mode>     never ask for crash reports',
+    '  -no-window                    run without a window',
+    '',
+  ].join('\n');
+
+  const helpWithoutFlag = [
+    'Android Emulator usage: emulator [options] [-qemu args]',
+    '  -verbose                      Verbose output',
+    '  -no-window                    run without a window',
+    '  -gpu <mode>                   GPU emulation mode',
+    '',
+  ].join('\n');
+
+  it('detects a listed option token', function () {
+    expect(emulatorSupportsFlag(helpWithFlag, '-crash-report-mode')).toBe(true);
+    expect(emulatorSupportsFlag(helpWithFlag, 'crash-report-mode')).toBe(true);
+    expect(emulatorSupportsFlag(helpWithFlag, '-verbose')).toBe(true);
+  });
+
+  it('rejects help text that does not list the flag', function () {
+    expect(emulatorSupportsFlag(helpWithoutFlag, '-crash-report-mode')).toBe(false);
+    expect(emulatorSupportsFlag(helpWithFlag, '-not-a-real-flag')).toBe(false);
+    expect(emulatorSupportsFlag(helpWithFlag, '-crash-report')).toBe(false);
+  });
+
+  it('treats malformed help text as unsupported', function () {
+    expect(emulatorSupportsFlag('', '-crash-report-mode')).toBe(false);
+    expect(emulatorSupportsFlag(null, '-crash-report-mode')).toBe(false);
+    expect(emulatorSupportsFlag(undefined, '-crash-report-mode')).toBe(false);
+    expect(emulatorSupportsFlag(helpWithFlag, '')).toBe(false);
+    expect(emulatorSupportsFlag(helpWithFlag, null)).toBe(false);
+    expect(emulatorSupportsFlag({ listing: helpWithFlag }, '-crash-report-mode')).toBe(false);
   });
 });
