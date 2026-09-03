@@ -247,6 +247,8 @@ describe('Auth', function () {
     it('`parseActionCodeURL` returns null for invalid action links', function () {
       expect(parseActionCodeURL('https://example.com/not-an-action-link')).toBeNull();
       expect(ActionCodeURL.parseLink('https://example.com/not-an-action-link')).toBeNull();
+      expect(parseActionCodeURL('https://example.com/?link=%')).toBeNull();
+      expect(ActionCodeURL.parseLink('https://example.com/?deep_link_id=%')).toBeNull();
     });
 
     it('`TotpSecret.generateQrCodeUrl` returns synchronously with default account and issuer', function () {

@@ -141,9 +141,8 @@ export class ActionCodeURL {
    * @returns The {@link ActionCodeURL} object, or null if the link is invalid.
    */
   static parseLink(link: string): ActionCodeURL | null {
-    const actionLink = parseDeepLink(link);
-
     try {
+      const actionLink = parseDeepLink(link);
       const searchParams = querystringDecode(extractQuerystring(actionLink));
       const apiKey = searchParams.apiKey ?? null;
       const code = searchParams.oobCode ?? null;
