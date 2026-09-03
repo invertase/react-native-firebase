@@ -206,6 +206,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
     FIRApp *firApp;
     NSString *appName = [appConfig valueForKey:@"name"];
     NSString *authDomain = [options valueForKey:@"authDomain"];
+    NSString *jsAppName = (appName.length > 0) ? appName : DEFAULT_APP_DISPLAY_NAME;
+    BOOL isDefaultApp = !appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME];
 
     NSString *appId = [options valueForKey:@"appId"];
     NSString *messagingSenderId = [options valueForKey:@"messagingSenderId"];
@@ -230,9 +232,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
     }
 
     @try {
-      if (!appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
-        [FIRApp configureWithOptions:firOptions];
-        firApp = [FIRApp defaultApp];
+      if (isDefaultApp) {
+        // Native bootstrap often already called [FIRApp configure]. Still accept a JS/bridge
+        // initializeApp for the default app so customAuthDomains can be keyed by [DEFAULT].
+        if ([FIRApp defaultApp] != nil) {
+          firApp = [FIRApp defaultApp];
+        } else {
+          [FIRApp configureWithOptions:firOptions];
+          firApp = [FIRApp defaultApp];
+        }
       } else {
         [FIRApp configureWithName:appName options:firOptions];
         firApp = [FIRApp appNamed:appName];
@@ -241,7 +249,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
 
-    [RNFBAppModule setCustomDomain:authDomain forAppName:appName];
+    // Store under the JS bridge app name ([DEFAULT]), never native __FIRAPP_DEFAULT.
+    [RNFBAppModule setCustomDomain:authDomain forAppName:jsAppName];
 
     firApp.dataCollectionDefaultEnabled =
         (BOOL)[appConfig valueForKey:@"automaticDataCollectionEnabled"];

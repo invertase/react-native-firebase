@@ -160,6 +160,31 @@ describe('modular', function () {
       should.equal(recreatedAuthDomain, undefined);
     });
 
+    // Regression: customAuthDomains is keyed by JS [DEFAULT]; Auth configureAuthDomain must
+    // look up via getAppJavaScriptName (not raw FIRApp.name __FIRAPP_DEFAULT). Named secondary
+    // apps never exercise that mismatch.
+    it('applies customAuthDomain onto Auth for the default app', async function () {
+      if (!Platform.ios) return;
+
+      const { getApp } = modular;
+      const { getAuth, getCustomAuthDomain } = authModular;
+      const config = FirebaseHelpers.app.config();
+      config.authDomain.should.be.a.String();
+
+      // Seed customAuthDomains under JS [DEFAULT] even when native default already exists.
+      await APP_MODULE.initializeApp(config, {
+        name: '[DEFAULT]',
+        automaticDataCollectionEnabled: true,
+      });
+
+      // Auth may already be constructed for the default app; re-apply from the map.
+      NativeModules.NativeRNFBTurboAuth.configureAuthDomain('[DEFAULT]');
+
+      const auth = getAuth(getApp());
+      const applied = await getCustomAuthDomain(auth);
+      should.equal(applied, config.authDomain);
+    });
+
     it('does not retain a custom auth domain after failed initialization', async function () {
       if (!Platform.ios) return;
 
