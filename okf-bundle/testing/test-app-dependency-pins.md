@@ -1,36 +1,40 @@
 ---
 type: Reference
 title: Test app dependency pins
-description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps; codegen resolves from tests/.
+description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps plus workspace compile/link fixtures; codegen resolves from tests/.
 tags: [testing, dependencies, react-native-macos, cli, pins]
-timestamp: 2026-08-18T00:00:00Z
+timestamp: 2026-09-03T00:00:00Z
 ---
 
 # Test app dependency pins
 
-Canonical owner for **intentional** version locks on the e2e apps (`tests/` mobile, `tests-macos/` macOS) and how the RN/codegen toolchain is selected. Do not “helpfully” bump these via Dependabot merges or drive-by upgrades without coordinating the affected app (and codegen when mobile moves).
+Canonical owner for **intentional** version locks on the e2e apps (`tests/` mobile, `tests-macos/` macOS), the compile/link fixtures (`test-rn-bare/`, `test-expo/`), and how the RN/codegen toolchain is selected. Do not “helpfully” bump these via Dependabot merges or drive-by upgrades without coordinating the affected app (and codegen when mobile moves).
 
-Codegen determinism: [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted). Dual-app split: [CPRN-236](https://linear.app/invertase/issue/CPRN-236).
+Codegen determinism: [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted).
 
-## Dual-app model
+<a id="dual-app-model"></a>
 
-| App | Role | RN pin owner |
-|-----|------|----------------|
-| **`tests/`** | iOS + Android Detox e2e; **codegen / `codegen:verify` toolchain** | `tests/package.json` (`react-native` + CLI / `@react-native/*`) |
-| **`tests-macos/`** | macOS Jet e2e (firebase-js-sdk harness; shared JS under `tests/`) | `tests-macos/package.json` (`react-native` + `react-native-macos`) |
+## Workspace e2e apps and fixtures
 
-**macOS no longer forces the mobile RN line.** `react-native-macos` only constrains `tests-macos/`. Mobile may advance independently once that workspace is bumped (see [When pins may move](#when-pins-may-move)).
+| App | Role | RN pin |
+|-----|------|--------|
+| **`tests/`** | iOS + Android Detox e2e; **codegen / `codegen:verify` toolchain** | **Owns** the mobile line: `tests/package.json` (`react-native` + CLI / `@react-native/*`) |
+| **`tests-macos/`** | macOS Jet e2e (firebase-js-sdk harness; shared JS under `tests/`) | Independent: `tests-macos/package.json` (`react-native` + `react-native-macos`) |
+| **`test-expo/`** | Expo CNG iOS **link** fixture (not Detox). Closer: `yarn test-expo:ios:link` | Tracks the **mobile** line (`test-expo/package.json`; same `react-native` / `react`) |
+| **`test-rn-bare/`** | Vanilla RN CLI JS+iOS **compile** fixture (not Detox). GitHub #8883 closer: `yarn test-rn-bare:ios:build` | Tracks the **mobile** line (`test-rn-bare/package.json`; same RN / CLI / `@react-native/*` as `tests/`) |
 
-Root `package.json` must **not** use blanket `resolutions` for `react-native`, `@react-native/codegen`, or `@react-native-community/cli` — each app pins its own line. Codegen scripts resolve the mobile toolchain from **`tests/`** via [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs).
+**macOS no longer forces the mobile RN line.** `react-native-macos` only constrains `tests-macos/`. Mobile may advance independently once that workspace is bumped (see [When pins may move](#when-pins-may-move)). `test-expo/` and `test-rn-bare/` are **not** a third RN line.
+
+Root `package.json` must **not** use blanket `resolutions` for `react-native`, `@react-native/codegen`, or `@react-native-community/cli` — `tests/` and `tests-macos/` pin independently. Codegen scripts resolve the mobile toolchain from **`tests/`** via [`scripts/codegen-package.mjs`](../../scripts/codegen-package.mjs).
 
 ## Current pins
 
 | Package | Pin | Where |
 |---------|-----|--------|
-| `react-native` (mobile) | **`0.86.2`** | `tests/package.json` |
-| `react` (mobile) | **`19.2.3`** | `tests/package.json` |
-| `@react-native-community/cli` (+ platform packages) | **`20.1.0`** | `tests/package.json` (and root `devDependencies` for tooling convenience) |
-| `@react-native/babel-preset` / `@react-native/metro-config` | **`0.86.2`** | `tests/package.json` |
+| `react-native` (mobile) | **`0.86.2`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
+| `react` (mobile) | **`19.2.3`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
+| `@react-native-community/cli` (+ platform packages) | **`20.1.0`** | `tests/package.json`, `test-rn-bare/package.json` (and root `devDependencies` for tooling convenience) |
+| `@react-native/babel-preset` / `@react-native/metro-config` | **`0.86.2`** | `tests/package.json`, `test-rn-bare/package.json` |
 | `@react-native/jest-preset` | **`0.86.2`** | `tests/package.json` (and root `devDependencies` for Jest / toolchain lockstep with mobile RN) |
 | `@react-native/codegen` | **`0.86.2`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |
 | `react-native` (macOS shell) | **`0.78.3`** | `tests-macos/package.json` |
@@ -38,24 +42,24 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | macOS CLI band | **`15.1.3`** | `tests-macos/package.json` |
 | `@react-native-async-storage/async-storage` (mobile) | **`^3.1.1`** | `tests/package.json` (iOS pod `AsyncStorage` 3.x; Android autolink) |
 | `@react-native-async-storage/async-storage` (macOS) | **`^2.0.2`** | `tests-macos/package.json` |
-| `@react-native-firebase/*` (e2e apps + `test-expo`) | **must match current lerna / package version** | `tests/package.json`, `tests-macos/package.json`, and `test-expo/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins) |
+| `@react-native-firebase/*` (e2e apps + `test-expo` + `test-rn-bare`) | **must match current lerna / package version** | `tests/package.json`, `tests-macos/package.json`, `test-expo/package.json`, and `test-rn-bare/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins) |
 | `@react-native-firebase/app-types` | **`6.7.2`** | both apps (legacy types package; not a workspace) |
 
 **CLI rationale:** mobile CLI **`20.1.0`** matches the React Native **0.86** community template. macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
 
 **fmt / Apple Clang:** RN **0.86.2** ships fmt **12.1.0** upstream (no mobile `patch-package` fmt bump). macOS **0.78.3** still applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch). Always verify via [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking).
 
-**iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The test app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so third-party dynamic pods (`react-native-device-info`, `@invertase/react-native-apple-authentication`) link against source RNCore (`RCTEventEmitter`) under SPM-dynamic Firebase. That pin is **Issue 2**. RNFB podspec Clang / xcconfig order is **Issue 1** ([iOS RNCore podspec invariants](../ios-rncore-podspec.md)). Do not re-enable prebuilt RNCore for this app without re-validating those third-party pods.
+**iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The e2e app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so third-party dynamic pods (`react-native-device-info`, `@invertase/react-native-apple-authentication`) link against source RNCore (`RCTEventEmitter`) under SPM-dynamic Firebase. That pin is **Issue 2** and stays on `tests/`. Vanilla RN CLI consumer compile (GitHub #8883) is `test-rn-bare/` plus `yarn test-rn-bare:ios:build` ([agent command policy](agent-command-policy.md)). Do **not** “fix” `test-rn-bare/` by flipping `tests/ios/Podfile`. RNFB podspec Clang / xcconfig order is **Issue 1** ([iOS RNCore podspec invariants](../ios-rncore-podspec.md)). Do not re-enable prebuilt RNCore for the e2e app without re-validating those third-party pods.
 
-**Agent / Dependabot rule:** leave these pins alone unless the change is an intentional dual-app or mobile-only upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other or codegen verify.
+**Agent / Dependabot rule:** leave these pins alone unless the change is an intentional mobile-line (e2e + fixtures) or macOS upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other, a tracking fixture, or codegen verify.
 
 ## RNFB workspace pins
 
-`tests/`, `tests-macos/`, and `test-expo/` must declare every `@react-native-firebase/*` dependency (except `app-types`) at the **current lerna / package version** so Yarn **workspace-links** them (`workspace:packages/<pkg>`) instead of fetching published npm tarballs. `test-expo` uses exact version strings, not `workspace:` protocol.
+`tests/`, `tests-macos/`, `test-expo/`, and `test-rn-bare/` must declare every `@react-native-firebase/*` dependency (except `app-types`) at the **current lerna / package version** so Yarn **workspace-links** them (`workspace:packages/<pkg>`) instead of fetching published npm tarballs. `test-expo` and `test-rn-bare` use exact version strings, not `workspace:` protocol.
 
 A stale pin (for example `26.3.0` while packages are `26.3.2`) resolves as `npm:26.3.0` and a fresh `yarn` downloads published tarballs. Metro may still remap JS to `packages/*`, so CI can look green while the lockfile is wrong. Hardened Yarn Install then fails YN0028.
 
-The root `version` lifecycle runs [`scripts/version.js`](../../scripts/version.js) during `lerna version`. It deterministically updates `tests/package.json`, `tests-macos/package.json`, and `test-expo/package.json`, including each app's private `"version"` and every `@react-native-firebase/*` dependency except `app-types`. Keep that automation intact; `@react-native-firebase/app-types` remains independently pinned at `6.7.2` on the e2e apps.
+The root `version` lifecycle runs [`scripts/version.js`](../../scripts/version.js) during `lerna version`. It deterministically updates `tests/package.json`, `tests-macos/package.json`, `test-expo/package.json`, and `test-rn-bare/package.json`, including each app's private `"version"` and every `@react-native-firebase/*` dependency except `app-types`. Keep that automation intact; `@react-native-firebase/app-types` remains independently pinned at `6.7.2` on the e2e apps.
 
 ## AsyncStorage (dual pin + Metro singleton)
 
@@ -67,11 +71,13 @@ Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macO
 
 ## When pins may move
 
-**Mobile (`tests/`) only** (macOS stays on its pair):
+**Mobile (`tests/`) line** (`test-expo/` and `test-rn-bare/` track this; macOS stays on its pair):
 
 1. Bump `tests/` `react-native` and matching `@react-native/*` / CLI band
-2. Regenerate codegen / rebuild native per [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) (`yarn codegen:all` → `scripts/codegen-package.mjs`)
-3. Keep `tests-macos/` on the `react-native-macos`-compatible pair until that stack can move
+2. Bump `test-rn-bare/package.json` to the same RN / CLI / `@react-native/*` in the **same change**
+3. Bump `test-expo/package.json` `react-native` / `react` in the **same change** (Expo SDK is separate)
+4. Regenerate codegen / rebuild native per [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) (`yarn codegen:all` → `scripts/codegen-package.mjs`). Codegen still resolves from **`tests/`** only.
+5. Keep `tests-macos/` on the `react-native-macos`-compatible pair until that stack can move
 
 **macOS (`tests-macos/`)**:
 
@@ -87,5 +93,5 @@ Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macO
 - [NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) — ResultT inject **retired** on mobile 0.86 (upstream emits `ResultT`)
 - [Other CI — macOS e2e](../ci-workflows/other.md) — macOS pipeline (`tests-macos/`)
 - [Agent command policy](agent-command-policy.md) — install / patch / fmt gate
-- [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) / [`test-expo/package.json`](../../test-expo/package.json) — declared pins
+- [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) / [`test-expo/package.json`](../../test-expo/package.json) / [`test-rn-bare/package.json`](../../test-rn-bare/package.json) — declared pins
 - [`tests/metro.config.js`](../../tests/metro.config.js) — mobile async-storage singleton + nested blocklist

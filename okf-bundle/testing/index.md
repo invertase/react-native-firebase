@@ -1,6 +1,6 @@
 # Testing
 
-* [Agent command policy](agent-command-policy.md) — **read before any shell command** (install, prepare, validation, e2e, Expo documented-path iOS **link**); **`yarn` / `yarn lerna:prepare` must exit 0 before any other command**; [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) before native `:build`
+* [Agent command policy](agent-command-policy.md) — **read before any shell command** (install, prepare, validation, e2e, Expo documented-path iOS **link**, RN CLI prebuilt RNCore iOS **build**; not Detox); **`yarn` / `yarn lerna:prepare` must exit 0 before any other command**; [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) before native `:build`
 * [Documentation/commit policy](../documentation-policy.md) — public vs ephemeral vs private, OKF scan, [Efficiency](../documentation-policy.md#efficiency)
 * [Change authoring workflow](change-authoring-workflow.md) — verified product change loop (unit-focused → `documentation?` → area-focused `independent-review` → commit); [§ gates](change-authoring-workflow.md#gates); [§ frozen tree](change-authoring-workflow.md#frozen-tree); [§ quality standards](change-authoring-workflow.md#quality-standards); [§ validation evidence (blocking)](change-authoring-workflow.md#validation-evidence-blocking); [§ commit](change-authoring-workflow.md#commit); [coverage evidence package](coverage-design.md#coverage-evidence-package)
 * [compare-types justification bar](../../.github/scripts/compare-types/README.md#justification-bar) — firebase-js-sdk type/API drift justification
@@ -13,4 +13,4 @@
 * [iOS unit testing ADR](ios-architecture-decisions.md#iostest-ad-1) — macOS/host-first in-package XCTest; Simulator only if UIKit required (`IosTest-AD-1`)
 * [Published types ADR](architecture-decisions.md) — attw / Expo plugin decisions (`Types-AD-*`); [Types-AD-5](architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted) (`ios/**/build` for pack)
 * [Firebase testing project](firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
-* [Test app dependency pins](test-app-dependency-pins.md) — intentional RN / CLI locks driven by `react-native-macos`
+* [Test app dependency pins](test-app-dependency-pins.md) — intentional RN / CLI locks (mobile + Expo/RN CLI fixtures share one line; `react-native-macos` is independent)

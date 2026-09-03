@@ -3,7 +3,7 @@ type: Reference
 title: iOS RNCore podspec invariants
 description: Clang non-modular-includes flag and pod_target_xcconfig order for RNFB CocoaPods specs under use_frameworks!.
 tags: [ios, podspec, rncore, cocoapods]
-timestamp: 2026-08-18T00:00:00Z
+timestamp: 2026-09-03T00:00:00Z
 ---
 
 # iOS RNCore podspec invariants
@@ -11,12 +11,16 @@ timestamp: 2026-08-18T00:00:00Z
 Canonical owner for RNFB **handwritten** `RNFB*.podspec` xcconfig around React
 Native's prebuilt RNCore and `use_frameworks!`. Not consumer setup.
 
-Two independent RNCore problems. This file is **Issue 1** (compile-time,
-inside RNFB pods), GitHub #9200.
+This file is **Issue 1** (compile-time, inside RNFB pods), GitHub #9200.
 **Issue 2** (link-time, `tests/` only: third-party dynamic pods vs prebuilt
 RNCore) is owned by
-[test app dependency pins](testing/test-app-dependency-pins.md). Firebase SPM
-imports and embed: [iOS SPM native integration decisions](ios-spm-native-imports.md).
+[test app dependency pins](testing/test-app-dependency-pins.md).
+Vanilla RN CLI consumer **compile** (GitHub #8883) is owned by `test-rn-bare/`
+plus `yarn test-rn-bare:ios:build`
+([agent command policy](testing/agent-command-policy.md)).
+Expo documented-path **link** is `yarn test-expo:ios:link`
+([agent command policy](testing/agent-command-policy.md)). Do not collapse those graphs.
+Firebase SPM imports and embed: [iOS SPM native integration decisions](ios-spm-native-imports.md).
 
 **Policy:** [OKF documentation and commit policy](documentation-policy.md).
 
@@ -59,7 +63,7 @@ When RNFB podspecs change:
   still calls `add_rncore_dependency` while it lacks
   `install_modules_dependencies`.
 
-Expo `forceStaticLinking` / `$RNFirebaseAsStaticFramework` consumer
-guidance stays in [`docs/index.mdx`](../docs/index.mdx) until a
-consumer-side proof exists. Related compile reports:
-[GitHub #8883](https://github.com/invertase/react-native-firebase/issues/8883).
+Do not treat this file as consumer setup.
+Static-SPM opt-out (`$RNFirebaseDisableSPM` / `forceStaticLinking` /
+`$RNFirebaseAsStaticFramework`) stays in [`docs/index.mdx`](../docs/index.mdx)
+and [`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
