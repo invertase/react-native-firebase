@@ -69,6 +69,9 @@ export function deepSet(
     return false;
   }
   const keys = path.split(joiner);
+  if (keys.some(key => ['__proto__', 'prototype', 'constructor'].includes(key))) {
+    return false;
+  }
 
   let i = 0;
   let _object: unknown = object;
