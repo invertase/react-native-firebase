@@ -146,13 +146,27 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
-| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. |
+| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` then `yarn lint:docs-links` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Link-check: [§ docs.page link check](#docs-page-link-check). |
 
 A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`).
 
 ### Frozen `independent-review` (check-only)
 
-Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only).
+Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck/link check (`docs/**` only).
+
+<a id="docs-page-link-check"></a>
+
+### `yarn lint:docs-links` — fix failures; bot-gate warnings only
+
+When `docs/**` is in the diff, **`yarn lint:docs-links` exit code 0** is blocking ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)). The script is `docs check .` (CLI defaults). Bot-gated external hosts (**401 / 403 / 405 / 429**) are **warnings**; **404** / **5xx** / DNS / timeout stay **errors** (including `reference.rnfirebase.io`).
+
+**Agents must fix every `error` line** (internal links, assets, MDX render, metadata, true external 404s). Do not hand off or close gates while errors remain.
+
+**The only acceptable non-fix** is an **`warn`** on an **external** link where the checker reports a **bot/WAF gate** (common on npmjs.com, stackoverflow.com, some Google support URLs). Those URLs are often valid in a browser. **Do not** replace, remove, or “fix” those links to clear warnings — **do not** add `--external-links warn` or `--ignore-external-hosts` to hide real failures.
+
+If an external link is a true **404** / **not found** at **error** severity, fix it like any other error. If unsure, verify in a browser; 403 from npm/SO in warn output alone is not grounds to change the link.
+
+Detail: [documentation site maintenance § Docs.page link check](../documentation-site-maintenance.md#docs-page-link-check-ci).
 
 ## Expo documented-path iOS link (not e2e)
 
@@ -199,6 +213,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
 | lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` in diff                                                                                                                       |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
+| lint:docs-links (CI docs) | yarn lint:docs-links                 | 0    | when `docs/**` in diff — errors fail; bot-gate warnings do not                                                                               |
 | coverage                  | post-process + region table          | —    | [coverage evidence package](coverage-design.md#coverage-evidence-package); closes `coverage_evidence_gate` when lib/native bridge or `packages/app/**/*.rb` touched |
 ```
 
