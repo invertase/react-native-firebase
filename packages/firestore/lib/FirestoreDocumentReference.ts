@@ -167,8 +167,10 @@ export default class DocumentReference<
       );
     }
 
+    // Always pass an object: iOS TurboModule SpecDocumentGetGetOptions is a C++
+    // reference; undefined/null here SIGSEGVs in documentGet (see PR #9279 CI).
     return this._firestore.native
-      .documentGet(this.path, options)
+      .documentGet(this.path, options ?? {})
       .then(
         (data: unknown) =>
           new FirestoreDocumentSnapshotClass!(
