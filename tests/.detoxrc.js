@@ -159,6 +159,10 @@ for (let slot = 0; slot < 5; slot += 1) {
     device: `simulator-slot${slot}`,
     app: 'ios.debug',
   };
+  configurations[`ios.sim.release.slot${slot}`] = {
+    device: `simulator-slot${slot}`,
+    app: 'ios.release',
+  };
   configurations[`android.emu.debug.slot${slot}`] = {
     device: `emulator-slot${slot}`,
     app: `android.debug.slot${slot}`,
