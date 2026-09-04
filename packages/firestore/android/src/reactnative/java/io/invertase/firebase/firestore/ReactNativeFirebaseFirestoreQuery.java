@@ -24,7 +24,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.Query;
@@ -56,10 +55,13 @@ public class ReactNativeFirebaseFirestoreQuery {
   }
 
   public Task<WritableMap> get(Executor executor, Source source) {
-    return Tasks.call(
+    // Non-blocking: do not Tasks.await on the shared single-thread module executor.
+    // See FirestoreAsyncTaskMap / issue #9278.
+    return FirestoreAsyncTaskMap.map(
+        query.get(source),
         executor,
-        () -> {
-          QuerySnapshot querySnapshot = Tasks.await(query.get(source));
+        task -> {
+          QuerySnapshot querySnapshot = task.getResult();
           return snapshotToWritableMap(this.appName, this.databaseId, "get", querySnapshot, null);
         });
   }

@@ -125,10 +125,13 @@ public class NativeRNFBTurboFirestoreDocument extends NativeRNFBTurboFirestoreDo
       source = Source.DEFAULT;
     }
 
-    Tasks.call(
+    // Non-blocking: do not Tasks.await on the shared single-thread module executor.
+    // See FirestoreAsyncTaskMap / issue #9278.
+    FirestoreAsyncTaskMap.map(
+            documentReference.get(source),
             turboSupport.getExecutor(),
-            () -> {
-              DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
+            task -> {
+              DocumentSnapshot documentSnapshot = task.getResult();
               return snapshotToWritableMap(appName, databaseId, documentSnapshot);
             })
         .addOnCompleteListener(
