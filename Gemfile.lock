@@ -107,8 +107,8 @@ GEM
     rainbow (3.1.1)
     regexp_parser (2.12.0)
     rexml (3.4.4)
-    rubocop (1.89.0)
-      json (~> 2.3)
+    rubocop (1.90.0)
+      json (>= 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
       parallel (>= 1.10)
@@ -158,7 +158,7 @@ PLATFORMS
 
 DEPENDENCIES
   cocoapods (= 1.17.0)
-  rubocop (~> 1.75)
+  rubocop (~> 1.90)
   simplecov (~> 1.0)
   simplecov-lcov (~> 0.9)
   xcodeproj (= 1.28.1)
@@ -222,7 +222,7 @@ CHECKSUMS
   rainbow (3.1.1) sha256=039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a
   regexp_parser (2.12.0) sha256=35a916a1d63190ab5c9009457136ae5f3c0c7512d60291d0d1378ba18ce08ebb
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
-  rubocop (1.89.0) sha256=4dee8e3ee9c45e474834efd9e8d6fd031e8331c8dacdff0de4ad65ae0a6faae7
+  rubocop (1.90.0) sha256=9eb4c065b5c5154e4ef554c547972f3905a9eb6b53e657e580b6796b54bf8242
   rubocop-ast (1.50.0) sha256=b9ca88300da0803ee222ad20cdb30494c0a784eed06fdc35d254b06d662788db
   ruby-macho (4.1.0) sha256=23dab37f7de0fe1e14f3bfa73bebc423ae8cd1d4fdb3e5585abc45a841eca920
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
