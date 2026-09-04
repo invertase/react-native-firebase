@@ -225,25 +225,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestore);
   FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                         databaseId:databaseId];
 
-  // Evict with native FIRApp.name before terminate — same key namespace as getFirestoreForApp.
-  // Using the JS bridge appName ([DEFAULT]) is a no-op for the default app (__FIRAPP_DEFAULT),
-  // leaving a terminated instance cached and causing later SIGABRT.
-  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:[firebaseApp name]
-                                                                   databaseId:databaseId];
-  [instanceCache removeObjectForKey:firestoreKey];
-
-  // emulatorConfigs is keyed by the JS bridge appName; clear so a later connectFirestoreEmulator
-  // can attach the emulator to a freshly created FIRFirestore after terminate.
-  if (emulatorConfigs != nil) {
-    NSString *emulatorKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
-                                                                    databaseId:databaseId];
-    [emulatorConfigs removeObjectForKey:emulatorKey];
-  }
-
+  // Evict only after terminate completes. Clearing instanceCache beforehand lets a concurrent
+  // getFirestoreForApp rebuild a production-hosted client while the singleton is still shutting
+  // down; later connectFirestoreEmulator is then too late and getDoc can hang (CI release flake).
+  // Cache key must be native FIRApp.name (__FIRAPP_DEFAULT), not the JS bridge name ([DEFAULT]).
   [instance terminateWithCompletion:^(NSError *error) {
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
+      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:[firebaseApp name]
+                                                                       databaseId:databaseId];
+      [instanceCache removeObjectForKey:firestoreKey];
+
+      // emulatorConfigs is keyed by the JS bridge appName; clear so a later
+      // connectFirestoreEmulator can attach the emulator to a freshly created FIRFirestore.
+      if (emulatorConfigs != nil) {
+        NSString *emulatorKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                        databaseId:databaseId];
+        [emulatorConfigs removeObjectForKey:emulatorKey];
+      }
+
       resolve(nil);
     }
   }];

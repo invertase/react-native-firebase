@@ -161,15 +161,24 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
   Task<Void> terminate(String appName, String databaseId) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     String firestoreKey = createFirestoreKey(appName, databaseId);
-    if (instanceCache.get(firestoreKey) != null) {
-      instanceCache.get(firestoreKey).clear();
-      instanceCache.remove(firestoreKey);
-    }
 
-    // Clear so a later connectFirestoreEmulator can attach the emulator to a freshly
-    // created FirebaseFirestore after terminate (mirrors iOS emulatorConfigs eviction).
-    emulatorConfigs.remove(firestoreKey);
-
-    return firebaseFirestore.terminate();
+    // Evict only after terminate completes (mirrors iOS). Clearing instanceCache /
+    // emulatorConfigs beforehand lets a concurrent getFirestoreForApp rebuild a
+    // non-emulator client while shutdown is in flight.
+    return firebaseFirestore
+        .terminate()
+        .continueWith(
+            getExecutor(),
+            task -> {
+              // Propagate failure without evicting (mirrors iOS success-only path).
+              // getResult() throws when terminate failed; do not clear caches first.
+              Void result = task.getResult();
+              if (instanceCache.get(firestoreKey) != null) {
+                instanceCache.get(firestoreKey).clear();
+                instanceCache.remove(firestoreKey);
+              }
+              emulatorConfigs.remove(firestoreKey);
+              return result;
+            });
   }
 }
