@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { Base64, getDataUrlParts } from '../lib/common';
+import { deepSet } from '../lib/common/deeps';
 
 describe('common utilities', () => {
   describe('getDataUrlParts', () => {
@@ -41,5 +42,26 @@ describe('common utilities', () => {
         });
       },
     );
+  });
+
+  describe('deepSet', () => {
+    it('rejects paths that mutate the target prototype', () => {
+      const target = {};
+
+      expect(deepSet(target, '__proto__.polluted', true)).toBe(false);
+      expect((target as Record<string, unknown>).polluted).toBeUndefined();
+    });
+
+    it('rejects paths that mutate Object.prototype', () => {
+      expect(deepSet({}, 'constructor.prototype.polluted', true, false)).toBe(false);
+      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    });
+
+    it('still assigns values along an ordinary nested path', () => {
+      const target: Record<string, unknown> = {};
+
+      expect(deepSet(target, 'a.b', 5)).toBe(true);
+      expect(target).toEqual({ a: { b: 5 } });
+    });
   });
 });
