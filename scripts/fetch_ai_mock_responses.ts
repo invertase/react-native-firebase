@@ -16,7 +16,7 @@
 //  clone of the shared repository of Vertex AI test data.
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { join } from 'path';
 import { existsSync, readdirSync } from 'fs';
 import { rimrafSync } from 'rimraf';
@@ -37,42 +37,57 @@ function findExistingCloneDirName(): string | undefined {
     .at(0);
 }
 
-const existingCloneDirName = findExistingCloneDirName();
-if (existingCloneDirName !== undefined) {
-  console.log('AI mock responses data exists locally already. Exiting fetch script.');
-  process.exit(0);
+export function fetchAiMockResponses(): void {
+  const existingCloneDirName = findExistingCloneDirName();
+  if (existingCloneDirName !== undefined) {
+    console.log('AI mock responses data exists locally already. Exiting fetch script.');
+    process.exit(0);
+  }
+
+  // Get tags from repository, sorted by tag name, and coerce result to a string, then trim it
+  const repoTags = execFileSync(
+    'git',
+    ['ls-remote', '--tags', '--sort=version:refname', REPO_LINK],
+    { encoding: 'utf8' },
+  ).trim();
+
+  // Fish out just the tag name from the last line (since they are sorted already)
+  const latestTag = repoTags.split('/').at(-1);
+  if (latestTag === undefined) {
+    console.error('Unable to determine latest test data tag.');
+    process.exit(1);
+  }
+
+  // Create the test data directory based on the latest tag
+  const cloneDirName = `${REPO_NAME}_${latestTag}`;
+  const cloneDirPath = join(TEST_DATA_ROOT, cloneDirName);
+
+  // Clean out any test data that isn't the latest test data
+  rimrafSync(TEST_DATA_ROOT, {
+    preserveRoot: false,
+    filter: (path: string, _) => !path.endsWith('.ts') && !path.includes(cloneDirName),
+  });
+
+  // Exit if our intended latest data clone target already exists
+  if (existsSync(cloneDirPath)) {
+    console.log('AI mock responses data exists locally already. Exiting fetch script.');
+    process.exit(0);
+  }
+
+  // Clone the latest test data
+  console.log(`Fetching AI mock responses data...`);
+  execFileSync('git', [
+    '-c',
+    'advice.detachedHead=false',
+    'clone',
+    '--branch',
+    latestTag,
+    '--',
+    REPO_LINK,
+    cloneDirPath,
+  ]);
 }
 
-// Get tags from repository, sorted by tag name, and coerce result to a string, then trim it
-const repoTags = (
-  execSync(`git ls-remote --tags --sort=version:refname "${REPO_LINK}"`) + ''
-).trim();
-
-// Fish out just the tag name from the last line (since they are sorted already)
-const latestTag = repoTags.split('/').at(-1);
-if (latestTag === undefined) {
-  console.error('Unable to determine latest test data tag.');
-  process.exit(1);
+if (require.main === module) {
+  fetchAiMockResponses();
 }
-
-// Create the test data directory based on the latest tag
-const cloneDirName = `${REPO_NAME}_${latestTag}`;
-const cloneDirPath = join(TEST_DATA_ROOT, cloneDirName);
-
-// Clean out any test data that isn't the latest test data
-rimrafSync(TEST_DATA_ROOT, {
-  preserveRoot: false,
-  filter: (path: string, _) => !path.endsWith('.ts') && !path.includes(cloneDirName),
-});
-
-// Exit if our intended latest data clone target already exists
-if (existsSync(cloneDirPath)) {
-  console.log('AI mock responses data exists locally already. Exiting fetch script.');
-  process.exit(0);
-}
-
-// Clone the latest test data
-console.log(`Fetching AI mock responses data...`);
-execSync(
-  `git -c advice.detachedHead=false clone --branch ${latestTag} ${REPO_LINK} ${cloneDirPath}`,
-);
