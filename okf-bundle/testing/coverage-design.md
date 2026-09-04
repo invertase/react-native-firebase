@@ -123,7 +123,7 @@ After `tests:<platform>:test-cover`:
 * **Android native:** `yarn tests:android:unit` (produces module `*.exec`) then e2e + `yarn tests:android:post-e2e-coverage` → merged **`jacocoTestReport`** XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing. Unit-only: `yarn tests:android:test:jacoco-report` (same merged task; needs fresh `*.exec` and any available `*.ec`).
 * macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
 
-**Baseline stability (repeatability):** after two full Law `:test-cover` (+ process) cycles on one slot, record metrics with `yarn tests:coverage:capture-baseline` → `tests/coverage-artifacts/coverage-baseline.json` (see `tests/coverage-artifacts/README.md`). Provisional relative variance threshold **T=1%** between run 1 and run 2; `--finalize` compares observed variance to T.
+**Baseline stability (repeatability):** after two full Law `:test-cover` (+ process) cycles, record metrics with `yarn tests:coverage:capture-baseline` → `tests/coverage-artifacts/coverage-baseline.json`. Dual-run variance and `--finalize` threshold live in `tests/coverage-artifacts/README.md` (not restated here).
 
 <a id="ios-ruby-simplecov"></a>
 
@@ -385,10 +385,10 @@ Do **not** conflate coverage flush with e2e probes.
 | Module | Kind | Role |
 |--------|------|------|
 | **`Coverage` (`react-native-coverage`)** | Package TurboModule | Flush only — [§ react-native-coverage](#react-native-coverage). |
-| **`NativeRNFBTesting`** | Test-app TurboModule | E2e probes (`completesNonFCMRemoteNotification`, `messagingStoreSupportsDisabledStorage`, …) — [running e2e](running-e2e.md#test-app-native-modules). |
-| **`RNFBTestingMessaging`** | Test-app `RCTBridgeModule` | iOS `messagingPreservesExistingDelegate` — [running e2e](running-e2e.md#test-app-native-modules). |
+| **`NativeRNFBTesting`** | Test-app TurboModule | E2e probes — [running e2e § test-app native modules](running-e2e.md#test-app-native-modules). |
+| **`RNFBTestingMessaging`** | Test-app `RCTBridgeModule` | iOS messaging delegate probe — [running e2e § test-app native modules](running-e2e.md#test-app-native-modules). |
 
-**Probe hits in native coverage:** Messaging e2e `getRNFBTesting().completesNonFCMRemoteNotification()` and `NativeModules.RNFBTestingMessaging.messagingPreservesExistingDelegate()` exercise product sources (for example `RNFBMessaging+AppDelegate.m` non-FCM `completionHandler`). Android e2e `getRNFBTesting().messagingStoreSupportsDisabledStorage()` exercises `ReactNativeFirebaseMessagingStoreImpl` disabled-storage paths. After iOS `:test-cover` and `yarn tests:ios:test:process-coverage`, iOS probe lines appear as hits in `coverage/ios-native/lcov.info` (Android probe hits land in Jacoco). Record them in the [coverage evidence package](#coverage-evidence-package); passing probes are not a substitute for that artifact.
+Probe method names, product-line hits, and evidence recording: [running e2e § test-app native modules](running-e2e.md#test-app-native-modules) → [coverage evidence package](#coverage-evidence-package).
 
 # Config-driven native coverage (Pattern C)
 
@@ -442,8 +442,8 @@ Do **not** rollback for TS-only Jet/NYC gaps — [§ TS e2e coverage troubleshoo
 
 ## Rollback steps (high level)
 
-1. **Identify cutover commits** in git history by subject: portal dry-run (`test(coverage): dry-run portal link to react-native-coverage`) then adopt (`test(coverage): adopt react-native-coverage@0.2.0`). The parent of the adopt commit (or the tree immediately before that series) is the known-good flush baseline for restore.
-2. **Prefer `git revert`** of the adopt cutover (and the portal commit if the revert does not restore a buildable tree) on a dedicated branch. If revert conflicts, **`git checkout <parent-tree> --`** the native flush sources and wiring paths the cutover removed/changed (in-tree `RNFBTestingCoverage*`, Podfile / Gradle / `AppDelegate` / `MainApplication` registration, related `tests/package.json` dep and lockfile hunks) — do not invent a new flusher.
+1. **Identify the cutover boundary** in git history: the commit that deletes in-tree `RNFBTestingCoverage*` and pins published `react-native-coverage@0.2.0` in `tests/package.json` (and any immediately preceding portal/link commit that only rewires the same dep). The parent of that adopt cutover is the known-good in-tree flush baseline for restore.
+2. **Prefer `git revert`** of the adopt cutover (and the portal/link commit if the revert does not restore a buildable tree) on a dedicated branch. If revert conflicts, **`git checkout <parent-tree> --`** the native flush sources and wiring paths the cutover removed/changed (in-tree `RNFBTestingCoverage*`, Podfile / Gradle / `AppDelegate` / `MainApplication` registration, related `tests/package.json` dep and lockfile hunks) — do not invent a new flusher.
 3. **Pin or remove** the published package version so Yarn no longer resolves `react-native-coverage@0.2.0` as the flush owner (revert the dep hunk, or leave the package unused only if the restored tree no longer imports it).
 4. **Reinstall and rebuild:** root `yarn` → (iOS only) `yarn tests:ios:pod:install` → `yarn tests:<platform>:build` → `:test-cover` → native post-process ([Local iteration](#local-iteration); e2e commands: [running e2e](running-e2e.md)).
 5. **Re-run presence assert** (`yarn tests:coverage:assert-presence` or the platform post-process that invokes it) — must not exit **2**.

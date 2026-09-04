@@ -94,7 +94,7 @@ Coverage flush is **package-owned**. Test-app modules are **integration probes o
 - **iOS:** `tests/ios/testing/RNFBTestingTurboModule.{h,mm}`
 - **Android:** `tests/android/app/src/main/java/com/invertase/testing/NativeRNFBTesting.kt` — unsupported methods **resolve `false`**
 - **JS:** `getRNFBTesting()` in `packages/app/e2e/helpers.js` via `TurboModuleRegistry.get('NativeRNFBTesting')`
-- **Probes:** `messagingPreservesExistingDelegate`, `completesNonFCMRemoteNotification` (iOS); `messagingStoreSupportsDisabledStorage` (Android). Cross-platform methods resolve `false` on the unsupported platform.
+- **Probes:** `completesNonFCMRemoteNotification` (iOS); `messagingStoreSupportsDisabledStorage` (Android). Cross-platform methods resolve `false` on the unsupported platform. iOS `messagingPreservesExistingDelegate` lives on `RNFBTestingMessaging` (below), not this TurboModule.
 - Production packages must **not** ship this TurboModule (test-app only).
 
 **`RNFBTestingMessaging` (this section)**
