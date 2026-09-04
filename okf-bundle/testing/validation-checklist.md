@@ -148,7 +148,7 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` on **`.java`** — **mutates**. Does **not** format `.kt`. Only Java entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
 | Kotlin under `packages/*/android` or `tests/android/**/*.kt` | repo-root `./gradlew ktlintFormat` | **Implementation only.** **Mutates.** Include `tests/android/**/*.kt` when those files are in the diff. Invocation and filter: [agent command policy § Android Kotlin format](agent-command-policy.md#android-kotlin-format). Frozen review: do not run. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. Repo pins `clang-format@1.7.0` (exact, not `^`): `1.8.0` ships darwin **x86_64** only (needs Rosetta); `1.7.0`’s misnamed `darwin_x64` path is native **arm64**. Intel Mac is not a supported local `lint:ios` host (App Store / Xcode / macOS floor). |
-| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Gotchas below. |
+| `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` then `yarn lint:docs-links` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Gotchas below. Link-check: [§ docs.page link check](#docs-page-link-check). |
 
 **Docs lint gotchas** (`docs/**` only):
 
@@ -159,7 +159,21 @@ A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn 
 
 ### Frozen `independent-review` (check-only)
 
-Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android`, repo-root `./gradlew ktlintFormat`, or full `yarn lint` — those formatters **mutate** the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only). There is no allowlisted check-only Kotlin ktlint task.
+Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android`, repo-root `./gradlew ktlintFormat`, or full `yarn lint` — those formatters **mutate** the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck/link check (`docs/**` only). There is no allowlisted check-only Kotlin ktlint task.
+
+<a id="docs-page-link-check"></a>
+
+### `yarn lint:docs-links` — fix failures; bot-gate warnings only
+
+When `docs/**` is in the diff, **`yarn lint:docs-links` exit code 0** is blocking ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)). The script is `docs check .` (CLI defaults). Bot-gated external hosts (**401 / 403 / 405 / 429**) are **warnings**; **404** / **5xx** / DNS / timeout stay **errors** (including `reference.rnfirebase.io`).
+
+**Agents must fix every `error` line** (internal links, assets, MDX render, metadata, true external 404s). Do not hand off or close gates while errors remain.
+
+**The only acceptable non-fix** is an **`warn`** on an **external** link where the checker reports a **bot/WAF gate** (common on npmjs.com, stackoverflow.com, some Google support URLs). Those URLs are often valid in a browser. **Do not** replace, remove, or “fix” those links to clear warnings — **do not** add `--external-links warn` or `--ignore-external-hosts` to hide real failures.
+
+If an external link is a true **404** / **not found** at **error** severity, fix it like any other error. If unsure, verify in a browser; 403 from npm/SO in warn output alone is not grounds to change the link.
+
+Detail: [documentation site maintenance § Docs.page link check](../documentation-site-maintenance.md#docs-page-link-check-ci).
 
 ## Expo example and documented-path iOS link (not e2e)
 
@@ -206,6 +220,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
 | lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` in diff                                                                                                                       |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
+| lint:docs-links (CI docs) | yarn lint:docs-links                 | 0    | when `docs/**` in diff — errors fail; bot-gate warnings do not                                                                               |
 | coverage                  | post-process + region table          | —    | [coverage evidence package](coverage-design.md#coverage-evidence-package); closes `coverage_evidence_gate` when lib/native bridge or `packages/app/**/*.rb` touched |
 ```
 
