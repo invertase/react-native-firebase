@@ -27,11 +27,11 @@ jobs:
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
-      - name: Install latest NPM
-        run: |
-          npm --version
-          npm install -g npm@latest
-          npm --version
+      - name: Install pinned NPM
+        # Content-pin via hardcoded dist.integrity (see script).
+        # engines: ^22.22.2 || ^24.15.0 || >=26.0.0 (setup-node "24" >=24.15).
+        run: bash .github/workflows/scripts/install-pinned-npm.sh
+
       - name: Yarn Install
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0

@@ -32,12 +32,11 @@ jobs:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false
-      - name: Install latest NPM
-        # OIDC publishing requires a very up to date npm version
-        run: |
-          npm --version
-          npm install -g npm@latest
-          npm --version
+      - name: Install pinned NPM
+        # OIDC publishing needs a current npm. Content-pin via hardcoded dist.integrity
+        # (see script). engines: ^22.22.2 || ^24.15.0 || >=26.0.0 (setup-node "24" >=24.15).
+        run: bash .github/workflows/scripts/install-pinned-npm.sh
+
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
