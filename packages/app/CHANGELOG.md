@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Features
+
+- **app:** add RNFBHandleMap for thread-safe handle registries ([d28edd5](https://github.com/invertase/react-native-firebase/commit/d28edd579281da523b626934e89a14dd38dd3ed8))
+
+### Bug Fixes
+
+- **app, android:** clear stale custom auth domains ([ccde348](https://github.com/invertase/react-native-firebase/commit/ccde3483511efd1c54bcc4676bd02893f28e9014))
+- **app, android:** discard tasks posted to shut-down transactional executors ([de98eaa](https://github.com/invertase/react-native-firebase/commit/de98eaa9ff0484eeb9e00ec99d5228067611a4f3))
+- **app, expo:** add missing Firebase imports ([7d6f19c](https://github.com/invertase/react-native-firebase/commit/7d6f19c5ba513c5880dd401e225ce19d550e27df))
+- **app, ios:** clear stale custom auth domains ([d747981](https://github.com/invertase/react-native-firebase/commit/d7479818e52f4b4df84bba53c53345942b80af85))
+- **app:** handle empty Android Firebase JSON ([5c48832](https://github.com/invertase/react-native-firebase/commit/5c48832f70a62c1061448a723f1e6a193e09c74a))
+- **app:** isolate native routing keys ([fd13a7a](https://github.com/invertase/react-native-firebase/commit/fd13a7adf84791ce1c1c4ce38a1728a86ae9c6c0))
+- **app:** make debug native proxies behavior-safe ([6caff3c](https://github.com/invertase/react-native-firebase/commit/6caff3cfc706133d132a2762b355c65979631555))
+- **app:** parse data URL payloads completely ([eb5d54e](https://github.com/invertase/react-native-firebase/commit/eb5d54e8bdbd6748e6c024b26f19bf63b764d5bb))
+- **app:** preserve empty memory storage values ([41ac6bc](https://github.com/invertase/react-native-firebase/commit/41ac6bc2f1113a6412e23dd171752f6e5762c335))
+- **app:** preserve memidb event listeners ([c8648a6](https://github.com/invertase/react-native-firebase/commit/c8648a622533afd2f2a94ed36c3acd57c611a2b2))
+- **app:** preserve web Promise contracts ([36c586e](https://github.com/invertase/react-native-firebase/commit/36c586ea908a2faaebf1d40846497bde096a779c))
+- **app:** reject FileReader startup failures ([08319ae](https://github.com/invertase/react-native-firebase/commit/08319aed8191ab823a506b3166c18b8ef02853ac))
+- **app:** retain global logger configuration ([23aeb7b](https://github.com/invertase/react-native-firebase/commit/23aeb7bb5fe60f9421ba81b3f88c859dfd6d3d49))
+- **app:** support arbitrary web storage keys ([c2c9f42](https://github.com/invertase/react-native-firebase/commit/c2c9f4261464bf56c3e6521f54448dbe4649392f))
+- **app:** support prototype-named apps ([0ed7a0f](https://github.com/invertase/react-native-firebase/commit/0ed7a0fd7c99c894e2b94fd3de733dfa43096af2))
+- **auth, ios:** look up customAuthDomains with JS app name ([9873f61](https://github.com/invertase/react-native-firebase/commit/9873f618a972c3324ec05b9e30f5aaefa7ab163b))
+- **database:** use RNFBHandleMap for transaction and query maps ([8adba4c](https://github.com/invertase/react-native-firebase/commit/8adba4cb88dffec2442ea0fe37738d1080d0a185))
+- **messaging, android:** support disabled notification storage ([afaba0b](https://github.com/invertase/react-native-firebase/commit/afaba0b3862b65a2bd83bbbfebfae3ac576811fd))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Bug Fixes

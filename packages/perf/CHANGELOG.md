@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **perf, android:** use RNFBHandleMap for traces and http metrics ([60b6e7d](https://github.com/invertase/react-native-firebase/commit/60b6e7daa005d137228763291be0db75997b9162))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Bug Fixes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **functions:** thread-safe Android streaming listener lifecycle ([8b902e8](https://github.com/invertase/react-native-firebase/commit/8b902e8178fdbbd9438e4c10a43ffaabf6038614))
+- **functions:** use RNFBHandleMap for streaming listeners ([8acd8bc](https://github.com/invertase/react-native-firebase/commit/8acd8bcf228c63a83bada87398c4cb7d5604c3e2))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Reverts

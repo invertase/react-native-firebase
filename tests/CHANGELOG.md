@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **firestore:** defer terminate cache eviction until shutdown completes ([7f3c5be](https://github.com/invertase/react-native-firebase/commit/7f3c5be4edbca727bf724308fa31e118ed52f779))
+- **messaging, android:** support disabled notification storage ([afaba0b](https://github.com/invertase/react-native-firebase/commit/afaba0b3862b65a2bd83bbbfebfae3ac576811fd))
+- **messaging, ios:** complete non-FCM notifications ([f2697ab](https://github.com/invertase/react-native-firebase/commit/f2697ab78b4d7c5b62c52a6574207324695c4402))
+- **messaging, ios:** preserve existing FIRMessaging delegate ([955509e](https://github.com/invertase/react-native-firebase/commit/955509e386d4e379cdeb7d47df2d0da9d8908a6d))
+- **perf, android:** use RNFBHandleMap for traces and http metrics ([60b6e7d](https://github.com/invertase/react-native-firebase/commit/60b6e7daa005d137228763291be0db75997b9162))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Reverts

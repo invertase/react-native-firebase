@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **firestore, android:** avoid Tasks.await wedging collection gets ([718da09](https://github.com/invertase/react-native-firebase/commit/718da09e9e87b44cee02e9b9863458d328c61827))
+- **firestore:** clear terminate caches so a fresh instance can reconnect ([8776b28](https://github.com/invertase/react-native-firebase/commit/8776b2878803419bf6fffc363635eab242c7e4e3))
+- **firestore:** defer terminate cache eviction until shutdown completes ([7f3c5be](https://github.com/invertase/react-native-firebase/commit/7f3c5be4edbca727bf724308fa31e118ed52f779))
+- **firestore:** restore namedQueryOnSnapshot completion callback ([8932c1e](https://github.com/invertase/react-native-firebase/commit/8932c1e4c35674725a38c068f64785afd3b56149))
+- **firestore:** use RNFBHandleMap for snapshot and transaction maps ([6f1f49c](https://github.com/invertase/react-native-firebase/commit/6f1f49c9b28df825700150912636b3836daf6052))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Reverts

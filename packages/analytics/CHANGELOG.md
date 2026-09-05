@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **analytics, android:** guard item conversion ([e193527](https://github.com/invertase/react-native-firebase/commit/e1935277d5dd3526090678feddc866a6237e50b7))
+- **analytics, ios:** serialize session completion ([cbda889](https://github.com/invertase/react-native-firebase/commit/cbda8898659c06486266642926c55826d1505cbc))
+- **analytics, ios:** stop transaction scan after match ([642ed3e](https://github.com/invertase/react-native-firebase/commit/642ed3eaccee9befbf70ecb2369cc53efbb0968f))
+- **analytics, web:** preserve read-only navigator state ([1f1ac12](https://github.com/invertase/react-native-firebase/commit/1f1ac12e5c64ef0956a8672f9bc44ece8ce0bbeb))
+- **analytics, web:** preserve session lifetime ([688775c](https://github.com/invertase/react-native-firebase/commit/688775c0a9379822bfb5c463d6d556791a3bf132))
+- **analytics, web:** serialize queue processing ([4a51f9e](https://github.com/invertase/react-native-firebase/commit/4a51f9e3092c36686a3fa28bb40379e453086d2f))
+- **analytics:** enforce documented input limits ([4c1eae9](https://github.com/invertase/react-native-firebase/commit/4c1eae9467db31aa3f96a8b78de415ba8ec796a9))
+- **analytics:** preserve omitted consent settings ([7110903](https://github.com/invertase/react-native-firebase/commit/71109032702388e0f1d99893534f18af55fd0365))
+- **analytics:** validate hashed conversion inputs ([5cd67ec](https://github.com/invertase/react-native-firebase/commit/5cd67ec851d26b9d6ce7b4c2804a87f4334b2003))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Reverts

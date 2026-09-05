@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **messaging, android:** preserve stored JSON values ([61fd558](https://github.com/invertase/react-native-firebase/commit/61fd55883763cac5a8096abbbe4294c803ab58d9))
+- **messaging, android:** preserve stored message integrity ([1e18fdf](https://github.com/invertase/react-native-firebase/commit/1e18fdfa2ed7b63db49ae88e6071e12ecea10e50))
+- **messaging, android:** support disabled notification storage ([afaba0b](https://github.com/invertase/react-native-firebase/commit/afaba0b3862b65a2bd83bbbfebfae3ac576811fd))
+- **messaging, android:** use RNFBHandleMap for the notification map ([5ff8825](https://github.com/invertase/react-native-firebase/commit/5ff882573edfbed56747f1b075ea42f522673d94))
+- **messaging, ios:** complete non-FCM notifications ([f2697ab](https://github.com/invertase/react-native-firebase/commit/f2697ab78b4d7c5b62c52a6574207324695c4402))
+- **messaging, ios:** preserve existing FIRMessaging delegate ([955509e](https://github.com/invertase/react-native-firebase/commit/955509e386d4e379cdeb7d47df2d0da9d8908a6d))
+- **messaging, ios:** preserve notification settings handler ([325eddf](https://github.com/invertase/react-native-firebase/commit/325eddf8abac91d61c8e6c210a4274817ba5d4d4))
+- **messaging, ios:** run background task expiration cleanup ([9348411](https://github.com/invertase/react-native-firebase/commit/9348411cddc86d673499e0ee2efc14398f088d0e))
+- **messaging:** make FCM options optional ([adcefc5](https://github.com/invertase/react-native-firebase/commit/adcefc59af790e19249442f6163bdd4e88a8baa1))
+- **messaging:** preserve registration state on failure ([1a690e1](https://github.com/invertase/react-native-firebase/commit/1a690e1998808ce272bde52b9a0cdb57a163a803))
+- **messaging:** serialize array data values as JSON ([9f27842](https://github.com/invertase/react-native-firebase/commit/9f27842fd513a1509776cf8de2c356a1b7f23462))
+- **messaging:** settle background notification work ([77e71ff](https://github.com/invertase/react-native-firebase/commit/77e71ff9446f37baa2d005fa86ad8964836786a2))
+- **messaging:** update cached settings after native success ([eb1a883](https://github.com/invertase/react-native-firebase/commit/eb1a883a7974bac7c8ab8410fb88af5230cb2197))
+- **messaging:** validate APNs token input ([6442fb4](https://github.com/invertase/react-native-firebase/commit/6442fb423d38410dd7f405d4792afb233a184eb5))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Bug Fixes

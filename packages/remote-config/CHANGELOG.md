@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
+
+### Bug Fixes
+
+- **remote-config:** use RNFBHandleMap for config update handlers ([f142bdb](https://github.com/invertase/react-native-firebase/commit/f142bdb1d9ec9318c5587a6f70e6cd6da28e9797))
+
 ## [26.3.3](https://github.com/invertase/react-native-firebase/compare/v26.3.2...v26.3.3) (2026-09-01)
 
 ### Bug Fixes

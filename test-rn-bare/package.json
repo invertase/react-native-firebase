@@ -1,12 +1,12 @@
 {
   "name": "test-rn-bare",
-  "version": "26.3.3",
+  "version": "26.4.0",
   "private": true,
   "scripts": {
     "start": "react-native start"
   },
   "dependencies": {
-    "@react-native-firebase/app": "26.3.3",
+    "@react-native-firebase/app": "26.4.0",
     "react": "19.2.3",
     "react-native": "0.86.2"
   },
