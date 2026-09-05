@@ -1,18 +1,152 @@
 ---
 title: Migrating to v27
-description: Migrate to React Native Firebase v27 — Imagen API removal.
+description: Migrate to React Native Firebase v27 — Firebase JS SDK 12.18.0, messaging corrections, and Imagen API removal.
 previous: /migrating-to-v26
 next: /typescript
 ---
 
-Version 27 removes the **Imagen** API from `@react-native-firebase/ai`. Google shut down the Imagen models as a service on **2026-08-17**, so the exports could no longer serve a request. Generate images with a Gemini image model through `getGenerativeModel()` instead.
+Version 27 bundles several **breaking behavior corrections** and dependency bumps that landed after v26:
 
-If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating-to-v26) first — the namespaced API removal still applies.
+- **Firebase JS SDK 12.18.0** — on web/macOS (`Platform.other`), `FunctionsError.message` appends an HTTP status suffix and `customData.url` is populated ([#9218](https://github.com/invertase/react-native-firebase/pull/9218)).
+- **Cloud Messaging** — four documented runtime contracts are enforced after previous accidental shapes ([#9246](https://github.com/invertase/react-native-firebase/pull/9246), [#9247](https://github.com/invertase/react-native-firebase/pull/9247), [#9252](https://github.com/invertase/react-native-firebase/pull/9252), [#9254](https://github.com/invertase/react-native-firebase/pull/9254)).
+- **Imagen API removed** from `@react-native-firebase/ai` after Google shut down the Imagen models as a service on **2026-08-17**. Generate images with a Gemini image model through `getGenerativeModel()` instead.
+
+If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating-to-v26) first — the namespaced API removal and New Architecture requirement still apply.
 
 ## Table of contents
 
+- [Agent-assisted migration](/migrating-to-v27#agent-assisted-migration)
+- [Firebase JS SDK 12.18.0](/migrating-to-v27#firebase-js-sdk-12180)
+- [Cloud Messaging](/migrating-to-v27#cloud-messaging)
+  - [String APNs sound → `notification.ios.sound`](/migrating-to-v27#string-apns-sound--notificationiossound)
+  - [iOS `sentTime` is epoch milliseconds](/migrating-to-v27#ios-senttime-is-epoch-milliseconds)
+  - [iOS badge is a string](/migrating-to-v27#ios-badge-is-a-string)
+  - [`onMessageSent` receives a string message ID](/migrating-to-v27#onmessagesent-receives-a-string-message-id)
 - [Removed Imagen API](/migrating-to-v27#removed-imagen-api)
-- [Example](/migrating-to-v27#example)
+  - [Example](/migrating-to-v27#example)
+- [Automated migration checklist](/migrating-to-v27#automated-migration-checklist)
+
+## Agent-assisted migration
+
+This guide is written to be **complete enough for an automated first pass**. We recommend feeding this document to your coding agent, then asking it to analyze your codebase against each relevant section below and produce a concrete change list (or PR) for the packages you use. The [Automated migration checklist](/migrating-to-v27#automated-migration-checklist) at the end is structured for that workflow.
+
+# Firebase JS SDK 12.18.0
+
+**PR:** [#9218](https://github.com/invertase/react-native-firebase/pull/9218)
+
+React Native Firebase pins **firebase-js-sdk 12.18.0**. On **web and macOS** (`Platform.other`), Cloud Functions uses the JS SDK callable path. That path now enriches `FunctionsError` (aliased as `HttpsError` in React Native Firebase):
+
+| Change                          | Before                      | After (v27 / JS SDK 12.18.0)                                                                   | Who              |
+| ------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------- | ---------------- |
+| `FunctionsError.message`        | Exact server message string | Message plus a trailing ` [<httpStatus>]` suffix (for example `Invalid test requested. [400]`) | Web / macOS only |
+| `FunctionsError.customData.url` | Not present                 | Request URL string on `customData`                                                             | Web / macOS only |
+
+**Native iOS and Android** continue to surface callable failures through the native bridge as `HttpsError` **without** the HTTP status suffix. Do not assume the suffix or `customData.url` on those platforms.
+
+### Migration actions
+
+1. Search for exact-equality checks on `error.message` / `e.message` for callable failures.
+2. On web/macOS, prefer `message.startsWith(expected)` or strip a trailing ` [digits]` before comparing.
+3. If you need the HTTP status or request URL, read them from the suffix / `customData.url` on web/macOS only; keep a native fallback path for iOS/Android.
+
+```js
+// Previously (exact match — breaks on web/macOS after 12.18.0)
+if (e.message === 'Invalid test requested.') {
+  /* … */
+}
+
+// Now (tolerant of the optional " [status]" suffix)
+const base = e.message.replace(/ \[\d+\]$/, '');
+if (base === 'Invalid test requested.') {
+  /* … */
+}
+// Optional on Platform.other:
+// e.customData?.url
+```
+
+Upstream note: [firebase@12.18.0](https://github.com/firebase/firebase-js-sdk/releases/tag/firebase%4012.18.0) — “Add HTTP status code to the `message` field and add `url` to `customData`.”
+
+# Cloud Messaging
+
+These changes **correct runtime behavior** to match the public `RemoteMessage` / listener contracts. There is no new public TypeScript surface — consumers that worked around the old accidental shapes must update.
+
+## String APNs sound → `notification.ios.sound`
+
+**PR:** [#9246](https://github.com/invertase/react-native-firebase/pull/9246)
+
+String-valued APNs sounds are serialized at the documented `message.notification.ios.sound` path. Previously, only string sounds were placed at the undocumented `message.notification.sound` path (critical-sound dictionaries already used the correct iOS nesting).
+
+| Before (accidental)                   | After (documented)                        |
+| ------------------------------------- | ----------------------------------------- |
+| `message.notification.sound` (string) | `message.notification.ios.sound` (string) |
+
+```js
+// Previously
+const sound = message.notification?.sound;
+
+// Now
+const sound = message.notification?.ios?.sound;
+```
+
+## iOS `sentTime` is epoch milliseconds
+
+**PR:** [#9247](https://github.com/invertase/react-native-firebase/pull/9247)
+
+On iOS, `RemoteMessage.sentTime` is a **number** of epoch **milliseconds**, matching Android and the public type. FCM supplies seconds (often as a string); native serialization converts those values to milliseconds.
+
+| Before (iOS accidental)                               | After                                                       |
+| ----------------------------------------------------- | ----------------------------------------------------------- |
+| string epoch **seconds** (for example `"1522880044"`) | number epoch **milliseconds** (for example `1522880044000`) |
+
+Android behavior is unchanged. Remove `parseInt` / string comparisons that assumed seconds.
+
+```js
+// Previously (iOS)
+const sentMs = Number(message.sentTime) * 1000;
+
+// Now (iOS and Android)
+const sentMs = message.sentTime; // number, epoch ms
+```
+
+## iOS badge is a string
+
+**PR:** [#9252](https://github.com/invertase/react-native-firebase/pull/9252)
+
+iOS `aps.badge` is serialized as a **string**, matching `RemoteMessage.notification.ios.badge?: string`.
+
+| Before (iOS accidental)  | After                      |
+| ------------------------ | -------------------------- |
+| number (for example `7`) | string (for example `"7"`) |
+
+```js
+// Previously
+const badge = message.notification?.ios?.badge; // number on iOS
+
+// Now
+const badge = Number(message.notification?.ios?.badge ?? 0);
+```
+
+## `onMessageSent` receives a string message ID
+
+**PR:** [#9254](https://github.com/invertase/react-native-firebase/pull/9254)
+
+`onMessageSent` listeners receive the documented **message-ID string**. Android previously forwarded the transport wrapper `{ messageId }` to application code.
+
+| Before (accidental)     | After (documented) |
+| ----------------------- | ------------------ |
+| `{ messageId: string }` | `string`           |
+
+```js
+// Previously
+onMessageSent(messaging, ({ messageId }) => {
+  console.log(messageId);
+});
+
+// Now
+onMessageSent(messaging, messageId => {
+  console.log(messageId);
+});
+```
 
 # Removed Imagen API
 
@@ -38,7 +172,7 @@ Nothing else in `@react-native-firebase/ai` changed. `getGenerativeModel()`, `ge
 | `ImagenSafetyFilterLevel` | `HarmBlockThreshold` |
 | `ImagenPersonFilterLevel` | No replacement — Gemini image models allow generating people by default |
 
-# Example
+## Example
 
 ```js
 // Previously (removed)
@@ -86,3 +220,49 @@ console.log(imagePart?.inlineData.mimeType);
 ```
 
 See [AI Logic usage](/ai/usage) for more image generation examples, and Google's [Imagen to Gemini migration guide](https://firebase.google.com/docs/ai-logic/imagen-models-migration) for model and prompt guidance.
+
+# Automated migration checklist
+
+Use this section when running scripted or agent-assisted upgrades from v26 → v27.
+
+## 1. Upgrade dependencies
+
+```bash
+# Bump all @react-native-firebase/* packages to v27 together (monorepo versions are aligned)
+yarn add @react-native-firebase/app@^27.0.0 …
+cd ios && pod install
+```
+
+Confirm the lockfiles resolve **firebase** / firebase-js-sdk **12.18.0+**.
+
+## 2. Agent-oriented search and replace
+
+For each area you use, search the listed symbols and apply the replacements:
+
+| Area                      | Search for                                                                             | Replace with / action                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Functions (web/macOS)     | `e.message ===`, `error.message ===` on callable failures                              | Tolerate trailing ` [<digits>]`; optionally read `customData.url` on `Platform.other` only    |
+| Messaging sound           | `notification.sound` (string APNs sound)                                               | `notification.ios.sound`                                                                      |
+| Messaging `sentTime`      | string/`parseInt`/`* 1000` on `sentTime` (iOS)                                         | Use numeric epoch-ms directly                                                                 |
+| Messaging badge           | numeric use of `notification.ios.badge`                                                | Parse string (`Number(...)`) when a number is required                                        |
+| Messaging `onMessageSent` | `({ messageId })` / `.messageId` in the listener                                       | Use the string argument directly                                                              |
+| AI Imagen                 | `getImagenModel`, `getTemplateImagenModel`, `ImagenModel`, `Imagen*`, `generateImages` | `getGenerativeModel` / `getTemplateGenerativeModel` with `responseModalities` + `imageConfig` |
+
+## 3. Validate
+
+```bash
+yarn compile
+# TypeScript consumers: fix compile errors from removed Imagen exports and messaging types
+# Manually exercise: callable error message handling (web/macOS), FCM notification fields (iOS), onMessageSent, Gemini image generation
+```
+
+## Related PRs (v27 breaking changes)
+
+| Area                                       | PR                                                                    |
+| ------------------------------------------ | --------------------------------------------------------------------- |
+| Firebase JS SDK 12.18.0 / `FunctionsError` | [#9218](https://github.com/invertase/react-native-firebase/pull/9218) |
+| Messaging — APNs string sound path         | [#9246](https://github.com/invertase/react-native-firebase/pull/9246) |
+| Messaging — iOS `sentTime` epoch-ms        | [#9247](https://github.com/invertase/react-native-firebase/pull/9247) |
+| Messaging — iOS badge string               | [#9252](https://github.com/invertase/react-native-firebase/pull/9252) |
+| Messaging — `onMessageSent` string ID      | [#9254](https://github.com/invertase/react-native-firebase/pull/9254) |
+| AI — Imagen API removal                    | [#9275](https://github.com/invertase/react-native-firebase/pull/9275) |
