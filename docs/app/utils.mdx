@@ -14,12 +14,12 @@ When working with modules such as [Cloud Storage](/storage), you may need to kno
 current directory paths. Rather than installing a separate module, the library provides useful statics
 which can be used.
 
-Access the `FilePath` static via utils:
+Import `FilePath` directly from the app package:
 
 ```js
-import { utils } from '@react-native-firebase/app';
+import { FilePath } from '@react-native-firebase/app';
 
-console.log(utils.FilePath.PICTURES_DIRECTORY);
+console.log(FilePath.PICTURES_DIRECTORY);
 ```
 
 # Test Lab
@@ -35,11 +35,11 @@ data collection. Such functionality can be carried out by taking advantage of th
 > Be aware, `isRunningInTestLab` is Android only property!
 
 ```js
-import { utils } from '@react-native-firebase/app';
+import { getUtils } from '@react-native-firebase/app';
 import { getAnalytics, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
 
 async function bootstrap() {
-  if (utils().isRunningInTestLab) {
+  if (getUtils().isRunningInTestLab) {
     await setAnalyticsCollectionEnabled(getAnalytics(), false);
   }
 }
@@ -55,9 +55,9 @@ separate package.
 > it is `undefined` (including when the native value is empty).
 
 ```js
-import { utils } from '@react-native-firebase/app';
+import { getUtils } from '@react-native-firebase/app';
 
-const version = utils().appVersion;
+const version = getUtils().appVersion;
 if (version) {
   console.log('App version:', version);
 }
@@ -68,11 +68,11 @@ if (version) {
 It is useful to know if the Android device has play services available, and what to do in response to certain use cases:
 
 ```js
-import { utils } from '@react-native-firebase/app';
+import { getUtils } from '@react-native-firebase/app';
 
 async function checkPlayServicesExample() {
   const { status, isAvailable, hasResolution, isUserResolvableError } =
-    utils().playServicesAvailability;
+    getUtils().playServicesAvailability;
   // all good and valid \o/
   if (isAvailable) return Promise.resolve();
   // if the user can resolve the issue i.e by updating play services
@@ -83,19 +83,19 @@ async function checkPlayServicesExample() {
         // SERVICE_MISSING - Google Play services is missing on this device.
         // show something to user
         // and then attempt to install if necessary
-        return utils().makePlayServicesAvailable();
+        return getUtils().makePlayServicesAvailable();
       case 2:
         // SERVICE_VERSION_UPDATE_REQUIRED - The installed version of Google Play services is out of date.
         // show something to user
         // and then attempt to update if necessary
-        return utils().resolutionForPlayServices();
+        return getUtils().resolutionForPlayServices();
 
       default:
         // some default dialog / component?
         // use the link below to tailor response to status codes to suit your use case
         // https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult#SERVICE_VERSION_UPDATE_REQUIRED
-        if (isUserResolvableError) return utils().promptForPlayServices();
-        if (hasResolution) return utils().resolutionForPlayServices();
+        if (isUserResolvableError) return getUtils().promptForPlayServices();
+        if (hasResolution) return getUtils().resolutionForPlayServices();
     }
   }
   // There's no way to resolve play services on this device

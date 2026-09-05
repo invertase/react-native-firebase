@@ -80,7 +80,7 @@ library provides [Utils](/app/utils) to help identify device directories:
 import React, { useEffect } from 'react';
 import { View, Button } from 'react-native';
 
-import { utils } from '@react-native-firebase/app';
+import { FilePath } from '@react-native-firebase/app';
 import { getStorage, ref, putFile } from '@react-native-firebase/storage';
 
 function App() {
@@ -91,7 +91,7 @@ function App() {
     <View>
       <Button
         onPress={async () => {
-          const pathToFile = `${utils.FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
+          const pathToFile = `${FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
           await putFile(reference, pathToFile);
         }}
       />
