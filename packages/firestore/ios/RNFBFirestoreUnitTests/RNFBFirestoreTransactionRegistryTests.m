@@ -17,6 +17,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import "RNFBFirestoreTransactionAttempt.h"
 #import "RNFBFirestoreTransactionRegistry.h"
 #import "RNFBHandleMap.h"
 
@@ -31,22 +32,26 @@
   self.registry = [[RNFBFirestoreTransactionRegistry alloc] init];
 }
 
+- (RNFBFirestoreTransactionAttempt *)attempt {
+  return [[RNFBFirestoreTransactionAttempt alloc] init];
+}
+
 - (void)testPutGetTake_happyPath {
-  NSMutableDictionary *state = [NSMutableDictionary dictionary];
+  RNFBFirestoreTransactionAttempt *state = [self attempt];
   NSError *error = nil;
   XCTAssertTrue([self.registry put:@1 value:state error:&error]);
   XCTAssertNil(error);
   XCTAssertEqual(state, [self.registry get:@1]);
   XCTAssertEqual(state, [self.registry take:@1]);
   XCTAssertNil([self.registry get:@1]);
-  XCTAssertNil(state[@"aborted"]);
+  XCTAssertFalse(state.aborted);
 }
 
 - (void)testPut_occupiedId_returnsCollision {
-  NSMutableDictionary *first = [NSMutableDictionary dictionary];
+  RNFBFirestoreTransactionAttempt *first = [self attempt];
   XCTAssertTrue([self.registry put:@1 value:first error:nil]);
   NSError *error = nil;
-  XCTAssertFalse([self.registry put:@1 value:[NSMutableDictionary dictionary] error:&error]);
+  XCTAssertFalse([self.registry put:@1 value:[self attempt] error:&error]);
   XCTAssertNotNil(error);
   XCTAssertEqualObjects(error.domain, RNFBHandleMapErrorDomain);
   XCTAssertEqual(error.code, RNFBHandleMapErrorCollision);
@@ -54,52 +59,52 @@
 }
 
 - (void)testPutOrSkip_uniqueId_putsValue {
-  NSMutableDictionary *state = [NSMutableDictionary dictionary];
+  RNFBFirestoreTransactionAttempt *state = [self attempt];
   XCTAssertTrue([self.registry putOrSkip:@1 value:state]);
   XCTAssertEqual(state, [self.registry get:@1]);
-  XCTAssertNil(state[@"aborted"]);
+  XCTAssertFalse(state.aborted);
 }
 
 - (void)testPutOrSkip_retryGet_sameValue_shortCircuits {
-  NSMutableDictionary *state = [NSMutableDictionary dictionary];
+  RNFBFirestoreTransactionAttempt *state = [self attempt];
   XCTAssertTrue([self.registry put:@1 value:state error:nil]);
   XCTAssertTrue([self.registry putOrSkip:@1 value:state]);
   XCTAssertEqual(state, [self.registry get:@1]);
-  XCTAssertNil(state[@"aborted"]);
+  XCTAssertFalse(state.aborted);
 }
 
 - (void)testPutOrSkip_occupiedId_skipsAndLeavesExisting {
-  NSMutableDictionary *first = [NSMutableDictionary dictionary];
-  NSMutableDictionary *duplicate = [NSMutableDictionary dictionary];
+  RNFBFirestoreTransactionAttempt *first = [self attempt];
+  RNFBFirestoreTransactionAttempt *duplicate = [self attempt];
   XCTAssertTrue([self.registry put:@2 value:first error:nil]);
   XCTAssertFalse([self.registry putOrSkip:@2 value:duplicate]);
   XCTAssertEqual(first, [self.registry get:@2]);
-  XCTAssertNil(first[@"aborted"]);
-  XCTAssertNil(duplicate[@"aborted"]);
+  XCTAssertFalse(first.aborted);
+  XCTAssertFalse(duplicate.aborted);
 }
 
 - (void)testAbortAll_signalsSemaphoreAndSetsAborted {
-  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-  NSMutableDictionary *state = [NSMutableDictionary dictionary];
-  state[@"semaphore"] = semaphore;
+  RNFBFirestoreTransactionAttempt *state = [self attempt];
+  [state prepareForUpdateBlockWithNativeTransaction:@"tx"];
   XCTAssertTrue([self.registry put:@7 value:state error:nil]);
 
   [self.registry abortAll];
 
-  XCTAssertEqual([state[@"aborted"] boolValue], YES);
-  XCTAssertEqual(dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW), 0);
+  XCTAssertTrue(state.aborted);
+  XCTAssertEqual([state waitUntilSignaledWithTimeout:DISPATCH_TIME_NOW],
+                 RNFBFirestoreTransactionWaitResultAborted);
   XCTAssertNil([self.registry get:@7]);
 }
 
-- (void)testAbortAll_dictionaryWithoutSemaphore_setsAborted {
-  NSMutableDictionary *state = [NSMutableDictionary dictionary];
+- (void)testAbortAll_attemptWithoutPrepare_setsAborted {
+  RNFBFirestoreTransactionAttempt *state = [self attempt];
   XCTAssertTrue([self.registry put:@8 value:state error:nil]);
   [self.registry abortAll];
-  XCTAssertEqual([state[@"aborted"] boolValue], YES);
+  XCTAssertTrue(state.aborted);
   XCTAssertNil([self.registry get:@8]);
 }
 
-- (void)testAbortAll_nonDictionary_doesNotCrash {
+- (void)testAbortAll_nonAttempt_doesNotCrash {
   NSObject *plain = [[NSObject alloc] init];
   XCTAssertTrue([self.registry put:@9 value:plain error:nil]);
   [self.registry abortAll];
@@ -112,8 +117,8 @@
 }
 
 - (void)testPut_afterTake_allowsReuse {
-  NSMutableDictionary *first = [NSMutableDictionary dictionary];
-  NSMutableDictionary *second = [NSMutableDictionary dictionary];
+  RNFBFirestoreTransactionAttempt *first = [self attempt];
+  RNFBFirestoreTransactionAttempt *second = [self attempt];
   XCTAssertTrue([self.registry put:@1 value:first error:nil]);
   XCTAssertEqual(first, [self.registry take:@1]);
   XCTAssertTrue([self.registry put:@1 value:second error:nil]);

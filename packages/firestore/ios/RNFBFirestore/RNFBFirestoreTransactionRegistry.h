@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Transaction state map. Unique `put`; begin uses `putOrSkip` (atomic putIfAbsentOrSame). Callers
  * `take` or `abortAll` then abort (flag + semaphore) outside the HandleMap lock. Stored values are
- * mutable dictionaries with optional `semaphore` and `aborted` keys.
+ * `RNFBFirestoreTransactionAttempt` instances. `abortAll` calls `abort` on each remaining attempt.
  */
 @interface RNFBFirestoreTransactionRegistry : NSObject
 

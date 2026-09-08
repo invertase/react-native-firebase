@@ -12,6 +12,8 @@
 		D2000000000000000000000C /* RNFBFirestoreListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000009 /* RNFBFirestoreListenerRegistryTests.m */; };
 		D20000000000000000000020 /* RNFBFirestoreTransactionRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000021 /* RNFBFirestoreTransactionRegistry.m */; };
 		D20000000000000000000022 /* RNFBFirestoreTransactionRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000023 /* RNFBFirestoreTransactionRegistryTests.m */; };
+		D20000000000000000000032 /* RNFBFirestoreTransactionAttempt.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */; };
+		D20000000000000000000034 /* RNFBFirestoreTransactionAttemptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */; };
 		D20000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D20000000000000000000014 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +27,9 @@
 		D20000000000000000000024 /* RNFBFirestoreTransactionRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreTransactionRegistry.h; path = ../RNFBFirestore/RNFBFirestoreTransactionRegistry.h; sourceTree = SOURCE_ROOT; };
 		D20000000000000000000021 /* RNFBFirestoreTransactionRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreTransactionRegistry.m; path = ../RNFBFirestore/RNFBFirestoreTransactionRegistry.m; sourceTree = SOURCE_ROOT; };
 		D20000000000000000000023 /* RNFBFirestoreTransactionRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionRegistryTests.m; sourceTree = "<group>"; };
+		D20000000000000000000030 /* RNFBFirestoreTransactionAttempt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreTransactionAttempt.h; path = ../RNFBFirestore/RNFBFirestoreTransactionAttempt.h; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreTransactionAttempt.m; path = ../RNFBFirestore/RNFBFirestoreTransactionAttempt.m; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionAttemptTests.m; sourceTree = "<group>"; };
 		D20000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -65,8 +70,11 @@
 				D20000000000000000000018 /* RNFBFirestoreListenerRegistry.m */,
 				D20000000000000000000024 /* RNFBFirestoreTransactionRegistry.h */,
 				D20000000000000000000021 /* RNFBFirestoreTransactionRegistry.m */,
+				D20000000000000000000030 /* RNFBFirestoreTransactionAttempt.h */,
+				D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */,
 				D20000000000000000000009 /* RNFBFirestoreListenerRegistryTests.m */,
 				D20000000000000000000023 /* RNFBFirestoreTransactionRegistryTests.m */,
+				D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -131,8 +139,10 @@
 				D2000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				D2000000000000000000000B /* RNFBFirestoreListenerRegistry.m in Sources */,
 				D20000000000000000000020 /* RNFBFirestoreTransactionRegistry.m in Sources */,
+				D20000000000000000000032 /* RNFBFirestoreTransactionAttempt.m in Sources */,
 				D2000000000000000000000C /* RNFBFirestoreListenerRegistryTests.m in Sources */,
 				D20000000000000000000022 /* RNFBFirestoreTransactionRegistryTests.m in Sources */,
+				D20000000000000000000034 /* RNFBFirestoreTransactionAttemptTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

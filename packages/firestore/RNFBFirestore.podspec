@@ -37,6 +37,7 @@ Pod::Spec.new do |s|
     'ios/RNFBFirestore/RNFBFirestoreTransactionModule.h',
     'ios/RNFBFirestore/RNFBFirestoreListenerRegistry.h',
     'ios/RNFBFirestore/RNFBFirestoreTransactionRegistry.h',
+    'ios/RNFBFirestore/RNFBFirestoreTransactionAttempt.h',
     'ios/generated/**/*.h',
   ]
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
