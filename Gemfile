@@ -21,8 +21,8 @@ gem 'xcodeproj', '1.28.1'
 #   (Bundler 2.6 deprecates `--frozen` and would persist it into .bundle/config).
 # - Do NOT put Bundler-native `cooldown:` here — that needs Bundler 4.0.13+.
 #   Dependabot cooldown for directory `/` lives in `.github/dependabot.yml`.
-gem 'simplecov', '~> 1.0'
+gem 'simplecov', '~> 1.2'
 gem 'simplecov-lcov', '~> 0.9'
 
 # Lint for packages/app Ruby helpers + __tests__ (yarn lint:ruby / tests:ios:ruby).
-gem 'rubocop', '~> 1.75'
+gem 'rubocop', '~> 1.90'
