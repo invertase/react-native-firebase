@@ -90,7 +90,7 @@ export default class FirestoreTransactionHandler {
     }
 
     const { meta, transaction } = this._pending[id];
-    const { updateFunction, reject } = meta;
+    const { updateFunction } = meta;
 
     transaction._prepare();
 
@@ -113,14 +113,22 @@ export default class FirestoreTransactionHandler {
       finalError = exception;
     }
 
-    if (updateFailed || finalError) {
-      reject?.(finalError);
+    const pendingAfter = this._pending[id];
+    if (!pendingAfter) {
       return;
     }
 
-    transaction._pendingResult = pendingResult;
+    if (updateFailed || finalError) {
+      pendingAfter.meta.reject?.(finalError);
+      return;
+    }
 
-    return this._firestore.native.transactionApplyBuffer(id, transaction._commandBuffer);
+    pendingAfter.transaction._pendingResult = pendingResult;
+
+    return this._firestore.native.transactionApplyBuffer(
+      id,
+      pendingAfter.transaction._commandBuffer,
+    );
   }
 
   _handleError(event: TransactionEvent): void {
