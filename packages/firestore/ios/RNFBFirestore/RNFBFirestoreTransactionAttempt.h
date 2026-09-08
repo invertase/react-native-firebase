@@ -28,6 +28,11 @@ FOUNDATION_EXPORT NSString *const RNFBFirestoreTransactionTimeoutErrorDomain;
 FOUNDATION_EXPORT const NSInteger RNFBFirestoreTransactionTimeoutErrorCode;
 FOUNDATION_EXPORT const int64_t RNFBFirestoreTransactionWaitTimeoutNSec;
 
+FOUNDATION_EXPORT NSString *const RNFBFirestoreTransactionRejectCodeAborted;
+FOUNDATION_EXPORT NSString *const RNFBFirestoreTransactionRejectCodeDeadlineExceeded;
+FOUNDATION_EXPORT NSString *const RNFBFirestoreTransactionRejectCodeInternalError;
+FOUNDATION_EXPORT NSString *const RNFBFirestoreTransactionMissingIdMessage;
+
 typedef NS_ENUM(NSInteger, RNFBFirestoreTransactionWaitResult) {
   RNFBFirestoreTransactionWaitResultSignaled = 0,
   RNFBFirestoreTransactionWaitResultTimeout = 1,
@@ -49,12 +54,23 @@ typedef NS_ENUM(NSInteger, RNFBFirestoreTransactionWaitResult) {
 + (dispatch_time_t)defaultWaitTimeout;
 - (NSError *)timeoutError;
 
+/**
+ * Arms a new semaphore and native transaction, and resets `updateBlockReturned` so get is eligible
+ * again. Timeout must stay a non-FIRFirestoreErrorDomain error so the SDK does not retry; a retry
+ * would make a leftover JS get look live on the new FIRTransaction.
+ */
 - (void)prepareForUpdateBlockWithNativeTransaction:(nullable id)nativeTransaction;
 - (RNFBFirestoreTransactionWaitResult)waitUntilSignaledWithTimeout:(dispatch_time_t)timeout;
 - (RNFBFirestoreTransactionWaitResult)completeWaitForSemaphore:(dispatch_semaphore_t)semaphore
                                                       timedOut:(BOOL)timedOut;
 
 - (BOOL)isEligibleForGet;
+/// JS reject payload when get is not eligible. aborted, else leftover after the update block
+/// returned (`deadline-exceeded`), else `internal-error`. Missing registry id is the module.
+- (NSDictionary *)ineligibleGetRejectUserInfo;
+/// nil when get is still live. Otherwise the same payload as `ineligibleGetRejectUserInfo`,
+/// chosen under the same lock as the eligibility check.
+- (nullable NSDictionary *)rejectUserInfoIfIneligibleForGet;
 - (BOOL)applyCommandBuffer:(nullable NSArray *)commandBuffer;
 - (void)abort;
 
