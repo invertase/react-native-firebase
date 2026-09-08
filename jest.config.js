@@ -30,4 +30,12 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@firebase|@react-native(-community)?))',
   ],
+  // Packages cross-import each other's built output (e.g. database imports
+  // `@react-native-firebase/app/dist/module/common/deeps`), which resolves
+  // through the workspace symlink to `packages/*/dist/**`. Without this,
+  // Jest instruments both that build artifact and the original `lib/**.ts`
+  // source it was compiled from, so any shared file with branches gets a
+  // second, all-zero coverage entry alongside the real one, and codecov's
+  // patch coverage misreports lines that are actually fully tested.
+  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
 };
