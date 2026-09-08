@@ -21,6 +21,11 @@ NSString *const RNFBFirestoreTransactionTimeoutErrorDomain =
     @"io.invertase.firebase.firestore.transaction";
 const NSInteger RNFBFirestoreTransactionTimeoutErrorCode = 4;
 const int64_t RNFBFirestoreTransactionWaitTimeoutNSec = 15 * NSEC_PER_SEC;
+NSString *const RNFBFirestoreTransactionRejectCodeAborted = @"aborted";
+NSString *const RNFBFirestoreTransactionRejectCodeDeadlineExceeded = @"deadline-exceeded";
+NSString *const RNFBFirestoreTransactionRejectCodeInternalError = @"internal-error";
+NSString *const RNFBFirestoreTransactionMissingIdMessage =
+    @"An internal error occurred whilst attempting to find a native transaction by id.";
 
 @implementation RNFBFirestoreTransactionAttempt {
   dispatch_semaphore_t _semaphore;
@@ -112,6 +117,38 @@ const int64_t RNFBFirestoreTransactionWaitTimeoutNSec = 15 * NSEC_PER_SEC;
 - (BOOL)isEligibleForGet {
   @synchronized(self) {
     return _semaphore != NULL && !_updateBlockReturned && !_aborted && _nativeTransaction != nil;
+  }
+}
+
+- (NSDictionary *)ineligibleGetRejectUserInfo {
+  @synchronized(self) {
+    if (_aborted) {
+      return @{
+        @"code" : RNFBFirestoreTransactionRejectCodeAborted,
+        @"message" : @"The transaction was aborted before this get could complete.",
+      };
+    }
+
+    if (_updateBlockReturned) {
+      return @{
+        @"code" : RNFBFirestoreTransactionRejectCodeDeadlineExceeded,
+        @"message" : @"The transaction update block returned before this get could complete.",
+      };
+    }
+
+    return @{
+      @"code" : RNFBFirestoreTransactionRejectCodeInternalError,
+      @"message" : RNFBFirestoreTransactionMissingIdMessage,
+    };
+  }
+}
+
+- (NSDictionary *)rejectUserInfoIfIneligibleForGet {
+  @synchronized(self) {
+    if (_semaphore != NULL && !_updateBlockReturned && !_aborted && _nativeTransaction != nil) {
+      return nil;
+    }
+    return [self ineligibleGetRejectUserInfo];
   }
 }
 

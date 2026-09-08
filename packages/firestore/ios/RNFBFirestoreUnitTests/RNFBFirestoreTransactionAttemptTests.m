@@ -100,6 +100,71 @@
   XCTAssertFalse(self.attempt.isEligibleForGet);
 }
 
+- (void)testIneligibleGet_neverPrepared_isInternalError {
+  NSDictionary *info = [self.attempt ineligibleGetRejectUserInfo];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeInternalError);
+  XCTAssertEqualObjects(info[@"message"], RNFBFirestoreTransactionMissingIdMessage);
+}
+
+- (void)testIneligibleGet_preparedWithoutTransaction_isInternalError {
+  [self.attempt prepareForUpdateBlockWithNativeTransaction:nil];
+  NSDictionary *info = [self.attempt ineligibleGetRejectUserInfo];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeInternalError);
+}
+
+- (void)testIneligibleGet_afterTimeout_isDeadlineExceeded {
+  [self.attempt prepareForUpdateBlockWithNativeTransaction:@"tx"];
+  XCTAssertEqual([self.attempt waitUntilSignaledWithTimeout:DISPATCH_TIME_NOW],
+                 RNFBFirestoreTransactionWaitResultTimeout);
+
+  NSDictionary *info = [self.attempt ineligibleGetRejectUserInfo];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeDeadlineExceeded);
+  XCTAssertEqualObjects(info[@"message"],
+                        @"The transaction update block returned before this get could complete.");
+}
+
+- (void)testIneligibleGet_afterSignaled_isDeadlineExceeded {
+  [self.attempt prepareForUpdateBlockWithNativeTransaction:@"tx"];
+  XCTAssertTrue([self.attempt applyCommandBuffer:@[]]);
+  XCTAssertEqual([self.attempt waitUntilSignaledWithTimeout:DISPATCH_TIME_NOW],
+                 RNFBFirestoreTransactionWaitResultSignaled);
+
+  NSDictionary *info = [self.attempt ineligibleGetRejectUserInfo];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeDeadlineExceeded);
+}
+
+- (void)testIneligibleGet_afterAbort_isAborted {
+  [self.attempt prepareForUpdateBlockWithNativeTransaction:@"tx"];
+  [self.attempt abort];
+
+  NSDictionary *info = [self.attempt ineligibleGetRejectUserInfo];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeAborted);
+  XCTAssertEqualObjects(info[@"message"],
+                        @"The transaction was aborted before this get could complete.");
+}
+
+- (void)testIneligibleGet_abortWinsOverReturnedUpdateBlock {
+  [self.attempt prepareForUpdateBlockWithNativeTransaction:@"tx"];
+  [self.attempt abort];
+  XCTAssertEqual([self.attempt waitUntilSignaledWithTimeout:DISPATCH_TIME_NOW],
+                 RNFBFirestoreTransactionWaitResultAborted);
+
+  NSDictionary *info = [self.attempt ineligibleGetRejectUserInfo];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeAborted);
+}
+
+- (void)testRejectUserInfoIfIneligible_nilWhenLive {
+  XCTAssertNotNil([self.attempt rejectUserInfoIfIneligibleForGet]);
+
+  [self.attempt prepareForUpdateBlockWithNativeTransaction:@"tx"];
+  XCTAssertNil([self.attempt rejectUserInfoIfIneligibleForGet]);
+
+  XCTAssertEqual([self.attempt waitUntilSignaledWithTimeout:DISPATCH_TIME_NOW],
+                 RNFBFirestoreTransactionWaitResultTimeout);
+  NSDictionary *info = [self.attempt rejectUserInfoIfIneligibleForGet];
+  XCTAssertEqualObjects(info[@"code"], RNFBFirestoreTransactionRejectCodeDeadlineExceeded);
+}
+
 - (void)testApplyBuffer_afterUpdateBlockReturned_isNoOp {
   [self.attempt prepareForUpdateBlockWithNativeTransaction:@"tx"];
   XCTAssertEqual([self.attempt waitUntilSignaledWithTimeout:DISPATCH_TIME_NOW],

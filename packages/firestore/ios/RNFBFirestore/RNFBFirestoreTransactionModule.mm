@@ -195,9 +195,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
 - (void)rejectMissingTransaction:(RCTPromiseRejectBlock)reject {
   [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                     userInfo:(NSMutableDictionary *)@{
-                                      @"code" : @"internal-error",
-                                      @"message" : @"An internal error occurred whilst attempting "
-                                                   @"to find a native transaction by id.",
+                                      @"code" : RNFBFirestoreTransactionRejectCodeInternalError,
+                                      @"message" : RNFBFirestoreTransactionMissingIdMessage,
                                     }];
 }
 
@@ -211,14 +210,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   NSNumber *transactionIdNumber = @(transactionId);
   RNFBFirestoreTransactionAttempt *attempt = [transactions get:transactionIdNumber];
 
-  if (![attempt isEligibleForGet]) {
+  if (attempt == nil) {
     [self rejectMissingTransaction:reject];
     return;
   }
 
+  NSDictionary *ineligible = [attempt rejectUserInfoIfIneligibleForGet];
+  if (ineligible != nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[ineligible mutableCopy]];
+    return;
+  }
+
   @synchronized(attempt) {
-    if (![attempt isEligibleForGet]) {
-      [self rejectMissingTransaction:reject];
+    ineligible = [attempt rejectUserInfoIfIneligibleForGet];
+    if (ineligible != nil) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[ineligible mutableCopy]];
       return;
     }
 
