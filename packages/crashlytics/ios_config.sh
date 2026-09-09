@@ -28,13 +28,33 @@ else
   # to get the DerivedData project root where SourcePackages lives.
   SPM_CRASHLYTICS_DIR="${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics"
   SPM_UPLOAD_SYMBOLS="${SPM_CRASHLYTICS_DIR}/upload-symbols"
-  if [[ -x "${SPM_UPLOAD_SYMBOLS}" ]]; then
+
+  # GoogleService-Info.plist can live directly under PROJECT_DIR (e.g. this repo's
+  # tests/ios/ fixture) or inside the app target's own folder next to AppDelegate
+  # (Expo CNG and RN CLI convention, e.g. test-expo/ios/<target>/, test-rn-bare/ios/<target>/).
+  # Prefer whichever one is actually present on disk.
+  if [[ -f "${PROJECT_DIR}/GoogleService-Info.plist" ]]; then
+    SPM_GSP_PATH="${PROJECT_DIR}/GoogleService-Info.plist"
+  elif [[ -f "${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist" ]]; then
+    SPM_GSP_PATH="${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist"
+  else
+    SPM_GSP_PATH=""
+  fi
+
+  if [[ -z "${SPM_GSP_PATH}" ]]; then
+    echo "warning: Unable to find GoogleService-Info.plist at \${PROJECT_DIR} or \${PROJECT_DIR}/\${TARGET_NAME}. Skipping dSYM upload."
+    echo "warning: Checked: ${PROJECT_DIR}/GoogleService-Info.plist, ${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist"
+  elif [[ -x "${SPM_UPLOAD_SYMBOLS}" ]]; then
     echo "info: Exec FirebaseCrashlytics upload-symbols from SPM"
-    "${SPM_UPLOAD_SYMBOLS}" -gsp "${PROJECT_DIR}/GoogleService-Info.plist" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+    if ! "${SPM_UPLOAD_SYMBOLS}" -gsp "${SPM_GSP_PATH}" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"; then
+      echo "warning: FirebaseCrashlytics upload-symbols (SPM) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
+    fi
   elif [[ -f "${SPM_UPLOAD_SYMBOLS}" ]]; then
     echo "info: Exec FirebaseCrashlytics upload-symbols from SPM (chmod +x)"
     chmod +x "${SPM_UPLOAD_SYMBOLS}"
-    "${SPM_UPLOAD_SYMBOLS}" -gsp "${PROJECT_DIR}/GoogleService-Info.plist" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+    if ! "${SPM_UPLOAD_SYMBOLS}" -gsp "${SPM_GSP_PATH}" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"; then
+      echo "warning: FirebaseCrashlytics upload-symbols (SPM) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
+    fi
   else
     echo "warning: FirebaseCrashlytics run script not found at CocoaPods, framework, or SPM paths. Skipping dSYM upload."
     echo "warning: Checked: \${PODS_ROOT}/FirebaseCrashlytics/run, \${PROJECT_DIR}/FirebaseCrashlytics.framework/run, ${SPM_UPLOAD_SYMBOLS}"
