@@ -2,7 +2,7 @@
   "name": "test-expo",
   "version": "26.4.0",
   "private": true,
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start"
   },
@@ -11,11 +11,23 @@
     "@react-native-firebase/messaging": "26.4.0",
     "expo": "57.0.14",
     "expo-build-properties": "57.0.12",
+    "expo-constants": "57.0.12",
+    "expo-dev-client": "57.0.13",
+    "expo-linking": "57.0.6",
+    "expo-router": "57.0.14",
     "react": "19.2.3",
-    "react-native": "0.86.2"
+    "react-native": "0.86.2",
+    "react-native-gesture-handler": "2.32.0",
+    "react-native-safe-area-context": "5.7.0",
+    "react-native-screens": "4.26.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "babel-preset-expo": "57.0.6"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": ["@expo/ui"]
+    }
   }
 }

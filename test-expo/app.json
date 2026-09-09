@@ -2,6 +2,7 @@
   "expo": {
     "name": "testexpo",
     "slug": "testexpo",
+    "scheme": "testexpo",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -11,6 +12,8 @@
       "supportsTablet": true
     },
     "plugins": [
+      "expo-router",
+      "expo-dev-client",
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
       [
