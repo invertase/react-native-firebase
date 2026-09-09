@@ -74,7 +74,7 @@ const reference = ref(getStorage(), '/images/t-shirts/black-t-shirt-sm.png');
 
 To upload a file directly from the users device, the `putFile` method on a reference accepts a string path to the file
 on the users device. For example, you may be creating an app which uploads users photos. The React Native Firebase
-library provides [Utils](/app/utils) to help identify device directories:
+library provides [utilities](/app/utils) such as `FilePath` to help identify device directories:
 
 ```jsx
 import React, { useEffect } from 'react';
