@@ -11,6 +11,10 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.invertase.testexpo",
+      "googleServicesFile": "./google-services.json"
+    },
     "plugins": [
       "expo-router",
       "expo-dev-client",
