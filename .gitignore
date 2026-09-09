@@ -625,6 +625,7 @@ Package.Resolved
 
 # Generated Expo prebuild / pods / local modules (test-expo fixture sources stay tracked)
 test-expo/ios/
+test-expo/android/
 test-expo/node_modules/
 test-expo/.expo/
 # Fake Expo fixture plist (global GoogleService-Info.plist rule would drop it)
