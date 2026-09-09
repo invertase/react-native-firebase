@@ -628,8 +628,10 @@ test-expo/ios/
 test-expo/android/
 test-expo/node_modules/
 test-expo/.expo/
-# Fake Expo fixture plist (global GoogleService-Info.plist rule would drop it)
+# Fake Expo fixture plist / json (global GoogleService-Info.plist and
+# google-services.json rules would drop them)
 !test-expo/GoogleService-Info.plist
+!test-expo/google-services.json
 
 # RN CLI prebuilt RNCore compile fixture: own ios/ sources, never android/ or Pods
 test-rn-bare/android/

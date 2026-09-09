@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "000000000000",
+    "firebase_url": "https://test-expo-fixture-fake.firebaseio.com",
+    "project_id": "test-expo-fixture-fake",
+    "storage_bucket": "test-expo-fixture-fake.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:fakefakefakefakefake",
+        "android_client_info": {
+          "package_name": "com.invertase.testexpo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "000000000000-testexpoandroidfakefakefake.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invertase.testexpo",
+            "certificate_hash": "0000000000000000000000000000000000000000"
+          }
+        },
+        {
+          "client_id": "000000000000-testexpofakefakefakefakefake.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKEFAKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "000000000000-testexpofakefakefakefakefake.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
