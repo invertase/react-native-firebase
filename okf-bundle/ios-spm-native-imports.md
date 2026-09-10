@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-08-06T16:00:00Z
+timestamp: 2026-09-10T00:00:00Z
 ---
 
 # iOS SPM native integration decisions
@@ -242,8 +242,9 @@ GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158)
 
 Maintainer check of the **Expo documented path** (SPM + dynamic frameworks +
 prebuild-generated AppDelegate `FIRApp` call) is **`yarn test-expo:ios:link`**
-only — [agent command policy](testing/agent-command-policy.md). That is a
-workspace **link** fixture (`test-expo/`), not Detox e2e (`yarn tests:ios:*`).
+only — [agent command policy](testing/agent-command-policy.md). `test-expo/` is
+also the user-facing Expo example; the closer is still a workspace **link**
+gate (build-only, does not launch), not Detox e2e (`yarn tests:ios:*`).
 Do not restate `expo prebuild` / `xcodebuild` here. Package index:
 [App package](packages/app/index.md).
 
@@ -466,10 +467,18 @@ Expo paths do not warn.
 
 The documented Podfile configuration does not change: SPM on,
 `use_frameworks! :linkage => :dynamic`, prebuilt RNCore on. The canonical regression
-fixture is **`yarn test-expo:ios:link`** ([agent command policy](testing/agent-command-policy.md)).
-Link success confirms both RNFB framework products are in dynamic form and
-duplicate Firebase symbols are absent, while still validating the app target's
-own FirebaseCore dependency (the original purpose of that fixture). See
+closer is **`yarn test-expo:ios:link`** ([agent command policy](testing/agent-command-policy.md)).
+That command is **build-only** (`xcodebuild build`; it does not launch the app).
+Link success confirms every discovered `RNFB*` CocoaPods product is a framework
+and duplicate Firebase symbols are absent, while still validating the app target's
+own FirebaseCore dependency. Discovery is dynamic against the generated Pods
+project. Packages with no iOS native target (pure-JS `packages/ai`, Android-only
+`packages/phone-number-verification`) do not produce an `RNFB*` product and are
+not in that graph. Named App+Messaging GitHub
+[#9158](https://github.com/invertase/react-native-firebase/issues/9158) /
+[#9202](https://github.com/invertase/react-native-firebase/issues/9202)
+signatures remain nested inside that generic gate. Do not hard-code an inventory
+name list here. See
 [Maintainer check of the Expo documented path](#app-target-firebasecore-link-package-dependency-alone-is-not-enough).
 The [#9202](https://github.com/invertase/react-native-firebase/issues/9202)
 regression signature is duplicate `_FIRFirebaseVersion` symbols from
@@ -517,8 +526,8 @@ invariants:
   job verifies that every `@rpath` framework dependency is embedded;
 - when Expo precompiled modules are active, `rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!`
   still restores RNFB targets from static back to dynamic if Expo's pre-install
-  hook downgraded them, and the `test-expo:ios:link` fixture still passes with no
-  duplicate Firebase symbols.
+  hook downgraded them, and `yarn test-expo:ios:link` still passes with every
+  discovered `RNFB*` product a framework and no duplicate Firebase symbols.
 
 The bullets above are the SPM-specific review checklist. General build, lint,
 and evidence requirements are owned by the

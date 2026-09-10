@@ -2,6 +2,7 @@
   "expo": {
     "name": "testexpo",
     "slug": "testexpo",
+    "scheme": "testexpo",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -10,9 +11,20 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.invertase.testexpo",
+      "googleServicesFile": "./google-services.json"
+    },
     "plugins": [
+      "expo-router",
+      "expo-dev-client",
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
+      "@react-native-firebase/analytics",
+      "@react-native-firebase/app-check",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      "@react-native-firebase/perf",
       [
         "expo-build-properties",
         {

@@ -15,7 +15,10 @@ export default defineConfig([
     'packages/**/dist/',
     'packages/**/android/build/',
     '**/type-test.ts',
-    'packages/ai/__tests__/test-utils'
+    'packages/ai/__tests__/test-utils',
+    'test-expo/ios/',
+    'test-expo/android/',
+    'test-expo/.expo/',
   ]),
 
   {

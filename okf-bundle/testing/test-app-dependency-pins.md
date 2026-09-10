@@ -1,27 +1,27 @@
 ---
 type: Reference
 title: Test app dependency pins
-description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps plus workspace compile/link fixtures; codegen resolves from tests/.
+description: Intentional version locks for the mobile (tests/) and macOS (tests-macos/) e2e apps plus the Expo example / iOS link closer and RN CLI compile fixture; codegen resolves from tests/.
 tags: [testing, dependencies, react-native-macos, cli, pins]
-timestamp: 2026-09-03T00:00:00Z
+timestamp: 2026-09-10T00:00:00Z
 ---
 
 # Test app dependency pins
 
-Canonical owner for **intentional** version locks on the e2e apps (`tests/` mobile, `tests-macos/` macOS), the compile/link fixtures (`test-rn-bare/`, `test-expo/`), and how the RN/codegen toolchain is selected. Do not “helpfully” bump these via Dependabot merges or drive-by upgrades without coordinating the affected app (and codegen when mobile moves).
+Canonical owner for **intentional** version locks on the e2e apps (`tests/` mobile, `tests-macos/` macOS), the Expo example / documented-path iOS link closer (`test-expo/`), the RN CLI compile fixture (`test-rn-bare/`), and how the RN/codegen toolchain is selected. Do not “helpfully” bump these via Dependabot merges or drive-by upgrades without coordinating the affected app (and codegen when mobile moves).
 
 Codegen determinism: [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted).
 
 <a id="dual-app-model"></a>
 
-## Workspace e2e apps and fixtures
+## Workspace e2e apps, Expo example, and fixtures
 
 | App | Role | RN pin |
 |-----|------|--------|
 | **`tests/`** | iOS + Android Detox e2e; **codegen / `codegen:verify` toolchain** | **Owns** the mobile line: `tests/package.json` (`react-native` + CLI / `@react-native/*`) |
 | **`tests-macos/`** | macOS Jet e2e (firebase-js-sdk harness; shared JS under `tests/`) | Independent: `tests-macos/package.json` (`react-native` + `react-native-macos`) |
-| **`test-expo/`** | Expo CNG iOS **link** fixture (not Detox). Closer: `yarn test-expo:ios:link` | Tracks the **mobile** line (`test-expo/package.json`; same `react-native` / `react`) |
-| **`test-rn-bare/`** | Vanilla RN CLI JS+iOS **compile** fixture (not Detox). GitHub #8883 closer: `yarn test-rn-bare:ios:build` | Tracks the **mobile** line (`test-rn-bare/package.json`; same RN / CLI / `@react-native/*` as `tests/`) |
+| **`test-expo/`** | User-facing Expo example (Expo Router, one route per included inventory package) **and** Expo CNG iOS **link** closer (not Detox). Closer: `yarn test-expo:ios:link` (build-only; does not launch). Native `RNFB*` discovery: [iOS SPM § Expo precompiled linkage repair](../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair) | Tracks the **mobile** line (`test-expo/package.json`; same `react-native` / `react`) |
+| **`test-rn-bare/`** | Vanilla RN CLI JS+iOS **compile** fixture (not Detox, not an example app). GitHub #8883 closer: `yarn test-rn-bare:ios:build` | Tracks the **mobile** line (`test-rn-bare/package.json`; same RN / CLI / `@react-native/*` as `tests/`) |
 
 **macOS no longer forces the mobile RN line.** `react-native-macos` only constrains `tests-macos/`. Mobile may advance independently once that workspace is bumped (see [When pins may move](#when-pins-may-move)). `test-expo/` and `test-rn-bare/` are **not** a third RN line.
 
@@ -51,7 +51,7 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 
 **iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The e2e app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so third-party dynamic pods (`react-native-device-info`, `@invertase/react-native-apple-authentication`) link against source RNCore (`RCTEventEmitter`) under SPM-dynamic Firebase. That pin is **Issue 2** and stays on `tests/`. Vanilla RN CLI consumer compile (GitHub #8883) is `test-rn-bare/` plus `yarn test-rn-bare:ios:build` ([agent command policy](agent-command-policy.md)). Do **not** “fix” `test-rn-bare/` by flipping `tests/ios/Podfile`. RNFB podspec Clang / xcconfig order is **Issue 1** ([iOS RNCore podspec invariants](../ios-rncore-podspec.md)). Do not re-enable prebuilt RNCore for the e2e app without re-validating those third-party pods.
 
-**Agent / Dependabot rule:** leave these pins alone unless the change is an intentional mobile-line (e2e + fixtures) or macOS upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other, a tracking fixture, or codegen verify.
+**Agent / Dependabot rule:** leave these pins alone unless the change is an intentional mobile-line (e2e + Expo example + RN CLI fixture) or macOS upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other, a tracking fixture, or codegen verify.
 
 ## RNFB workspace pins
 

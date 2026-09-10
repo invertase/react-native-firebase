@@ -145,6 +145,8 @@ jobs:
           command: yarn
       - name: Lint
         run: yarn tsc:compile
+      - name: Test-expo TypeScript
+        run: yarn tsc:compile:test-expo
       # https://github.com/actions/cache/releases
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
