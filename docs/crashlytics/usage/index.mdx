@@ -55,6 +55,8 @@ To learn more, view the [Firebase Crashlytics documentation](https://firebase.go
 
 # Usage
 
+See the Expo example at [`test-expo/app/crashlytics.tsx`](https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/crashlytics.tsx).
+
 Use the `log` method throughout your app to accumulate extra context for possible crashes that can happen. For additional context, Crashlytics also offers [various methods](/crashlytics/usage#crash-attributes) to set attributes for the crash report. You can also test Crashlytics by forcing a crash through the `crash` method.
 
 Crashlytics also supports sending JavaScript stack traces to the Firebase console. This can be used in any situation where an error occurs but is caught by your own code to recover gracefully. To send a stack trace, pass a JavaScript Error to the `recordError` method.
