@@ -20,6 +20,7 @@
 #import <React/RCTUtils.h>
 #import "RNFBApp/RCTConvert+FIRApp.h"
 
+#import "RNFBFirestoreTransactionAttempt.h"
 #import "RNFBFirestoreTransactionModule.h"
 #import "RNFBFirestoreTransactionRegistry.h"
 #import "RNFBFirestoreTurboModules.h"
@@ -29,6 +30,7 @@ static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transactio
 
 @interface RNFBFirestoreTransactionModule () <NativeRNFBTurboFirestoreTransactionSpec,
                                               RCTBridgeModule>
+- (void)rejectMissingTransaction:(RCTPromiseRejectBlock)reject;
 @end
 
 @implementation RNFBFirestoreTransactionModule
@@ -75,18 +77,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
 
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  __block BOOL aborted = false;
-  __block NSMutableDictionary *transactionState = [NSMutableDictionary new];
+  RNFBFirestoreTransactionAttempt *attempt = [[RNFBFirestoreTransactionAttempt alloc] init];
 
   id transactionBlock = ^id(FIRTransaction *transaction, NSError **errorPointer) {
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [attempt prepareForUpdateBlockWithNativeTransaction:transaction];
 
-    @synchronized(transactionState) {
-      transactionState[@"semaphore"] = semaphore;
-      transactionState[@"transaction"] = transaction;
-    }
-
-    if (![transactions putOrSkip:transactionIdNumber value:transactionState]) {
+    if (![transactions putOrSkip:transactionIdNumber value:attempt]) {
       *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain
                                           code:FIRFirestoreErrorCodeAborted
                                       userInfo:@{}];
@@ -106,91 +102,85 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                        }];
     });
 
-    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 15 * NSEC_PER_SEC);
-    BOOL timedOut = dispatch_semaphore_wait(semaphore, delayTime) != 0;
+    RNFBFirestoreTransactionWaitResult waitResult =
+        [attempt waitUntilSignaledWithTimeout:[RNFBFirestoreTransactionAttempt defaultWaitTimeout]];
 
-    @synchronized(transactionState) {
-      aborted = (BOOL)transactionState[@"aborted"];
-
-      if (transactionState[@"semaphore"] != semaphore) {
-        return nil;
-      }
-
-      if (aborted == YES) {
-        *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain
-                                            code:FIRFirestoreErrorCodeAborted
-                                        userInfo:@{}];
-        return nil;
-      }
-
-      if (timedOut == YES) {
-        *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain
-                                            code:FIRFirestoreErrorCodeDeadlineExceeded
-                                        userInfo:@{}];
-        return nil;
-      }
-
-      NSArray *commandBuffer = transactionState[@"commandBuffer"];
-
-      for (NSDictionary *command in commandBuffer) {
-        NSString *type = command[@"type"];
-        NSString *path = command[@"path"];
-        FIRDocumentReference *documentReference =
-            [RNFBFirestoreCommon getDocumentForFirestore:firestore path:path];
-
-        if ([type isEqualToString:@"DELETE"]) {
-          [transaction deleteDocument:documentReference];
-        } else if ([type isEqualToString:@"SET"]) {
-          NSDictionary *options = command[@"options"];
-          NSDictionary *parsedData = [RNFBFirestoreSerialize parseNSDictionary:firestore
-                                                                    dictionary:command[@"data"]];
-
-          if (options[@"merge"]) {
-            [transaction setData:parsedData forDocument:documentReference merge:true];
-          } else if (options[@"mergeFields"]) {
-            NSArray *mergeFields = options[@"mergeFields"];
-            [transaction setData:parsedData forDocument:documentReference mergeFields:mergeFields];
-          } else {
-            [transaction setData:parsedData forDocument:documentReference];
-          }
-        } else if ([type isEqualToString:@"UPDATE"]) {
-          NSDictionary *parsedData = [RNFBFirestoreSerialize parseNSDictionary:firestore
-                                                                    dictionary:command[@"data"]];
-          [transaction updateData:parsedData forDocument:documentReference];
-        }
-      }
-
+    if (waitResult == RNFBFirestoreTransactionWaitResultStale) {
       return nil;
     }
+
+    if (waitResult == RNFBFirestoreTransactionWaitResultAborted) {
+      *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain
+                                          code:FIRFirestoreErrorCodeAborted
+                                      userInfo:@{}];
+      return nil;
+    }
+
+    if (waitResult == RNFBFirestoreTransactionWaitResultTimeout) {
+      *errorPointer = [attempt timeoutError];
+      return nil;
+    }
+
+    NSArray *commandBuffer = attempt.commandBuffer;
+
+    for (NSDictionary *command in commandBuffer) {
+      NSString *type = command[@"type"];
+      NSString *path = command[@"path"];
+      FIRDocumentReference *documentReference =
+          [RNFBFirestoreCommon getDocumentForFirestore:firestore path:path];
+
+      if ([type isEqualToString:@"DELETE"]) {
+        [transaction deleteDocument:documentReference];
+      } else if ([type isEqualToString:@"SET"]) {
+        NSDictionary *options = command[@"options"];
+        NSDictionary *parsedData = [RNFBFirestoreSerialize parseNSDictionary:firestore
+                                                                  dictionary:command[@"data"]];
+
+        if (options[@"merge"]) {
+          [transaction setData:parsedData forDocument:documentReference merge:true];
+        } else if (options[@"mergeFields"]) {
+          NSArray *mergeFields = options[@"mergeFields"];
+          [transaction setData:parsedData forDocument:documentReference mergeFields:mergeFields];
+        } else {
+          [transaction setData:parsedData forDocument:documentReference];
+        }
+      } else if ([type isEqualToString:@"UPDATE"]) {
+        NSDictionary *parsedData = [RNFBFirestoreSerialize parseNSDictionary:firestore
+                                                                  dictionary:command[@"data"]];
+        [transaction updateData:parsedData forDocument:documentReference];
+      }
+    }
+
+    return nil;
   };
 
   id completionBlock = ^(id result, NSError *error) {
     [transactions take:transactionIdNumber];
-    @synchronized(transactionState) {
-      if (aborted == NO) {
-        NSMutableDictionary *eventMap = [NSMutableDictionary new];
-
-        if (error != nil) {
-          NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
-          eventMap[@"type"] = @"error";
-          eventMap[@"error"] = @{
-            @"code" : codeAndMessage[0],
-            @"message" : codeAndMessage[1],
-          };
-        } else {
-          eventMap[@"type"] = @"complete";
-        }
-
-        [[RNFBRCTEventEmitter shared]
-            sendEventWithName:RNFB_FIRESTORE_TRANSACTION_EVENT
-                         body:@{
-                           @"listenerId" : transactionIdNumber,
-                           @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
-                           @"databaseId" : databaseId,
-                           @"body" : eventMap,
-                         }];
-      }
+    if (attempt.aborted) {
+      return;
     }
+
+    NSMutableDictionary *eventMap = [NSMutableDictionary new];
+
+    if (error != nil) {
+      NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
+      eventMap[@"type"] = @"error";
+      eventMap[@"error"] = @{
+        @"code" : codeAndMessage[0],
+        @"message" : codeAndMessage[1],
+      };
+    } else {
+      eventMap[@"type"] = @"complete";
+    }
+
+    [[RNFBRCTEventEmitter shared]
+        sendEventWithName:RNFB_FIRESTORE_TRANSACTION_EVENT
+                     body:@{
+                       @"listenerId" : transactionIdNumber,
+                       @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                       @"databaseId" : databaseId,
+                       @"body" : eventMap,
+                     }];
   };
 
   if (maxAttempts > 0) {
@@ -202,6 +192,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
   }
 }
 
+- (void)rejectMissingTransaction:(RCTPromiseRejectBlock)reject {
+  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                    userInfo:(NSMutableDictionary *)@{
+                                      @"code" : RNFBFirestoreTransactionRejectCodeInternalError,
+                                      @"message" : RNFBFirestoreTransactionMissingIdMessage,
+                                    }];
+}
+
 - (void)transactionGetDocument:(NSString *)appName
                     databaseId:(NSString *)databaseId
                  transactionId:(double)transactionId
@@ -210,16 +208,28 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                         reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
   NSNumber *transactionIdNumber = @(transactionId);
-  NSMutableDictionary *transactionState = [transactions get:transactionIdNumber];
+  RNFBFirestoreTransactionAttempt *attempt = [transactions get:transactionIdNumber];
 
-  if (!transactionState) {
-    DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionIdNumber);
+  if (attempt == nil) {
+    [self rejectMissingTransaction:reject];
     return;
   }
 
-  @synchronized(transactionState) {
+  NSDictionary *ineligible = [attempt rejectUserInfoIfIneligibleForGet];
+  if (ineligible != nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[ineligible mutableCopy]];
+    return;
+  }
+
+  @synchronized(attempt) {
+    ineligible = [attempt rejectUserInfoIfIneligibleForGet];
+    if (ineligible != nil) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[ineligible mutableCopy]];
+      return;
+    }
+
     NSError *error = nil;
-    FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
+    FIRTransaction *transaction = (FIRTransaction *)attempt.nativeTransaction;
     FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                            databaseId:databaseId];
     FIRDocumentReference *ref = [RNFBFirestoreCommon getDocumentForFirestore:firestore path:path];
@@ -248,17 +258,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                 databaseId:(NSString *)databaseId
              transactionId:(double)transactionId {
   NSNumber *transactionIdNumber = @(transactionId);
-  NSMutableDictionary *transactionState = [transactions get:transactionIdNumber];
-
-  if (!transactionState) {
-    return;
-  }
-
-  @synchronized(transactionState) {
-    dispatch_semaphore_t semaphore = transactionState[@"semaphore"];
-    transactionState[@"aborted"] = @(true);
-    dispatch_semaphore_signal(semaphore);
-  }
+  RNFBFirestoreTransactionAttempt *attempt = [transactions get:transactionIdNumber];
+  [attempt abort];
 }
 
 - (void)transactionApplyBuffer:(NSString *)appName
@@ -266,18 +267,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFirestoreTransaction);
                  transactionId:(double)transactionId
                  commandBuffer:(NSArray *)commandBuffer {
   NSNumber *transactionIdNumber = @(transactionId);
-  NSMutableDictionary *transactionState = [transactions get:transactionIdNumber];
-
-  if (!transactionState) {
-    DLog(@"transactionApplyBuffer called for non-existent transactionId %@", transactionIdNumber);
-    return;
-  }
-
-  @synchronized(transactionState) {
-    dispatch_semaphore_t semaphore = [transactionState valueForKey:@"semaphore"];
-    [transactionState setValue:commandBuffer forKey:@"commandBuffer"];
-    dispatch_semaphore_signal(semaphore);
-  }
+  RNFBFirestoreTransactionAttempt *attempt = [transactions get:transactionIdNumber];
+  [attempt applyCommandBuffer:commandBuffer];
 }
 
 @end
