@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/invertase/react-native-firebase/security/policy
+    about: Do not file a public issue. Use private reporting or email as described in SECURITY.md.
   - name: Feature Request
     url: https://github.com/invertase/react-native-firebase/discussions/new?category_id=24212123
     about: Share ideas for new features.
