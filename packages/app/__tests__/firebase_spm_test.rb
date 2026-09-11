@@ -483,7 +483,7 @@ class FirebaseSpmTest < Minitest::Test
     call = spm_calls[0]
     assert_equal spec, call[:spec]
     assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', call[:url]
-    assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: '12.10.0' }, call[:requirement])
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, call[:requirement])
     assert_equal ['FirebaseAuth'], call[:products]
   end
 
@@ -750,6 +750,7 @@ class FirebaseSpmTest < Minitest::Test
     ref = target.package_product_dependencies[0]
     assert_equal 'FirebaseCore', ref.product_name
     assert_equal RNFirebaseSPM.url, ref.package.repositoryURL
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, ref.package.requirement)
 
     search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
     target.build_configurations.each do |config|
@@ -848,6 +849,7 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_equal 1, user_project.root_object.package_references.length
     assert_same existing_pkg, user_project.root_object.package_references[0]
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, existing_pkg.requirement)
     assert_equal 1, target.package_product_dependencies.length
     assert_same existing_pkg, target.package_product_dependencies[0].package
     assert_equal 1, user_project.save_count
@@ -902,12 +904,103 @@ class FirebaseSpmTest < Minitest::Test
     assert_same existing_ref, target.package_product_dependencies[0]
     assert_equal 1, user_project.root_object.package_references.length
     assert_same existing_pkg, user_project.root_object.package_references[0]
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, existing_pkg.requirement)
     assert_equal 1, user_project.save_count
 
     search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
     target.build_configurations.each do |config|
       assert_includes target.build_settings(config.name)['SWIFT_INCLUDE_PATHS'], search_path
     end
+  end
+
+  def test_add_core_pins_already_linked_package_to_exact_version
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    existing_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    existing_pkg.repositoryURL = RNFirebaseSPM.url
+    existing_pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }
+
+    existing_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    existing_ref.package = existing_pkg
+    existing_ref.product_name = 'FirebaseCore'
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [existing_ref])
+    build_file = Xcodeproj::Project::Object::PBXBuildFile.new
+    build_file.product_ref = existing_ref
+    target.frameworks_build_phase.files << build_file
+
+    user_project = MockUserProject.new([target], package_references: [existing_pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, existing_pkg.requirement)
+    assert_equal 1, target.package_product_dependencies.length
+    assert_same existing_ref, target.package_product_dependencies[0]
+    assert_equal 1, target.frameworks_build_phase.files.length
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_add_core_already_linked_exact_version_does_not_resave
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    existing_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    existing_pkg.repositoryURL = RNFirebaseSPM.url
+    existing_pkg.requirement = { kind: 'exactVersion', version: '12.10.0' }
+
+    existing_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    existing_ref.package = existing_pkg
+    existing_ref.product_name = 'FirebaseCore'
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [existing_ref])
+    build_file = Xcodeproj::Project::Object::PBXBuildFile.new
+    build_file.product_ref = existing_ref
+    target.frameworks_build_phase.files << build_file
+
+    user_project = MockUserProject.new([target], package_references: [existing_pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, existing_pkg.requirement)
+    assert_equal 0, user_project.save_count
+  end
+
+  def test_pin_spm_package_requirement_noops_without_writable_package
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    refute rnfirebase_pin_spm_package_requirement!(nil)
+    refute rnfirebase_pin_spm_package_requirement!(Object.new)
+  end
+
+  def test_pin_spm_package_requirement_noops_when_already_exact
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    pkg.requirement = { kind: 'exactVersion', version: '12.10.0' }
+
+    refute rnfirebase_pin_spm_package_requirement!(pkg)
+    assert_equal({ kind: 'exactVersion', version: '12.10.0' }, pkg.requirement)
+  end
+
+  def test_rnfb_pod_target_predicate
+    load_firebase_spm
+
+    analytics = MockTarget.new([])
+    analytics.name = 'RNFBAnalytics'
+    assert rnfirebase_rnfb_pod_target?(analytics)
+    app_pod = MockTarget.new([])
+    app_pod.name = 'RNFBApp'
+    assert rnfirebase_rnfb_pod_target?(app_pod)
+    refute rnfirebase_rnfb_pod_target?(MockTarget.new([]))
+    other = MockTarget.new([])
+    other.name = 'React-Core'
+    refute rnfirebase_rnfb_pod_target?(other)
+    refute rnfirebase_rnfb_pod_target?(Object.new)
   end
 
   # ── rnfirebase_apply_spm_build_settings ──
@@ -925,10 +1018,13 @@ class FirebaseSpmTest < Minitest::Test
 
     user_target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([user_target])
-    pods_target = MockTarget.new([])
+    analytics_pod = MockTarget.new([])
+    analytics_pod.name = 'RNFBAnalytics'
+    other_pod = MockTarget.new([])
+    other_pod.name = 'React-Core'
     pods_project = MockPodsProject.new(
       uuid_prefix: 'ABCDEF',
-      targets: [pods_target]
+      targets: [analytics_pod, other_pod]
     )
     installer = MockInstaller.new(
       [MockAggregateTarget.new(user_project)],
@@ -942,7 +1038,13 @@ class FirebaseSpmTest < Minitest::Test
       assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
       assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
     end
-    pods_target.build_configurations.each do |config|
+    analytics_pod.build_configurations.each do |config|
+      assert_includes config.build_settings['OTHER_LDFLAGS'], '-ObjC'
+      assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
+      assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
+    end
+    other_pod.build_configurations.each do |config|
+      refute_includes rnfirebase_build_setting_list(config.build_settings['OTHER_LDFLAGS']), '-ObjC'
       assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
       assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
     end
@@ -963,12 +1065,18 @@ class FirebaseSpmTest < Minitest::Test
       config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
     end
     user_project = MockUserProject.new([user_target])
-    pods_target = MockTarget.new([])
-    pods_target.build_configurations.each do |config|
+    analytics_pod = MockTarget.new([], name: 'RNFBAnalytics')
+    analytics_pod.build_configurations.each do |config|
+      config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -ObjC'
       config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
       config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
     end
-    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [pods_target])
+    other_pod = MockTarget.new([], name: 'React-Core')
+    other_pod.build_configurations.each do |config|
+      config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES'] = 'NO'
+      config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES'] = 'NO'
+    end
+    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [analytics_pod, other_pod])
     installer = MockInstaller.new(
       [MockAggregateTarget.new(user_project)],
       pods_project: pods_project
@@ -982,6 +1090,12 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 0, pods_project.save_count
     user_target.build_configurations.each do |config|
       assert_equal '$(inherited) -ObjC', config.build_settings['OTHER_LDFLAGS']
+    end
+    analytics_pod.build_configurations.each do |config|
+      assert_equal '$(inherited) -ObjC', config.build_settings['OTHER_LDFLAGS']
+    end
+    other_pod.build_configurations.each do |config|
+      refute_includes rnfirebase_build_setting_list(config.build_settings['OTHER_LDFLAGS']), '-ObjC'
     end
   end
 
