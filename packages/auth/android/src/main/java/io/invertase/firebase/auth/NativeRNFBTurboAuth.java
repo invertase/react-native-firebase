@@ -195,8 +195,6 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
           } else {
             eventBody.putString("appName", appName); // for js side distribution
           }
-          Log.d(TAG, "addAuthStateListener:eventBody " + eventBody.toString());
-
           ReactNativeFirebaseEvent event =
               new ReactNativeFirebaseEvent("auth_state_changed", eventBody, appName);
           emitter.sendEvent(event);
@@ -1518,7 +1516,7 @@ public class NativeRNFBTurboAuth extends NativeRNFBTurboAuthSpec {
       final String requestKey,
       final double timeout,
       final boolean forceResend) {
-    Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
+    Log.d(TAG, "verifyPhoneNumber");
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
