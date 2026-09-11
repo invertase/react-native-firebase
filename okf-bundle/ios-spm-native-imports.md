@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-08-06T16:00:00Z
+timestamp: 2026-09-11T00:00:00Z
 ---
 
 # iOS SPM native integration decisions
@@ -214,6 +214,39 @@ Linear CPRN-292.
 Do **not** reintroduce comments or docs that claim firebase-ios-sdk products
 use `.library(type: .dynamic)`. That claim is false and misled debugging of
 the multi-pod sharing failure.
+
+## Exact SPM Firebase iOS SDK version
+
+CocoaPods already pins Firebase pods with an exact `version`
+(`spec.dependency pod, version` from `sdkVersions.ios.firebase`). SPM used
+`{ kind: 'upToNextMajorVersion', minimumVersion: version }` in both
+`firebase_dependency` (RN `spm_dependency` → Pods project) and
+`rnfirebase_add_spm_core_to_app_target` (user-project `package_references`).
+Xcode could therefore resolve a newer 12.x than the RNFB pin.
+
+SPM package requirement is `{ kind: 'exactVersion', version: version }` —
+the hash RN's `spm_dependency` and xcodeproj accept for an exact pin, equal
+to `sdkVersions.ios.firebase`. Do not change the CocoaPods Firebase pod
+version path.
+
+Reusing an existing user-project `package_references` entry, including the
+already-linked FirebaseCore healing path, must rewrite a leftover
+`upToNextMajorVersion` to that exact requirement. Leaving the old kind in
+place lets SPM keep floating after upgrade.
+
+## ObjC flag on RNFB pod targets
+
+`rnfirebase_apply_spm_build_settings` adds `-ObjC` to user-project native
+targets so Release dead-code stripping cannot drop FIRLibrary/FIRComponent
+registration. That is not enough when Analytics/Measurement is statically
+absorbed into `RNFBAnalytics` (automatic SPM libraries + dynamic pods):
+Measurement ObjC categories live in the pod's static link, not the app
+target. The same helper therefore adds `-ObjC` to every RNFB pod target
+(`OTHER_LDFLAGS`) as well. Non-RNFB Pods targets are unchanged. Do not add
+CocoaPods-only `IdentitySupport` on the SPM path.
+
+Consumer-facing version pin and `-ObjC` notes:
+[`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
 
 ## App target FirebaseCore link: package dependency alone is not enough
 
@@ -501,6 +534,15 @@ invariants:
   consumer's checked-in `.pbxproj` instead of treating a declared-but-unlinked
   dependency as already done; and `rnfirebase_remove_spm_core_from_app_target`
   removes both artifacts symmetrically;
+- SPM firebase-ios-sdk package requirement is `{ kind: 'exactVersion',
+  version: version }` equal to `sdkVersions.ios.firebase` in both
+  `firebase_dependency` and app-target `package_references`; reusing an
+  existing package reference still rewrites leftover `upToNextMajorVersion`.
+  CocoaPods Firebase pod versions stay exact `spec.dependency` pins;
+- `rnfirebase_apply_spm_build_settings` still adds `-ObjC` to user-project
+  native targets **and** every RNFB pod target (so `RNFBAnalytics` keeps
+  Measurement categories); do not add CocoaPods-only `IdentitySupport` on
+  the SPM path;
 - `embed_frameworks_from`'s Archive `UninstalledProducts` path still skips
   frameworks whose internal binary is missing or not `dynamically linked`
   (`file -b`), so static CocoaPods products are never copied into the app

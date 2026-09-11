@@ -20,6 +20,9 @@ native application code do not change.
   does not provide `spm_dependency`.
 - SPM requires CocoaPods 1.10 or newer. React Native 0.75+ templates already
   satisfy this requirement.
+- SPM pins the Firebase iOS SDK to the same exact version CocoaPods uses
+  (`sdkVersions.ios.firebase` in `@react-native-firebase/app`). It does not
+  float to a newer 12.x release.
 
 SPM requires dynamic framework linkage:
 
@@ -118,8 +121,10 @@ pod-level SPM integration does not otherwise copy into the app bundle.
 RNFB automatically applies two build settings needed for SPM + dynamic
 linkage, on every `pod install`/`pod update`:
 
-- `-ObjC` in the app target's linker flags, so Release's dead-code stripping
-  does not drop Firebase's `FIRLibrary`/`FIRComponent` registration.
+- `-ObjC` in the app target's linker flags and on RNFB pod targets, so
+  Release's dead-code stripping does not drop Firebase's
+  `FIRLibrary`/`FIRComponent` registration or Measurement Objective-C
+  categories statically absorbed into `RNFBAnalytics`.
 - `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` and `CLANG_ENABLE_EXPLICIT_MODULES =
 'NO'` on both the app project and the Pods project, so Xcode 26's explicit
   Swift and Clang modules don't fail to resolve Firebase's internal-only SPM
