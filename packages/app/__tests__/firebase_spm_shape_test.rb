@@ -163,6 +163,9 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
       assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', pkg.repositoryURL
       assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: '12.10.0' }, pkg.requirement)
 
+      pkg.requirement = { kind: 'exactVersion', version: '12.10.0' }
+      assert_equal({ kind: 'exactVersion', version: '12.10.0' }, pkg.requirement)
+
       ref = project.new(ref_class)
       ref.product_name = 'FirebaseCore'
       ref.package = pkg

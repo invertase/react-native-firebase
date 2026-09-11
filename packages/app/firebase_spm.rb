@@ -80,7 +80,7 @@ module RNFirebaseSPM
     # least one podspec in this install, and which Firebase SDK `version` it
     # resolved with. Called once, from `firebase_dependency` itself, the
     # first time it successfully takes the SPM path. `version` is stored so
-    # `rnfirebase_add_spm_core_to_app_target` can declare the same minimum
+    # `rnfirebase_add_spm_core_to_app_target` can declare the same exact
     # version requirement on the app target's own FirebaseCore product
     # dependency, without needing its own separate copy of it.
     def activate!(version)
@@ -96,7 +96,7 @@ module RNFirebaseSPM
     # without going through `activate!` above (e.g. a future refactor that
     # assigns the flag directly instead of calling it), and every downstream
     # helper that trusts this return value -- including one that links
-    # FirebaseCore into the app target at a specific minimum version -- would
+    # FirebaseCore into the app target at a specific exact version -- would
     # silently operate on incomplete state instead. Raising `Pod::Informative`
     # here (this file's own user-facing `pod install`-time error class, same
     # as `rnfirebase_fail_if_spm_static_linkage!` below) turns that into a
@@ -117,7 +117,7 @@ module RNFirebaseSPM
 
     # The Firebase SDK version `firebase_dependency` resolved with, recorded
     # by `activate!` above -- used by `rnfirebase_add_spm_core_to_app_target`
-    # to declare the same minimum version requirement on the app target's own
+    # to declare the same exact version requirement on the app target's own
     # FirebaseCore product dependency.
     attr_reader :version
 
@@ -183,6 +183,35 @@ def rnfirebase_build_setting_list(current)
   else
     current.dup
   end
+end
+
+# Exact firebase-ios-sdk SPM requirement. CocoaPods already pins `version`
+# exactly via `spec.dependency pod, version`. SPM used to declare
+# `upToNextMajorVersion`, which lets Xcode resolve a newer 12.x than
+# `sdkVersions.ios.firebase`. `{ kind: 'exactVersion', version: version }`
+# is the Xcode/xcodeproj requirement hash RN's `spm_dependency` passes
+# through unchanged.
+def rnfirebase_spm_package_requirement(version)
+  { kind: 'exactVersion', version: version }
+end
+
+# Rewrites a leftover `upToNextMajorVersion` (or any other kind) on an
+# existing `XCRemoteSwiftPackageReference` to the exact pin. Returns true
+# when the requirement changed so callers can mark the project dirty.
+def rnfirebase_pin_spm_package_requirement!(pkg, version = RNFirebaseSPM.version) # rubocop:disable Naming/PredicateMethod
+  return false if pkg.nil? || !pkg.respond_to?(:requirement=)
+
+  desired = rnfirebase_spm_package_requirement(version)
+  return false if pkg.requirement == desired
+
+  pkg.requirement = desired
+  true
+end
+
+# True for RNFB CocoaPods targets (`RNFBApp`, `RNFBAnalytics`, ...). Used to
+# apply `-ObjC` on the pod that statically absorbs Analytics/Measurement.
+def rnfirebase_rnfb_pod_target?(target)
+  target.respond_to?(:name) && target.name.to_s.start_with?('RNFB')
 end
 
 def rnfirebase_spm_embed_script
@@ -867,6 +896,10 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       # already-linked one -- it has to check the build phase itself.
       existing_ref = target.package_product_dependencies.find { |dep| dep.product_name == 'FirebaseCore' }
       if existing_ref
+        # Pin even when the link is already healthy: a prior RNFB version
+        # may have committed `upToNextMajorVersion` on this package
+        # reference, and leaving that kind in place lets SPM float.
+        project_modified ||= rnfirebase_pin_spm_package_requirement!(existing_ref.package)
         next if target.frameworks_build_phase.files.any? { |bf| bf.product_ref == existing_ref }
 
         # Healing path: reuse the dependency (and its package reference)
@@ -877,10 +910,12 @@ def rnfirebase_add_spm_core_to_app_target(installer)
         pkg = project.root_object.package_references.find do |candidate|
           candidate.instance_of?(pkg_class) && candidate.repositoryURL == RNFirebaseSPM.url
         end
-        unless pkg
+        if pkg
+          project_modified ||= rnfirebase_pin_spm_package_requirement!(pkg)
+        else
           pkg = project.new(pkg_class)
           pkg.repositoryURL = RNFirebaseSPM.url
-          pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.version }
+          pkg.requirement = rnfirebase_spm_package_requirement(RNFirebaseSPM.version)
           project.root_object.package_references << pkg
         end
 
@@ -1086,17 +1121,18 @@ end
 # `rnfirebase_hook_cocoapods_post_install!` above -- so you normally never
 # need to call this yourself.
 #
-# 1. `-ObjC` in `OTHER_LDFLAGS` (app target, every configuration): under SPM
-#    + dynamic linkage, dead-code stripping can drop Objective-C
-#    classes/categories that are only ever discovered via runtime reflection
-#    rather than a direct static reference -- e.g. Firebase's
-#    FIRLibrary/FIRComponent registration used by RNFBCrashlyticsInitProvider
-#    -- which otherwise crashes the app at launch, but only in Release/
-#    Archive builds (a TestFlight-only failure that's hard to reproduce from
-#    a local Debug build). `-ObjC` forces the linker to keep any object file
-#    that defines an ObjC class/category, without disabling dead-code
-#    stripping or optimizations for anything else, so it doesn't meaningfully
-#    grow the binary or slow down Release builds.
+# 1. `-ObjC` in `OTHER_LDFLAGS` (app target *and* every RNFB pod target,
+#    every configuration): under SPM + dynamic linkage, dead-code stripping
+#    can drop Objective-C classes/categories that are only ever discovered
+#    via runtime reflection rather than a direct static reference -- e.g.
+#    Firebase's FIRLibrary/FIRComponent registration used by
+#    RNFBCrashlyticsInitProvider, and GoogleAppMeasurement categories
+#    statically absorbed into RNFBAnalytics. App-target `-ObjC` does not
+#    keep categories linked into a pod. Without pod-level `-ObjC` those
+#    categories can vanish and Measurement/Remote Config can explode or
+#    hang. `-ObjC` forces the linker to keep any object file that defines
+#    an ObjC class/category, without disabling dead-code stripping or
+#    optimizations for anything else.
 #
 # 2. `SWIFT_ENABLE_EXPLICIT_MODULES = 'NO'` and `CLANG_ENABLE_EXPLICIT_MODULES
 #    = 'NO'` (app target and Pods project, every configuration): Xcode 26
@@ -1187,6 +1223,15 @@ def rnfirebase_apply_spm_build_settings(installer)
   pods_modified = false
   pods_project.targets.each do |target|
     target.build_configurations.each do |config|
+      # Analytics/Measurement ObjC categories live on the pod that
+      # statically absorbs those SPM products. App-target `-ObjC` does
+      # not keep them. Apply to every RNFB pod target (not only
+      # RNFBAnalytics) so each static absorption site retains categories.
+      if rnfirebase_rnfb_pod_target?(target)
+        ldflags_changed = add_flag.call(config.build_settings, 'OTHER_LDFLAGS', '-ObjC')
+        pods_modified ||= ldflags_changed
+      end
+
       explicit_modules_settings.each do |setting|
         unless config.build_settings[setting] == 'NO'
           config.build_settings[setting] = 'NO'
@@ -1217,7 +1262,7 @@ def firebase_dependency(spec, version, spm_products, pods)
     end
     spm_dependency(spec,
                    url: RNFirebaseSPM.url,
-                   requirement: { kind: 'upToNextMajorVersion', minimumVersion: version },
+                   requirement: rnfirebase_spm_package_requirement(version),
                    products: spm_products)
   else
     if defined?(Pod::UI)

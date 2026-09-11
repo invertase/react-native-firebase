@@ -3,7 +3,7 @@ type: Reference
 title: "@react-native-firebase/app"
 description: Knowledge index for the core app package — Firebase app lifecycle, Expo config plugin, and iOS SPM / CocoaPods integration helpers.
 tags: [app, expo, ios, spm, cocoapods, firebase, integration, test-expo, test-rn-bare]
-timestamp: 2026-09-03T00:00:00Z
+timestamp: 2026-09-11T00:00:00Z
 ---
 
 # @react-native-firebase/app
@@ -18,7 +18,7 @@ The workspace RN CLI prebuilt RNCore iOS **build** fixture (`test-rn-bare/`) is 
 
 ## Documents
 
-* Cross-cutting durable SPM decisions: [iOS SPM native integration](../../ios-spm-native-imports.md) ([app-target FirebaseCore link](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough); [Expo precompiled linkage repair](../../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair))
+* Cross-cutting durable SPM decisions: [iOS SPM native integration](../../ios-spm-native-imports.md) ([app-target FirebaseCore link](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough); [exact SPM Firebase SDK version](../../ios-spm-native-imports.md#exact-spm-firebase-ios-sdk-version); [ObjC flag on RNFB pod targets](../../ios-spm-native-imports.md#objc-flag-on-rnfb-pod-targets); [Expo precompiled linkage repair](../../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair))
 
 ## Related repository files
 
