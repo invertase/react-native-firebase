@@ -576,8 +576,8 @@ export function fetchAndActivate(remoteConfig: RemoteConfig): Promise<boolean> {
 /**
  * Fetches and caches configuration from the Remote Config service.
  */
-export function fetchConfig(remoteConfig: RemoteConfig): Promise<void> {
-  return rc(remoteConfig).fetch();
+export function fetchConfig(remoteConfig: RemoteConfig, expirationDurationSeconds?: number): Promise<void> {
+  return rc(remoteConfig).fetch(expirationDurationSeconds);
 }
 
 /**
