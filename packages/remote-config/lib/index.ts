@@ -578,7 +578,7 @@ export function fetchAndActivate(remoteConfig: RemoteConfig): Promise<boolean> {
  */
 export function fetchConfig(
   remoteConfig: RemoteConfig,
-  expirationDurationSeconds?: number
+  expirationDurationSeconds?: number,
 ): Promise<void> {
   return rc(remoteConfig).fetch(expirationDurationSeconds);
 }
