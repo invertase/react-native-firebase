@@ -10,6 +10,7 @@ import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Path
 import type { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { PluginConfigType } from '../pluginConfig';
+import { usesSceneLifecycle } from './sceneLifecycle';
 
 export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
   config: ExpoConfig,
@@ -64,6 +65,11 @@ export function withOpenUrlFixForAppDelegate({
 
   const newContents = modifyAppDelegate(contents, language);
   if (newContents === null) {
+    // Under the UIScene life cycle (Xcode 27+) UIKit stops calling `application(_:open:options:)` and the template drops the method
+    // `withIosCaptchaSceneDelegateFix` patches `SceneDelegate.swift` for those projects.
+    if (usesSceneLifecycle(config.modRequest.platformProjectRoot)) {
+      return config;
+    }
     if (configValue === true) {
       throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
     } else {

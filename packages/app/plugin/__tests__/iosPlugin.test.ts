@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig, WarningAggregator } from '@expo/config-plugins';
 import { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import fs from 'fs/promises';
 import path from 'path';
@@ -91,6 +91,66 @@ describe('Config Plugin iOS Tests', function () {
     );
     const result = modifySwiftAppDelegate(appDelegate);
     expect(result).toMatchSnapshot();
+  });
+
+  it('works with a UIScene lifecycle Swift AppDelegate (SDK 58+)', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+      {
+        encoding: 'utf8',
+      },
+    );
+
+    // The SDK 58 template moved `startReactNative` into SceneDelegate.swift, so neither of the
+    // pre-existing anchors is present. Without the didFinishLaunchingWithOptions fallback the
+    // plugin silently skips and Firebase is never configured.
+    expect(appDelegate).not.toContain('factory.startReactNative(');
+    expect(appDelegate).not.toContain('self.moduleName');
+
+    const result = modifySwiftAppDelegate(appDelegate);
+
+    expect(result).toContain('import FirebaseCore');
+    // Must land inside didFinishLaunchingWithOptions: it has to run before any scene connects.
+    const configureIndex = result.indexOf('FirebaseApp.configure()');
+    const didFinishLaunchingIndex = result.indexOf('didFinishLaunchingWithOptions launchOptions');
+    const superCallIndex = result.indexOf('return super.application(application');
+    expect(configureIndex).toBeGreaterThan(didFinishLaunchingIndex);
+    expect(configureIndex).toBeLessThan(superCallIndex);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('is idempotent on a UIScene lifecycle Swift AppDelegate', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+      {
+        encoding: 'utf8',
+      },
+    );
+
+    const once = modifySwiftAppDelegate(appDelegate);
+    const twice = modifySwiftAppDelegate(once);
+
+    expect(twice).toEqual(once);
+    expect(twice.match(/FirebaseApp\.configure\(\)/g)).toHaveLength(1);
+    expect(twice.match(/import FirebaseCore/g)).toHaveLength(1);
+  });
+
+  it('warns rather than throwing when a Swift AppDelegate has no recognizable insertion point', function () {
+    const appDelegate = `import UIKit
+
+class NotAnAppDelegate {
+  var window: UIWindow?
+}
+`;
+    const spy = jest.spyOn(WarningAggregator, 'addWarningIOS').mockImplementation(() => undefined);
+
+    const result = modifySwiftAppDelegate(appDelegate);
+
+    expect(result).not.toContain('FirebaseApp.configure()');
+    expect(spy).toHaveBeenCalledWith(
+      '@react-native-firebase/app',
+      'Unable to determine correct Firebase insertion point in AppDelegate.swift. Skipping Firebase addition.',
+    );
   });
 
   it('does not add the firebase import multiple times', async function () {

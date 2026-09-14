@@ -98,6 +98,25 @@ export function modifyObjcAppDelegate(contents: string): string {
   }
 }
 
+export const swiftDidFinishLaunchingAnchor: RegExp = /didFinishLaunchingWithOptions\s+\w+\s*:/;
+
+export function getSwiftMethodBodyOffset(contents: string, anchor: RegExp): number | null {
+  const lines = contents.split('\n');
+  const anchorIndex = lines.findIndex(line => anchor.test(line));
+  if (anchorIndex === -1) {
+    return null;
+  }
+
+  const maxLookahead = Math.min(lines.length, anchorIndex + 8);
+  for (let index = anchorIndex; index < maxLookahead; index++) {
+    if (/\{\s*$/.test(lines[index])) {
+      return index - anchorIndex + 1;
+    }
+  }
+
+  return null;
+}
+
 export function modifySwiftAppDelegate(contents: string): string {
   const methodInvocationBlock = `FirebaseApp.configure()`;
   const methodInvocationLineMatcher =
@@ -108,8 +127,9 @@ export function modifySwiftAppDelegate(contents: string): string {
     contents,
     'import FirebaseCore',
     /^[ \t]*import\s+FirebaseCore[ \t]*$/m,
-    /^[ \t]*import\s+Expo[ \t]*$/m,
-    /^[ \t]*import\b[^\r\n]*$/m,
+    // The SDK 58 template writes `internal import Expo`, so allow an access-level modifier.
+    /^[ \t]*(?:\w+\s+)?import\s+Expo[ \t]*$/m,
+    /^[ \t]*(?:\w+\s+)?import\b[^\r\n]*$/m,
   );
 
   // To avoid potential issues with existing changes from older plugin versions
@@ -117,7 +137,19 @@ export function modifySwiftAppDelegate(contents: string): string {
     return contents;
   }
 
-  if (!methodInvocationLineMatcher.test(contents)) {
+  if (methodInvocationLineMatcher.test(contents)) {
+    return mergeContents({
+      tag: '@react-native-firebase/app-didFinishLaunchingWithOptions',
+      src: contents,
+      newSrc: methodInvocationBlock,
+      anchor: methodInvocationLineMatcher,
+      offset: 0, // new line will be inserted right above matched anchor
+      comment: '//',
+    }).contents;
+  }
+
+  const bodyOffset = getSwiftMethodBodyOffset(contents, swiftDidFinishLaunchingAnchor);
+  if (bodyOffset === null) {
     WarningAggregator.addWarningIOS(
       '@react-native-firebase/app',
       'Unable to determine correct Firebase insertion point in AppDelegate.swift. Skipping Firebase addition.',
@@ -125,13 +157,12 @@ export function modifySwiftAppDelegate(contents: string): string {
     return contents;
   }
 
-  // Add invocation
   return mergeContents({
     tag: '@react-native-firebase/app-didFinishLaunchingWithOptions',
     src: contents,
     newSrc: methodInvocationBlock,
-    anchor: methodInvocationLineMatcher,
-    offset: 0, // new line will be inserted right above matched anchor
+    anchor: swiftDidFinishLaunchingAnchor,
+    offset: bodyOffset, // new lines will be inserted at the top of the method body
     comment: '//',
   }).contents;
 }
