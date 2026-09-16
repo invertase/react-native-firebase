@@ -7,7 +7,7 @@ import { WarningAggregator } from '@expo/config-plugins';
 import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 
 import { modifySceneDelegate, generatedTag } from '../src/ios/sceneDelegate';
-import { findSceneDelegateFile, usesSceneLifecycle } from '../src/ios/sceneLifecycle';
+import { findSceneDelegateFile, infoPlistDeclaresSceneManifest } from '../src/ios/sceneLifecycle';
 import { withOpenUrlFixForAppDelegate } from '../src/ios/openUrlFix';
 
 const SCENE_MANIFEST_PLIST = `<?xml version="1.0" encoding="UTF-8"?>
@@ -42,7 +42,6 @@ describe('Config Plugin iOS Tests - sceneDelegate', () => {
       await fs.writeFile(scenePath, 'class SceneDelegate: ExpoAppSceneDelegate {\n}\n');
 
       expect(findSceneDelegateFile(tmpDir)).toBe(scenePath);
-      expect(usesSceneLifecycle(tmpDir)).toBe(true);
     });
 
     it('finds SceneDelegate.swift at the ios root (bare-expo layout)', async () => {
@@ -66,7 +65,7 @@ describe('Config Plugin iOS Tests - sceneDelegate', () => {
       await fs.writeFile(path.join(projectDir, 'Info.plist'), SCENE_MANIFEST_PLIST);
 
       expect(findSceneDelegateFile(tmpDir)).toBeNull();
-      expect(usesSceneLifecycle(tmpDir)).toBe(true);
+      expect(infoPlistDeclaresSceneManifest(tmpDir)).toBe(true);
     });
 
     it('reports false for an app-delegate lifecycle project', async () => {
@@ -74,12 +73,12 @@ describe('Config Plugin iOS Tests - sceneDelegate', () => {
       await fs.mkdir(projectDir, { recursive: true });
       await fs.writeFile(path.join(projectDir, 'Info.plist'), '<plist><dict></dict></plist>');
 
-      expect(usesSceneLifecycle(tmpDir)).toBe(false);
+      expect(infoPlistDeclaresSceneManifest(tmpDir)).toBe(false);
     });
 
     it('reports false for a missing or empty platform project root', () => {
-      expect(usesSceneLifecycle(path.join(tmpDir, 'does-not-exist'))).toBe(false);
-      expect(usesSceneLifecycle('')).toBe(false);
+      expect(infoPlistDeclaresSceneManifest(path.join(tmpDir, 'does-not-exist'))).toBe(false);
+      expect(infoPlistDeclaresSceneManifest('')).toBe(false);
       expect(findSceneDelegateFile('')).toBeNull();
     });
   });
@@ -161,19 +160,48 @@ describe('Config Plugin iOS Tests - sceneDelegate', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('does not throw when captchaOpenUrlFix is forced on and the project uses scenes', async () => {
+    it('does not throw or warn when captchaOpenUrlFix is forced on and SceneDelegate.swift exists', async () => {
       await makeSceneProject();
       const appDelegate = await fs.readFile(
         path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
         { encoding: 'utf8' },
       );
+      const spy = jest
+        .spyOn(WarningAggregator, 'addWarningIOS')
+        .mockImplementation(() => undefined);
 
-      expect(() =>
-        withOpenUrlFixForAppDelegate({
-          config: makeConfig(appDelegate, tmpDir),
-          props: { ios: { captchaOpenUrlFix: true } },
-        }),
-      ).not.toThrow();
+      const result = withOpenUrlFixForAppDelegate({
+        config: makeConfig(appDelegate, tmpDir),
+        props: { ios: { captchaOpenUrlFix: true } },
+      });
+
+      expect(result.modResults.contents).toBe(appDelegate);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('warns instead of throwing when Info.plist declares scenes but SceneDelegate.swift is missing', async () => {
+      const projectDir = path.join(tmpDir, 'HelloWorld');
+      await fs.mkdir(projectDir, { recursive: true });
+      await fs.writeFile(path.join(projectDir, 'Info.plist'), SCENE_MANIFEST_PLIST);
+      const appDelegate = await fs.readFile(
+        path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+        { encoding: 'utf8' },
+      );
+      const spy = jest
+        .spyOn(WarningAggregator, 'addWarningIOS')
+        .mockImplementation(() => undefined);
+
+      const result = withOpenUrlFixForAppDelegate({
+        config: makeConfig(appDelegate, tmpDir),
+        props: { ios: { captchaOpenUrlFix: true } },
+      });
+
+      expect(result.modResults.contents).toBe(appDelegate);
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        '@react-native-firebase/auth',
+        expect.stringContaining('no SceneDelegate.swift was found'),
+      );
     });
 
     it('still throws for an app-delegate lifecycle project with no openURL method', async () => {

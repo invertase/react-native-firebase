@@ -45,7 +45,17 @@ export function findSceneDelegateFile(platformProjectRoot: string): string | nul
   return null;
 }
 
-function infoPlistDeclaresSceneManifest(platformProjectRoot: string): boolean {
+/**
+ * Detect a `UIApplicationSceneManifest` entry in the app's `Info.plist`.
+ *
+ * Independent of `findSceneDelegateFile`: a project can declare the scene life cycle without shipping
+ * a `SceneDelegate.swift` the plugin can patch, and callers need to tell the two cases apart.
+ */
+export function infoPlistDeclaresSceneManifest(platformProjectRoot: string): boolean {
+  if (!platformProjectRoot) {
+    return false;
+  }
+
   let entries: fs.Dirent[];
   try {
     entries = fs.readdirSync(platformProjectRoot, { withFileTypes: true });
@@ -71,21 +81,4 @@ function infoPlistDeclaresSceneManifest(platformProjectRoot: string): boolean {
   }
 
   return false;
-}
-
-/**
- * Detect whether the generated iOS project uses the UIKit scene life cycle.
- *
- * Two independent signals, because either one alone can be missing depending on which mods have
- * run: a generated `SceneDelegate.swift`, or a `UIApplicationSceneManifest` entry in the app's
- * `Info.plist`.
- */
-export function usesSceneLifecycle(platformProjectRoot: string): boolean {
-  if (!platformProjectRoot || !fs.existsSync(platformProjectRoot)) {
-    return false;
-  }
-  if (findSceneDelegateFile(platformProjectRoot) !== null) {
-    return true;
-  }
-  return infoPlistDeclaresSceneManifest(platformProjectRoot);
 }

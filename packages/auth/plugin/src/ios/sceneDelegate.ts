@@ -67,7 +67,6 @@ export const withIosCaptchaSceneDelegateFix: ConfigPlugin<PluginConfigType> = (
       const sceneDelegatePath = findSceneDelegateFile(config.modRequest.platformProjectRoot);
 
       if (sceneDelegatePath === null) {
-        // App-delegate life cycle: `withIosCaptchaOpenUrlFix` owns this project.
         return config;
       }
 
