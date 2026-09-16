@@ -214,6 +214,8 @@ is skipped intentionally so the main thread cannot hang) — see
 
 # Getting a Device Token
 
+> **Deprecated:** FCM token APIs (`getToken`, `deleteToken`, `onTokenRefresh`) are deprecated upstream (Firebase JS 12.14+, Android Messaging 25.1+, Apple 12.18+) in favor of `FID` registration (`register` / `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`, `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+
 To send messages to a device, you would need the FCM token for it, which you can get using the `getToken(messaging)` method. An example is available on '[Notifee pages](https://notifee.app/react-native/docs/integrations/fcm)'.
 
 On iOS, React Native Firebase Messaging automatically registers the device with APNs by default. You only need to
