@@ -518,6 +518,11 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * Returns an FCM token for this device. Optionally you can specify a custom options to your own use-case.
    *
    * @param options Options composite type with all members of `GetTokenOptions` and `NativeTokenOptions`
+   *
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
    */
   getToken(options?: GetTokenOptions & NativeTokenOptions): Promise<string>;
 
@@ -526,6 +531,11 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * to this token will fail.
    *
    * @param options Options to override senderId (iOS) and appName (android)
+   *
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
    */
   deleteToken(options?: NativeTokenOptions): Promise<void>;
 
@@ -557,6 +567,11 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * > This subscriber method is only called when the app is active (in the foreground).
    *
    * @param listener Called with a FCM token when the token is refreshed.
+   *
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
    */
   onTokenRefresh(listener: (token: string) => any): () => void;
 
