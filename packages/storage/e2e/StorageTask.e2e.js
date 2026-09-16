@@ -171,6 +171,21 @@ describe('storage() -> StorageTask', function () {
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
+      it('uploads a data_url with an explicit content type', async function () {
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
+
+        const uploadTaskSnapshot = await uploadString(
+          ref(getStorage(), `${PATH}/putStringDataURLWithContentType.txt`),
+          'data:text/plain;base64,aGVsbG8=',
+          StringFormat.DATA_URL,
+          { contentType: 'text/custom' },
+        );
+
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
+        uploadTaskSnapshot.metadata.size.should.eql(5);
+        uploadTaskSnapshot.metadata.contentType.should.eql('text/custom');
+      });
+
       it('uploads a url encoded data_url formatted string', async function () {
         const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
 
