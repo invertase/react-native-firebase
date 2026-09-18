@@ -211,6 +211,19 @@ Tracked from GitHub
 [#9140](https://github.com/invertase/react-native-firebase/issues/9140) /
 Linear CPRN-292.
 
+### Local dynamic umbrella spike
+
+The App, Analytics, and Messaging pods currently use the repository-local
+`RNFBFirebase` Swift package as a first-party packaging spike. Its single
+dynamic product owns FirebaseCore, Installations, Analytics, and Messaging;
+the RNFB pod targets link only that product and keep their existing Objective-C
+module imports. The app target links the same umbrella product.
+
+This is not a published package or a general third-party Firebase sharing
+contract. Do not expand umbrella membership or alter the framework embed phase
+without first proving the generated binaries still keep Firebase and
+GoogleUtilities definitions out of each RNFB framework.
+
 Do **not** reintroduce comments or docs that claim firebase-ios-sdk products
 use `.library(type: .dynamic)`. That claim is false and misled debugging of
 the multi-pod sharing failure.

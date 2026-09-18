@@ -31,9 +31,19 @@ Pod::Spec.new do |s|
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.public_header_files = [
     'ios/RNFBMessaging/RNFBMessagingModule.h',
+    # Needs to be public (i.e. reachable from this pod's own generated
+    # umbrella header) so that RNFBMessagingFIRMessagingDelegate.swift can see
+    # RNFBMessagingEventEmitter -- CocoaPods doesn't generate a bridging
+    # header for mixed Objective-C/Swift pod targets, so a pod's own Swift
+    # files only see its *public* Objective-C headers, same as any other
+    # module consumer. See RNFBMessaging+EventEmitter.h for the full
+    # explanation.
+    'ios/RNFBMessaging/RNFBMessaging+EventEmitter.h',
   ]
   s.private_header_files = [
-    'ios/RNFBMessaging/RNFBMessaging+*.h',
+    'ios/RNFBMessaging/RNFBMessaging+AppDelegate.h',
+    'ios/RNFBMessaging/RNFBMessaging+NSNotificationCenter.h',
+    'ios/RNFBMessaging/RNFBMessaging+UNUserNotificationCenter.h',
     'ios/RNFBMessaging/RNFBMessagingSerializer.h',
     'ios/generated/**/*.h',
   ]
@@ -60,10 +70,7 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   # FirebaseCoreExtension is a transitive dependency of FirebaseMessaging in SPM,
   # so it only needs to be declared explicitly for CocoaPods.
-  firebase_dependency(s, firebase_sdk_version,
-    ['FirebaseMessaging'],
-    ['Firebase/Messaging', 'FirebaseCoreExtension']
-  )
+  rnfirebase_umbrella_dependency(s, firebase_sdk_version, ['Firebase/Messaging', 'FirebaseCoreExtension'])
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

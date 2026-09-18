@@ -15,17 +15,13 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#else
-@import FirebaseCore;
-@import FirebaseMessaging;
-#endif
+// This class never calls FirebaseMessaging directly -- `UNNotification`
+// below comes from UserNotifications, not Firebase. The previous Firebase
+// header guard here was unused dead weight (and, under the local dynamic SPM
+// umbrella, would have fallen into an `@import` it didn't need).
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
+#import <UserNotifications/UserNotifications.h>
 
 @interface RNFBMessagingSerializer : NSObject
 

@@ -15,15 +15,14 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#else
-@import FirebaseCore;
-@import FirebaseMessaging;
-#endif
+// This file's own Firebase call (setAPNSToken:type: below) is routed through
+// RNFBMessagingFacade.swift instead of `#import`/`@import`ing FirebaseMessaging
+// directly -- under the local dynamic SPM umbrella (RNFBFirebase) the
+// individual Firebase framework headers are not on the Clang header search
+// path, only this pod's own generated `-Swift.h` header (below) is.
+// `FirebaseAuth/FirebaseAuth.h` below is unrelated (a separate, optional
+// integration, `__has_include`-guarded with no `@import` fallback, so it's
+// inert -- not exercised -- under the umbrella rather than a build failure).
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 #import <objc/runtime.h>
 
@@ -33,6 +32,17 @@
 
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessagingSerializer.h"
+#if __has_include(<RNFBMessaging/RNFBMessaging-Swift.h>)
+// This import will work in situations where `use_frameworks!` is in use
+#import <RNFBMessaging/RNFBMessaging-Swift.h>
+#elif __has_include("RNFBMessaging-Swift.h")
+// If `use_frameworks!` is not in use (for example, while using pre-built
+// react-native core) then header imports based on frameworks assumptions fail.
+// So, if frameworks are not available, fall back to importing the header directly, it
+// should be findable from a header search path pointing to the build
+// directory. See firebase-ios-sdk#12611 for more context.
+#import "RNFBMessaging-Swift.h"
+#endif
 
 @implementation RNFBMessagingAppDelegate
 
@@ -169,9 +179,9 @@
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 #ifdef DEBUG
-  [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeSandbox];
+  [RNFBMessagingFacade setAPNSTokenFromRegistration:deviceToken sandbox:YES];
 #else
-  [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
+  [RNFBMessagingFacade setAPNSTokenFromRegistration:deviceToken sandbox:NO];
 #endif
 
   RCTPromiseResolveBlock resolve = nil;

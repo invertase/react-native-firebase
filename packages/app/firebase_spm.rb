@@ -21,6 +21,7 @@ require 'json'
 
 RNFIREBASE_SPM_EMBED_PHASE_NAME = '[RNFB] Embed Firebase SPM Frameworks'
 RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME = '[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature files' # rubocop:disable Layout/LineLength
+RNFIREBASE_SPM_UMBRELLA_PRODUCT = 'RNFBFirebase'
 
 # Every `.binaryTarget` xcframework name reachable in the resolved SPM package
 # graph for the RNFB test app (firebase-ios-sdk 12.16.0, full module set --
@@ -74,6 +75,12 @@ module RNFirebaseSPM
         app_package = JSON.parse(File.read(app_package_path))
         app_package['sdkVersions']['ios']['firebaseSpmUrl']
       end
+    end
+
+    # Absolute path is intentional: React Native's SPM manager recognizes a
+    # local package with `File.exist?`, then writes an XCLocalSwiftPackageReference.
+    def umbrella_path
+      File.join(__dir__, 'ios', RNFIREBASE_SPM_UMBRELLA_PRODUCT)
     end
 
     # Records that `firebase_dependency` (below) took the SPM path for at
@@ -589,7 +596,7 @@ def rnfirebase_run_spm_user_project_hooks(installer)
     rnfirebase_add_spm_core_to_app_target(installer)
   rescue StandardError => e
     if defined?(Pod::UI)
-      Pod::UI.warn "[react-native-firebase] Couldn't link FirebaseCore into the app target " \
+      Pod::UI.warn "[react-native-firebase] Couldn't link RNFBFirebase into the app target " \
                    "automatically (#{e.class}: #{e.message}). " \
                    'Add `rnfirebase_add_spm_core_to_app_target(installer)` ' \
                    'to your Podfile\'s post_integrate block as a fallback if your own native code calls ' \
@@ -600,9 +607,9 @@ def rnfirebase_run_spm_user_project_hooks(installer)
     rnfirebase_remove_spm_core_from_app_target(installer)
   rescue StandardError => e
     if defined?(Pod::UI)
-      Pod::UI.warn "[react-native-firebase] Couldn't remove a stale FirebaseCore SPM link from the " \
+      Pod::UI.warn "[react-native-firebase] Couldn't remove a stale RNFBFirebase SPM link from the " \
                    "app target automatically (#{e.class}: #{e.message}). If you previously used SPM and have " \
-                   'since set `$RNFirebaseDisableSPM = true`, remove the "firebase-ios-sdk" Swift Package ' \
+                   'since set `$RNFirebaseDisableSPM = true`, remove the "RNFBFirebase" local Swift Package ' \
                    'dependency from your app target manually in Xcode.'
     end
   end
@@ -819,7 +826,7 @@ rescue StandardError => e
   end
 end
 
-# Adds a direct SPM product dependency on `FirebaseCore` to the *app's own*
+# Adds a direct SPM product dependency on the local `RNFBFirebase` umbrella to the *app's own*
 # native target(s) -- not just RNFB's pod targets. Runs automatically on every
 # `pod install`/`pod update` from `rnfirebase_run_spm_user_project_hooks`
 # (post_integrate on current CocoaPods; post_install fallback otherwise) --
@@ -844,7 +851,7 @@ end
 def rnfirebase_add_spm_core_to_app_target(installer)
   return unless RNFirebaseSPM.active?
 
-  pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+  pkg_class = Xcodeproj::Project::Object::XCLocalSwiftPackageReference
   ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
 
   installer.aggregate_targets.each do |aggregate_target|
@@ -856,7 +863,7 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
 
-      # A `FirebaseCore` product dependency already being declared on the
+      # An `RNFBFirebase` product dependency already being declared on the
       # target does *not* by itself mean this target is a genuine no-op:
       # a pre-fix RNFB version could have committed that dependency into
       # the consumer's `.pbxproj` without ever linking it (see the
@@ -865,7 +872,9 @@ def rnfirebase_add_spm_core_to_app_target(installer)
       # project today. So checking `package_product_dependencies` alone
       # can't tell that already-affected state apart from a healthy,
       # already-linked one -- it has to check the build phase itself.
-      existing_ref = target.package_product_dependencies.find { |dep| dep.product_name == 'FirebaseCore' }
+      existing_ref = target.package_product_dependencies.find do |dep|
+        dep.product_name == RNFIREBASE_SPM_UMBRELLA_PRODUCT
+      end
       if existing_ref
         next if target.frameworks_build_phase.files.any? { |bf| bf.product_ref == existing_ref }
 
@@ -875,28 +884,27 @@ def rnfirebase_add_spm_core_to_app_target(installer)
         ref = existing_ref
       else
         pkg = project.root_object.package_references.find do |candidate|
-          candidate.instance_of?(pkg_class) && candidate.repositoryURL == RNFirebaseSPM.url
+          candidate.instance_of?(pkg_class) && candidate.relative_path == RNFirebaseSPM.umbrella_path
         end
         unless pkg
           pkg = project.new(pkg_class)
-          pkg.repositoryURL = RNFirebaseSPM.url
-          pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.version }
+          pkg.relative_path = RNFirebaseSPM.umbrella_path
           project.root_object.package_references << pkg
         end
 
         ref = project.new(ref_class)
         ref.package = pkg
-        ref.product_name = 'FirebaseCore'
+        ref.product_name = RNFIREBASE_SPM_UMBRELLA_PRODUCT
         target.package_product_dependencies << ref
       end
 
       if defined?(Pod::UI)
         message = if existing_ref
-                    'Repairing FirebaseCore SPM link on the app target (dependency was already declared but ' \
+                    'Repairing RNFBFirebase SPM link on the app target (dependency was already declared but ' \
                       'never linked) so native code that calls FIRApp/FIROptions APIs directly can resolve ' \
                       'those symbols.'
                   else
-                    'Linking FirebaseCore directly into the app target (SPM) so native code that calls ' \
+                    'Linking RNFBFirebase directly into the app target (SPM) so native code that calls ' \
                       'FIRApp/FIROptions APIs directly can resolve those symbols.'
                   end
         Pod::UI.puts "[react-native-firebase] #{target.name}: ".yellow + message
@@ -955,7 +963,7 @@ end
 # references from `pods_project` on every `pod install` -- it has no
 # knowledge of, and never touches, the app-project-level reference added
 # above. So once SPM has been active at least once and the resulting
-# `FirebaseCore` product dependency has been committed into the app's
+# `RNFBFirebase` product dependency has been committed into the app's
 # `.pbxproj` (as it normally would be), switching to
 # `$RNFirebaseDisableSPM = true` and reinstalling left that stale SPM wiring
 # in place forever: the app target ended up simultaneously linked against
@@ -965,10 +973,14 @@ end
 # 'Firebase'` at compile time, and as duplicate App-Intents-metadata build
 # commands at Archive time.
 def rnfirebase_remove_spm_core_from_app_target(installer)
-  return if RNFirebaseSPM.active?
-
-  pkg_class = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+  spm_active = RNFirebaseSPM.active?
+  pkg_class = if spm_active
+                Xcodeproj::Project::Object::XCRemoteSwiftPackageReference
+              else
+                Xcodeproj::Project::Object::XCLocalSwiftPackageReference
+              end
   ref_class = Xcodeproj::Project::Object::XCSwiftPackageProductDependency
+  stale_product = spm_active ? 'FirebaseCore' : RNFIREBASE_SPM_UMBRELLA_PRODUCT
 
   installer.aggregate_targets.each do |aggregate_target|
     project = aggregate_target.user_project
@@ -978,12 +990,23 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
       next unless target.respond_to?(:package_product_dependencies)
 
       stale_refs = target.package_product_dependencies.select do |dep|
-        dep.instance_of?(ref_class) && dep.product_name == 'FirebaseCore' && dep.package&.repositoryURL == RNFirebaseSPM.url # rubocop:disable Layout/LineLength
+        next false unless dep.instance_of?(ref_class) && dep.product_name == stale_product
+
+        if spm_active
+          dep.package&.repositoryURL == RNFirebaseSPM.url
+        else
+          dep.package&.relative_path == RNFirebaseSPM.umbrella_path
+        end
       end
       next if stale_refs.empty?
 
       if defined?(Pod::UI)
-        Pod::UI.puts "#{"[react-native-firebase] #{target.name}: ".yellow}SPM disabled -- removing the stale FirebaseCore Swift Package link left on the app target." # rubocop:disable Layout/LineLength
+        reason = if spm_active
+                   'SPM umbrella active -- removing the superseded direct FirebaseCore Swift Package link.'
+                 else
+                   'SPM disabled -- removing the stale RNFBFirebase Swift Package link.'
+                 end
+        Pod::UI.puts "#{"[react-native-firebase] #{target.name}: ".yellow}#{reason}"
       end
 
       stale_refs.each do |ref|
@@ -998,15 +1021,18 @@ def rnfirebase_remove_spm_core_from_app_target(installer)
       project_modified = true
     end
 
-    project.root_object.package_references
-           .select { |pkg| pkg.instance_of?(pkg_class) && pkg.repositoryURL == RNFirebaseSPM.url }
-           .each do |pkg|
-             next if pkg.referrers.any?(ref_class)
+    stale_packages = project.root_object.package_references.select do |pkg|
+      next false unless pkg.instance_of?(pkg_class)
 
-             project.root_object.package_references.delete(pkg)
-             pkg.remove_from_project
-             project_modified = true
-           end
+      spm_active ? pkg.repositoryURL == RNFirebaseSPM.url : pkg.relative_path == RNFirebaseSPM.umbrella_path
+    end
+    stale_packages.each do |pkg|
+      next if pkg.referrers.any?(ref_class)
+
+      project.root_object.package_references.delete(pkg)
+      pkg.remove_from_project
+      project_modified = true
+    end
 
     project.save if project_modified
   end
@@ -1199,6 +1225,35 @@ def rnfirebase_apply_spm_build_settings(installer)
 end
 
 rnfirebase_hook_cocoapods_post_install!
+
+# Declares the local dynamic umbrella for the first-party spike pods while
+# preserving their existing CocoaPods dependencies when SPM is unavailable or
+# explicitly disabled.
+def rnfirebase_umbrella_dependency(spec, version, pods)
+  if defined?(spm_dependency) && !rnfirebase_spm_disabled?
+    RNFirebaseSPM.activate!(version)
+    if defined?(Pod::UI)
+      Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
+                   "Using local #{RNFIREBASE_SPM_UMBRELLA_PRODUCT} SPM dependency"
+    end
+    spm_dependency(spec,
+                   url: RNFirebaseSPM.umbrella_path,
+                   requirement: { kind: 'upToNextMajorVersion', minimumVersion: version },
+                   products: [RNFIREBASE_SPM_UMBRELLA_PRODUCT])
+  else
+    if defined?(Pod::UI)
+      if rnfirebase_spm_disabled?
+        Pod::UI.puts "#{"[react-native-firebase] #{spec.name}: ".yellow}SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies" # rubocop:disable Layout/LineLength
+      elsif !defined?(spm_dependency)
+        Pod::UI.puts "#{"[react-native-firebase] #{spec.name}: ".yellow}SPM not available (React Native < 0.75), using CocoaPods for Firebase dependencies" # rubocop:disable Layout/LineLength
+      end
+    end
+    pods = [pods] unless pods.is_a?(Array)
+    pods.each do |pod|
+      spec.dependency pod, version
+    end
+  end
+end
 
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)
 # @param version [String] Firebase SDK version (e.g., '12.10.0')

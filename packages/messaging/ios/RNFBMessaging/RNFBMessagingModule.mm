@@ -15,15 +15,12 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#else
-@import FirebaseCore;
-@import FirebaseMessaging;
-#endif
+// Every FIRMessaging call this file needs goes through RNFBMessagingFacade
+// (RNFBMessagingFacade.swift) instead of `#import`/`@import`ing
+// FirebaseMessaging directly. Under the local dynamic SPM umbrella
+// (RNFBFirebase, see packages/app/ios/RNFBFirebase/Package.swift) only this
+// pod's own generated Swift interop header is on the Clang header search
+// path -- the individual Firebase framework headers are not.
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
@@ -34,6 +31,17 @@
 #import "RNFBMessagingModule.h"
 #import "RNFBMessagingSerializer.h"
 #import "RNFBMessagingTurboModules.h"
+#if __has_include(<RNFBMessaging/RNFBMessaging-Swift.h>)
+// This import will work in situations where `use_frameworks!` is in use
+#import <RNFBMessaging/RNFBMessaging-Swift.h>
+#elif __has_include("RNFBMessaging-Swift.h")
+// If `use_frameworks!` is not in use (for example, while using pre-built
+// react-native core) then header imports based on frameworks assumptions fail.
+// So, if frameworks are not available, fall back to importing the header directly, it
+// should be findable from a header search path pointing to the build
+// directory. See firebase-ios-sdk#12611 for more context.
+#import "RNFBMessaging-Swift.h"
+#endif
 
 @interface RNFBMessagingModule () <NativeRNFBTurboMessagingSpec>
 @end
@@ -71,7 +79,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 - (NSDictionary *)messagingConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isAutoInitEnabled"] =
-      @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
+      @([RCTConvert BOOL:@([RNFBMessagingFacade isAutoInitEnabled])]);
 #if TARGET_IPHONE_SIMULATOR
   constants[@"isRegisteredForRemoteNotifications"] = @NO;
 #else
@@ -114,7 +122,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
   @try {
-    [FIRMessaging messaging].autoInitEnabled = enabled;
+    [RNFBMessagingFacade setAutoInitEnabled:enabled];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -148,7 +156,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
     return;
   }
 
-  NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+  NSData *apnsToken = [RNFBMessagingFacade apnsToken];
   if (apnsToken == nil) {
     DLog(@"RNFBMessaging getToken - no APNS token is available. Firebase "
          @"requires an APNS token to "
@@ -157,7 +165,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
          @"setAPNSToken and getAPNSToken.")
   }
 
-  [[FIRMessaging messaging]
+  [RNFBMessagingFacade
       retrieveFCMTokenForSenderID:senderId
                        completion:^(NSString *_Nullable token, NSError *_Nullable error) {
                          if (error) {
@@ -172,19 +180,19 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
            senderId:(NSString *)senderId
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
-  [[FIRMessaging messaging] deleteFCMTokenForSenderID:senderId
-                                           completion:^(NSError *_Nullable error) {
-                                             if (error) {
-                                               [RNFBSharedUtils rejectPromiseWithNSError:reject
-                                                                                   error:error];
-                                             } else {
-                                               resolve([NSNull null]);
-                                             }
-                                           }];
+  [RNFBMessagingFacade deleteFCMTokenForSenderID:senderId
+                                       completion:^(NSError *_Nullable error) {
+                                         if (error) {
+                                           [RNFBSharedUtils rejectPromiseWithNSError:reject
+                                                                               error:error];
+                                         } else {
+                                           resolve([NSNull null]);
+                                         }
+                                       }];
 }
 
 - (void)getAPNSToken:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+  NSData *apnsToken = [RNFBMessagingFacade apnsToken];
   if (apnsToken) {
     resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
   } else {
@@ -223,13 +231,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
                 type:(NSString *)type
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
-  FIRMessagingAPNSTokenType tokenType = FIRMessagingAPNSTokenTypeUnknown;
-  if (type != nil && [@"prod" isEqualToString:type]) {
-    tokenType = FIRMessagingAPNSTokenTypeProd;
-  } else if (type != nil && [@"sandbox" isEqualToString:type]) {
-    tokenType = FIRMessagingAPNSTokenTypeSandbox;
-  }
-
   NSData *tokenData = [RNFBMessagingSerializer APNSTokenDataFromNSString:token];
   if (tokenData == nil) {
     [RNFBSharedUtils
@@ -242,7 +243,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
     return;
   }
 
-  [[FIRMessaging messaging] setAPNSToken:tokenData type:tokenType];
+  [RNFBMessagingFacade setAPNSTokenData:tokenData typeString:type];
   resolve([NSNull null]);
 }
 
@@ -468,28 +469,27 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 - (void)subscribeToTopic:(NSString *)topic
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
-  [[FIRMessaging messaging] subscribeToTopic:topic
-                                  completion:^(NSError *error) {
-                                    if (error) {
-                                      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                                    } else {
-                                      resolve(nil);
-                                    }
-                                  }];
+  [RNFBMessagingFacade subscribeToTopic:topic
+                             completion:^(NSError *error) {
+                               if (error) {
+                                 [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+                               } else {
+                                 resolve(nil);
+                               }
+                             }];
 }
 
 - (void)unsubscribeFromTopic:(NSString *)topic
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
-  [[FIRMessaging messaging] unsubscribeFromTopic:topic
-                                      completion:^(NSError *error) {
-                                        if (error) {
-                                          [RNFBSharedUtils rejectPromiseWithNSError:reject
-                                                                              error:error];
-                                        } else {
-                                          resolve(nil);
-                                        }
-                                      }];
+  [RNFBMessagingFacade unsubscribeFromTopic:topic
+                                 completion:^(NSError *error) {
+                                   if (error) {
+                                     [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+                                   } else {
+                                     resolve(nil);
+                                   }
+                                 }];
 }
 
 - (void)setDeliveryMetricsExportToBigQuery:(BOOL)enabled

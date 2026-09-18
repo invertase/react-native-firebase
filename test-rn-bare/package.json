@@ -6,7 +6,9 @@
     "start": "react-native start"
   },
   "dependencies": {
+    "@react-native-firebase/analytics": "26.4.0",
     "@react-native-firebase/app": "26.4.0",
+    "@react-native-firebase/messaging": "26.4.0",
     "react": "19.2.3",
     "react-native": "0.86.2"
   },

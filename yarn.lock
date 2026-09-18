@@ -26191,6 +26191,7 @@ __metadata:
   resolution: "test-expo@workspace:test-expo"
   dependencies:
     "@babel/core": "npm:^7.29.0"
+    "@react-native-firebase/analytics": "npm:26.4.0"
     "@react-native-firebase/app": "npm:26.4.0"
     "@react-native-firebase/messaging": "npm:26.4.0"
     babel-preset-expo: "npm:57.0.6"
@@ -26208,7 +26209,9 @@ __metadata:
     "@react-native-community/cli": "npm:20.1.0"
     "@react-native-community/cli-platform-android": "npm:20.1.0"
     "@react-native-community/cli-platform-ios": "npm:20.1.0"
+    "@react-native-firebase/analytics": "npm:26.4.0"
     "@react-native-firebase/app": "npm:26.4.0"
+    "@react-native-firebase/messaging": "npm:26.4.0"
     "@react-native/babel-preset": "npm:0.86.2"
     "@react-native/metro-config": "npm:0.86.2"
     react: "npm:19.2.3"

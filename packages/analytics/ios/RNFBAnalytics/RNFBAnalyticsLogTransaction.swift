@@ -16,7 +16,11 @@
  */
 
 import Foundation
+#if canImport(RNFBFirebase)
+import RNFBFirebase
+#else
 import FirebaseAnalytics
+#endif
 import StoreKit
 
 /// Swift wrapper for logging a verified StoreKit 2 transaction to Firebase Analytics.

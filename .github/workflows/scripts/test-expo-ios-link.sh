@@ -15,7 +15,7 @@
 #     okf-bundle/testing/test-app-dependency-pins.md (tests/ios/Podfile's
 #     RCT_USE_PREBUILT_RNCORE=0 / RCT_USE_RN_DEP=0 pin)
 # Historical #9158 signature to stay past: undefined `_OBJC_CLASS_$_FIRApp`
-# (and/or missing app-target FirebaseCore / packageProductDependencies).
+# (and/or missing app-target packageProductDependencies).
 # Regression #9202 signature: duplicate `_FIRFirebaseVersion` from both
 # libRNFBApp.a(FirebaseCore.o) and libRNFBMessaging.a(FirebaseCore.o). The
 # green graph must produce RNFB frameworks and link them with `-framework`.
@@ -30,6 +30,7 @@ log() {
 
 PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-/tmp/test-expo-prebuild.log}"
 XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-/tmp/test-expo-xcodebuild.log}"
+DERIVED_DATA="${RNFB_TEST_EXPO_DERIVED_DATA:-/tmp/test-expo-derived-data}"
 PBXPROJ="ios/testexpo.xcodeproj/project.pbxproj"
 PODS_PBXPROJ="ios/Pods/Pods.xcodeproj/project.pbxproj"
 PODS_XCCONFIG="ios/Pods/Target Support Files/Pods-testexpo/Pods-testexpo.release.xcconfig"
@@ -51,8 +52,8 @@ if [[ ! -d "$WORKSPACE" ]]; then
   exit 1
 fi
 
-# Diagnosis: did #9164's rnfirebase_add_spm_core_to_app_target run during
-# Expo CNG `pod install`, and did the resulting pbxproj keep FirebaseCore on
+# Diagnosis: did rnfirebase_add_spm_core_to_app_target run during Expo CNG
+# `pod install`, and did the resulting pbxproj keep RNFBFirebase on
 # the app target? Do not "fix" a wipe by hand-editing pbxproj or adding a
 # custom Podfile post_integrate -- that is not the documented Expo path.
 log "--- SPM helper / pbxproj diagnosis ---"
@@ -62,16 +63,16 @@ if grep -E '\[react-native-firebase\]' "$PREBUILD_LOG" >/dev/null 2>&1; then
 else
   log "NO [react-native-firebase] lines in prebuild log (firebase_spm.rb may not have evaluated)"
 fi
-if grep -E 'Linking FirebaseCore|Repairing FirebaseCore|Couldn.t link FirebaseCore|Couldn.t hook CocoaPods|SPM not available|SPM disabled' "$PREBUILD_LOG" >/dev/null 2>&1; then
+if grep -E 'Linking RNFBFirebase|Repairing RNFBFirebase|Couldn.t link RNFBFirebase|Couldn.t hook CocoaPods|SPM not available|SPM disabled' "$PREBUILD_LOG" >/dev/null 2>&1; then
   log "helper-specific lines:"
-  grep -E 'Linking FirebaseCore|Repairing FirebaseCore|Couldn.t link FirebaseCore|Couldn.t hook CocoaPods|SPM not available|SPM disabled|Using SPM' "$PREBUILD_LOG" || true
+  grep -E 'Linking RNFBFirebase|Repairing RNFBFirebase|Couldn.t link RNFBFirebase|Couldn.t hook CocoaPods|SPM not available|SPM disabled|Using (SPM|local RNFBFirebase)' "$PREBUILD_LOG" || true
 else
   log "NO rnfirebase_add_spm_core_to_app_target success/warn lines in prebuild log"
 fi
 if [[ -f "$PBXPROJ" ]]; then
   if grep -q 'packageProductDependencies' "$PBXPROJ"; then
     log "pbxproj HAS packageProductDependencies"
-    grep -n 'packageProductDependencies\|XCSwiftPackageProductDependency\|productName = FirebaseCore\|XCRemoteSwiftPackageReference' "$PBXPROJ" | head -80 || true
+    grep -n 'packageProductDependencies\|XCSwiftPackageProductDependency\|productName = RNFBFirebase\|XCLocalSwiftPackageReference' "$PBXPROJ" | head -80 || true
   else
     log "pbxproj HAS NO packageProductDependencies (helper did not stick, or never ran)"
   fi
@@ -85,11 +86,11 @@ if [[ -f "$PBXPROJ" ]]; then
   else
     log "pbxproj HAS NO [RNFB] Embed Firebase SPM Frameworks"
   fi
-  if grep -E 'FirebaseCore.*PBXBuildFile|productName = FirebaseCore' "$PBXPROJ" >/dev/null 2>&1; then
-    log "pbxproj HAS FirebaseCore productName / PBXBuildFile hits:"
-    grep -n 'productName = FirebaseCore\|FirebaseCore.framework in Frameworks' "$PBXPROJ" | head -40 || true
+  if grep -E 'RNFBFirebase.*PBXBuildFile|productName = RNFBFirebase' "$PBXPROJ" >/dev/null 2>&1; then
+    log "pbxproj HAS RNFBFirebase productName / PBXBuildFile hits:"
+    grep -n 'productName = RNFBFirebase\|RNFBFirebase.framework in Frameworks' "$PBXPROJ" | head -40 || true
   else
-    log "pbxproj HAS NO FirebaseCore PBXBuildFile / productName (app target never got FirebaseCore)"
+    log "pbxproj HAS NO RNFBFirebase PBXBuildFile / productName (app target never got the umbrella)"
   fi
 else
   log "ERROR: missing ${PBXPROJ}"
@@ -173,7 +174,7 @@ pod_framework_file_ref_ok() {
   ' "$PODS_PBXPROJ"
 }
 
-for rnfb_target in RNFBApp RNFBMessaging; do
+for rnfb_target in RNFBApp RNFBAnalytics RNFBMessaging; do
   product_type="$(pod_target_product_type "$rnfb_target")"
   if [[ "$product_type" != "com.apple.product-type.framework" ]]; then
     log "ERROR: ${rnfb_target} generated with wrong product type '${product_type:-missing}' (expected dynamic framework)"
@@ -186,7 +187,7 @@ for rnfb_target in RNFBApp RNFBMessaging; do
 done
 
 app_ldflags="$(grep '^OTHER_LDFLAGS = ' "$PODS_XCCONFIG" || true)"
-for rnfb_target in RNFBApp RNFBMessaging; do
+for rnfb_target in RNFBApp RNFBAnalytics RNFBMessaging; do
   if grep -Fq -- "-l\"${rnfb_target}\"" <<<"$app_ldflags"; then
     log "ERROR: app link inputs still use static library -l\"${rnfb_target}\""
     exit 1
@@ -212,9 +213,9 @@ xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
   ONLY_ACTIVE_ARCH=YES
-  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++
   -workspace "$WORKSPACE"
   -scheme "$SCHEME"
+  -derivedDataPath "$DERIVED_DATA"
   -configuration Release
   -destination 'generic/platform=iOS Simulator'
   CODE_SIGNING_ALLOWED=NO
@@ -258,4 +259,52 @@ if grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG" ||
   exit 1
 fi
 
-log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"
+assert_dynamic_umbrella_graph() {
+  local products_dir="${DERIVED_DATA}/Build/Products/Release-iphonesimulator"
+  local umbrella_binary
+  local app_binary
+  local framework_binary
+  local defined_symbols
+
+  umbrella_binary="$(find "$products_dir" -type f -path '*/RNFBFirebase.framework/RNFBFirebase' -print -quit)"
+  [[ -n "$umbrella_binary" ]] || {
+    log "ERROR: RNFBFirebase dynamic framework binary was not produced"
+    exit 1
+  }
+  file -b "$umbrella_binary" | grep -q 'dynamically linked' || {
+    log "ERROR: RNFBFirebase product is not a dynamically linked framework"
+    exit 1
+  }
+
+  app_binary="$(find "$products_dir" -type f -path '*/testexpo.app/testexpo' -print -quit)"
+  [[ -n "$app_binary" ]] || {
+    log "ERROR: testexpo app binary was not found under ${products_dir}"
+    exit 1
+  }
+  otool -L "$app_binary" | grep -Fq '@rpath/RNFBFirebase.framework/RNFBFirebase' || {
+    log "ERROR: app binary does not link RNFBFirebase"
+    exit 1
+  }
+
+  for rnfb_target in RNFBApp RNFBAnalytics RNFBMessaging; do
+    framework_binary="$(find "$products_dir" -type f -path "*/${rnfb_target}.framework/${rnfb_target}" -print -quit)"
+    [[ -n "$framework_binary" ]] || {
+      log "ERROR: ${rnfb_target} framework binary was not found"
+      exit 1
+    }
+    otool -L "$framework_binary" | grep -Fq '@rpath/RNFBFirebase.framework/RNFBFirebase' || {
+      log "ERROR: ${rnfb_target} does not link the RNFBFirebase umbrella"
+      exit 1
+    }
+    defined_symbols="$(nm -gU "$framework_binary")"
+    if grep -E -q 'FIRApp|GUL' <<<"$defined_symbols"; then
+      log "ERROR: ${rnfb_target} still defines FIRApp/GoogleUtilities symbols"
+      grep -E 'FIRApp|GUL' <<<"$defined_symbols" || true
+      exit 1
+    fi
+  done
+}
+
+assert_dynamic_umbrella_graph
+
+log "PASS: Expo documented path links App/Analytics/Messaging through the dynamic RNFBFirebase umbrella"

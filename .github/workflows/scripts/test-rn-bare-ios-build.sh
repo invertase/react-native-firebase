@@ -29,6 +29,7 @@ log() {
 
 POD_INSTALL_LOG="${RNFB_TEST_RN_BARE_POD_LOG:-/tmp/test-rn-bare-pod-install.log}"
 XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_XCODEBUILD_LOG:-/tmp/test-rn-bare-xcodebuild.log}"
+DERIVED_DATA="${RNFB_TEST_RN_BARE_DERIVED_DATA:-/tmp/test-rn-bare-derived-data}"
 PODFILE="test-rn-bare/ios/Podfile"
 PBXPROJ="test-rn-bare/ios/testrnbare.xcodeproj/project.pbxproj"
 PODFILE_LOCK="test-rn-bare/ios/Podfile.lock"
@@ -109,9 +110,10 @@ xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
   ONLY_ACTIVE_ARCH=YES
-  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++
+  CC=clang CPLUSPLUS=clang++
   -workspace "$WORKSPACE"
   -scheme "$SCHEME"
+  -derivedDataPath "$DERIVED_DATA"
   -configuration Release
   -destination 'generic/platform=iOS Simulator'
   CODE_SIGNING_ALLOWED=NO
@@ -165,4 +167,37 @@ if grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG"; then
   fail "xcodebuild passed but an Expo duplicate-Firebase signature remains; that is not this closer"
 fi
 
-log "PASS: vanilla RN CLI documented path compiles with prebuilt RNCore on, no RNFB static pre_install, SPM + dynamic, without #8883 compile signatures"
+assert_dynamic_umbrella_graph() {
+  local products_dir="${DERIVED_DATA}/Build/Products/Release-iphonesimulator"
+  local umbrella_binary
+  local app_binary
+  local framework_binary
+  local defined_symbols
+
+  umbrella_binary="$(find "$products_dir" -type f -path '*/RNFBFirebase.framework/RNFBFirebase' -print -quit)"
+  [[ -n "$umbrella_binary" ]] || fail "RNFBFirebase dynamic framework binary was not produced"
+  file -b "$umbrella_binary" | grep -q 'dynamically linked' ||
+    fail "RNFBFirebase product is not a dynamically linked framework"
+
+  app_binary="$(find "$products_dir" -type f -path '*/testrnbare.app/testrnbare' -print -quit)"
+  [[ -n "$app_binary" ]] || fail "testrnbare app binary was not found under ${products_dir}"
+  otool -L "$app_binary" | grep -Fq '@rpath/RNFBFirebase.framework/RNFBFirebase' ||
+    fail "app binary does not link RNFBFirebase"
+
+  for rnfb_target in RNFBApp RNFBAnalytics RNFBMessaging; do
+    framework_binary="$(find "$products_dir" -type f -path "*/${rnfb_target}.framework/${rnfb_target}" -print -quit)"
+    [[ -n "$framework_binary" ]] || fail "${rnfb_target} framework binary was not found"
+    otool -L "$framework_binary" | grep -Fq '@rpath/RNFBFirebase.framework/RNFBFirebase' ||
+      fail "${rnfb_target} does not link the RNFBFirebase umbrella"
+    defined_symbols="$(nm -gU "$framework_binary")"
+    if grep -E -q 'FIRApp|GUL' <<<"$defined_symbols"; then
+      log "${rnfb_target} still defines FIRApp/GoogleUtilities symbols:"
+      grep -E 'FIRApp|GUL' <<<"$defined_symbols" || true
+      fail "${rnfb_target} still owns FirebaseCore/GoogleUtilities code"
+    fi
+  done
+}
+
+assert_dynamic_umbrella_graph
+
+log "PASS: vanilla RN CLI documented path links App/Analytics/Messaging through the dynamic RNFBFirebase umbrella"

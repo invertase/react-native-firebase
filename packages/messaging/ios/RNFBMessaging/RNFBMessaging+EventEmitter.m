@@ -15,27 +15,14 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#else
-@import FirebaseCore;
-@import FirebaseMessaging;
-#endif
-#import <Foundation/Foundation.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
-NS_ASSUME_NONNULL_BEGIN
+#import "RNFBMessaging+EventEmitter.h"
 
-@interface RNFBMessagingFIRMessagingDelegate : NSObject <FIRMessagingDelegate>
+@implementation RNFBMessagingEventEmitter
 
-@property(nonatomic, nullable, weak) id<FIRMessagingDelegate> originalDelegate;
-
-+ (_Nonnull instancetype)sharedInstance;
-
-- (void)observe;
++ (void)sendTokenRefreshEventWithToken:(NSString *)token {
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh" body:@{@"token" : token}];
+}
 
 @end
-
-NS_ASSUME_NONNULL_END

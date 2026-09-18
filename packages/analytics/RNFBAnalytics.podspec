@@ -35,6 +35,24 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBAnalyticsTurboModules\" \"$(PODS_TARGET_SRCROOT)/ios/generated\"",
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
+    # Under the local dynamic SPM umbrella (RNFBFirebase), `import RNFBFirebase`
+    # from RNFBAnalyticsFacade.swift re-exports FirebaseAnalytics, whose SPM
+    # product is backed by a *prebuilt* `.binaryTarget` XCFramework (wrapped by
+    # `FirebaseAnalyticsWrapper`) rather than plain Swift/ObjC source -- unlike
+    # e.g. FirebaseMessaging. Swift's `@_exported import` auto-links that
+    # underlying framework directly for every consumer, but this pod's own
+    # link step has no `-F` search path pointing at the shared
+    # `PackageFrameworks` directory Xcode stages it into, so without this the
+    # linker warns "Could not find or use auto-linked framework
+    # 'FirebaseAnalytics'" and fails with undefined `_OBJC_CLASS_$_FIRAnalytics`.
+    "FRAMEWORK_SEARCH_PATHS" => "\"$(PODS_CONFIGURATION_BUILD_DIR)/PackageFrameworks\"",
+    # FirebaseAnalytics.framework's own binary doesn't trigger auto-linking of
+    # its transitive GoogleAppMeasurement dependency (the obfuscated `APM*`
+    # symbols FIRAnalytics.o calls into) the way source-built Swift Package
+    # products do, so without this the linker fails with undefined
+    # `_OBJC_CLASS_$_APM*` symbols even once FirebaseAnalytics.framework
+    # itself is found.
+    "OTHER_LDFLAGS" => "$(inherited) -framework GoogleAppMeasurement",
   }
 
   s.dependency          'RNFBApp'
@@ -51,21 +69,9 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  # Analytics has conditional dependencies that vary between SPM and CocoaPods.
-  # SPM: use FirebaseAnalyticsCore when $RNFirebaseAnalyticsWithoutAdIdSupport = true
-  #      to avoid GoogleAppMeasurement APM symbols (APMETaskManager, APMMeasurement)
-  #      that require FirebasePerformance at link time.
-  # CocoaPods: IdentitySupport is a separate subspec controlled by $RNFirebaseAnalyticsWithoutAdIdSupport.
-  if defined?(spm_dependency) && !rnfirebase_spm_disabled? &&
-     defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && $RNFirebaseAnalyticsWithoutAdIdSupport
-    # FirebaseAnalyticsCore uses GoogleAppMeasurementCore (no IDFA, no APM objects).
-    # FirebaseAnalytics uses GoogleAppMeasurement which has APMETaskManager/APMMeasurement
-    # cross-references that cause linker errors when FirebasePerformance is not linked.
-    Pod::UI.puts "#{s.name}: Using FirebaseAnalyticsCore SPM product (no IDFA, uses GoogleAppMeasurementCore)."
-    firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalyticsCore'], 'FirebaseAnalytics/Core')
-  else
-    firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
-  end
+  # The local SPM umbrella has one hardcoded FirebaseAnalytics graph for this
+  # spike. CocoaPods keeps its existing conditional IdentitySupport behavior.
+  rnfirebase_umbrella_dependency(s, firebase_sdk_version, 'FirebaseAnalytics/Core')
 
   unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
     # CocoaPods-only: conditional IdentitySupport subspec
@@ -87,25 +93,11 @@ Pod::Spec.new do |s|
   end
 
   # GoogleAdsOnDeviceConversion
-  # Not part of firebase-ios-sdk's own Package.swift, but Google publishes it as
-  # its own standalone SPM package (googleads/google-ads-on-device-conversion-ios-sdk),
-  # independent of the Firebase package graph. Resolved via a second, independent
-  # spm_dependency() call -- RN's SPMManager keys dependencies by pod target and
-  # package URL, so multiple unrelated SPM packages on the same pod target are
-  # supported. If linker errors occur (some consumers have hit this when the
-  # dependency sits behind an indirect/wrapper package -- see
-  # https://github.com/firebase/firebase-ios-sdk/issues/15916), try adding
-  # `-ObjC` and `-lc++` to the app target's "Other Linker Settings".
+  # FirebaseAnalytics already pulls this into the SPM graph transitively. Keep
+  # the explicit dependency only on the CocoaPods path.
   # See: https://developers.google.com/google-ads/api/docs/conversions/upload-identifiers
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
-    if defined?(spm_dependency) && !rnfirebase_spm_disabled?
-      Pod::UI.puts "#{s.name}: Using GoogleAdsOnDeviceConversion SPM package."
-      spm_dependency(s,
-        url: 'https://github.com/googleads/google-ads-on-device-conversion-ios-sdk.git',
-        requirement: { kind: 'upToNextMajorVersion', minimumVersion: '3.6.1' },
-        products: ['GoogleAdsOnDeviceConversion']
-      )
-    else
+    unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
       Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
       s.dependency          'GoogleAdsOnDeviceConversion'
     end

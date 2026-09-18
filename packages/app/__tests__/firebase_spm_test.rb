@@ -147,6 +147,10 @@ module Xcodeproj
         end
       end
 
+      class XCLocalSwiftPackageReference < XCRemoteSwiftPackageReference
+        attr_accessor :relative_path
+      end
+
       class XCSwiftPackageProductDependency
         attr_reader :package
         attr_accessor :product_name
@@ -509,6 +513,43 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal ['FirebaseCrashlytics'], spm_calls[0][:products]
   end
 
+  def test_umbrella_dependency_uses_only_local_dynamic_product
+    spm_calls = []
+    Object.define_method(:spm_dependency) do |spec, **kwargs|
+      spm_calls << { spec: spec, **kwargs }
+    end
+    load_firebase_spm
+
+    spec = MockSpec.new(name: 'RNFBAnalytics')
+    rnfirebase_umbrella_dependency(spec, '12.10.0', 'FirebaseAnalytics/Core')
+
+    assert_empty spec.dependencies
+    assert RNFirebaseSPM.active?
+    assert_equal 1, spm_calls.length
+    assert_equal RNFirebaseSPM.umbrella_path, spm_calls[0][:url]
+    assert_equal [RNFIREBASE_SPM_UMBRELLA_PRODUCT], spm_calls[0][:products]
+  end
+
+  def test_umbrella_dependency_keeps_cocoapods_fallback
+    load_firebase_spm
+
+    spec = MockSpec.new(name: 'RNFBMessaging')
+    rnfirebase_umbrella_dependency(
+      spec,
+      '12.10.0',
+      ['Firebase/Messaging', 'FirebaseCoreExtension']
+    )
+
+    assert_equal(
+      [
+        { name: 'Firebase/Messaging', version: '12.10.0' },
+        { name: 'FirebaseCoreExtension', version: '12.10.0' }
+      ],
+      spec.dependencies
+    )
+    refute RNFirebaseSPM.active?
+  end
+
   # ── $RNFirebaseDisableSPM semantics (must check truthiness, not defined?) ──
 
   def test_disable_spm_true_forces_cocoapods
@@ -564,6 +605,20 @@ class FirebaseSpmTest < Minitest::Test
     load_firebase_spm
 
     assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', RNFirebaseSPM.url
+  end
+
+  def test_local_umbrella_manifest_matches_firebase_pin_and_products
+    load_firebase_spm
+    package_json = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+    firebase_version = package_json['sdkVersions']['ios']['firebase']
+    manifest = File.read(File.join(RNFirebaseSPM.umbrella_path, 'Package.swift'))
+
+    assert_includes manifest, 'name: "RNFBFirebase"'
+    assert_includes manifest, 'type: .dynamic'
+    assert_includes manifest, ".upToNextMajor(from: \"#{firebase_version}\")"
+    %w[FirebaseCore FirebaseInstallations FirebaseAnalytics FirebaseMessaging].each do |product|
+      assert_includes manifest, ".product(name: \"#{product}\""
+    end
   end
 
   # ── RNFirebaseSPM.active? tracking (replaces reflecting into RN's `SPM`
@@ -748,8 +803,8 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_equal 1, target.package_product_dependencies.length
     ref = target.package_product_dependencies[0]
-    assert_equal 'FirebaseCore', ref.product_name
-    assert_equal RNFirebaseSPM.url, ref.package.repositoryURL
+    assert_equal RNFIREBASE_SPM_UMBRELLA_PRODUCT, ref.product_name
+    assert_equal RNFirebaseSPM.umbrella_path, ref.package.relative_path
 
     search_path = '${SYMROOT}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/'
     target.build_configurations.each do |config|
@@ -836,9 +891,8 @@ class FirebaseSpmTest < Minitest::Test
     load_firebase_spm
     RNFirebaseSPM.activate!('12.10.0')
 
-    existing_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    existing_pkg.repositoryURL = RNFirebaseSPM.url
-    existing_pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }
+    existing_pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    existing_pkg.relative_path = RNFirebaseSPM.umbrella_path
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([target], package_references: [existing_pkg])
@@ -874,13 +928,12 @@ class FirebaseSpmTest < Minitest::Test
     load_firebase_spm
     RNFirebaseSPM.activate!('12.10.0')
 
-    existing_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    existing_pkg.repositoryURL = RNFirebaseSPM.url
-    existing_pkg.requirement = { kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }
+    existing_pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    existing_pkg.relative_path = RNFirebaseSPM.umbrella_path
 
     existing_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
     existing_ref.package = existing_pkg
-    existing_ref.product_name = 'FirebaseCore'
+    existing_ref.product_name = RNFIREBASE_SPM_UMBRELLA_PRODUCT
 
     # Stale pre-fix state: dependency already declared on the target, but
     # never linked -- `frameworks_build_phase.files` (via the default empty
@@ -1007,13 +1060,24 @@ class FirebaseSpmTest < Minitest::Test
   #    see "redefinition of module 'Firebase'" / duplicate App-Intents-metadata
   #    build commands) ──
 
-  def test_remove_core_noop_when_spm_active
+  def test_remove_core_replaces_superseded_direct_core_when_spm_active
     load_firebase_spm
     RNFirebaseSPM.activate!('12.10.0')
 
-    installer = MockInstaller.new(nil) # would raise if ever touched
+    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    pkg.repositoryURL = RNFirebaseSPM.url
+    ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    ref.product_name = 'FirebaseCore'
+    ref.package = pkg
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
     rnfirebase_remove_spm_core_from_app_target(installer)
-    # No error raised => returned early without walking `installer.aggregate_targets`.
+
+    assert_empty target.package_product_dependencies
+    assert_empty user_project.root_object.package_references
+    assert_equal 1, user_project.save_count
   end
 
   def test_remove_core_noop_when_no_stale_dependency_present
@@ -1035,10 +1099,10 @@ class FirebaseSpmTest < Minitest::Test
     # Simulate the state left behind by a prior SPM-mode `pod install`: the
     # app target still has an explicit FirebaseCore product dependency, and
     # the project still has the backing package reference.
-    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    pkg.repositoryURL = RNFirebaseSPM.url
+    pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    pkg.relative_path = RNFirebaseSPM.umbrella_path
     ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
-    ref.product_name = 'FirebaseCore'
+    ref.product_name = RNFIREBASE_SPM_UMBRELLA_PRODUCT
     ref.package = pkg
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
@@ -1082,11 +1146,11 @@ class FirebaseSpmTest < Minitest::Test
   def test_remove_core_leaves_package_reference_when_still_used_by_another_target
     load_firebase_spm
 
-    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    pkg.repositoryURL = RNFirebaseSPM.url
+    pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    pkg.relative_path = RNFirebaseSPM.umbrella_path
 
     stale_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
-    stale_ref.product_name = 'FirebaseCore'
+    stale_ref.product_name = RNFIREBASE_SPM_UMBRELLA_PRODUCT
     stale_ref.package = pkg
 
     other_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
@@ -1110,10 +1174,10 @@ class FirebaseSpmTest < Minitest::Test
   def test_remove_core_ignores_dependencies_from_a_different_package_url
     load_firebase_spm
 
-    unrelated_pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
-    unrelated_pkg.repositoryURL = 'https://github.com/some/other-package.git'
+    unrelated_pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    unrelated_pkg.relative_path = '/some/other/package'
     unrelated_ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
-    unrelated_ref.product_name = 'FirebaseCore'
+    unrelated_ref.product_name = RNFIREBASE_SPM_UMBRELLA_PRODUCT
     unrelated_ref.package = unrelated_pkg
 
     target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [unrelated_ref])
@@ -1926,7 +1990,7 @@ class FirebaseSpmTest < Minitest::Test
     instance.send(:run_podfile_post_integrate_hooks)
 
     assert_equal 1, target.package_product_dependencies.length
-    assert_equal 'FirebaseCore', target.package_product_dependencies[0].product_name
+    assert_equal RNFIREBASE_SPM_UMBRELLA_PRODUCT, target.package_product_dependencies[0].product_name
     assert_equal 1, target.frameworks_build_phase.files.length
     assert(target.shell_script_build_phases.any? { |phase| phase.name == RNFIREBASE_SPM_EMBED_PHASE_NAME })
     assert user_project.save_count >= 1
@@ -1963,7 +2027,7 @@ class FirebaseSpmTest < Minitest::Test
 
     rnfirebase_run_spm_user_project_hooks(installer)
 
-    core_warn = Pod::UI.warnings.find { |warning| warning.include?('link FirebaseCore') }
+    core_warn = Pod::UI.warnings.find { |warning| warning.include?('link RNFBFirebase') }
     refute_nil core_warn
     assert_includes core_warn, 'core boom'
     assert_includes core_warn, 'post_integrate'
@@ -2213,7 +2277,7 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_equal :original_result, result
     assert_equal 1, Pod::UI.warnings.length
-    assert_includes Pod::UI.warnings[0], "Couldn't link FirebaseCore into the app target"
+    assert_includes Pod::UI.warnings[0], "Couldn't link RNFBFirebase into the app target"
     assert_includes Pod::UI.warnings[0], 'core boom'
   end
 

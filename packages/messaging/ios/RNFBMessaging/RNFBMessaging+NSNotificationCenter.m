@@ -14,15 +14,13 @@
  * limitations under the License.
  *
  */
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#else
-@import FirebaseCore;
-@import FirebaseMessaging;
-#endif
+// This file never needs to touch FirebaseMessaging/FirebaseCore types
+// directly (it only calls into other RNFB classes that own their own Firebase
+// calls), so it never imports Firebase at all -- see RNFBMessagingFacade.swift
+// and RNFBMessagingFIRMessagingDelegate.swift for where those calls now live,
+// behind this pod's own generated `-Swift.h` header (below), which is the
+// only header still reachable once the local dynamic SPM umbrella
+// (RNFBFirebase) is in use.
 #import <RNFBApp/RNFBJSON.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <RNFBApp/RNFBSharedUtils.h>
@@ -30,9 +28,19 @@
 #import <React/RCTRootView.h>
 
 #import "RNFBMessaging+AppDelegate.h"
-#import "RNFBMessaging+FIRMessagingDelegate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
+#if __has_include(<RNFBMessaging/RNFBMessaging-Swift.h>)
+// This import will work in situations where `use_frameworks!` is in use
+#import <RNFBMessaging/RNFBMessaging-Swift.h>
+#elif __has_include("RNFBMessaging-Swift.h")
+// If `use_frameworks!` is not in use (for example, while using pre-built
+// react-native core) then header imports based on frameworks assumptions fail.
+// So, if frameworks are not available, fall back to importing the header directly, it
+// should be findable from a header search path pointing to the build
+// directory. See firebase-ios-sdk#12611 for more context.
+#import "RNFBMessaging-Swift.h"
+#endif
 
 @implementation RNFBMessagingNSNotificationCenter
 @synthesize isHeadless;
