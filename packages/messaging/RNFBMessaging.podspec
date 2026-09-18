@@ -65,6 +65,24 @@ Pod::Spec.new do |s|
     ['Firebase/Messaging', 'FirebaseCoreExtension']
   )
 
+  # SPM: fix for #9322 -- see the matching comment in RNFBAnalytics.podspec
+  # for the full writeup, including what's actually confirmed vs. still an
+  # open question about *why* Xcode's SPM integration behaves this way.
+  # RNFBMessaging needs the same explicit top-level declaration for Xcode to
+  # share a single dynamic framework per product instead of privately
+  # duplicating GULNetwork/GULReachabilityChecker/GULSwizzler into
+  # RNFBMessaging.framework too.
+  if defined?(spm_dependency) && !rnfirebase_spm_disabled?
+    # 8.1.3 floor matches the GoogleUtilities version firebase-ios-sdk 12.x
+    # resolves transitively; bump this alongside firebase_sdk_version if
+    # firebase-ios-sdk ever moves to GoogleUtilities 9.x.
+    spm_dependency(s,
+      url: 'https://github.com/google/GoogleUtilities.git',
+      requirement: { kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' },
+      products: ['GULNetwork', 'GULReachability', 'GULMethodSwizzler']
+    )
+  end
+
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework

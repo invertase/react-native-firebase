@@ -248,6 +248,30 @@ CocoaPods-only `IdentitySupport` on the SPM path.
 Consumer-facing version pin and `-ObjC` notes:
 [`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
 
+### GoogleUtilities: explicit `spm_dependency` lets pods share one product
+
+The FirebaseCore limitation above is about *automatic* SPM products declared
+only transitively. A related but narrower case: some `GoogleUtilities`
+products (`GULNetwork`, `GULReachability`, `GULMethodSwizzler`) were only
+reachable transitively through `FirebaseAnalytics`/`FirebaseMessaging` on
+`RNFBAnalytics.podspec`/`RNFBMessaging.podspec`, and Xcode's SPM integration
+did not reliably promote them to a shared `PackageProduct.framework` in that
+graph — each pod compiled a private copy instead, colliding at runtime once
+both were loaded (GitHub
+[#9322](https://github.com/invertase/react-native-firebase/issues/9322)).
+
+Declaring the same GoogleUtilities products as an explicit top-level
+`spm_dependency` directly on each consuming podspec (same pattern as the
+existing `GULAppDelegateSwizzler` declaration) is enough for Xcode to build
+one shared dynamic framework per product and link every consumer against it,
+instead of duplicating it per pod. This is scoped to `GoogleUtilities`
+products specifically; it does **not** change or fix the `FirebaseCore`/
+`FIRApp` sharing limitation described above, which stays unsupported under
+SPM regardless of how explicitly any product is declared. Add this
+declaration only to podspecs actually shown to privately duplicate a watched
+class by `yarn test-expo:ios:link`'s `#9322` diagnosis, not pre-emptively to
+every RNFB podspec.
+
 ## App target FirebaseCore link: package dependency alone is not enough
 
 `rnfirebase_add_spm_core_to_app_target` exists for the case in the table above
