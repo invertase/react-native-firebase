@@ -26,3 +26,9 @@ gem 'simplecov-lcov', '~> 0.9'
 
 # Lint for packages/app Ruby helpers + __tests__ (yarn lint:ruby / tests:ios:ruby).
 gem 'rubocop', '~> 1.91'
+
+# CocoaPods still calls JSON.parse(..., quirks_mode: true) when loading generated
+# podspec JSON (react-native-macos codegen during `yarn tests:macos:pod:install`).
+# json 3.0 dropped that keyword (ArgumentError: unknown keyword: quirks_mode).
+# RuboCop 1.91 allows json >= 2.3 and would otherwise pull 3.x; keep the 2.x line.
+gem 'json', '~> 2.21'
