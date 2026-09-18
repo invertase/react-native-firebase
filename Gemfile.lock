@@ -86,7 +86,7 @@ GEM
       mutex_m
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    json (2.21.2)
+    json (3.0.2)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -97,7 +97,7 @@ GEM
     nap (1.1.0)
     netrc (0.11.0)
     nkf (0.3.0)
-    parallel (2.1.0)
+    parallel (2.2.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
@@ -107,7 +107,7 @@ GEM
     rainbow (3.1.1)
     regexp_parser (2.12.0)
     rexml (3.4.4)
-    rubocop (1.90.0)
+    rubocop (1.91.0)
       json (>= 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -158,7 +158,7 @@ PLATFORMS
 
 DEPENDENCIES
   cocoapods (= 1.17.0)
-  rubocop (~> 1.90)
+  rubocop (~> 1.91)
   simplecov (~> 1.2)
   simplecov-lcov (~> 0.9)
   xcodeproj (= 1.28.1)
@@ -203,7 +203,7 @@ CHECKSUMS
   gh_inspector (1.1.3) sha256=04cca7171b87164e053aa43147971d3b7f500fcb58177698886b48a9fc4a1939
   httpclient (2.9.0) sha256=4b645958e494b2f86c2f8a2f304c959baa273a310e77a2931ddb986d83e498c8
   i18n (1.15.2) sha256=00f9eb62412fe593b2a65a97daa75300d37abb8f7202ec748e94b6d46a9dd1b5
-  json (2.21.2) sha256=1f1d3b7cf2b3ba1a69beca0bb6db13d5438b80bff3cd54cdaaa620b9b07c1c6a
+  json (3.0.2) sha256=8e6d7e7b11384c21230430cef90b71f14849a34a1f4452796670f7c981bd19df
   language_server-protocol (3.17.0.6) sha256=5ef2c0c138f8267e1bc631d3328347d354f96724b0af22f2c79516120443b7f0
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
@@ -214,7 +214,7 @@ CHECKSUMS
   nap (1.1.0) sha256=949691660f9d041d75be611bb2a8d2fd559c467537deac241f4097d9b5eea576
   netrc (0.11.0) sha256=de1ce33da8c99ab1d97871726cba75151113f117146becbe45aa85cb3dabee3f
   nkf (0.3.0) sha256=357a8dbeba38b727b75930f665146546076a394a1c243faf634ff176e3588895
-  parallel (2.1.0) sha256=b35258865c2e31134c5ecb708beaaf6772adf9d5efae28e93e99260877b09356
+  parallel (2.2.0) sha256=e1059c5fd7b649558a0aec38a769f06a42942bdb40503d005a59c352fe011cd8
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
   public_suffix (4.0.7) sha256=8be161e2421f8d45b0098c042c06486789731ea93dc3a896d30554ee38b573b8
@@ -222,7 +222,7 @@ CHECKSUMS
   rainbow (3.1.1) sha256=039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a
   regexp_parser (2.12.0) sha256=35a916a1d63190ab5c9009457136ae5f3c0c7512d60291d0d1378ba18ce08ebb
   rexml (3.4.4) sha256=19e0a2c3425dfbf2d4fc1189747bdb2f849b6c5e74180401b15734bc97b5d142
-  rubocop (1.90.0) sha256=9eb4c065b5c5154e4ef554c547972f3905a9eb6b53e657e580b6796b54bf8242
+  rubocop (1.91.0) sha256=9c82b7bf391c5d7e3798c5b9996e22a1fe3bd7468e351dfdeb96140c058296d0
   rubocop-ast (1.50.0) sha256=b9ca88300da0803ee222ad20cdb30494c0a784eed06fdc35d254b06d662788db
   ruby-macho (4.1.0) sha256=23dab37f7de0fe1e14f3bfa73bebc423ae8cd1d4fdb3e5585abc45a841eca920
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
