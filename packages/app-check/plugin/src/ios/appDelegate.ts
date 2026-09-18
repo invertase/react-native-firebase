@@ -31,6 +31,25 @@ const methodInvocationLineMatcher =
 const fallbackInvocationLineMatcher =
   /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
 
+export const swiftDidFinishLaunchingAnchor: RegExp = /didFinishLaunchingWithOptions\s+\w+\s*:/;
+
+export function getSwiftMethodBodyOffset(contents: string, anchor: RegExp): number | null {
+  const lines = contents.split('\n');
+  const anchorIndex = lines.findIndex(line => anchor.test(line));
+  if (anchorIndex === -1) {
+    return null;
+  }
+
+  const maxLookahead = Math.min(lines.length, anchorIndex + 8);
+  for (let index = anchorIndex; index < maxLookahead; index++) {
+    if (/\{\s*$/.test(lines[index])) {
+      return index - anchorIndex + 1;
+    }
+  }
+
+  return null;
+}
+
 export function modifyObjcAppDelegate(contents: string): string {
   contents = preferQuotedAppCheckModuleImport(contents);
   // Add import
@@ -149,12 +168,23 @@ export function modifySwiftAppDelegate(contents: string): string {
 
   const methodInvocationLineMatcher = /(?:factory\.startReactNative\()/;
 
-  if (!methodInvocationLineMatcher.test(contents)) {
-    WarningAggregator.addWarningIOS(
-      '@react-native-firebase/app-check',
-      'Unable to determine correct insertion point in AppDelegate.swift. Skipping App Check addition.',
-    );
-    return contents;
+  // Under the UIScene life cycle (required by Xcode 27+) the app delegate was moved to `SceneDelegate.swift`
+  let anchor: RegExp;
+  let offset: number;
+  if (methodInvocationLineMatcher.test(contents)) {
+    anchor = methodInvocationLineMatcher;
+    offset = 0;
+  } else {
+    const bodyOffset = getSwiftMethodBodyOffset(contents, swiftDidFinishLaunchingAnchor);
+    if (bodyOffset === null) {
+      WarningAggregator.addWarningIOS(
+        '@react-native-firebase/app-check',
+        'Unable to determine correct insertion point in AppDelegate.swift. Skipping App Check addition.',
+      );
+      return contents;
+    }
+    anchor = swiftDidFinishLaunchingAnchor;
+    offset = bodyOffset;
   }
 
   try {
@@ -162,8 +192,8 @@ export function modifySwiftAppDelegate(contents: string): string {
       tag: '@react-native-firebase/app-check',
       src: contents,
       newSrc: methodInvocationBlock,
-      anchor: methodInvocationLineMatcher,
-      offset: 0,
+      anchor,
+      offset,
       comment: '//',
     }).contents;
   } catch (_e) {

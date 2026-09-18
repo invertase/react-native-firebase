@@ -17,6 +17,48 @@ describe('Config Plugin iOS Tests', function () {
     jest.resetAllMocks();
   });
 
+  it('works with a UIScene lifecycle Swift AppDelegate (SDK 58+)', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+      { encoding: 'utf8' },
+    );
+
+    // SDK 58 moved `startReactNative` into SceneDelegate.swift, so the previous anchor is gone.
+    expect(appDelegate).not.toContain('factory.startReactNative(');
+
+    const result = modifySwiftAppDelegate(appDelegate);
+
+    expect(result).toContain('RNFBAppCheckModule.sharedInstance()');
+    // Firebase requires the App Check provider factory before configure (AppCheck-AD-3).
+    expect(result.indexOf('RNFBAppCheckModule.sharedInstance()')).toBeLessThan(
+      result.indexOf('FirebaseApp.configure()'),
+    );
+    // Must land inside didFinishLaunchingWithOptions, before the super call returns.
+    expect(result.indexOf('RNFBAppCheckModule.sharedInstance()')).toBeLessThan(
+      result.indexOf('return super.application(application'),
+    );
+    expect(result).toMatchSnapshot();
+  });
+
+  it('prefers the app plugin generated marker when it is already present', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+      { encoding: 'utf8' },
+    );
+    const firebaseLine =
+      '// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions';
+    const withMarker = appDelegate.replace(
+      'return super.application(application',
+      `${firebaseLine}\n    return super.application(application`,
+    );
+
+    const result = modifySwiftAppDelegate(withMarker);
+
+    expect(result.indexOf('RNFBAppCheckModule.sharedInstance()')).toBeGreaterThan(
+      result.indexOf(firebaseLine),
+    );
+  });
+
   it('tests changes made to old AppDelegate.m (SDK 42)', async function () {
     const appDelegate = await fs.readFile(path.join(__dirname, './fixtures/AppDelegate_sdk42.m'), {
       encoding: 'utf8',

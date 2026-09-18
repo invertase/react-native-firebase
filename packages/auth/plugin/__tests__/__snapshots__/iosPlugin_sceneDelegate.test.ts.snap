@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Config Plugin iOS Tests - sceneDelegate patching inserts the openURLContexts override into the SDK 58 SceneDelegate 1`] = `
+"internal import Expo
+
+@objc(SceneDelegate)
+class SceneDelegate: ExpoAppSceneDelegate {
+// @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY)
+  override func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
+    let forwardedContexts = URLContexts.filter { $0.url.host?.lowercased() != "firebaseauth" }
+    guard !forwardedContexts.isEmpty else {
+      return
+    }
+    super.scene(scene, openURLContexts: forwardedContexts)
+  }
+// @generated end @react-native-firebase/auth-openURL
+  // Extension point for config plugins.
+}
+"
+`;
