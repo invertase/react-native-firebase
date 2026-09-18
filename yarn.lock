@@ -26191,6 +26191,7 @@ __metadata:
   resolution: "test-expo@workspace:test-expo"
   dependencies:
     "@babel/core": "npm:^7.29.0"
+    "@react-native-firebase/analytics": "npm:26.4.0"
     "@react-native-firebase/app": "npm:26.4.0"
     "@react-native-firebase/messaging": "npm:26.4.0"
     babel-preset-expo: "npm:57.0.6"
