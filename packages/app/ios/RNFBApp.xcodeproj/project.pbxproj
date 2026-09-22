@@ -20,6 +20,7 @@
 		RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */; };
 		RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026082000000002 /* RNFBHandleMap.m */; };
 		RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */; };
+		RNFB00001A2026092200000011 /* RNFBPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +62,7 @@
 		RNFB00001A2026082000000002 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMap.m; sourceTree = "<group>"; };
 		RNFB00001A2026082000000003 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBHandleMap.h; sourceTree = "<group>"; };
 		RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorage.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPreferencesStorage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
 				2748D81A223674B600FC8DC8 /* RNFBPreferences.h */,
 				2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */,
+				RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */,
 				DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */,
 				DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */,
 				4D97BAD223042F0800077358 /* RNFBUtilsModule.h */,
@@ -194,6 +197,7 @@
 				RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */,
 				RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */,
 				RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */,
+				RNFB00001A2026092200000011 /* RNFBPreferencesStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
