@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import io.invertase.firebase.app.ReactNativeFirebaseApp
@@ -230,11 +231,16 @@ class ReactNativeFirebaseMetaTest {
     context: Context,
     block: () -> Unit,
   ) {
-    mockStatic(ReactNativeFirebaseApp::class.java).use { firebaseApp ->
-      firebaseApp
-        .`when`<Context>(ReactNativeFirebaseApp::getApplicationContext)
-        .thenReturn(context)
+    val previous: Context? = ReactNativeFirebaseApp.getApplicationContext()
+    mockStatic(Log::class.java).use {
+      ReactNativeFirebaseApp.setApplicationContext(context)
+    }
+    try {
       block()
+    } finally {
+      mockStatic(Log::class.java).use {
+        ReactNativeFirebaseApp.setApplicationContext(previous)
+      }
     }
   }
 }

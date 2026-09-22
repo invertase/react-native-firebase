@@ -18,6 +18,7 @@ package io.invertase.firebase.common
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import io.invertase.firebase.app.ReactNativeFirebaseApp
@@ -119,19 +120,23 @@ class ReactNativeFirebasePreferencesTest {
     ).thenReturn(preferences)
     `when`(preferences.contains("present")).thenReturn(true)
 
-    mockStatic(ReactNativeFirebaseApp::class.java).use { firebaseApp ->
-      firebaseApp
-        .`when`<Context>(ReactNativeFirebaseApp::getApplicationContext)
-        .thenReturn(applicationContext)
+    val previous: Context? = ReactNativeFirebaseApp.getApplicationContext()
+    mockStatic(Log::class.java).use {
+      ReactNativeFirebaseApp.setApplicationContext(applicationContext)
+    }
+    try {
       val subject = ReactNativeFirebasePreferences()
 
       assertTrue(subject.contains("present"))
       assertTrue(subject.contains("present"))
 
-      firebaseApp.verify(ReactNativeFirebaseApp::getApplicationContext, times(1))
       verify(applicationContext, times(1))
         .getSharedPreferences("io.invertase.firebase", Context.MODE_PRIVATE)
       verify(preferences, times(2)).contains("present")
+    } finally {
+      mockStatic(Log::class.java).use {
+        ReactNativeFirebaseApp.setApplicationContext(previous)
+      }
     }
   }
 
