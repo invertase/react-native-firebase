@@ -29,15 +29,11 @@ export default function HomeScreen() {
       <View style={styles.list}>
         {ROUTES.map((route, index) => (
           <Link key={route.href} href={route.href} asChild>
-            <Pressable
-              style={({ pressed }) => [
-                styles.row,
-                index > 0 && styles.rowBorder,
-                pressed && styles.rowPressed,
-              ]}
-            >
-              <Text style={styles.rowLabel}>{route.label}</Text>
-              <Text style={styles.chevron}>{'\u203A'}</Text>
+            <Pressable style={({ pressed }) => [pressed && styles.rowPressed]}>
+              <View style={[styles.row, index > 0 && styles.rowBorder]}>
+                <Text style={styles.rowLabel}>{route.label}</Text>
+                <Text style={styles.chevron}>{'\u203A'}</Text>
+              </View>
             </Pressable>
           </Link>
         ))}
@@ -47,23 +43,31 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  subtitle: { fontSize: 15, color: theme.subtleText, marginTop: -8 },
+  subtitle: { fontSize: 17, color: theme.subtleText, marginTop: -8 },
   list: {
-    borderRadius: 12,
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 480,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: theme.border,
     backgroundColor: theme.card,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 1,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
   },
   rowBorder: { borderTopWidth: 1, borderTopColor: theme.border },
   rowPressed: { backgroundColor: theme.background },
-  rowLabel: { fontSize: 16, color: theme.text },
-  chevron: { fontSize: 18, color: theme.subtleText },
+  rowLabel: { fontSize: 19, color: theme.text, fontWeight: '500' },
+  chevron: { fontSize: 20, color: theme.subtleText },
 });
