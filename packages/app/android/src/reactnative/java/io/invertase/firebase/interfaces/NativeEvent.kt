@@ -1,4 +1,4 @@
-package io.invertase.firebase.interfaces;
+package io.invertase.firebase.interfaces
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -17,12 +17,12 @@ package io.invertase.firebase.interfaces;
  *
  */
 
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableMap
 
-public interface NativeEvent {
-  String getEventName();
+interface NativeEvent {
+  fun getEventName(): String
 
-  WritableMap getEventBody();
+  fun getEventBody(): WritableMap
 
-  String getFirebaseAppName();
+  fun getFirebaseAppName(): String?
 }
