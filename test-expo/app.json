@@ -4,8 +4,9 @@
     "slug": "testexpo",
     "scheme": "testexpo",
     "version": "1.0.0",
+    "icon": "./assets/app-icon.png",
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
       "bundleIdentifier": "io.invertase.testing",
       "googleServicesFile": "./GoogleService-Info.plist",

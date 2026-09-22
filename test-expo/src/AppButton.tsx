@@ -64,6 +64,6 @@ const styles = StyleSheet.create({
   secondary: { backgroundColor: theme.card, borderWidth: 1.5, borderColor: theme.accent },
   pressed: { opacity: 0.7 },
   label: { fontSize: 16, fontWeight: '600' },
-  primaryLabel: { color: '#FFFFFF' },
+  primaryLabel: { color: theme.background },
   secondaryLabel: { color: theme.accent },
 });
