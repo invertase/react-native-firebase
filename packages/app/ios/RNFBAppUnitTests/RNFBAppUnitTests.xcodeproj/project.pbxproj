@@ -12,6 +12,10 @@
 		A10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* XCTest.framework */; };
 		A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* RNFBHandleMapStorage.swift */; };
 		A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */; };
+		A1000000000000000000001A /* RNFBPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001B /* RNFBPreferences.m */; };
+		A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001C /* RNFBPreferencesStorage.swift */; };
+		A1000000000000000000001F /* RNFBPreferencesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* RNFBPreferencesTests.m */; };
+		A10000000000000000000021 /* RNFBPreferencesStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +26,11 @@
 		A10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A10000000000000000000016 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorageTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000001B /* RNFBPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPreferences.m; path = ../RNFBApp/RNFBPreferences.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000001C /* RNFBPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPreferencesStorage.swift; path = ../RNFBApp/RNFBPreferencesStorage.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000001E /* RNFBPreferencesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPreferencesTests.m; sourceTree = "<group>"; };
+		A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPreferencesStorageTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000022 /* RNFBPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPreferences.h; path = ../RNFBApp/RNFBPreferences.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +69,11 @@
 				A10000000000000000000016 /* RNFBHandleMapStorage.swift */,
 				A10000000000000000000009 /* RNFBHandleMapTests.m */,
 				A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */,
+				A10000000000000000000022 /* RNFBPreferences.h */,
+				A1000000000000000000001B /* RNFBPreferences.m */,
+				A1000000000000000000001C /* RNFBPreferencesStorage.swift */,
+				A1000000000000000000001E /* RNFBPreferencesTests.m */,
+				A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -125,6 +139,10 @@
 				A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */,
 				A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */,
 				A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */,
+				A1000000000000000000001A /* RNFBPreferences.m in Sources */,
+				A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */,
+				A1000000000000000000001F /* RNFBPreferencesTests.m in Sources */,
+				A10000000000000000000021 /* RNFBPreferencesStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
