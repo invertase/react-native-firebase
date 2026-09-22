@@ -58,4 +58,4 @@ That exception is a reason **not** to inherit test-app targetSdk on libraries �
 
 **Not a substitute for area e2e:** JVM tests do **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) delivery/integration e2e on platforms where the module loads. Multi-generation races may be proven **primarily** via JVM tests; e2e remains required for load, flush, and native↔JS delivery on those platforms.
 
-**Formatting:** Java under `packages/*/android/src` uses **`yarn lint:android` only** — [agent command policy](agent-command-policy.md).
+**Formatting:** Java = **`yarn lint:android` only**; Kotlin = repo-root **`./gradlew ktlintFormat` only** — [agent command policy](agent-command-policy.md).
