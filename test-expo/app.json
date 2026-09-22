@@ -7,12 +7,12 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.invertase.testexpo",
+      "bundleIdentifier": "io.invertase.testing",
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true
     },
     "android": {
-      "package": "com.invertase.testexpo",
+      "package": "com.invertase.testing",
       "googleServicesFile": "./google-services.json"
     },
     "plugins": [
