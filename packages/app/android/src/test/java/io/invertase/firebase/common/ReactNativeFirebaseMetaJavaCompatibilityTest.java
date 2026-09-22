@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
@@ -37,11 +38,11 @@ public class ReactNativeFirebaseMetaJavaCompatibilityTest {
     Context context = mock(Context.class);
     WritableMap writableMap = mock(WritableMap.class);
     when(context.getPackageManager()).thenReturn(null);
+    Context previous = ReactNativeFirebaseApp.getApplicationContext();
 
-    try (MockedStatic<ReactNativeFirebaseApp> firebaseApp =
-            mockStatic(ReactNativeFirebaseApp.class);
+    try (MockedStatic<Log> ignored = mockStatic(Log.class);
         MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
-      firebaseApp.when(ReactNativeFirebaseApp::getApplicationContext).thenReturn(context);
+      ReactNativeFirebaseApp.setApplicationContext(context);
       arguments.when(Arguments::createMap).thenReturn(writableMap);
 
       ReactNativeFirebaseMeta meta =
@@ -57,6 +58,10 @@ public class ReactNativeFirebaseMetaJavaCompatibilityTest {
       assertEquals(7, meta.getIntValue(null, 7));
       assertNull(meta.getStringValue(null, null));
       assertEquals(writableMap, meta.getAll());
+    } finally {
+      try (MockedStatic<Log> ignored = mockStatic(Log.class)) {
+        ReactNativeFirebaseApp.setApplicationContext(previous);
+      }
     }
   }
 }
