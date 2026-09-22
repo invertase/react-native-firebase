@@ -17,11 +17,20 @@
 
 #import "RNFBHandleMap.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBHandleMapStorage Swift interface not found"
+#endif
+
 NSErrorDomain const RNFBHandleMapErrorDomain = @"io.invertase.firebase.RNFBHandleMap";
 
 @interface RNFBHandleMap ()
-@property(nonatomic, strong) NSMutableDictionary *map;
-@property(nonatomic, strong) NSObject *lock;
+@property(nonatomic, strong) RNFBHandleMapStorage *storage;
 @end
 
 @implementation RNFBHandleMap
@@ -29,88 +38,50 @@ NSErrorDomain const RNFBHandleMapErrorDomain = @"io.invertase.firebase.RNFBHandl
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [NSMutableDictionary dictionary];
-    _lock = [[NSObject alloc] init];
+    _storage = [[RNFBHandleMapStorage alloc] init];
   }
   return self;
 }
 
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
-  @synchronized(self.lock) {
-    if (self.map[key] != nil) {
-      if (error != nil) {
-        NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
-        *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
-                                     code:RNFBHandleMapErrorCollision
-                                 userInfo:@{NSLocalizedDescriptionKey : message}];
-      }
-      return NO;
+  if (![self.storage putIfAbsent:key value:value]) {
+    if (error != nil) {
+      NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
+      *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
+                                   code:RNFBHandleMapErrorCollision
+                               userInfo:@{NSLocalizedDescriptionKey : message}];
     }
-    self.map[key] = value;
-    return YES;
+    return NO;
   }
+  return YES;
 }
 
 - (BOOL)putIfAbsent:(id)key value:(id)value {
-  @synchronized(self.lock) {
-    if (self.map[key] != nil) {
-      return NO;
-    }
-    self.map[key] = value;
-    return YES;
-  }
+  return [self.storage putIfAbsent:key value:value];
 }
 
 - (BOOL)putIfAbsentOrSame:(id)key value:(id)value {
-  @synchronized(self.lock) {
-    id existing = self.map[key];
-    if (existing == nil) {
-      self.map[key] = value;
-      return YES;
-    }
-    return existing == value;
-  }
+  return [self.storage putIfAbsentOrSame:key value:value];
 }
 
 - (id)putReplacing:(id)key value:(id)value {
-  @synchronized(self.lock) {
-    id previous = self.map[key];
-    self.map[key] = value;
-    return previous;
-  }
+  return [self.storage putReplacing:key value:value];
 }
 
 - (id)get:(id)key {
-  @synchronized(self.lock) {
-    return self.map[key];
-  }
+  return [self.storage get:key];
 }
 
 - (id)take:(id)key {
-  @synchronized(self.lock) {
-    id value = self.map[key];
-    [self.map removeObjectForKey:key];
-    return value;
-  }
+  return [self.storage take:key];
 }
 
 - (id)takeIf:(id)key when:(BOOL (^)(id))condition {
-  @synchronized(self.lock) {
-    id value = self.map[key];
-    if (value != nil && condition(value)) {
-      [self.map removeObjectForKey:key];
-      return value;
-    }
-    return nil;
-  }
+  return [self.storage takeIf:key when:condition];
 }
 
 - (NSArray *)takeAll {
-  @synchronized(self.lock) {
-    NSArray *values = [self.map allValues];
-    [self.map removeAllObjects];
-    return values;
-  }
+  return [self.storage takeAll];
 }
 
 @end
