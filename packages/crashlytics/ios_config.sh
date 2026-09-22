@@ -18,10 +18,14 @@ set -e
 
 if [[ ${PODS_ROOT} && -f "${PODS_ROOT}/FirebaseCrashlytics/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from Pods"
-  "${PODS_ROOT}/FirebaseCrashlytics/run"
+  if ! "${PODS_ROOT}/FirebaseCrashlytics/run"; then
+    echo "warning: FirebaseCrashlytics run (CocoaPods) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
+  fi
 elif [[ -f "${PROJECT_DIR}/FirebaseCrashlytics.framework/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from framework"
-  "${PROJECT_DIR}/FirebaseCrashlytics.framework/run"
+  if ! "${PROJECT_DIR}/FirebaseCrashlytics.framework/run"; then
+    echo "warning: FirebaseCrashlytics run (framework) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
+  fi
 else
   # SPM: upload-symbols is at a known path in the SourcePackages checkout.
   # BUILD_DIR is typically DerivedData/Project-hash/Build/Products — strip from /Build onward
