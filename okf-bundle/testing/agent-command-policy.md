@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Agent command policy
-description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, Expo documented-path iOS link, and RN CLI prebuilt RNCore iOS build. Supersedes improvised diagnostics.
+description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, Expo documented-path iOS link, RN CLI prebuilt RNCore iOS build, and workflow-friction logging. Supersedes improvised diagnostics.
 tags: [testing, validation, agents, workflow, yarn]
 timestamp: 2026-09-03T00:00:00Z
 ---
@@ -52,6 +52,7 @@ Single source for **which shell commands agents may run** in this repo. E2e `yar
 | Host pre-flight (before each `:test-cover`)                     | [running e2e § pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) — host-clear + services ready + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier. `yarn tests:e2e:check` / `yarn tests:e2e:release` ([host-clear probes](running-e2e.md#host-clear-probes)) | Port/HTTP checks alone when Metro/emulators belong to another worktree; `pgrep`/spawn probes of Jet/Detox as completion signals; ad-hoc `pgrep` / hardcoded `:8090` only; improvised kill lists; `--all-slots` while another owner is live |
 | Slotted parallel                                                | [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle) — `eval "$(yarn tests:e2e:export-slot-env <platform> N)"` then the **same** `yarn tests:packager:*` / `yarn tests:emulator:start` / `pod:install` / `:build` / `:test-cover` as serial. macOS packager is `yarn tests:macos:packager:*` (`tests-macos/`); mobile is `yarn tests:packager:*` (`tests/`) | ad-hoc port math; second lifecycle helpers as the runbook; rsync between local worktrees; host flock; Metro-after-build; disabling Swift explicit modules; Debug `RCT_NO_LAUNCH_PACKAGER` as a Metro fix; using the mobile packager for macOS Jet (or vice versa) |
 | TurboModule codegen (all migrated / CI)                         | `yarn codegen:verify` (wipe + regen + diff); `yarn codegen:all` for local regen via package scripts                                                                                                                         | ad-hoc CLI without wipe; inventing alternate codegen yarn scripts — see [TurboModule codegen](#turbomodule-codegen)                                           |
+| Workflow friction — read the inventory at item pickup; record friction met during the work | `frog list` (current friction inventory); `frog log` (interactive — record the friction just encountered)                                                                                                        | Reading, grepping, or hand-editing `frog`'s own storage; ad-hoc notes or scratch files as the friction record; inventing other `frog` subcommands or flags |
 
 ### Prepare / transpile (detail)
 
