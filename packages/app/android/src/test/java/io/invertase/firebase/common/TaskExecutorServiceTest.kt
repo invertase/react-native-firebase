@@ -17,6 +17,7 @@ package io.invertase.firebase.common
  *
  */
 
+import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -28,9 +29,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.MockedStatic
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.`when`
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
@@ -49,25 +48,28 @@ import java.util.concurrent.atomic.AtomicBoolean
  * `org.json.JSONObject`.
  */
 class TaskExecutorServiceTest {
-  private lateinit var jsonStatic: MockedStatic<ReactNativeFirebaseJSON>
+  private lateinit var jsonObjectField: java.lang.reflect.Field
+  private var originalJsonObject: Any? = null
   private val configuration = HashMap<String, Int>()
 
   @Before
   fun setUp() {
-    val json = mock(ReactNativeFirebaseJSON::class.java)
-    `when`(json.getIntValue(anyString(), anyInt())).thenAnswer { invocation ->
-      configuration[invocation.getArgument(0)] ?: invocation.getArgument(1)
-    }
-    jsonStatic = mockStatic(ReactNativeFirebaseJSON::class.java)
-    jsonStatic
-      .`when`<ReactNativeFirebaseJSON> {
-        ReactNativeFirebaseJSON.getSharedInstance()
-      }.thenReturn(json)
+    val jsonObject = mock(JSONObject::class.java)
+    `when`(jsonObject.optInt(anyString(), anyInt()))
+      .thenAnswer { invocation ->
+        configuration[invocation.getArgument(0)] ?: invocation.getArgument(1)
+      }
+    val json = ReactNativeFirebaseJSON.getSharedInstance()
+    jsonObjectField = ReactNativeFirebaseJSON::class.java.getDeclaredField("jsonObject")
+    jsonObjectField.isAccessible = true
+    originalJsonObject = jsonObjectField.get(json)
+    jsonObjectField.set(json, jsonObject)
   }
 
   @After
   fun tearDown() {
-    jsonStatic.close()
+    jsonObjectField.set(ReactNativeFirebaseJSON.getSharedInstance(), originalJsonObject)
+    configuration.clear()
   }
 
   @Test
