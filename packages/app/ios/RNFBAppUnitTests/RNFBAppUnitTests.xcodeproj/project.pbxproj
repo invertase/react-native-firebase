@@ -10,6 +10,8 @@
 		A1000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* RNFBHandleMap.m */; };
 		A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* RNFBHandleMapTests.m */; };
 		A10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* XCTest.framework */; };
+		A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* RNFBHandleMapStorage.swift */; };
+		A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +20,8 @@
 		A10000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000009 /* RNFBHandleMapTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMapTests.m; sourceTree = "<group>"; };
 		A10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A10000000000000000000016 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +57,9 @@
 			children = (
 				A10000000000000000000007 /* RNFBHandleMap.h */,
 				A10000000000000000000008 /* RNFBHandleMap.m */,
+				A10000000000000000000016 /* RNFBHandleMapStorage.swift */,
 				A10000000000000000000009 /* RNFBHandleMapTests.m */,
+				A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -116,7 +122,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */,
 				A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */,
+				A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +147,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -154,6 +163,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};
@@ -165,6 +175,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RNFBApp";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -181,9 +192,12 @@
 					"-fprofile-instr-generate",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppUnitTests;
+				PRODUCT_MODULE_NAME = RNFBAppUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -195,6 +209,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RNFBApp";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -204,9 +219,12 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppUnitTests;
+				PRODUCT_MODULE_NAME = RNFBAppUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};

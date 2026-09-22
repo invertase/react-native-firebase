@@ -19,6 +19,7 @@
 		DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */; };
 		RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */; };
 		RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026082000000002 /* RNFBHandleMap.m */; };
+		RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -59,6 +60,7 @@
 		RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBNullSentinelInterceptor.h; sourceTree = "<group>"; };
 		RNFB00001A2026082000000002 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMap.m; sourceTree = "<group>"; };
 		RNFB00001A2026082000000003 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBHandleMap.h; sourceTree = "<group>"; };
+		RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 				RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */,
 				RNFB00001A2026082000000003 /* RNFBHandleMap.h */,
 				RNFB00001A2026082000000002 /* RNFBHandleMap.m */,
+				RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */,
 			);
 			path = RNFBApp;
 			sourceTree = "<group>";
@@ -190,6 +193,7 @@
 				2748D8152236426300FC8DC8 /* RNFBJSON.m in Sources */,
 				RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */,
 				RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */,
+				RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +219,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -231,6 +236,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -254,6 +260,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -265,6 +272,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
