@@ -34,12 +34,14 @@ buildscript {
   repositories {
     google()
     mavenCentral()
+    gradlePluginPortal()
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.5.0' // https://developers.google.com/android/guides/google-services-plugin
     classpath 'com.android.tools.build:gradle:8.13.1' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    classpath 'org.jlleitschuh.gradle:ktlint-gradle:14.2.0'
     classpath 'com.google.firebase:perf-plugin:2.0.2'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.8'
     classpath 'com.google.firebase:firebase-appdistribution-gradle:5.3.0'
@@ -72,6 +74,46 @@ if (!rnCoveragePackageJson) {
 }
 apply from: new File(new File(rnCoveragePackageJson).parentFile, 'android/rn-coverage.gradle')
 
+def repositoryDir = rootProject.projectDir.parentFile.parentFile
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jlleitschuh.gradle.ktlint'
+
+def packageAndroidSourceDirs = new File(repositoryDir, 'packages')
+  .listFiles()
+  .findAll { it.isDirectory() }
+  .collect { new File(it, 'android') }
+  .findAll { it.isDirectory() }
+sourceSets.main.kotlin.srcDirs(packageAndroidSourceDirs)
+
+def repositoryKotlinFilter = providers.gradleProperty('rnfbKtlintGitFilter')
+  .map { value ->
+    value.readLines()
+      .collect { it.replace('\\', '/').replaceFirst('^\\./', '') }
+      .findAll { !it.isEmpty() }
+      .toSet()
+  }
+  .orElse([] as Set)
+
+allprojects {
+  tasks.withType(org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask).configureEach {
+    exclude { element ->
+      if (element.directory) {
+        return false
+      }
+
+      def relativePath = repositoryDir.canonicalFile.toPath()
+        .relativize(element.file.canonicalFile.toPath())
+        .toString()
+        .replace('\\', '/')
+      def isAndroidKotlin = relativePath.matches(
+        '(?:packages/[^/]+/android|tests/android)/.*\\.kt',
+      )
+      !(isAndroidKotlin && repositoryKotlinFilter.get().contains(relativePath))
+    }
+  }
+}
+
 // collect all our modules for reporting
 subprojects.forEach { project ->
   if (coverageLibraryMatchers.any { matcher -> project.name.contains(matcher) }) {
@@ -80,6 +122,14 @@ subprojects.forEach { project ->
 }
 
 subprojects {
+  if (project.name == 'app') {
+    apply plugin: 'org.jlleitschuh.gradle.ktlint'
+    def projectKtlintFormat = tasks.named('ktlintFormat')
+    rootProject.tasks.named('ktlintFormat').configure {
+      dependsOn projectKtlintFormat
+    }
+  }
+
   tasks.register('listAllDependencies', DependencyReportTask) {}
 
   // Force all subprojects to use one and only one set of versions

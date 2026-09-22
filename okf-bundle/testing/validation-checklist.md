@@ -134,7 +134,7 @@ Opt-in shape/embed suites skip cleanly when cocoapods/xcodeproj are absent; exit
 
 **Blocking before `implementation` handoff and on the frozen tree for `independent-review`.** Run from repo root after prepare/compile when TS/JS changed. **Owner of which script to run** — [change authoring](change-authoring-workflow.md) hops here; do not duplicate this table there.
 
-**CI Lint job** (`.github/workflows/linting.yml`) is `yarn lint` = `lint:js` + `lint:deps` + `lint:android` + `lint:ios:check`.
+**CI Lint job** (`.github/workflows/linting.yml`) is `yarn lint` = `lint:js` + `lint:deps` + `lint:android` + `lint:ios:check`. `lint:android` is **Java** (`google-java-format`); it does **not** format Kotlin. Kotlin format is repo-root `./gradlew ktlintFormat` ([agent command policy](agent-command-policy.md)), not part of `yarn lint`.
 
 ### Lint-by-tree / by-diff
 
@@ -144,7 +144,8 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | ------------ | ------ | ----- |
 | `packages/**` JS/TS | `yarn lint:js` | ESLint `packages/*`. Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. A flood under `packages/app/__tests__/vendor/` is local Bundler vendor, not product lint. Do not treat it as the lint gate. [Agent command policy § JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor). |
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
-| Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
+| Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` on **`.java`** — **mutates**. Does **not** format `.kt`. Only Java entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
+| Kotlin under `packages/*/android` or `tests/android/**/*.kt` | repo-root `./gradlew ktlintFormat` | **Implementation only.** **Mutates.** Include `tests/android/**/*.kt` when those files are in the diff. Invocation and filter: [agent command policy § Android Kotlin format](agent-command-policy.md#android-kotlin-format). Frozen review: do not run. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
 | `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Gotchas below. |
 
@@ -153,11 +154,11 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 - **Markdown tables:** `yarn lint:markdown` runs Prettier `--check` (exact column padding). No `lint:markdown:fix`; no allowlisted formatter for this tree ([agent command policy](agent-command-policy.md)). Wide tables: prefix `{/* prettier-ignore */}`, compact single-space cells — see `docs/migrating-to-v26.mdx`.
 - **Spellcheck frontmatter:** `spellchecker-cli` exits **0** when frontmatter fails to parse (`Failed to parse YAML frontmatter, ignoring it`) and skips checking that page's frontmatter. `yarn lint:spellcheck` runs it through `scripts/spellcheck.mjs`, which streams the output through unchanged and turns that case into exit **1** with a fix hint. Unquoted colons in values (e.g. `description: v27: Imagen API removal`) are the common trigger — quote the value. Keep that wrapper in place if the script is ever rewritten; a bare `spellchecker` invocation restores the silent pass.
 
-A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`).
+A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`). Full `yarn lint` still does **not** run Kotlin `ktlintFormat`.
 
 ### Frozen `independent-review` (check-only)
 
-Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only).
+Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android`, repo-root `./gradlew ktlintFormat`, or full `yarn lint` — those formatters **mutate** the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only). There is no allowlisted check-only Kotlin ktlint task.
 
 ## Expo documented-path iOS link (not e2e)
 
@@ -200,7 +201,7 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | e2e Android               | yarn tests:android:test-cover        | 0    | Z passing — /tmp/...log                                                                                                                      |
 | android merged Jacoco     | yarn tests:android:post-e2e-coverage | 0    | jacocoTestReport.xml (unit + e2e) — [coverage design](coverage-design.md)                                                                    |
 | compare:types             | yarn compare:types                   | 0    | <pkg> 0/0/0                                                                                                                                  |
-| lint (by-tree)            | [§ lint and formatting](#lint-and-formatting) | 0    | matching scripts; frozen review: check-only (no `lint:android` / full `yarn lint`)                                                            |
+| lint (by-tree)            | [§ lint and formatting](#lint-and-formatting) | 0    | matching scripts; frozen review: check-only (no `lint:android` / `ktlintFormat` / full `yarn lint`)                                          |
 | lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
 | lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` in diff                                                                                                                       |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
@@ -224,7 +225,7 @@ Exit codes must be the **real** ones: the agent shell is zsh, where `${PIPESTATU
 - [ ] `yarn tests:ios:unit` when `packages/*/ios/**` ObjC/C++ or `packages/*/ios/*UnitTests` changed ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
-- [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / full `yarn lint`)
+- [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / `./gradlew ktlintFormat` / full `yarn lint`)
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] Android post-e2e merged Jacoco when Android native touched: `yarn tests:android:post-e2e-coverage` → `jacocoTestReport.xml` ([coverage design](coverage-design.md))
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)
