@@ -75,6 +75,10 @@ def configureRnfbJacocoSourcesAndClasses(JacocoReport reportTask) {
             dir: "$projectPath/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes",
             excludes: classFileFilter,
         )
+        classFiles << fileTree(
+            dir: "$projectPath/build/tmp/kotlin-classes/debug",
+            excludes: classFileFilter,
+        )
         srcFiles << "$projectPath/src/main/java"
         def reactNativeSrc = file("$projectPath/src/reactnative/java")
         if (reactNativeSrc.exists()) {
