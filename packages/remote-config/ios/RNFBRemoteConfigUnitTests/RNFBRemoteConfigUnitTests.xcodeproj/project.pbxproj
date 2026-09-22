@@ -11,6 +11,7 @@
 		A9000000000000000000000B /* RNFBRemoteConfigListenerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */; };
 		A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */; };
 		A90000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* XCTest.framework */; };
+		A90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000001C /* RNFBHandleMapStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		A90000000000000000000016 /* RNFBRemoteConfigListenerRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBRemoteConfigListenerRegistry.h; path = ../RNFBConfig/RNFBRemoteConfigListenerRegistry.h; sourceTree = SOURCE_ROOT; };
 		A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRemoteConfigListenerRegistry.m; path = ../RNFBConfig/RNFBRemoteConfigListenerRegistry.m; sourceTree = SOURCE_ROOT; };
 		A90000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A9000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			children = (
 				A90000000000000000000007 /* RNFBHandleMap.h */,
 				A90000000000000000000008 /* RNFBHandleMap.m */,
+				A9000000000000000000001C /* RNFBHandleMapStorage.swift */,
 				A90000000000000000000016 /* RNFBRemoteConfigListenerRegistry.h */,
 				A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */,
 				A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */,
@@ -121,6 +124,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				A90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
 				A9000000000000000000000B /* RNFBRemoteConfigListenerRegistry.m in Sources */,
 				A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */,
 			);
@@ -171,6 +175,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -194,6 +199,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -205,6 +212,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -221,6 +229,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};
