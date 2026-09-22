@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Button, TextInput } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 
+import { AppButton } from '../../src/AppButton';
 import { ScreenChrome } from '../../src/ScreenChrome';
+import { TextField } from '../../src/TextField';
 import { getAuthErrorMessage } from '../../src/authErrorMessage';
 
 export default function SignInScreen() {
@@ -24,20 +25,20 @@ export default function SignInScreen() {
 
   return (
     <ScreenChrome title="auth / sign in" result={result} error={error}>
-      <TextInput
+      <TextField
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
       />
-      <TextInput
+      <TextField
         placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Sign in" onPress={handleSignIn} />
+      <AppButton title="Sign in" onPress={handleSignIn} />
     </ScreenChrome>
   );
 }

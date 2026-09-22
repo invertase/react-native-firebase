@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Button, TextInput } from 'react-native';
 import { createUserWithEmailAndPassword, getAuth } from '@react-native-firebase/auth';
 
+import { AppButton } from '../../src/AppButton';
 import { ScreenChrome } from '../../src/ScreenChrome';
+import { TextField } from '../../src/TextField';
 import { getAuthErrorMessage } from '../../src/authErrorMessage';
 
 export default function SignUpScreen() {
@@ -24,20 +25,20 @@ export default function SignUpScreen() {
 
   return (
     <ScreenChrome title="auth / sign up" result={result} error={error}>
-      <TextInput
+      <TextField
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
       />
-      <TextInput
+      <TextField
         placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Create account" onPress={handleSignUp} />
+      <AppButton title="Create account" onPress={handleSignUp} />
     </ScreenChrome>
   );
 }

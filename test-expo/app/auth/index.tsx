@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'expo-router';
-import { Button, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { getAuth, signInAnonymously, signOut } from '@react-native-firebase/auth';
 
+import { AppButton, LinkButton } from '../../src/AppButton';
 import { ScreenChrome } from '../../src/ScreenChrome';
 import { getAuthErrorMessage } from '../../src/authErrorMessage';
 import { useAuthUser } from '../../src/useAuthUser';
@@ -38,17 +38,13 @@ export default function AuthScreen() {
   return (
     <ScreenChrome title="auth" result={result} error={error}>
       {!initializing && !user ? (
-        <>
-          <Link href="/auth/sign-in">
-            <Text>Sign in with email</Text>
-          </Link>
-          <Link href="/auth/sign-up">
-            <Text>Create account with email</Text>
-          </Link>
-          <Button title="Sign in anonymously" onPress={handleSignInAnonymously} />
-        </>
+        <View style={{ gap: 12 }}>
+          <LinkButton href="/auth/sign-in" title="Sign in with email" />
+          <LinkButton href="/auth/sign-up" title="Create account with email" />
+          <AppButton title="Sign in anonymously" onPress={handleSignInAnonymously} />
+        </View>
       ) : null}
-      {!initializing && user ? <Button title="Sign out" onPress={handleSignOut} /> : null}
+      {!initializing && user ? <AppButton title="Sign out" onPress={handleSignOut} /> : null}
       <Text>
         {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Auth calls will fail.'}
       </Text>
