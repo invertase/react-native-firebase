@@ -1,4 +1,4 @@
-package io.invertase.firebase.app;
+package io.invertase.firebase.app
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -14,22 +14,20 @@ package io.invertase.firebase.app;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-import androidx.annotation.Keep;
-import com.google.firebase.components.Component;
-import com.google.firebase.components.ComponentRegistrar;
-import com.google.firebase.platforminfo.LibraryVersionComponent;
-import java.util.Collections;
-import java.util.List;
+import androidx.annotation.Keep
+import com.google.firebase.components.Component
+import com.google.firebase.components.ComponentRegistrar
+import com.google.firebase.platforminfo.LibraryVersionComponent
 
 @Keep
-public class ReactNativeFirebaseAppRegistrar implements ComponentRegistrar {
-  @Override
-  public List<Component<?>> getComponents() {
-    return Collections.singletonList(
-        LibraryVersionComponent.create(
-            "react-native-firebase", ReactNativeFirebaseVersion.VERSION));
-  }
+public open class ReactNativeFirebaseAppRegistrar : ComponentRegistrar {
+  override fun getComponents(): List<Component<*>> =
+    listOf(
+      LibraryVersionComponent.create(
+        "react-native-firebase",
+        ReactNativeFirebaseVersion.VERSION,
+      ),
+    )
 }
