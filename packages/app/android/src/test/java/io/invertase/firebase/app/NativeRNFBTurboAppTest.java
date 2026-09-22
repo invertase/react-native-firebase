@@ -20,10 +20,16 @@ package io.invertase.firebase.app;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Application;
@@ -41,16 +47,18 @@ import com.google.firebase.FirebaseOptions;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseJSON;
-import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
+import io.invertase.firebase.interfaces.NativeEvent;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,8 +104,55 @@ public class NativeRNFBTurboAppTest {
     when(reactContext.hasActiveReactInstance()).thenReturn(true);
     when(reactHost.getCurrentReactContext()).thenReturn(reactContext);
 
+    ReactNativeFirebaseApp.setApplicationContext(application);
     NativeRNFBTurboApp.authDomains.clear();
+    ReactNativeFirebasePreferences.getSharedInstance().clearAll();
     resetEmitterSharedInstance();
+  }
+
+  @Test
+  public void javaAbi_preservesClassConstructorAndStaticAuthDomainSurface() throws Exception {
+    assertTrue(Modifier.isPublic(NativeRNFBTurboApp.class.getModifiers()));
+    assertFalse(Modifier.isFinal(NativeRNFBTurboApp.class.getModifiers()));
+    assertEquals(
+        com.facebook.fbreact.specs.NativeRNFBTurboAppSpec.class,
+        NativeRNFBTurboApp.class.getSuperclass());
+    assertTrue(
+        com.facebook.react.bridge.LifecycleEventListener.class.isAssignableFrom(
+            NativeRNFBTurboApp.class));
+
+    Constructor<NativeRNFBTurboApp> constructor =
+        NativeRNFBTurboApp.class.getDeclaredConstructor(ReactApplicationContext.class);
+    // Kotlin cannot emit package-private. Protected is the closest JVM visibility: it preserves
+    // construction from same-package Java (as every `new` in this class proves) without making the
+    // constructor public; the internal companion invoke serves same-module Kotlin registration.
+    assertTrue(Modifier.isProtected(constructor.getModifiers()));
+    assertFalse(Modifier.isPublic(constructor.getModifiers()));
+
+    Field field = NativeRNFBTurboApp.class.getDeclaredField("authDomains");
+    assertTrue(Modifier.isPublic(field.getModifiers()));
+    assertTrue(Modifier.isStatic(field.getModifiers()));
+    assertTrue(Modifier.isFinal(field.getModifiers()));
+    assertEquals(Map.class, field.getType());
+    ParameterizedType fieldType = (ParameterizedType) field.getGenericType();
+    assertEquals(String.class, fieldType.getActualTypeArguments()[0]);
+    assertEquals(String.class, fieldType.getActualTypeArguments()[1]);
+    assertTrue(field.get(null) instanceof ConcurrentHashMap);
+    assertSame(NativeRNFBTurboApp.authDomains, field.get(null));
+
+    Method configure =
+        NativeRNFBTurboApp.class.getDeclaredMethod(
+            "configureAuthDomain", String.class, String.class);
+    assertTrue(Modifier.isPublic(configure.getModifiers()));
+    assertTrue(Modifier.isStatic(configure.getModifiers()));
+    assertEquals(void.class, configure.getReturnType());
+  }
+
+  @Test
+  public void javaNullCalls_doNotGainKotlinBoundaryChecks() {
+    NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
+    module.addListener(null);
+    module.setLogLevel(null);
   }
 
   @Test
@@ -141,21 +196,14 @@ public class NativeRNFBTurboAppTest {
   @Test
   public void getTypedExportedConstants_includesAppsAndRawJson() throws Exception {
     FirebaseApp firebaseApp = mock(FirebaseApp.class);
-    Map<String, Object> appMap = new HashMap<>();
-    appMap.put("name", "[DEFAULT]");
+    FirebaseOptions options = mock(FirebaseOptions.class);
+    when(firebaseApp.getName()).thenReturn("[DEFAULT]");
+    when(firebaseApp.getOptions()).thenReturn(options);
 
-    try (MockedStatic<FirebaseApp> firebaseApps = mockStatic(FirebaseApp.class);
-        MockedStatic<RCTConvertFirebase> convert = mockStatic(RCTConvertFirebase.class);
-        MockedStatic<ReactNativeFirebaseJSON> jsonStatic =
-            mockStatic(ReactNativeFirebaseJSON.class)) {
+    try (MockedStatic<FirebaseApp> firebaseApps = mockStatic(FirebaseApp.class)) {
       firebaseApps
           .when(() -> FirebaseApp.getApps(reactContext))
           .thenReturn(Collections.singletonList(firebaseApp));
-      convert.when(() -> RCTConvertFirebase.firebaseAppToMap(firebaseApp)).thenReturn(appMap);
-
-      ReactNativeFirebaseJSON json = mock(ReactNativeFirebaseJSON.class);
-      jsonStatic.when(ReactNativeFirebaseJSON::getSharedInstance).thenReturn(json);
-      when(json.getRawJSON()).thenReturn("{}");
 
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
       Method method = NativeRNFBTurboApp.class.getDeclaredMethod("getTypedExportedConstants");
@@ -163,12 +211,16 @@ public class NativeRNFBTurboAppTest {
       @SuppressWarnings("unchecked")
       Map<String, Object> constants = (Map<String, Object>) method.invoke(module);
 
-      assertEquals("{}", constants.get("FIREBASE_RAW_JSON"));
+      assertEquals(
+          ReactNativeFirebaseJSON.getSharedInstance().getRawJSON(),
+          constants.get("FIREBASE_RAW_JSON"));
       @SuppressWarnings("unchecked")
       List<Map<String, Object>> apps =
           (List<Map<String, Object>>) constants.get("NATIVE_FIREBASE_APPS");
       assertEquals(1, apps.size());
-      assertEquals("[DEFAULT]", apps.get(0).get("name"));
+      @SuppressWarnings("unchecked")
+      Map<String, Object> appConfig = (Map<String, Object>) apps.get(0).get("appConfig");
+      assertEquals("[DEFAULT]", appConfig.get("name"));
     }
   }
 
@@ -178,24 +230,33 @@ public class NativeRNFBTurboAppTest {
     ReadableMap appConfig = mock(ReadableMap.class);
     Promise promise = mock(Promise.class);
     FirebaseApp firebaseApp = mock(FirebaseApp.class);
-    WritableMap writableMap = mock(WritableMap.class);
+    FirebaseOptions firebaseOptions = mock(FirebaseOptions.class);
 
     when(appConfig.getString("name")).thenReturn("secondary");
+    when(options.getString("apiKey")).thenReturn("api-key");
+    when(options.getString("appId")).thenReturn("app-id");
     when(options.getString("authDomain")).thenReturn("example.firebaseapp.com");
+    when(firebaseApp.getName()).thenReturn("secondary");
+    when(firebaseApp.getOptions()).thenReturn(firebaseOptions);
 
-    try (MockedStatic<RCTConvertFirebase> convert = mockStatic(RCTConvertFirebase.class)) {
-      convert
-          .when(() -> RCTConvertFirebase.readableMapToFirebaseApp(options, appConfig, reactContext))
+    try (MockedStatic<FirebaseApp> firebaseApps = mockStatic(FirebaseApp.class);
+        MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      firebaseApps
+          .when(
+              () ->
+                  FirebaseApp.initializeApp(
+                      eq(reactContext), any(FirebaseOptions.class), eq("secondary")))
           .thenReturn(firebaseApp);
-      convert
-          .when(() -> RCTConvertFirebase.firebaseAppToWritableMap(firebaseApp))
-          .thenReturn(writableMap);
-
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
       module.initializeApp(options, appConfig, promise);
 
       assertEquals("example.firebaseapp.com", NativeRNFBTurboApp.authDomains.get("secondary"));
-      verify(promise).resolve(writableMap);
+      firebaseApps.verify(
+          () ->
+              FirebaseApp.initializeApp(
+                  eq(reactContext), any(FirebaseOptions.class), eq("secondary")));
+      arguments.verify(() -> Arguments.makeNativeMap(anyMap()));
+      verify(promise).resolve(null);
     }
   }
 
@@ -205,6 +266,15 @@ public class NativeRNFBTurboAppTest {
     assertEquals("example.firebaseapp.com", NativeRNFBTurboApp.authDomains.get("secondary"));
     NativeRNFBTurboApp.configureAuthDomain("secondary", null);
     assertFalse(NativeRNFBTurboApp.authDomains.containsKey("secondary"));
+  }
+
+  @Test
+  public void configureAuthDomain_preservesConcurrentHashMapNullKeyFailures() {
+    assertThrows(
+        NullPointerException.class,
+        () -> NativeRNFBTurboApp.configureAuthDomain(null, "example.firebaseapp.com"));
+    assertThrows(
+        NullPointerException.class, () -> NativeRNFBTurboApp.configureAuthDomain(null, null));
   }
 
   @Test
@@ -233,11 +303,18 @@ public class NativeRNFBTurboAppTest {
   public void setAutomaticDataCollectionEnabled_delegatesToFirebaseApp() {
     FirebaseApp firebaseApp = mock(FirebaseApp.class);
     try (MockedStatic<FirebaseApp> firebaseApps = mockStatic(FirebaseApp.class)) {
-      firebaseApps.when(() -> FirebaseApp.getInstance("secondary")).thenReturn(firebaseApp);
+      firebaseApps
+          .when(() -> FirebaseApp.getInstance((String) null))
+          .thenAnswer(
+              invocation -> {
+                assertNull(invocation.getArgument(0));
+                return firebaseApp;
+              });
 
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
-      module.setAutomaticDataCollectionEnabled("secondary", true);
+      module.setAutomaticDataCollectionEnabled(null, true);
 
+      firebaseApps.verify(() -> FirebaseApp.getInstance((String) null));
       verify(firebaseApp).setDataCollectionDefaultEnabled(true);
     }
   }
@@ -269,6 +346,22 @@ public class NativeRNFBTurboAppTest {
       module.deleteApp("missing", promise);
 
       verify(promise).resolve(null);
+
+      RuntimeException fromFirebase = new RuntimeException("from FirebaseApp.getInstance");
+      firebaseApps
+          .when(() -> FirebaseApp.getInstance((String) null))
+          .thenAnswer(
+              invocation -> {
+                assertNull(invocation.getArgument(0));
+                throw fromFirebase;
+              });
+      Promise nullNamePromise = mock(Promise.class);
+
+      assertSame(
+          fromFirebase,
+          assertThrows(RuntimeException.class, () -> module.deleteApp(null, nullNamePromise)));
+      firebaseApps.verify(() -> FirebaseApp.getInstance((String) null));
+      verifyNoInteractions(nullNamePromise);
     }
   }
 
@@ -298,18 +391,39 @@ public class NativeRNFBTurboAppTest {
   }
 
   @Test
-  public void eventsPing_sendsEventAndResolvesBody() {
+  public void eventsPing_sendsEventAndResolvesBody() throws Exception {
     ReadableMap body = mock(ReadableMap.class);
-    WritableMap writable = mock(WritableMap.class);
+    WritableMap eventWritable = mock(WritableMap.class);
+    WritableMap resolvedWritable = mock(WritableMap.class);
+    WritableMap nullNameWritable = mock(WritableMap.class);
     Promise promise = mock(Promise.class);
 
-    try (MockedStatic<RCTConvertFirebase> convert = mockStatic(RCTConvertFirebase.class)) {
-      convert.when(() -> RCTConvertFirebase.readableMapToWritableMap(body)).thenReturn(writable);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      arguments
+          .when(Arguments::createMap)
+          .thenReturn(eventWritable, resolvedWritable, nullNameWritable);
 
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
       module.eventsPing("ping_event", body, promise);
+      ShadowLooper.idleMainLooper();
 
-      verify(promise).resolve(writable);
+      verify(eventWritable).merge(body);
+      verify(resolvedWritable).merge(body);
+      verify(promise).resolve(resolvedWritable);
+      @SuppressWarnings("unchecked")
+      List<NativeEvent> queuedEvents =
+          (List<NativeEvent>)
+              getEmitterField("queuedEvents")
+                  .get(ReactNativeFirebaseEventEmitter.getSharedInstance());
+      assertEquals(1, queuedEvents.size());
+      assertEquals("ping_event", queuedEvents.get(0).getEventName());
+      assertSame(eventWritable, queuedEvents.get(0).getEventBody());
+
+      Promise nullNamePromise = mock(Promise.class);
+      assertThrows(
+          NullPointerException.class, () -> module.eventsPing(null, body, nullNamePromise));
+      verify(nullNameWritable).merge(body);
+      verifyNoInteractions(nullNamePromise);
     }
   }
 
@@ -341,12 +455,9 @@ public class NativeRNFBTurboAppTest {
   public void metaGetAll_resolvesMetaSingleton() {
     Promise promise = mock(Promise.class);
     WritableMap all = mock(WritableMap.class);
-    ReactNativeFirebaseMeta meta = mock(ReactNativeFirebaseMeta.class);
-    when(meta.getAll()).thenReturn(all);
 
-    try (MockedStatic<ReactNativeFirebaseMeta> metaStatic =
-        mockStatic(ReactNativeFirebaseMeta.class)) {
-      metaStatic.when(ReactNativeFirebaseMeta::getSharedInstance).thenReturn(meta);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      arguments.when(Arguments::createMap).thenReturn(all);
 
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
       module.metaGetAll(promise);
@@ -358,12 +469,9 @@ public class NativeRNFBTurboAppTest {
   public void jsonGetAll_resolvesJsonSingleton() {
     Promise promise = mock(Promise.class);
     WritableMap all = mock(WritableMap.class);
-    ReactNativeFirebaseJSON json = mock(ReactNativeFirebaseJSON.class);
-    when(json.getAll()).thenReturn(all);
 
-    try (MockedStatic<ReactNativeFirebaseJSON> jsonStatic =
-        mockStatic(ReactNativeFirebaseJSON.class)) {
-      jsonStatic.when(ReactNativeFirebaseJSON::getSharedInstance).thenReturn(json);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      arguments.when(Arguments::createMap).thenReturn(all);
 
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
       module.jsonGetAll(promise);
@@ -373,28 +481,37 @@ public class NativeRNFBTurboAppTest {
 
   @Test
   public void preferencesSettersAndGetters_delegateToPreferencesSingleton() {
-    Promise promise = mock(Promise.class);
+    Promise boolPromise = mock(Promise.class);
+    Promise stringPromise = mock(Promise.class);
+    Promise getPromise = mock(Promise.class);
+    Promise clearPromise = mock(Promise.class);
     WritableMap all = mock(WritableMap.class);
-    ReactNativeFirebasePreferences prefs = mock(ReactNativeFirebasePreferences.class);
-    when(prefs.getAll()).thenReturn(all);
 
-    try (MockedStatic<ReactNativeFirebasePreferences> prefsStatic =
-        mockStatic(ReactNativeFirebasePreferences.class)) {
-      prefsStatic.when(ReactNativeFirebasePreferences::getSharedInstance).thenReturn(prefs);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      arguments.when(Arguments::createMap).thenReturn(all);
 
       NativeRNFBTurboApp module = new NativeRNFBTurboApp(reactContext);
-      module.preferencesSetBool("k", true, promise);
-      verify(prefs).setBooleanValue("k", true);
-      verify(promise).resolve(null);
+      module.preferencesSetBool("bool", true, boolPromise);
+      assertTrue(ReactNativeFirebasePreferences.getSharedInstance().getBooleanValue("bool", false));
+      verify(boolPromise).resolve(null);
 
-      module.preferencesSetString("k", "v", promise);
-      verify(prefs).setStringValue("k", "v");
+      assertThrows(
+          NullPointerException.class, () -> module.preferencesSetBool("nullPromise", true, null));
+      assertTrue(
+          ReactNativeFirebasePreferences.getSharedInstance().getBooleanValue("nullPromise", false));
 
-      module.preferencesGetAll(promise);
-      verify(promise).resolve(all);
+      module.preferencesSetString("string", "v", stringPromise);
+      assertEquals(
+          "v", ReactNativeFirebasePreferences.getSharedInstance().getStringValue("string", null));
+      verify(stringPromise).resolve(null);
 
-      module.preferencesClearAll(promise);
-      verify(prefs).clearAll();
+      module.preferencesGetAll(getPromise);
+      verify(getPromise).resolve(all);
+
+      module.preferencesClearAll(clearPromise);
+      assertFalse(ReactNativeFirebasePreferences.getSharedInstance().contains("bool"));
+      assertFalse(ReactNativeFirebasePreferences.getSharedInstance().contains("string"));
+      verify(clearPromise).resolve(null);
     }
   }
 
@@ -412,6 +529,12 @@ public class NativeRNFBTurboAppTest {
     Field shared = ReactNativeFirebaseEventEmitter.class.getDeclaredField("sharedInstance");
     shared.setAccessible(true);
     shared.set(null, fresh);
+  }
+
+  private static Field getEmitterField(String name) throws Exception {
+    Field field = ReactNativeFirebaseEventEmitter.class.getDeclaredField(name);
+    field.setAccessible(true);
+    return field;
   }
 
   @SuppressWarnings("unchecked")
