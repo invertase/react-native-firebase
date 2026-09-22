@@ -18,6 +18,7 @@ package io.invertase.firebase.common
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import io.invertase.firebase.app.ReactNativeFirebaseApp
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -122,19 +123,23 @@ class UniversalFirebasePreferencesTest {
     ).thenReturn(preferences)
     `when`(preferences.contains("present")).thenReturn(true)
 
-    mockStatic(ReactNativeFirebaseApp::class.java).use { firebaseApp ->
-      firebaseApp
-        .`when`<Context>(ReactNativeFirebaseApp::getApplicationContext)
-        .thenReturn(applicationContext)
+    val previous: Context? = ReactNativeFirebaseApp.getApplicationContext()
+    mockStatic(Log::class.java).use {
+      ReactNativeFirebaseApp.setApplicationContext(applicationContext)
+    }
+    try {
       val subject = UniversalFirebasePreferences()
 
       assertTrue(subject.contains("present"))
       assertTrue(subject.contains("present"))
 
-      firebaseApp.verify(ReactNativeFirebaseApp::getApplicationContext, times(1))
       verify(applicationContext, times(1))
         .getSharedPreferences("io.invertase.firebase", Context.MODE_PRIVATE)
       verify(preferences, times(2)).contains("present")
+    } finally {
+      mockStatic(Log::class.java).use {
+        ReactNativeFirebaseApp.setApplicationContext(previous)
+      }
     }
   }
 
