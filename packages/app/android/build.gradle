@@ -14,6 +14,7 @@ buildscript {
 
     dependencies {
       classpath("com.android.tools.build:gradle:8.4.0")
+      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.findProperty('kotlinVersion') ?: '2.2.10'}")
     }
   }
 }
@@ -21,6 +22,8 @@ buildscript {
 plugins {
   id "io.invertase.gradle.build" version "1.5"
 }
+
+apply plugin: "org.jetbrains.kotlin.android"
 
 def packageJson = PackageJson.getForProject(project)
 def firebaseBomVersion = packageJson['sdkVersions']['android']['firebase']
