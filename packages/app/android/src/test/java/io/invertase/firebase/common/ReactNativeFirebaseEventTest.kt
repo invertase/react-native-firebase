@@ -32,9 +32,9 @@ class ReactNativeFirebaseEventTest {
 
     val event: NativeEvent = ReactNativeFirebaseEvent("event_name", body)
 
-    assertEquals("event_name", event.eventName)
-    assertSame(body, event.eventBody)
-    assertNull(event.firebaseAppName)
+    assertEquals("event_name", event.getEventName())
+    assertSame(body, event.getEventBody())
+    assertNull(event.getFirebaseAppName())
   }
 
   @Test
@@ -43,9 +43,9 @@ class ReactNativeFirebaseEventTest {
 
     val event: NativeEvent = ReactNativeFirebaseEvent("event_name", body, "app_name")
 
-    assertEquals("event_name", event.eventName)
-    assertSame(body, event.eventBody)
-    assertEquals("app_name", event.firebaseAppName)
+    assertEquals("event_name", event.getEventName())
+    assertSame(body, event.getEventBody())
+    assertEquals("app_name", event.getFirebaseAppName())
   }
 
   @Test
