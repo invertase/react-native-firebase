@@ -127,6 +127,7 @@
     "eslint-plugin-react": "^7.37.5",
     "firebase": "^12.19.0",
     "firebase-tools": "^15.22.4",
+    "frog": "1.1.0",
     "genversion": "^3.2.0",
     "google-java-format": "^2.3.0",
     "jest": "^30.3.0",

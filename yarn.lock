@@ -2379,6 +2379,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cfworker/json-schema@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@cfworker/json-schema@npm:4.1.1"
+  checksum: 10/62fd08bb2e6b4f0fe7c2b8f8c19f17f94b6a34feba7f455f228898ab435eda8aae082fcf6b0fe8a235a72e0ec0041922fdcd4c526acc32d45084272f000c1af9
+  languageName: node
+  linkType: hard
+
+"@clack/core@npm:1.5.1":
+  version: 1.5.1
+  resolution: "@clack/core@npm:1.5.1"
+  dependencies:
+    fast-wrap-ansi: "npm:^0.2.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10/2bd9f8ae5b756e13ee73da37b7afe29987aa43ffc0b892669eed46194a708ccc3f368a41067bf09a8072ffac5ff8ca5f074a6a3d067543e1cbf8edc4ee6e1581
+  languageName: node
+  linkType: hard
+
+"@clack/prompts@npm:^1.7.0":
+  version: 1.8.1
+  resolution: "@clack/prompts@npm:1.8.1"
+  dependencies:
+    "@clack/core": "npm:1.5.1"
+    fast-string-width: "npm:^3.0.2"
+    fast-wrap-ansi: "npm:^0.2.0"
+    sisteransi: "npm:^1.0.5"
+  checksum: 10/fb4f920dc0caf054f4fa3d611dc82979e80518c09dd961996cab7aec5866bcf5359b63e60881506c84089c4ede8686965946db6195116d41ed8cba3fdfdabc8a
+  languageName: node
+  linkType: hard
+
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -5382,6 +5411,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@modelcontextprotocol/server@npm:2.0.0-alpha.4":
+  version: 2.0.0-alpha.4
+  resolution: "@modelcontextprotocol/server@npm:2.0.0-alpha.4"
+  dependencies:
+    zod: "npm:^4.2.0"
+  checksum: 10/7087a3ce493651fdd33a571be9f6e04f8f61f5175bdc509be37f3ad336311e0147d1574fcd2fcfc2fab81372366d87ae3a9f837b0a84f7231268f7fb7d928362
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:0.2.4":
   version: 0.2.4
   resolution: "@napi-rs/wasm-runtime@npm:0.2.4"
@@ -5993,12 +6031,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/plugin-paginate-rest@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@octokit/plugin-paginate-rest@npm:14.0.0"
+  dependencies:
+    "@octokit/types": "npm:^16.0.0"
+  peerDependencies:
+    "@octokit/core": ">=6"
+  checksum: 10/57ddd857528dad9c02431bc6254c2374c06057872cf9656a4a88b162ebe1c2bc9f34fbec360f2ccff72c940f29b120758ce14e8135bd027223d381eb1b8b6579
+  languageName: node
+  linkType: hard
+
 "@octokit/plugin-request-log@npm:^4.0.0":
   version: 4.0.1
   resolution: "@octokit/plugin-request-log@npm:4.0.1"
   peerDependencies:
     "@octokit/core": 5
   checksum: 10/fd8c0a201490cba00084689a0d1d54fc7b5ab5b6bdb7e447056b947b1754f78526e9685400eab10d3522bfa7b5bc49c555f41ec412c788610b96500b168f3789
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-request-log@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@octokit/plugin-request-log@npm:6.0.0"
+  peerDependencies:
+    "@octokit/core": ">=6"
+  checksum: 10/8a79973b1429bfead9113c4117f418aaef5ff368795daded3415ba14623d97d5fc08d1e822dbd566ecc9f041119e1a48a11853a9c48d9eb1caa62baa79c17f83
   languageName: node
   linkType: hard
 
@@ -6010,6 +6068,17 @@ __metadata:
   peerDependencies:
     "@octokit/core": ^5
   checksum: 10/479827e62466e55bc1a50129d51597807bddc6c909e56be9e8dd9c1a91efa0f466a2f56b7d80438649e21ab0a3a195f840b3fccf2ae7f11fb0a919db8e62bc62
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-rest-endpoint-methods@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "@octokit/plugin-rest-endpoint-methods@npm:17.0.0"
+  dependencies:
+    "@octokit/types": "npm:^16.0.0"
+  peerDependencies:
+    "@octokit/core": ">=6"
+  checksum: 10/e9d9ad4d9755cc7fb82fdcbfa870ddea8a432180f0f76c8469095557fd1e26f8caea8cae58401209be17c4f3d8cc48c0e16a3643e37e48f4d23c39e058bf2c55
   languageName: node
   linkType: hard
 
@@ -6067,6 +6136,18 @@ __metadata:
     "@octokit/plugin-request-log": "npm:^4.0.0"
     "@octokit/plugin-rest-endpoint-methods": "npm:13.3.2-cjs.1"
   checksum: 10/e0759fdbf18bc96f68299b4ca04d7102ce861e8508f01e9e580ed9c1e19d4cc20d150635161e360375f1c52c95e54bf6b56aaae16f943a93d6dcb38a51d8a23e
+  languageName: node
+  linkType: hard
+
+"@octokit/rest@npm:^22.0.1":
+  version: 22.0.1
+  resolution: "@octokit/rest@npm:22.0.1"
+  dependencies:
+    "@octokit/core": "npm:^7.0.6"
+    "@octokit/plugin-paginate-rest": "npm:^14.0.0"
+    "@octokit/plugin-request-log": "npm:^6.0.0"
+    "@octokit/plugin-rest-endpoint-methods": "npm:^17.0.0"
+  checksum: 10/ec2e94cfa8766716faeb3ca18527d9af746482d35aaa6e4265a30cb669ae3f31f4ebb6235edebe5ae62bc2cec2b8e88902584f698df2e7cabac3a15fd27da665
   languageName: node
   linkType: hard
 
@@ -7481,6 +7562,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@scalar/openapi-types@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "@scalar/openapi-types@npm:0.8.0"
+  checksum: 10/124b0289508175122470205e4562e100a41263c0cd8efd15b8ee3f6017f2a33fffb2e757a3033faed7d364069eb84dd5ea3bef3e1e72afdf02ac039ad3de128f
+  languageName: node
+  linkType: hard
+
 "@shikijs/engine-oniguruma@npm:^3.23.0":
   version: 3.23.0
   resolution: "@shikijs/engine-oniguruma@npm:3.23.0"
@@ -7686,6 +7774,13 @@ __metadata:
     color: "npm:^5.0.2"
     text-hex: "npm:1.0.x"
   checksum: 10/fc3285e5cb9a458d255aa678d9453174ca40689a4c692f1617907996ab8eb78839542439604ced484c4f674a5297f7ba8b0e63fcfe901174f43c3d9c3c881b52
+  languageName: node
+  linkType: hard
+
+"@toon-format/toon@npm:^2.1.0":
+  version: 2.3.1
+  resolution: "@toon-format/toon@npm:2.3.1"
+  checksum: 10/e0529005b08b241e201dab074ca0d2568b534604eb63c71cf44cdfc9ae71987f46e7ba21e8f42e0bc30eb99f9c7bab14920a4aa192628bddeac35b23c5bc3b52
   languageName: node
   linkType: hard
 
@@ -14312,6 +14407,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"frog@npm:1.1.0":
+  version: 1.1.0
+  resolution: "frog@npm:1.1.0"
+  dependencies:
+    "@clack/prompts": "npm:^1.7.0"
+    "@octokit/rest": "npm:^22.0.1"
+    incur: "npm:0.4.25"
+    postgres: "npm:^3.4.9"
+    yaml: "npm:^2.9.0"
+  bin:
+    frog: ./dist/bin.js
+    frog.src: ./src/bin.ts
+  checksum: 10/8feae0effbb8191267ee34054c81ee7d4f6155e8b86657c9a1ed53c7b9dc360614d0ba87b3b5240bf4ce93c5f028a051e2f4f153f5a315f95ce0e85ba4bd2853
+  languageName: node
+  linkType: hard
+
 "fromentries@npm:^1.2.0":
   version: 1.3.2
   resolution: "fromentries@npm:1.3.2"
@@ -15871,6 +15982,24 @@ __metadata:
   version: 0.1.4
   resolution: "imurmurhash@npm:0.1.4"
   checksum: 10/2d30b157a91fe1c1d7c6f653cbf263f039be6c5bfa959245a16d4ee191fc0f2af86c08545b6e6beeb041c56b574d2d5b9f95343d378ab49c0f37394d541e7fc8
+  languageName: node
+  linkType: hard
+
+"incur@npm:0.4.25":
+  version: 0.4.25
+  resolution: "incur@npm:0.4.25"
+  dependencies:
+    "@cfworker/json-schema": "npm:^4.1.1"
+    "@modelcontextprotocol/server": "npm:2.0.0-alpha.4"
+    "@scalar/openapi-types": "npm:^0.8.0"
+    "@toon-format/toon": "npm:^2.1.0"
+    tokenx: "npm:^1.3.0"
+    yaml: "npm:^2.8.2"
+    zod: "npm:^4.3.6"
+  bin:
+    incur: dist/bin.js
+    incur.src: src/bin.ts
+  checksum: 10/793a73e3a755116e2b67d2c22d189c5e5a1b0ce1de62af81ea0c005249f5732ddb9578af02f3c5f7a8da494443ad00fdaf57183d1dcc07b676aa20141ac5620a
   languageName: node
   linkType: hard
 
@@ -22706,6 +22835,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postgres@npm:^3.4.9":
+  version: 3.4.9
+  resolution: "postgres@npm:3.4.9"
+  checksum: 10/c6c7e85f5cfb00d455bcfee98e7af2abded43323552295044f00a602431465c9296ef6152d45d4a53bf3a72323ca00e03585b7ba6f8713367e42d1ef34d1fa5d
+  languageName: node
+  linkType: hard
+
 "postinstall-postinstall@npm:2.1.0":
   version: 2.1.0
   resolution: "postinstall-postinstall@npm:2.1.0"
@@ -23496,6 +23632,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     firebase: "npm:^12.19.0"
     firebase-tools: "npm:^15.22.4"
+    frog: "npm:1.1.0"
     genversion: "npm:^3.2.0"
     google-java-format: "npm:^2.3.0"
     jest: "npm:^30.3.0"
@@ -26359,6 +26496,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tokenx@npm:^1.3.0":
+  version: 1.6.0
+  resolution: "tokenx@npm:1.6.0"
+  checksum: 10/9cc302749b4d2e320bc42d8f3fea10dca0e24acfe12d4886591fda61a581fd758417ee61366c603f2b4e6843a4c412384e19d6748e4462574e0b0712eefa96d0
+  languageName: node
+  linkType: hard
+
 "toml@npm:^3.0.0":
   version: 3.0.0
   resolution: "toml@npm:3.0.0"
@@ -28095,6 +28239,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yaml@npm:^2.8.2, yaml@npm:^2.9.0":
+  version: 2.9.1
+  resolution: "yaml@npm:2.9.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/123c5e56a26f4962d3d5954971b2071a533d17041e00ae9ff6a5e634aed2503639bbdeea143b1610eac29613aad95a3a1d10f5fbda87b92203c039ce63934295
+  languageName: node
+  linkType: hard
+
 "yargs-parser@npm:21.1.1, yargs-parser@npm:^21.0.0, yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
@@ -28267,6 +28420,13 @@ __metadata:
   version: 4.4.3
   resolution: "zod@npm:4.4.3"
   checksum: 10/804b9a42aa8f35f2b3c5a8dff906291cb749115f83ee2afe3576d70b5b5c53c965365c7f4967690647a9c54af9838ff232a85ff9577a0a36c44b68bc6cdefe36
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.2.0, zod@npm:^4.3.6":
+  version: 4.6.5
+  resolution: "zod@npm:4.6.5"
+  checksum: 10/db004952e4dc6eab38b70f0cdef9251a65da84f5d08c5a0ef85e2590cfa9c477544ce734161ff5c05f89a15f0967137607a7feb16716195e04965f030db47213
   languageName: node
   linkType: hard
 
