@@ -111,7 +111,7 @@ e2e_slot_env_apply foo 0
 });
 
 describe('E2E_SLOTTED_MAX default', function () {
-  it('defaults to 4 aligned with Detox slots 0-4', function () {
+  it('defaults to 7 aligned with Detox slots 0-7', function () {
     const slotLib = path.join(repoRoot, 'scripts/e2e/lib/e2e-slot-env.sh');
     const env = { ...process.env };
     delete env.E2E_SLOTTED_MAX;
@@ -127,7 +127,7 @@ echo "$E2E_SLOTTED_MAX"
       ],
       { encoding: 'utf8', cwd: repoRoot, env },
     );
-    expect(out.trim()).toBe('4');
+    expect(out.trim()).toBe('7');
   });
 });
 
@@ -160,6 +160,68 @@ e2e_print_collected_ports
     expect(out).toMatch(/^13005 emulator-hub:android-slot1$/m);
     expect(out).toMatch(/^14107 metro:ios-slot2$/m);
     expect(out).toMatch(/^4400 emulator-hub:global$/m);
+  });
+
+  it('sweeps slot 7 and excludes slot 8 at the shared default ceiling', function () {
+    const env = cleanEnv();
+    env.E2E_ALL_SLOTS = '1';
+    env.E2E_SLOTTED_MAX = '7';
+    const out = execFileSync(
+      'bash',
+      [
+        '-c',
+        `set -euo pipefail
+source ${JSON.stringify(lib)}
+e2e_collect_targets
+e2e_print_collected_ports
+`,
+      ],
+      { encoding: 'utf8', cwd: repoRoot, env },
+    );
+    expect(out).toMatch(/^19005 emulator-hub:android-slot7$/m);
+    expect(out).toMatch(/^19107 metro:ios-slot7$/m);
+    expect(out).not.toMatch(/android-slot8|ios-slot8|macos-slot8/);
+  });
+
+  it('caps a configured max of 99 at slot 7 for every all-slot port sweep', function () {
+    const env = cleanEnv();
+    env.E2E_ALL_SLOTS = '1';
+    env.E2E_SLOTTED_MAX = '99';
+    const out = execFileSync(
+      'bash',
+      [
+        '-c',
+        `set -euo pipefail
+source ${JSON.stringify(lib)}
+e2e_collect_targets
+e2e_print_collected_ports
+`,
+      ],
+      { encoding: 'utf8', cwd: repoRoot, env },
+    );
+    expect(out).toMatch(/^19005 emulator-hub:android-slot7$/m);
+    expect(out).toMatch(/^19107 metro:ios-slot7$/m);
+    expect(out).not.toMatch(/android-slot8|ios-slot8|macos-slot8/);
+  });
+
+  it('honors a lower max for every all-slot port sweep', function () {
+    const env = cleanEnv();
+    env.E2E_ALL_SLOTS = '1';
+    env.E2E_SLOTTED_MAX = '2';
+    const out = execFileSync(
+      'bash',
+      [
+        '-c',
+        `set -euo pipefail
+source ${JSON.stringify(lib)}
+e2e_collect_targets
+e2e_print_collected_ports
+`,
+      ],
+      { encoding: 'utf8', cwd: repoRoot, env },
+    );
+    expect(out).toMatch(/android-slot2|ios-slot2|macos-slot2/);
+    expect(out).not.toMatch(/android-slot3|ios-slot3|macos-slot3/);
   });
 
   it('does not include leftover slotted hubs when slot env is loaded', function () {
@@ -206,12 +268,13 @@ describe('unscoped device names', function () {
     expect(avds).not.toMatch(/^TestingAVD-0$/m);
     const sims = bashSnippet('e2e_ios_simulator_names_for_release');
     expect(sims).toMatch(/^iPhone 17$/m);
-    expect(sims).not.toMatch(/^RNFB E2E iOS slot-0$/m);
+    expect(sims).not.toMatch(/^RN E2E iOS slot-0$/m);
   });
 
-  it('lists TestingAVD plus TestingAVD-0..MAX and iOS slot sims with --all-slots', function () {
+  it('lists serial plus every exact neutral base through MAX with --all-slots', function () {
     const env = cleanEnv();
     env.E2E_ALL_SLOTS = '1';
+    env.E2E_SLOTTED_MAX = '7';
     const avds = execFileSync(
       'bash',
       [
@@ -225,7 +288,8 @@ e2e_android_avd_names_for_release
     );
     expect(avds).toMatch(/^TestingAVD$/m);
     expect(avds).toMatch(/^TestingAVD-0$/m);
-    expect(avds).toMatch(/^TestingAVD-2$/m);
+    expect(avds).toMatch(/^TestingAVD-7$/m);
+    expect(avds).not.toMatch(/^TestingAVD-8$/m);
     const sims = execFileSync(
       'bash',
       [
@@ -238,8 +302,79 @@ e2e_ios_simulator_names_for_release
       { encoding: 'utf8', cwd: repoRoot, env },
     );
     expect(sims).toMatch(/^iPhone 17$/m);
-    expect(sims).toMatch(/^RNFB E2E iOS slot-0$/m);
-    expect(sims).toMatch(/^RNFB E2E iOS slot-2$/m);
+    expect(sims).toMatch(/^RN E2E iOS slot-0$/m);
+    expect(sims).toMatch(/^RN E2E iOS slot-7$/m);
+    expect(sims).not.toMatch(/^RN E2E iOS slot-8$/m);
+    expect(sims).not.toMatch(/-Detox$/m);
+    expect(sims).not.toMatch(/^RNFB E2E iOS slot-/m);
+  });
+
+  it('caps configured 99 and honors lower max across Android, iOS, and macOS names', function () {
+    const renderNames = max => {
+      const env = cleanEnv();
+      env.E2E_ALL_SLOTS = '1';
+      env.E2E_SLOTTED_MAX = max;
+      return execFileSync(
+        'bash',
+        [
+          '-c',
+          `set -euo pipefail
+source ${JSON.stringify(lib)}
+e2e_android_avd_names_for_release
+e2e_ios_simulator_names_for_release
+e2e_macos_process_names_for_probe
+`,
+        ],
+        { encoding: 'utf8', cwd: repoRoot, env },
+      );
+    };
+
+    const capped = renderNames('99');
+    expect(capped).toMatch(/^TestingAVD-7$/m);
+    expect(capped).toMatch(/^RN E2E iOS slot-7$/m);
+    expect(capped).toMatch(/^io\.invertase\.testing\.s7$/m);
+    expect(capped).not.toMatch(/TestingAVD-8|slot-8|\.s8$/m);
+
+    const lowered = renderNames('2');
+    expect(lowered).toMatch(/^TestingAVD-2$/m);
+    expect(lowered).toMatch(/^RN E2E iOS slot-2$/m);
+    expect(lowered).toMatch(/^io\.invertase\.testing\.s2$/m);
+    expect(lowered).not.toMatch(/TestingAVD-3|slot-3|\.s3$/m);
+  });
+
+  it('targets only the selected exact neutral base', function () {
+    const env = cleanEnv();
+    env.E2E_SLOT_OVERRIDE = '1';
+    const sims = execFileSync(
+      'bash',
+      [
+        '-c',
+        `set -euo pipefail
+source ${JSON.stringify(lib)}
+e2e_ios_simulator_names_for_release
+`,
+      ],
+      { encoding: 'utf8', cwd: repoRoot, env },
+    );
+    expect(sims.trim().split('\n')).toEqual(['RN E2E iOS slot-1']);
+  });
+});
+
+describe('exact iOS simulator boot checks', function () {
+  it('distinguishes a neutral base from suffixed and substring-collision names', function () {
+    const out = bashSnippet(`
+xcrun() {
+  cat <<'JSON'
+{"devices":{"runtime":[
+  {"name":"RN E2E iOS slot-1-other","state":"Booted"},
+  {"name":"RN E2E iOS slot-10","state":"Booted"}
+]}}
+JSON
+}
+e2e_ios_sim_booted 'RN E2E iOS slot-1' && echo BASE_BUSY || echo BASE_CLEAR
+`);
+    expect(out).toMatch(/^BASE_CLEAR$/m);
+    expect(out).not.toMatch(/^BASE_BUSY$/m);
   });
 });
 
@@ -314,6 +449,74 @@ e2e_print_collected_ports
     expect(out).toMatch(/^13005 emulator-hub:android-slot1$/m);
     expect(out).not.toMatch(/metro:ios-slot2/);
     expect(out).not.toMatch(/^4400 emulator-hub:global$/m);
+  });
+
+  it('canonical check and release reject invalid selectors before output or actions', function () {
+    const fs = require('fs');
+    const os = require('os');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-slot-selector-'));
+    const actionLog = path.join(dir, 'actions.log');
+    for (const command of ['xcrun', 'lsof', 'adb', 'pgrep', 'pkill', 'killall', 'sleep']) {
+      fs.writeFileSync(
+        path.join(dir, command),
+        `#!/bin/bash
+printf '%s %s\\n' ${JSON.stringify(command)} "$*" >> "$RNFB_ACTION_LOG"
+exit 0
+`,
+      );
+      fs.chmodSync(path.join(dir, command), 0o755);
+    }
+    const env = cleanEnv();
+    env.E2E_SLOTTED_MAX = '99';
+    env.PATH = `${dir}:${env.PATH || '/usr/bin:/bin'}`;
+    env.RNFB_ACTION_LOG = actionLog;
+    const scripts = ['check-e2e-resources.sh', 'release-e2e-resources.sh'];
+
+    try {
+      for (const script of scripts) {
+        for (const { max, slot, expectedMax } of [
+          { max: '99', slot: '8', expectedMax: '7' },
+          { max: '99', slot: '99', expectedMax: '7' },
+          { max: '99', slot: '-1', expectedMax: '7' },
+          { max: '99', slot: '1.5', expectedMax: '7' },
+          { max: '99', slot: 'foo', expectedMax: '7' },
+          { max: '99', slot: '07', expectedMax: '7' },
+          { max: '99', slot: '', expectedMax: '7' },
+          { max: '2', slot: '3', expectedMax: '2' },
+        ]) {
+          env.E2E_SLOTTED_MAX = max;
+          let result;
+          try {
+            result = {
+              status: 0,
+              stdout: execFileSync(
+                '/bin/bash',
+                [path.join(repoRoot, 'scripts/e2e', script), `--slot=${slot}`],
+                {
+                  encoding: 'utf8',
+                  cwd: repoRoot,
+                  env,
+                  stdio: ['pipe', 'pipe', 'pipe'],
+                },
+              ),
+              stderr: '',
+            };
+          } catch (error) {
+            result = {
+              status: error.status,
+              stdout: error.stdout || '',
+              stderr: error.stderr || '',
+            };
+          }
+          expect(result.status).toBe(1);
+          expect(result.stdout).toBe('');
+          expect(result.stderr).toContain(`slot must be an integer 0..${expectedMax}`);
+        }
+      }
+      expect(fs.existsSync(actionLog)).toBe(false);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 

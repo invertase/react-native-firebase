@@ -1,0 +1,30 @@
+diff --git a/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js b/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js
+index 291d739..be7f2b1 100644
+--- a/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js
++++ b/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js
+@@ -13,6 +13,8 @@ const SimulatorAppCache = require('../../../common/drivers/ios/tools/SimulatorAp
+ 
+ const SimulatorQuery = require('./SimulatorQuery');
+ 
++const RN_E2E_SLOT_BASE_NAME = /^RN E2E iOS slot-[0-7]$/;
++
+ /**
+  * @implements {AllocationDriverBase}
+  */
+@@ -127,6 +129,16 @@ class SimulatorAllocDriver {
+     const { free, taken } = await this._groupDevicesByStatus(deviceQuery);
+ 
+     if (_.isEmpty(free)) {
++      if (RN_E2E_SLOT_BASE_NAME.test(deviceQuery.byName)) {
++        throw new DetoxRuntimeError({
++          message: `The neutral iOS slot ${deviceQuery.byName} is already allocated`,
++          hint: `Detox will not create a suffixed clone for a neutral slot. ` +
++            `Confirm Mellifera/manual ownership and release the owning run before retrying. ` +
++            `If no owner is active, inspect ~/Library/Detox/device.registry.json for a stale allocation; ` +
++            `do not reset the registry while another run is active.`
++        });
++      }
++
+       const prototypeDevice = taken[0];
+       udid = this._applesimutils.create(prototypeDevice);
+       await this._runScreenshotWorkaround(udid);
