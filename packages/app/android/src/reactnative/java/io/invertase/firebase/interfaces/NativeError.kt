@@ -1,4 +1,4 @@
-package io.invertase.firebase.interfaces;
+package io.invertase.firebase.interfaces
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -17,14 +17,16 @@ package io.invertase.firebase.interfaces;
  *
  */
 
-import android.app.Activity;
-import android.content.Context;
-import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap
 
-public interface ContextProvider {
-  Activity getActivity();
+interface NativeError {
+  fun getErrorCode(): String?
 
-  ReactContext getContext();
+  fun getErrorMessage(): String?
 
-  Context getApplicationContext();
+  fun getFirebaseAppName(): String?
+
+  fun getFirebaseServiceName(): String?
+
+  fun getUserInfo(): WritableMap?
 }
