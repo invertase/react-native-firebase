@@ -1,4 +1,4 @@
-package io.invertase.firebase.common;
+package io.invertase.firebase.common
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -18,14 +18,12 @@ package io.invertase.firebase.common;
  */
 
 /**
- * Thrown when {@link RNFBHandleMap#put} is asked to register an id that is already occupied.
+ * Thrown when [RNFBHandleMap.put] is asked to register an id that is already occupied.
  *
- * <p>This is a checked exception ({@code extends Exception}, not {@link RuntimeException}) so
- * callers must handle collisions explicitly. There is no upsert: replace an existing registration
- * with {@code take} then {@code put}.
+ * This remains a checked Java-visible exception ([Exception], not [RuntimeException]) so callers
+ * must handle collisions explicitly. There is no upsert: replace an existing registration with
+ * [RNFBHandleMap.take] then [RNFBHandleMap.put].
  */
-public class RNFBHandleCollisionException extends Exception {
-  public RNFBHandleCollisionException(Object id) {
-    super("Handle id already registered: " + id);
-  }
-}
+open class RNFBHandleCollisionException(
+  id: Any?,
+) : Exception("Handle id already registered: $id")
