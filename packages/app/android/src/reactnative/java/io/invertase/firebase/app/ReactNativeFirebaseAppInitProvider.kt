@@ -1,4 +1,4 @@
-package io.invertase.firebase.app;
+package io.invertase.firebase.app
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -14,9 +14,8 @@ package io.invertase.firebase.app;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
+import io.invertase.firebase.common.ReactNativeFirebaseInitProvider
 
-public class ReactNativeFirebaseAppInitProvider extends ReactNativeFirebaseInitProvider {}
+public open class ReactNativeFirebaseAppInitProvider : ReactNativeFirebaseInitProvider()
