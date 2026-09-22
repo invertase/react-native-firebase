@@ -219,12 +219,16 @@ class ReactNativeFirebaseModuleTest {
     val promise = mock(Promise::class.java)
     val exception = Exception("failure")
     val map = mock(WritableMap::class.java)
-    mockStatic(SharedUtils::class.java).use { sharedUtils ->
-      sharedUtils.`when`<WritableMap> { SharedUtils.getExceptionMap(exception) }.thenReturn(map)
+    mockStatic(Arguments::class.java).use { arguments ->
+      arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(map)
 
       ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, exception)
 
       verify(promise).reject(exception, map)
+      verify(map).putString("code", "unknown")
+      verify(map).putString("nativeErrorCode", "unknown")
+      verify(map).putString("message", "failure")
+      verify(map).putString("nativeErrorMessage", "failure")
       assertThrows(NullPointerException::class.java) {
         ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(null, exception)
       }

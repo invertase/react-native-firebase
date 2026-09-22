@@ -197,15 +197,15 @@ class ReactNativeFirebasePreferencesTest {
     `when`(preferences.all).thenReturn(values)
 
     mockStatic(Arguments::class.java).use { arguments ->
-      mockStatic(SharedUtils::class.java).use { sharedUtils ->
-        arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
+      arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
 
-        assertSame(writableMap, subject.getAll())
+      assertSame(writableMap, subject.getAll())
 
-        values.forEach { (key, value) ->
-          sharedUtils.verify { SharedUtils.mapPutValue(key, value, writableMap) }
-        }
-      }
+      verify(writableMap).putBoolean("boolean", true)
+      verify(writableMap).putInt("integer", 42)
+      verify(writableMap).putDouble("long", 4_294_967_296.0)
+      verify(writableMap).putString("string", "value")
+      verify(writableMap).putNull("null")
     }
   }
 
@@ -217,13 +217,11 @@ class ReactNativeFirebasePreferencesTest {
     `when`(preferences.all).thenReturn(emptyMap())
 
     mockStatic(Arguments::class.java).use { arguments ->
-      mockStatic(SharedUtils::class.java).use { sharedUtils ->
-        arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
+      arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
 
-        assertSame(writableMap, subject.getAll())
+      assertSame(writableMap, subject.getAll())
 
-        sharedUtils.verifyNoInteractions()
-      }
+      verifyNoMoreInteractions(writableMap)
     }
   }
 

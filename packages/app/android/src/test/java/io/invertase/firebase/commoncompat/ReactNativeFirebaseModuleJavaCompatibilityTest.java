@@ -30,7 +30,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import io.invertase.firebase.common.SharedUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -107,12 +106,16 @@ public class ReactNativeFirebaseModuleJavaCompatibilityTest {
     }
 
     Exception exception = new Exception("failure");
-    try (MockedStatic<SharedUtils> sharedUtils = mockStatic(SharedUtils.class)) {
-      when(SharedUtils.getExceptionMap(exception)).thenReturn(map);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      when(Arguments.createMap()).thenReturn(map);
 
       ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, exception);
 
       verify(promise).reject(exception, map);
+      verify(map).putString("code", "unknown");
+      verify(map).putString("nativeErrorCode", "unknown");
+      verify(map).putString("message", "failure");
+      verify(map).putString("nativeErrorMessage", "failure");
     }
   }
 

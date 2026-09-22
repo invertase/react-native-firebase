@@ -16,7 +16,9 @@ package io.invertase.firebase.common
  * limitations under the License.
  */
 
+import android.util.Log
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import io.invertase.firebase.BuildConfig
 import org.json.JSONArray
@@ -32,11 +34,11 @@ import org.junit.Test
 import org.mockito.Mockito.inOrder
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.`when`
 import java.lang.reflect.Modifier
 import java.util.ArrayList
-import java.util.LinkedHashMap
 
 /**
  * Plain JUnit4 + Mockito (AndroidTest-AD-1). JSONObject and JSONArray are mocked where Android's
@@ -205,13 +207,13 @@ class ReactNativeFirebaseJSONTest {
   }
 
   @Test
-  fun getAllForwardsEverySupportedValueShapeToRecursiveBridgeConversion() {
+  fun getAllConvertsSupportedPreferenceValueShapesAndNestedCollections() {
     val writableMap = mock(WritableMap::class.java)
+    val nestedWritableArray = mock(WritableArray::class.java)
+    val nestedWritableMap = mock(WritableMap::class.java)
     val jsonObject = mock(JSONObject::class.java)
     val nestedObject = mock(JSONObject::class.java)
-    val nestedArray = mock(JSONArray::class.java)
-    val nestedList = listOf<Any>("nested")
-    val nestedMap = LinkedHashMap<String, Any>().apply { put("nested", true) }
+    val nestedJsonArray = mock(JSONArray::class.java)
     val values =
       linkedMapOf<String, Any>(
         "boolean" to true,
@@ -222,23 +224,34 @@ class ReactNativeFirebaseJSONTest {
         "string" to "value",
         "jsonNull" to JSONObject.NULL,
         "jsonObject" to nestedObject,
-        "jsonArray" to nestedArray,
-        "list" to nestedList,
-        "map" to nestedMap,
+        "jsonArray" to nestedJsonArray,
+        "list" to listOf("nested"),
+        "map" to linkedMapOf("nested" to true),
       )
     `when`(jsonObject.keys()).thenReturn(values.keys.iterator())
     values.forEach { (key, value) -> `when`(jsonObject.get(key)).thenReturn(value) }
     jsonObjectField.set(json, jsonObject)
 
-    mockStatic(Arguments::class.java).use { arguments ->
-      mockStatic(SharedUtils::class.java).use { sharedUtils ->
-        arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
+    mockStatic(Log::class.java).use {
+      mockStatic(Arguments::class.java).use { arguments ->
+        arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap, nestedWritableMap)
+        arguments.`when`<WritableArray>(Arguments::createArray).thenReturn(nestedWritableArray)
 
         assertSame(writableMap, json.getAll())
 
-        values.forEach { (key, value) ->
-          sharedUtils.verify { SharedUtils.mapPutValue(key, value, writableMap) }
-        }
+        verify(writableMap).putBoolean("boolean", true)
+        verify(writableMap).putInt("integer", 42)
+        verify(writableMap).putDouble("long", 4_294_967_296.0)
+        verify(writableMap).putDouble("float", 1.5)
+        verify(writableMap).putDouble("double", 2.5)
+        verify(writableMap).putString("string", "value")
+        verify(writableMap).putNull("jsonNull")
+        verify(writableMap).putNull("jsonObject")
+        verify(writableMap).putNull("jsonArray")
+        verify(writableMap).putArray("list", nestedWritableArray)
+        verify(writableMap).putMap("map", nestedWritableMap)
+        verify(nestedWritableArray).pushString("nested")
+        verify(nestedWritableMap).putBoolean("nested", true)
       }
     }
   }
@@ -253,15 +266,13 @@ class ReactNativeFirebaseJSONTest {
     jsonObjectField.set(json, jsonObject)
 
     mockStatic(Arguments::class.java).use { arguments ->
-      mockStatic(SharedUtils::class.java).use {
-        arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
+      arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
 
-        json.getAll()
+      json.getAll()
 
-        val order = inOrder(jsonObject)
-        order.verify(jsonObject).get("first")
-        order.verify(jsonObject).get("second")
-      }
+      val order = inOrder(jsonObject)
+      order.verify(jsonObject).get("first")
+      order.verify(jsonObject).get("second")
     }
   }
 
@@ -275,13 +286,11 @@ class ReactNativeFirebaseJSONTest {
     jsonObjectField.set(json, jsonObject)
 
     mockStatic(Arguments::class.java).use { arguments ->
-      mockStatic(SharedUtils::class.java).use { sharedUtils ->
-        arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
+      arguments.`when`<WritableMap>(Arguments::createMap).thenReturn(writableMap)
 
-        assertSame(writableMap, json.getAll())
+      assertSame(writableMap, json.getAll())
 
-        sharedUtils.verify { SharedUtils.mapPutValue("good", false, writableMap) }
-      }
+      verify(writableMap).putBoolean("good", false)
     }
   }
 }
