@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { getMessaging, getToken } from '@react-native-firebase/messaging';
 
 import { ScreenChrome } from '../src/ScreenChrome';
@@ -19,11 +18,5 @@ export default function MessagingScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="messaging" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Messaging calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="messaging" onRun={handleRun} result={result} error={error} />;
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 
 import { ScreenChrome } from '../src/ScreenChrome';
@@ -19,11 +18,5 @@ export default function AnalyticsScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="analytics" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Analytics calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="analytics" onRun={handleRun} result={result} error={error} />;
 }

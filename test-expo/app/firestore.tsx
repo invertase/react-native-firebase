@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
 import { ScreenChrome } from '../src/ScreenChrome';
@@ -19,11 +18,5 @@ export default function FirestoreScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="firestore" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Firestore calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="firestore" onRun={handleRun} result={result} error={error} />;
 }

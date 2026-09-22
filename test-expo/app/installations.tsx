@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { getId, getInstallations } from '@react-native-firebase/installations';
 
 import { ScreenChrome } from '../src/ScreenChrome';
@@ -19,11 +18,5 @@ export default function InstallationsScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="installations" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Installations calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="installations" onRun={handleRun} result={result} error={error} />;
 }

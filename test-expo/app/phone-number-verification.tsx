@@ -21,11 +21,7 @@ export default function PhoneNumberVerificationScreen() {
 
   return (
     <ScreenChrome title="phone-number-verification" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {
-          'Android-only. getVerificationSupportInfo() throws on iOS. PROJECT_ID=test-expo-fixture-fake is a placeholder; real Phone Number Verification calls will fail.'
-        }
-      </Text>
+      <Text>{'Android-only. getVerificationSupportInfo() throws on iOS.'}</Text>
     </ScreenChrome>
   );
 }

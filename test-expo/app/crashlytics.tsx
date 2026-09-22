@@ -28,9 +28,6 @@ export default function CrashlyticsScreen() {
           'expo-dev-client custom error overlay catches native crashes such as those from crash(getCrashlytics()) during development, so they are not reported to Firebase Crashlytics. Testing native crash reporting requires a build without that overlay.'
         }
       </Text>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Crashlytics calls will fail.'}
-      </Text>
     </ScreenChrome>
   );
 }

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import {
   fetchAndActivate,
   getAll,
@@ -36,11 +35,5 @@ export default function RemoteConfigScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="remote-config" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Remote Config calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="remote-config" onRun={handleRun} result={result} error={error} />;
 }

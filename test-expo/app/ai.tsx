@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { getAI, getGenerativeModel } from '@react-native-firebase/ai';
 import { getApp } from '@react-native-firebase/app';
 
@@ -21,9 +20,5 @@ export default function AiScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="ai" onRun={handleRun} result={result} error={error}>
-      <Text>{'PROJECT_ID=test-expo-fixture-fake is a placeholder; real AI calls will fail.'}</Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="ai" onRun={handleRun} result={result} error={error} />;
 }

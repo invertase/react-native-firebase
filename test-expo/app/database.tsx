@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { get, getDatabase, ref } from '@react-native-firebase/database';
 
 import { ScreenChrome } from '../src/ScreenChrome';
@@ -19,11 +18,5 @@ export default function DatabaseScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="database" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Database calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="database" onRun={handleRun} result={result} error={error} />;
 }

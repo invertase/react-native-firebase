@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { getAuth, signInAnonymously, signOut } from '@react-native-firebase/auth';
 
 import { AppButton, LinkButton } from '../../src/AppButton';
@@ -45,9 +45,6 @@ export default function AuthScreen() {
         </View>
       ) : null}
       {!initializing && user ? <AppButton title="Sign out" onPress={handleSignOut} /> : null}
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real Auth calls will fail.'}
-      </Text>
     </ScreenChrome>
   );
 }

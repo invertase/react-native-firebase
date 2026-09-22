@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Text } from 'react-native';
 import { getApp } from '@react-native-firebase/app';
 import { getToken, initializeAppCheck } from '@react-native-firebase/app-check';
 
@@ -28,11 +27,5 @@ export default function AppCheckScreen() {
     }
   }
 
-  return (
-    <ScreenChrome title="app-check" onRun={handleRun} result={result} error={error}>
-      <Text>
-        {'PROJECT_ID=test-expo-fixture-fake is a placeholder; real App Check calls will fail.'}
-      </Text>
-    </ScreenChrome>
-  );
+  return <ScreenChrome title="app-check" onRun={handleRun} result={result} error={error} />;
 }
