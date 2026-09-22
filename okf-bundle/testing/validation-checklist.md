@@ -147,6 +147,7 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
 | `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Gotchas below. |
+| `docs/**` (informational, non-blocking) | `yarn docs:tsc:check` | Docs snippet type-check harness — advisory only, not part of this blocking row, no exit-code gate. [Agent command policy](agent-command-policy.md#canonical-registry). |
 
 **Docs lint gotchas** (`docs/**` only):
 

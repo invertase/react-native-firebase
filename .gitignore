@@ -623,6 +623,11 @@ mocks-lookup.ts
 .codex/
 Package.Resolved
 
+# Docs snippet type-check harness (yarn docs:tsc:check) — generated
+# every run, never committed. See scripts/docs-snippets-tsc.mjs.
+.docs-snippets-tsc/
+tsconfig.docs-snippets.generated.json
+
 # Generated Expo prebuild / pods / local modules (test-expo fixture sources stay tracked)
 test-expo/ios/
 test-expo/node_modules/

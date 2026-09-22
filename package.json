@@ -26,6 +26,7 @@
     "lint:spellcheck": "node ./scripts/spellcheck.mjs",
     "tsc:compile": "tsc --project .",
     "tsc:compile:consumer": "tsc --project tsconfig.consumer.json",
+    "docs:tsc:check": "node ./scripts/docs-snippets-tsc.mjs",
     "lint:all": "yarn lint && yarn lint:markdown && yarn lint:spellcheck && yarn tsc:compile",
     "test:full": "bash ./scripts/run-full-tests.sh",
     "reference:api": "typedoc",
