@@ -4,7 +4,9 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "start": "expo start"
+    "start": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android"
   },
   "dependencies": {
     "@react-native-firebase/ai": "26.4.0",
