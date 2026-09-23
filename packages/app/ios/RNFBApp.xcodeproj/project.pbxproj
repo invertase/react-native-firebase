@@ -31,6 +31,8 @@
 		RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */; };
 		RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */; };
 		RNFB00001A20260923000000B1 /* RNFBRCTEventEmitterCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */; };
+		RNFB00001A20260923000000C1 /* RNFBUtilsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */; };
+		RNFB00001A20260923000000C3 /* RNFBUtilsModule+Foundation.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -83,6 +85,8 @@
 		RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIRApp.swift; sourceTree = "<group>"; };
 		RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIROptions.swift; sourceTree = "<group>"; };
 		RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRCTEventEmitterCore.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpers.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBUtilsModule+Foundation.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +141,8 @@
 				DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */,
 				4D97BAD223042F0800077358 /* RNFBUtilsModule.h */,
 				4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */,
+				RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */,
+				RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */,
 				RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */,
 				RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */,
 				RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */,
@@ -238,6 +244,8 @@
 				RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */,
 				RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */,
 				RNFB00001A20260923000000B1 /* RNFBRCTEventEmitterCore.swift in Sources */,
+				RNFB00001A20260923000000C1 /* RNFBUtilsHelpers.swift in Sources */,
+				RNFB00001A20260923000000C3 /* RNFBUtilsModule+Foundation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
