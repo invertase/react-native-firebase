@@ -16,15 +16,47 @@
  */
 
 #import "RCTConvert+FIRApp.h"
-#import "RNFBSharedUtils.h"
+
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
+/**
+ * Adapts `[FIRApp defaultApp]` / `[FIRApp appNamed:]` for `RCTConvertFIRApp`.
+ */
+@interface RNFBFIRAppRegistryAdapter : NSObject <RNFBFIRAppLookingUp>
+@end
+
+@implementation RNFBFIRAppRegistryAdapter
+
+- (NSObject *)defaultApp {
+  return [FIRApp defaultApp];
+}
+
+- (NSObject *)appNamed:(NSString *)name {
+  return [FIRApp appNamed:name];
+}
+
+@end
+
+static id<RNFBFIRAppLookingUp> RNFBFIRAppRegistry(void) {
+  static RNFBFIRAppRegistryAdapter *sharedRegistry;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedRegistry = [[RNFBFIRAppRegistryAdapter alloc] init];
+  });
+  return sharedRegistry;
+}
 
 @implementation RCTConvert (FIRApp)
 + (FIRApp *)firAppFromString:(NSString *)appName {
-  if ([appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
-    return [FIRApp defaultApp];
-  }
-
-  return [FIRApp appNamed:appName];
+  return (FIRApp *)[RCTConvertFIRApp firAppFromString:appName registry:RNFBFIRAppRegistry()];
 }
 
 RCT_CUSTOM_CONVERTER(FIRApp *, FIRApp, [self firAppFromString:[self NSString:json]]);
