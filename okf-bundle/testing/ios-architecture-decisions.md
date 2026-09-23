@@ -49,6 +49,6 @@ Prefer a tiny **in-package xcodeproj** that compiles Foundation-only sources and
 
 **Not a substitute for area e2e:** In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) delivery/integration e2e on platforms where the module loads.
 
-**Podspec:** Exclude `ios/*UnitTests/**` from package `source_files` so XCTest sources are not compiled into the production pod.
+**Podspec:** Exclude `ios/*UnitTests/**/*` from package `source_files` so XCTest sources (and nested trees such as `HostStubs/`) are not compiled into the production pod. CocoaPods `FileList` uses `FNM_PATHNAME`; the shallower `ios/*UnitTests/**` glob does **not** match nested paths under the unit-test directory.
 
 **Pack / attw:** nested XCTest `build/` trees — [Types-AD-5](architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted).
