@@ -16,6 +16,10 @@
 		A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001C /* RNFBPreferencesStorage.swift */; };
 		A1000000000000000000001F /* RNFBPreferencesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* RNFBPreferencesTests.m */; };
 		A10000000000000000000021 /* RNFBPreferencesStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */; };
+		A10000000000000000000024 /* RNFBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* RNFBJSON.m */; };
+		A10000000000000000000026 /* RNFBJSONImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RNFBJSONImplementation.swift */; };
+		A10000000000000000000028 /* RNFBJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000027 /* RNFBJSONTests.m */; };
+		A1000000000000000000002A /* RNFBJSONImplementationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000029 /* RNFBJSONImplementationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +35,11 @@
 		A1000000000000000000001E /* RNFBPreferencesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPreferencesTests.m; sourceTree = "<group>"; };
 		A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPreferencesStorageTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000022 /* RNFBPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPreferences.h; path = ../RNFBApp/RNFBPreferences.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000023 /* RNFBJSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBJSON.m; path = ../RNFBApp/RNFBJSON.m; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000025 /* RNFBJSONImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBJSONImplementation.swift; path = ../RNFBApp/RNFBJSONImplementation.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000027 /* RNFBJSONTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBJSONTests.m; sourceTree = "<group>"; };
+		A10000000000000000000029 /* RNFBJSONImplementationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBJSONImplementationTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000002B /* RNFBJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBJSON.h; path = ../RNFBApp/RNFBJSON.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +83,11 @@
 				A1000000000000000000001C /* RNFBPreferencesStorage.swift */,
 				A1000000000000000000001E /* RNFBPreferencesTests.m */,
 				A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */,
+				A1000000000000000000002B /* RNFBJSON.h */,
+				A10000000000000000000023 /* RNFBJSON.m */,
+				A10000000000000000000025 /* RNFBJSONImplementation.swift */,
+				A10000000000000000000027 /* RNFBJSONTests.m */,
+				A10000000000000000000029 /* RNFBJSONImplementationTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -143,6 +157,10 @@
 				A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */,
 				A1000000000000000000001F /* RNFBPreferencesTests.m in Sources */,
 				A10000000000000000000021 /* RNFBPreferencesStorageTests.swift in Sources */,
+				A10000000000000000000024 /* RNFBJSON.m in Sources */,
+				A10000000000000000000026 /* RNFBJSONImplementation.swift in Sources */,
+				A10000000000000000000028 /* RNFBJSONTests.m in Sources */,
+				A1000000000000000000002A /* RNFBJSONImplementationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
