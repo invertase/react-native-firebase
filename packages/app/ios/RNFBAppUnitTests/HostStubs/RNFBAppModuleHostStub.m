@@ -16,42 +16,44 @@
 
 #import "RNFBAppModule.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
 @interface RNFBAppModule (Testing)
++ (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName;
 + (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName;
 + (void)resetCustomDomainsForTesting;
 @end
 
 @implementation RNFBAppModule
 
-static NSMutableDictionary<NSString *, NSString *> *RNFBAppModuleCustomDomains(void) {
-  static NSMutableDictionary<NSString *, NSString *> *domains;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    domains = [NSMutableDictionary new];
-  });
-  return domains;
-}
-
 + (NSString *)getCustomDomain:(NSString *)appName {
   if (appName == nil) {
     return nil;
   }
-  return RNFBAppModuleCustomDomains()[appName];
+  return [RNFBAppCustomAuthDomains getCustomDomain:appName];
 }
 
-+ (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName {
++ (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName {
   if (appName == nil) {
     return;
   }
-  if (domain == nil) {
-    [RNFBAppModuleCustomDomains() removeObjectForKey:appName];
-  } else {
-    RNFBAppModuleCustomDomains()[appName] = [domain copy];
-  }
+  [RNFBAppCustomAuthDomains setCustomDomain:authDomain forAppName:appName];
+}
+
++ (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName {
+  [self setCustomDomain:domain forAppName:appName];
 }
 
 + (void)resetCustomDomainsForTesting {
-  [RNFBAppModuleCustomDomains() removeAllObjects];
+  [RNFBAppCustomAuthDomains resetCustomDomainsForTesting];
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
