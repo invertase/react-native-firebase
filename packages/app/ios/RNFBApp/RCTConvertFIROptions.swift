@@ -28,6 +28,8 @@ import Foundation
   var databaseURL: String? { get set }
   var storageBucket: String? { get set }
   var bundleID: String? { get set }
+  /// Set by `initializeApp` options mapping (`appGroupId`); unused by `convertRawOptions`.
+  var appGroupID: String? { get set }
 }
 
 /**

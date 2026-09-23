@@ -67,6 +67,8 @@
 		A1000000000000000000008D /* RNFBAppLogLevelMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */; };
 		A1000000000000000000008F /* RNFBAppLogLevelMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */; };
 		A10000000000000000000091 /* RNFBAppLogLevelFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */; };
+		A10000000000000000000093 /* RNFBAppInitializeOptionsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000094 /* RNFBAppInitializeOptionsMapper.swift */; };
+		A10000000000000000000095 /* RNFBAppInitializeOptionsMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000096 /* RNFBAppInitializeOptionsMapperTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -142,6 +144,8 @@
 		A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppLogLevelMapper.swift; path = ../RNFBApp/RNFBAppLogLevelMapper.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppLogLevelMapperTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppLogLevelFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000094 /* RNFBAppInitializeOptionsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppInitializeOptionsMapper.swift; path = ../RNFBApp/RNFBAppInitializeOptionsMapper.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000096 /* RNFBAppInitializeOptionsMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppInitializeOptionsMapperTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,6 +249,8 @@
 				A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */,
 				A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */,
 				A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */,
+				A10000000000000000000094 /* RNFBAppInitializeOptionsMapper.swift */,
+				A10000000000000000000096 /* RNFBAppInitializeOptionsMapperTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -365,6 +371,8 @@
 				A1000000000000000000008D /* RNFBAppLogLevelMapper.swift in Sources */,
 				A1000000000000000000008F /* RNFBAppLogLevelMapperTests.swift in Sources */,
 				A10000000000000000000091 /* RNFBAppLogLevelFacadeTests.m in Sources */,
+				A10000000000000000000093 /* RNFBAppInitializeOptionsMapper.swift in Sources */,
+				A10000000000000000000095 /* RNFBAppInitializeOptionsMapperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

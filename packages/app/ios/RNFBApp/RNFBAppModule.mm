@@ -56,6 +56,33 @@
 
 @end
 
+/**
+ * Adapts `[[FIROptions alloc] initWithGoogleAppID:GCMSenderID:]` for
+ * `RNFBAppInitializeOptionsMapper` (same shape as `RCTConvert+FIROptions.m`).
+ * Must sit outside `@implementation RNFBAppModule` (nested @implementation is invalid).
+ */
+@interface RNFBAppModuleFIROptionsFactory : NSObject <RNFBFIROptionsCreating>
+@end
+
+@implementation RNFBAppModuleFIROptionsFactory
+
+- (id<RNFBFIROptionsConfiguring>)createWithGoogleAppID:(NSString *)googleAppID
+                                           gcmSenderID:(NSString *)gcmSenderID {
+  return (id<RNFBFIROptionsConfiguring>)[[FIROptions alloc] initWithGoogleAppID:googleAppID
+                                                                    GCMSenderID:gcmSenderID];
+}
+
+@end
+
+static id<RNFBFIROptionsCreating> RNFBAppModuleOptionsFactory(void) {
+  static RNFBAppModuleFIROptionsFactory *sharedFactory;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedFactory = [[RNFBAppModuleFIROptionsFactory alloc] init];
+  });
+  return sharedFactory;
+}
+
 @implementation RNFBAppModule
 
 #pragma mark -
@@ -212,35 +239,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
                reject:(RCTPromiseRejectBlock)reject {
   RCTUnsafeExecuteOnMainQueueSync(^{
     FIRApp *firApp;
-    NSString *appName = [appConfig valueForKey:@"name"];
-    NSString *authDomain = [options valueForKey:@"authDomain"];
-    NSString *jsAppName = (appName.length > 0) ? appName : DEFAULT_APP_DISPLAY_NAME;
-    BOOL isDefaultApp = !appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME];
-
-    NSString *appId = [options valueForKey:@"appId"];
-    NSString *messagingSenderId = [options valueForKey:@"messagingSenderId"];
-    FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:appId
-                                                         GCMSenderID:messagingSenderId];
-    firOptions.APIKey = [options valueForKey:@"apiKey"];
-    firOptions.projectID = [options valueForKey:@"projectId"];
-    if (![[options valueForKey:@"databaseURL"] isEqual:[NSNull null]]) {
-      firOptions.databaseURL = [options valueForKey:@"databaseURL"];
-    }
-    if (![[options valueForKey:@"storageBucket"] isEqual:[NSNull null]]) {
-      firOptions.storageBucket = [options valueForKey:@"storageBucket"];
-    }
-    if (![[options valueForKey:@"iosBundleId"] isEqual:[NSNull null]]) {
-      firOptions.bundleID = [options valueForKey:@"iosBundleId"];
-    }
-    if (![[options valueForKey:@"iosClientId"] isEqual:[NSNull null]]) {
-      firOptions.clientID = [options valueForKey:@"iosClientId"];
-    }
-    if (![[options valueForKey:@"appGroupId"] isEqual:[NSNull null]]) {
-      firOptions.appGroupID = [options valueForKey:@"appGroupId"];
-    }
+    RNFBAppInitializeNameResolution *names =
+        [RNFBAppInitializeOptionsMapper resolveNameFromAppConfig:appConfig];
+    NSString *authDomain = [RNFBAppInitializeOptionsMapper authDomainFromOptions:options];
+    FIROptions *firOptions = (FIROptions *)[RNFBAppInitializeOptionsMapper
+        buildOptionsFrom:options
+          optionsFactory:RNFBAppModuleOptionsFactory()];
 
     @try {
-      if (isDefaultApp) {
+      if (names.isDefaultApp) {
         // Native bootstrap often already called [FIRApp configure]. Still accept a JS/bridge
         // initializeApp for the default app so customAuthDomains can be keyed by [DEFAULT].
         if ([FIRApp defaultApp] != nil) {
@@ -250,15 +257,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
           firApp = [FIRApp defaultApp];
         }
       } else {
-        [FIRApp configureWithName:appName options:firOptions];
-        firApp = [FIRApp appNamed:appName];
+        [FIRApp configureWithName:names.appName options:firOptions];
+        firApp = [FIRApp appNamed:names.appName];
       }
     } @catch (NSException *exception) {
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
 
     // Store under the JS bridge app name ([DEFAULT]), never native __FIRAPP_DEFAULT.
-    [RNFBAppModule setCustomDomain:authDomain forAppName:jsAppName];
+    [RNFBAppModule setCustomDomain:authDomain forAppName:names.jsAppName];
 
     firApp.dataCollectionDefaultEnabled =
         (BOOL)[appConfig valueForKey:@"automaticDataCollectionEnabled"];
