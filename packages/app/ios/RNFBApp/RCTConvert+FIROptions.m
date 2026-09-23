@@ -17,19 +17,79 @@
 
 #import "RCTConvert+FIROptions.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
+/**
+ * Adapts `[[FIROptions alloc] initWithGoogleAppID:GCMSenderID:]` for `RCTConvertFIROptions`.
+ */
+@interface RNFBFIROptionsFactoryAdapter : NSObject <RNFBFIROptionsCreating>
+@end
+
+@implementation RNFBFIROptionsFactoryAdapter
+
+- (id<RNFBFIROptionsConfiguring>)createWithGoogleAppID:(NSString *)googleAppID
+                                           gcmSenderID:(NSString *)gcmSenderID {
+  return (id<RNFBFIROptionsConfiguring>)[[FIROptions alloc] initWithGoogleAppID:googleAppID
+                                                                    GCMSenderID:gcmSenderID];
+}
+
+@end
+
+/**
+ * Adapts mainBundle CFBundleIdentifier for `RCTConvertFIROptions`.
+ */
+@interface RNFBMainBundleIdentifierProvider : NSObject <RNFBBundleIdentifierProviding>
+@end
+
+@implementation RNFBMainBundleIdentifierProvider
+
+- (NSString *)bundleIdentifier {
+  return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
+}
+
+@end
+
+/**
+ * Empty category: live `FIROptions` already exposes the configuring properties.
+ */
+@interface FIROptions (RNFBFIROptionsConfiguring) <RNFBFIROptionsConfiguring>
+@end
+
+@implementation FIROptions (RNFBFIROptionsConfiguring)
+@end
+
+static id<RNFBFIROptionsCreating> RNFBFIROptionsFactory(void) {
+  static RNFBFIROptionsFactoryAdapter *sharedFactory;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedFactory = [[RNFBFIROptionsFactoryAdapter alloc] init];
+  });
+  return sharedFactory;
+}
+
+static id<RNFBBundleIdentifierProviding> RNFBMainBundleIDProvider(void) {
+  static RNFBMainBundleIdentifierProvider *sharedProvider;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedProvider = [[RNFBMainBundleIdentifierProvider alloc] init];
+  });
+  return sharedProvider;
+}
+
 @implementation RCTConvert (FIROptions)
 
 + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
-  FIROptions *firOptions =
-      [[FIROptions alloc] initWithGoogleAppID:[rawOptions valueForKey:@"appId"]
-                                  GCMSenderID:[rawOptions valueForKey:@"messagingSenderId"]];
-  firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
-  firOptions.projectID = [rawOptions valueForKey:@"projectId"];
-  firOptions.clientID = [rawOptions valueForKey:@"clientId"];
-  firOptions.databaseURL = [rawOptions valueForKey:@"databaseURL"];
-  firOptions.storageBucket = [rawOptions valueForKey:@"storageBucket"];
-  firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-  return firOptions;
+  return (FIROptions *)[RCTConvertFIROptions convertRawOptions:rawOptions
+                                                optionsFactory:RNFBFIROptionsFactory()
+                                              bundleIDProvider:RNFBMainBundleIDProvider()];
 }
 
 RCT_CUSTOM_CONVERTER(FIROptions *, FIROptions, [self convertRawOptions:[self NSDictionary:json]]);

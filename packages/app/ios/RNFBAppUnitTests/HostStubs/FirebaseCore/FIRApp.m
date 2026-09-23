@@ -5,10 +5,30 @@
 #import "FirebaseCore.h"
 
 @implementation FIROptions
+
+- (instancetype)initWithGoogleAppID:(NSString *)googleAppID GCMSenderID:(NSString *)GCMSenderID {
+  self = [super init];
+  if (self) {
+    _googleAppID = [googleAppID copy];
+    _GCMSenderID = [GCMSenderID copy];
+  }
+  return self;
+}
+
 @end
 
 @implementation FIRApp {
   BOOL _dataCollectionDefaultEnabled;
+}
+
+static FIRApp *_Nullable RNFBStubDefaultApp;
+static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
+
++ (NSMutableDictionary<NSString *, FIRApp *> *)namedAppsRegistry {
+  if (RNFBStubNamedApps == nil) {
+    RNFBStubNamedApps = [[NSMutableDictionary alloc] init];
+  }
+  return RNFBStubNamedApps;
 }
 
 - (instancetype)initWithName:(NSString *)name options:(FIROptions *)options {
@@ -27,6 +47,27 @@
 
 - (BOOL)isDataCollectionDefaultEnabled {
   return _dataCollectionDefaultEnabled;
+}
+
++ (FIRApp *)defaultApp {
+  return RNFBStubDefaultApp;
+}
+
++ (FIRApp *)appNamed:(NSString *)name {
+  return [self namedAppsRegistry][name];
+}
+
++ (void)setDefaultAppForTesting:(FIRApp *)app {
+  RNFBStubDefaultApp = app;
+}
+
++ (void)registerAppForTesting:(FIRApp *)app {
+  [self namedAppsRegistry][app.name] = app;
+}
+
++ (void)resetRegistryForTesting {
+  RNFBStubDefaultApp = nil;
+  [RNFBStubNamedApps removeAllObjects];
 }
 
 @end
