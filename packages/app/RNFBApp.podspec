@@ -26,7 +26,9 @@ Pod::Spec.new do |s|
   s.swift_version       = '5.10'
   s.source_files        = "ios/**/*.{h,m,mm,cpp,swift}"
   s.private_header_files = "ios/**/*.h"
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
+  # CocoaPods FileList uses FNM_PATHNAME: `ios/*UnitTests/**` does not match nested
+  # paths like `ios/RNFBAppUnitTests/HostStubs/**` (those would compile into the pod).
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**/*'
 
   # Fail fast for old architecture users, but safely in case the variable goes away
   # completely in future react-native versions

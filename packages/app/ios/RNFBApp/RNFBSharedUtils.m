@@ -29,7 +29,7 @@
 #elif __has_include("RNFBHandleMapStorage-Swift.inc")
 #import "RNFBHandleMapStorage-Swift.inc"
 #else
-#error "RNFBNullSentinelDecoder Swift interface not found"
+#error "RNFBApp Swift interface not found"
 #endif
 
 #pragma mark -
@@ -45,10 +45,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 #pragma mark Methods
 
 + (NSString *)getAppJavaScriptName:(NSString *)appDisplayName {
-  if ([appDisplayName isEqualToString:DEFAULT_APP_NAME]) {
-    return DEFAULT_APP_DISPLAY_NAME;
-  }
-  return appDisplayName;
+  return [RNFBSharedUtilsFormatting getAppJavaScriptName:appDisplayName];
 }
 
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
@@ -129,18 +126,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 }
 
 + (NSString *)getISO8601String:(NSDate *)date {
-  static NSDateFormatter *formatter = nil;
-
-  if (!formatter) {
-    formatter = [[NSDateFormatter alloc] init];
-    [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
-    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss"];
-  }
-
-  NSString *iso8601String = [formatter stringFromDate:date];
-
-  return [iso8601String stringByAppendingString:@"Z"];
+  return [RNFBSharedUtilsFormatting getISO8601String:date];
 }
 
 + (BOOL)configContains:(NSString *)key {
