@@ -13,6 +13,9 @@
 		B90000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B90000000000000000000014 /* XCTest.framework */; };
 		B90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000001C /* RNFBHandleMapStorage.swift */; };
 		B9000000000000000000001D /* RNFBPerfHandleRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000001E /* RNFBPerfHandleRegistryStorage.swift */; };
+		B9000000000000000000001F /* RNFBPerfHttpMethodMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000020 /* RNFBPerfHttpMethodMapper.swift */; };
+		B90000000000000000000021 /* RNFBPerfHttpMethodMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000022 /* RNFBPerfHttpMethodMapperTests.swift */; };
+		B90000000000000000000023 /* RNFBPerfHttpMethodMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000024 /* RNFBPerfHttpMethodMapperFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +28,9 @@
 		B90000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B9000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 		B9000000000000000000001E /* RNFBPerfHandleRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHandleRegistryStorage.swift; path = ../RNFBPerf/RNFBPerfHandleRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		B90000000000000000000020 /* RNFBPerfHttpMethodMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMethodMapper.swift; path = ../RNFBPerf/RNFBPerfHttpMethodMapper.swift; sourceTree = SOURCE_ROOT; };
+		B90000000000000000000022 /* RNFBPerfHttpMethodMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPerfHttpMethodMapperTests.swift; sourceTree = "<group>"; };
+		B90000000000000000000024 /* RNFBPerfHttpMethodMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPerfHttpMethodMapperFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,7 +70,10 @@
 				B90000000000000000000016 /* RNFBPerfHandleRegistry.h */,
 				B90000000000000000000018 /* RNFBPerfHandleRegistry.m */,
 				B9000000000000000000001E /* RNFBPerfHandleRegistryStorage.swift */,
+				B90000000000000000000020 /* RNFBPerfHttpMethodMapper.swift */,
 				B90000000000000000000009 /* RNFBPerfHandleRegistryTests.m */,
+				B90000000000000000000022 /* RNFBPerfHttpMethodMapperTests.swift */,
+				B90000000000000000000024 /* RNFBPerfHttpMethodMapperFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -129,8 +138,11 @@
 				B9000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				B90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
 				B9000000000000000000001D /* RNFBPerfHandleRegistryStorage.swift in Sources */,
+				B9000000000000000000001F /* RNFBPerfHttpMethodMapper.swift in Sources */,
 				B9000000000000000000000B /* RNFBPerfHandleRegistry.m in Sources */,
 				B9000000000000000000000C /* RNFBPerfHandleRegistryTests.m in Sources */,
+				B90000000000000000000021 /* RNFBPerfHttpMethodMapperTests.swift in Sources */,
+				B90000000000000000000023 /* RNFBPerfHttpMethodMapperFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
