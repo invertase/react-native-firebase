@@ -16,11 +16,42 @@
 
 #import "RNFBAppModule.h"
 
+@interface RNFBAppModule (Testing)
++ (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName;
++ (void)resetCustomDomainsForTesting;
+@end
+
 @implementation RNFBAppModule
 
+static NSMutableDictionary<NSString *, NSString *> *RNFBAppModuleCustomDomains(void) {
+  static NSMutableDictionary<NSString *, NSString *> *domains;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    domains = [NSMutableDictionary new];
+  });
+  return domains;
+}
+
 + (NSString *)getCustomDomain:(NSString *)appName {
-  (void)appName;
-  return nil;
+  if (appName == nil) {
+    return nil;
+  }
+  return RNFBAppModuleCustomDomains()[appName];
+}
+
++ (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName {
+  if (appName == nil) {
+    return;
+  }
+  if (domain == nil) {
+    [RNFBAppModuleCustomDomains() removeObjectForKey:appName];
+  } else {
+    RNFBAppModuleCustomDomains()[appName] = [domain copy];
+  }
+}
+
++ (void)resetCustomDomainsForTesting {
+  [RNFBAppModuleCustomDomains() removeAllObjects];
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
