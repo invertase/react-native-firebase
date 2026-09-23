@@ -21,6 +21,7 @@
 		RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026082000000002 /* RNFBHandleMap.m */; };
 		RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */; };
 		RNFB00001A2026092200000011 /* RNFBPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */; };
+		RNFB00001A2026092200000021 /* RNFBJSONImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +64,7 @@
 		RNFB00001A2026082000000003 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBHandleMap.h; sourceTree = "<group>"; };
 		RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorage.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPreferencesStorage.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBJSONImplementation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				2744B98521F45429004F8E3F /* RNFBAppModule.mm */,
 				2748D8162236428100FC8DC8 /* RNFBJSON.h */,
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
+				RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */,
 				2748D81A223674B600FC8DC8 /* RNFBPreferences.h */,
 				2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */,
 				RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */,
@@ -198,6 +201,7 @@
 				RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */,
 				RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */,
 				RNFB00001A2026092200000011 /* RNFBPreferencesStorage.swift in Sources */,
+				RNFB00001A2026092200000021 /* RNFBJSONImplementation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
