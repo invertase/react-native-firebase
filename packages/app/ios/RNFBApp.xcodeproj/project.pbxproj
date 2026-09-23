@@ -28,6 +28,8 @@
 		RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */; };
 		RNFB00001A2026092300000071 /* RNFBSharedUtilsPromiseRejection.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */; };
 		RNFB00001A2026092300000081 /* RNFBSharedUtilsFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */; };
+		RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */; };
+		RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -77,6 +79,8 @@
 		RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsConfig.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsPromiseRejection.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFIRApp.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIRApp.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIROptions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,11 +115,13 @@
 				2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */,
 				2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */,
 				2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */,
+				RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */,
 				2748D81E2237012B00FC8DC8 /* RNFBMeta.h */,
 				2748D81F2237018600FC8DC8 /* RNFBMeta.m */,
 				RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */,
 				2744B9A521F57BD9004F8E3F /* RCTConvert+FIRApp.h */,
 				2744B9A621F57C2F004F8E3F /* RCTConvert+FIRApp.m */,
+				RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */,
 				2744B98421F45429004F8E3F /* RNFBAppModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAppModule.mm */,
 				2748D8162236428100FC8DC8 /* RNFBJSON.h */,
@@ -226,6 +232,8 @@
 				RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */,
 				RNFB00001A2026092300000071 /* RNFBSharedUtilsPromiseRejection.swift in Sources */,
 				RNFB00001A2026092300000081 /* RNFBSharedUtilsFIRApp.swift in Sources */,
+				RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */,
+				RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
