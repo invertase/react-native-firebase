@@ -67,7 +67,6 @@ static id<RNFBConfigBooleanProviding> RNFBSharedUtilsMetaConfigSource(void) {
 }
 
 @implementation RNFBSharedUtils
-static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 #pragma mark -
 #pragma mark Methods
@@ -112,38 +111,16 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject
                              exception:(NSException *)exception {
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-
-  [userInfo setValue:@(YES) forKey:@"fatal"];
-  [userInfo setValue:@"unknown" forKey:@"code"];
-  [userInfo setValue:exception.reason forKey:@"message"];
-  [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
-  [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
-
-  NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-
-  reject(exception.name, exception.reason, error);
+  [RNFBSharedUtilsPromiseRejection rejectPromiseWithException:reject exception:exception];
 }
 
 + (void)rejectPromiseWithNSError:(RCTPromiseRejectBlock)reject error:(NSError *)error {
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-
-  [userInfo setValue:@(NO) forKey:@"fatal"];
-  [userInfo setValue:@"unknown" forKey:@"code"];
-  [userInfo setValue:error.localizedDescription forKey:@"message"];
-  [userInfo setValue:@(error.code) forKey:@"nativeErrorCode"];
-  [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
-
-  NSError *newErrorWithUserInfo = [NSError errorWithDomain:RNFBErrorDomain
-                                                      code:666
-                                                  userInfo:userInfo];
-  reject(@"unknown", error.localizedDescription, newErrorWithUserInfo);
+  [RNFBSharedUtilsPromiseRejection rejectPromiseWithNSError:reject error:error];
 }
 
 + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject
                          userInfo:(NSMutableDictionary *)userInfo {
-  NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-  reject(userInfo[@"code"], userInfo[@"message"], error);
+  [RNFBSharedUtilsPromiseRejection rejectPromiseWithUserInfo:reject userInfo:userInfo];
 }
 
 // for easier v5 migration
