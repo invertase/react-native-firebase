@@ -1,0 +1,19 @@
+# Code owners for critical paths. GitHub requests review from these people when
+# a PR touches a matching file. Owners must have write access on this repo.
+#
+# Org team @invertase/react-native already has maintain here, but it is a
+# *secret* team — GitHub ignores secret teams in CODEOWNERS. Visible team
+# @invertase/invertase is not granted on this repository. Use the maintainers
+# who actually merge (recent history) plus the project owner in CONTRIBUTING.md.
+#
+# Intentionally no catch-all `*` — docs typos and other non-critical files do
+# not require a code-owner review unless they live under a path below.
+
+# Protect this file so owners cannot be swapped without a maintainer review.
+/.github/CODEOWNERS @mikehardy @Ehesp @russellwheatley
+
+# CI, tests, docs deploy, and release/publish workflows.
+/.github/workflows/ @mikehardy @Ehesp @russellwheatley
+
+# Published packages (JS, native, and package metadata).
+/packages/ @mikehardy @Ehesp @russellwheatley
