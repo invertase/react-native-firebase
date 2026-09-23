@@ -56,6 +56,11 @@
 		A1000000000000000000006A /* RCTConvert+FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006B /* RCTConvert+FIRApp.m */; };
 		A1000000000000000000006C /* RCTConvert+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006D /* RCTConvert+FIROptions.m */; };
 		A1000000000000000000006E /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006F /* RCTConvert.m */; };
+		A1000000000000000000007C /* RNFBUtilsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007D /* RNFBUtilsHelpers.swift */; };
+		A1000000000000000000007E /* RNFBUtilsModule+Foundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */; };
+		A10000000000000000000080 /* RNFBUtilsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000081 /* RNFBUtilsModule.m */; };
+		A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */; };
+		A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -119,6 +124,12 @@
 		A1000000000000000000006F /* RCTConvert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTConvert.m; path = HostStubs/React/RCTConvert.m; sourceTree = "<group>"; };
 		A10000000000000000000070 /* RCTConvert+FIRApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIRApp.h"; path = "../RNFBApp/RCTConvert+FIRApp.h"; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000071 /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIROptions.h"; path = "../RNFBApp/RCTConvert+FIROptions.h"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000007D /* RNFBUtilsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBUtilsHelpers.swift; path = ../RNFBApp/RNFBUtilsHelpers.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RNFBUtilsModule+Foundation.m"; path = "../RNFBApp/RNFBUtilsModule+Foundation.m"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000081 /* RNFBUtilsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBUtilsModule.m; path = HostStubs/RNFBUtilsModule.m; sourceTree = "<group>"; };
+		A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpersTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBUtilsModuleFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000086 /* RNFBUtilsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBUtilsModule.h; path = ../RNFBApp/RNFBUtilsModule.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +221,12 @@
 				A1000000000000000000007A /* RCTBridge.m */,
 				A1000000000000000000005D /* FIRApp.m */,
 				A1000000000000000000006F /* RCTConvert.m */,
+				A10000000000000000000086 /* RNFBUtilsModule.h */,
+				A1000000000000000000007D /* RNFBUtilsHelpers.swift */,
+				A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */,
+				A10000000000000000000081 /* RNFBUtilsModule.m */,
+				A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */,
+				A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -319,6 +336,11 @@
 				A10000000000000000000077 /* RNFBRCTEventEmitterFacadeTests.m in Sources */,
 				A10000000000000000000079 /* RCTBridge.m in Sources */,
 				A1000000000000000000005C /* FIRApp.m in Sources */,
+				A1000000000000000000007C /* RNFBUtilsHelpers.swift in Sources */,
+				A1000000000000000000007E /* RNFBUtilsModule+Foundation.m in Sources */,
+				A10000000000000000000080 /* RNFBUtilsModule.m in Sources */,
+				A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */,
+				A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
