@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBPerfModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBPerfModule.mm */; };
+		RNFBPERF0000000000000001 /* RNFBPerfHandleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000002 /* RNFBPerfHandleRegistry.m */; };
+		RNFBPERF0000000000000003 /* RNFBPerfHandleRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000004 /* RNFBPerfHandleRegistryStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +28,9 @@
 		2744B98221F45429004F8E3F /* libRNFBPerf.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBPerf.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBPerfModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPerfModule.h; path = RNFBPerf/RNFBPerfModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBPerfModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPerfModule.mm; path = RNFBPerf/RNFBPerfModule.mm; sourceTree = SOURCE_ROOT; };
+		RNFBPERF0000000000000005 /* RNFBPerfHandleRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPerfHandleRegistry.h; path = RNFBPerf/RNFBPerfHandleRegistry.h; sourceTree = SOURCE_ROOT; };
+		RNFBPERF0000000000000002 /* RNFBPerfHandleRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPerfHandleRegistry.m; path = RNFBPerf/RNFBPerfHandleRegistry.m; sourceTree = SOURCE_ROOT; };
+		RNFBPERF0000000000000004 /* RNFBPerfHandleRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHandleRegistryStorage.swift; path = RNFBPerf/RNFBPerfHandleRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +57,9 @@
 			children = (
 				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
+				RNFBPERF0000000000000005 /* RNFBPerfHandleRegistry.h */,
+				RNFBPERF0000000000000002 /* RNFBPerfHandleRegistry.m */,
+				RNFBPERF0000000000000004 /* RNFBPerfHandleRegistryStorage.swift */,
 				2744B98421F45429004F8E3F /* RNFBPerfModule.h */,
 				2744B98521F45429004F8E3F /* RNFBPerfModule.mm */,
 			);
@@ -124,6 +132,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				RNFBPERF0000000000000003 /* RNFBPerfHandleRegistryStorage.swift in Sources */,
+				RNFBPERF0000000000000001 /* RNFBPerfHandleRegistry.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBPerfModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -150,6 +160,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -166,6 +177,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -189,6 +201,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -200,6 +213,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
