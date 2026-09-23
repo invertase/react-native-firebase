@@ -71,3 +71,38 @@ static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
 }
 
 @end
+
+@implementation FIRConfiguration {
+  FIRLoggerLevel _loggerLevel;
+}
+
+static FIRConfiguration *_Nullable RNFBStubSharedConfiguration;
+
++ (instancetype)sharedInstance {
+  if (RNFBStubSharedConfiguration == nil) {
+    RNFBStubSharedConfiguration = [[FIRConfiguration alloc] init];
+  }
+  return RNFBStubSharedConfiguration;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _loggerLevel = FIRLoggerLevelError;
+  }
+  return self;
+}
+
+- (FIRLoggerLevel)loggerLevel {
+  return _loggerLevel;
+}
+
+- (void)setLoggerLevel:(FIRLoggerLevel)loggerLevel {
+  _loggerLevel = loggerLevel;
+}
+
++ (void)resetForTesting {
+  RNFBStubSharedConfiguration = nil;
+}
+
+@end

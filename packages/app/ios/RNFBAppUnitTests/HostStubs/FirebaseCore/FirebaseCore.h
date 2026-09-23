@@ -3,6 +3,18 @@
  */
 #import <Foundation/Foundation.h>
 
+/**
+ * Mirrors FirebaseCore `FIRLoggerLevel` raw values
+ * (`FirebaseCore/Sources/Public/FirebaseCore/FIRLoggerLevel.h`).
+ */
+typedef NS_ENUM(NSInteger, FIRLoggerLevel) {
+  FIRLoggerLevelError = 3,
+  FIRLoggerLevelWarning = 4,
+  FIRLoggerLevelNotice = 5,
+  FIRLoggerLevelInfo = 6,
+  FIRLoggerLevelDebug = 7,
+};
+
 @interface FIROptions : NSObject
 - (nonnull instancetype)initWithGoogleAppID:(nullable NSString *)googleAppID
                                 GCMSenderID:(nullable NSString *)GCMSenderID;
@@ -30,4 +42,13 @@
 + (void)setDefaultAppForTesting:(nullable FIRApp *)app;
 + (void)registerAppForTesting:(nonnull FIRApp *)app;
 + (void)resetRegistryForTesting;
+@end
+
+@interface FIRConfiguration : NSObject
+@property(nonatomic, assign, readonly) FIRLoggerLevel loggerLevel;
+
++ (nonnull instancetype)sharedInstance;
+- (void)setLoggerLevel:(FIRLoggerLevel)loggerLevel;
+
++ (void)resetForTesting;
 @end

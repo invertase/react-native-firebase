@@ -64,6 +64,9 @@
 		A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */; };
 		A10000000000000000000089 /* RNFBAppCustomAuthDomainsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */; };
 		A1000000000000000000008B /* RNFBAppCustomAuthDomainsFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */; };
+		A1000000000000000000008D /* RNFBAppLogLevelMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */; };
+		A1000000000000000000008F /* RNFBAppLogLevelMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */; };
+		A10000000000000000000091 /* RNFBAppLogLevelFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -136,6 +139,9 @@
 		A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppCustomAuthDomains.swift; path = ../RNFBApp/RNFBAppCustomAuthDomains.swift; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppCustomAuthDomainsTests.swift; sourceTree = "<group>"; };
 		A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppCustomAuthDomainsFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppLogLevelMapper.swift; path = ../RNFBApp/RNFBAppLogLevelMapper.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppLogLevelMapperTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppLogLevelFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -236,6 +242,9 @@
 				A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */,
 				A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */,
 				A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */,
+				A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */,
+				A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */,
+				A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -353,6 +362,9 @@
 				A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */,
 				A10000000000000000000089 /* RNFBAppCustomAuthDomainsTests.swift in Sources */,
 				A1000000000000000000008B /* RNFBAppCustomAuthDomainsFacadeTests.m in Sources */,
+				A1000000000000000000008D /* RNFBAppLogLevelMapper.swift in Sources */,
+				A1000000000000000000008F /* RNFBAppLogLevelMapperTests.swift in Sources */,
+				A10000000000000000000091 /* RNFBAppLogLevelFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
