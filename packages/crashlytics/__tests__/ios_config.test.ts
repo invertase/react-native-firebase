@@ -38,6 +38,18 @@ fi
 exit 0
 `;
 
+// Always fails, regardless of args — simulates a genuinely rejected upload
+// (bad credentials, network, project mismatch), as opposed to the "gsp file
+// missing" failure mode of UPLOAD_SYMBOLS_STUB above.
+const ALWAYS_FAILS_STUB = `#!/usr/bin/env bash
+echo "error: stub forced failure" >&2
+exit 1
+`;
+
+const ALWAYS_SUCCEEDS_STUB = `#!/usr/bin/env bash
+exit 0
+`;
+
 const SCRIPT_PATH = join(__dirname, '..', 'ios_config.sh');
 
 describe('Crashlytics ios_config.sh SPM dSYM upload', function () {
@@ -46,6 +58,7 @@ describe('Crashlytics ios_config.sh SPM dSYM upload', function () {
   let buildDir: string;
   let dsymFolder: string;
   let uploadSymbolsLog: string;
+  let uploadSymbolsPath: string;
 
   beforeEach(function () {
     projectDir = mkdtempSync(join(tmpdir(), 'rnfb-ios-config-'));
@@ -63,7 +76,7 @@ describe('Crashlytics ios_config.sh SPM dSYM upload', function () {
     mkdirSync(buildDir, { recursive: true });
     mkdirSync(spmCrashlyticsDir, { recursive: true });
 
-    const uploadSymbolsPath = join(spmCrashlyticsDir, 'upload-symbols');
+    uploadSymbolsPath = join(spmCrashlyticsDir, 'upload-symbols');
     writeFileSync(uploadSymbolsPath, UPLOAD_SYMBOLS_STUB);
     chmodSync(uploadSymbolsPath, 0o755);
 
@@ -126,5 +139,89 @@ describe('Crashlytics ios_config.sh SPM dSYM upload', function () {
     expect(existsSync(uploadSymbolsLog)).toBe(false);
     expect(result.stdout).toContain('warning:');
     expect(result.stdout).toContain('GoogleService-Info.plist');
+  });
+
+  it('warns and continues without failing the build when SPM upload-symbols rejects the upload', function () {
+    const targetFolderPlist = join(projectDir, targetName, 'GoogleService-Info.plist');
+    mkdirSync(join(projectDir, targetName), { recursive: true });
+    writeFileSync(targetFolderPlist, 'plist-contents');
+
+    // Overwrite the stub installed in beforeEach with one that always rejects,
+    // simulating a real upload failure rather than a missing gsp file.
+    writeFileSync(uploadSymbolsPath, ALWAYS_FAILS_STUB);
+    chmodSync(uploadSymbolsPath, 0o755);
+
+    const result = runIosConfig();
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('warning:');
+    expect(result.stdout).toContain('upload-symbols (SPM) failed');
+  });
+});
+
+describe('Crashlytics ios_config.sh CocoaPods / framework run', function () {
+  let projectDir: string;
+  let podsRoot: string;
+
+  beforeEach(function () {
+    projectDir = mkdtempSync(join(tmpdir(), 'rnfb-ios-config-pods-'));
+    podsRoot = join(projectDir, 'Pods');
+  });
+
+  afterEach(function () {
+    rmSync(projectDir, { recursive: true, force: true });
+  });
+
+  function runIosConfig(env: Record<string, string> = { PODS_ROOT: podsRoot }) {
+    return spawnSync('bash', [SCRIPT_PATH], {
+      cwd: projectDir,
+      encoding: 'utf8',
+      env: {
+        PATH: process.env.PATH,
+        PROJECT_DIR: projectDir,
+        ...env,
+      },
+    });
+  }
+
+  it('runs the CocoaPods run script when present, without warning on success', function () {
+    const runScriptPath = join(podsRoot, 'FirebaseCrashlytics', 'run');
+    mkdirSync(join(podsRoot, 'FirebaseCrashlytics'), { recursive: true });
+    writeFileSync(runScriptPath, ALWAYS_SUCCEEDS_STUB);
+    chmodSync(runScriptPath, 0o755);
+
+    const result = runIosConfig();
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Exec FirebaseCrashlytics Run from Pods');
+    expect(result.stdout).not.toContain('warning:');
+  });
+
+  it('warns and continues without failing the build when the CocoaPods run script fails', function () {
+    const runScriptPath = join(podsRoot, 'FirebaseCrashlytics', 'run');
+    mkdirSync(join(podsRoot, 'FirebaseCrashlytics'), { recursive: true });
+    writeFileSync(runScriptPath, ALWAYS_FAILS_STUB);
+    chmodSync(runScriptPath, 0o755);
+
+    const result = runIosConfig();
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('warning:');
+    expect(result.stdout).toContain('run (CocoaPods) failed');
+  });
+
+  it('warns and continues without failing the build when the vendored framework run script fails', function () {
+    const runScriptPath = join(projectDir, 'FirebaseCrashlytics.framework', 'run');
+    mkdirSync(join(projectDir, 'FirebaseCrashlytics.framework'), { recursive: true });
+    writeFileSync(runScriptPath, ALWAYS_FAILS_STUB);
+    chmodSync(runScriptPath, 0o755);
+
+    // No PODS_ROOT/FirebaseCrashlytics/run here, so this falls through to the
+    // vendored-framework branch instead.
+    const result = runIosConfig({});
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('warning:');
+    expect(result.stdout).toContain('run (framework) failed');
   });
 });

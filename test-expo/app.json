@@ -2,17 +2,30 @@
   "expo": {
     "name": "testexpo",
     "slug": "testexpo",
+    "scheme": "testexpo",
     "version": "1.0.0",
+    "icon": "./assets/app-icon.png",
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "bundleIdentifier": "com.invertase.testexpo",
+      "bundleIdentifier": "io.invertase.testing",
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.invertase.testing",
+      "googleServicesFile": "./google-services.json"
+    },
     "plugins": [
+      "expo-router",
+      "expo-dev-client",
       "@react-native-firebase/app",
       "@react-native-firebase/messaging",
+      "@react-native-firebase/analytics",
+      "@react-native-firebase/app-check",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics",
+      "@react-native-firebase/perf",
       [
         "expo-build-properties",
         {
