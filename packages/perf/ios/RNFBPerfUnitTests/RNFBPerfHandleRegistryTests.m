@@ -65,6 +65,13 @@
   XCTAssertEqual(first, [self.registry get:@1]);
 }
 
+- (void)testPut_occupiedId_nilErrorPointer_returnsNO {
+  FakePerfHandle *first = [[FakePerfHandle alloc] init];
+  XCTAssertTrue([self.registry put:@1 value:first error:nil]);
+  XCTAssertFalse([self.registry put:@1 value:[[FakePerfHandle alloc] init] error:nil]);
+  XCTAssertEqual(first, [self.registry get:@1]);
+}
+
 - (void)testPutOrDiscard_collision_dropsIncomingWithoutStop {
   FakePerfHandle *first = [[FakePerfHandle alloc] init];
   FakePerfHandle *duplicate = [[FakePerfHandle alloc] init];
@@ -88,6 +95,45 @@
   XCTAssertTrue([self.registry put:@3 value:first error:nil]);
   XCTAssertEqual(first, [self.registry putReplacing:@3 value:second]);
   XCTAssertEqual(second, [self.registry get:@3]);
+}
+
+- (void)testPutReplacing_whenFree_returnsNil {
+  FakePerfHandle *handle = [[FakePerfHandle alloc] init];
+  XCTAssertNil([self.registry putReplacing:@7 value:handle]);
+  XCTAssertEqual(handle, [self.registry get:@7]);
+}
+
+- (void)testTakeIf_missingDoesNotCallCondition {
+  __block BOOL conditionCalled = NO;
+  XCTAssertNil([self.registry takeIf:@99
+                                when:^BOOL(id value) {
+                                  (void)value;
+                                  conditionCalled = YES;
+                                  return YES;
+                                }]);
+  XCTAssertFalse(conditionCalled);
+}
+
+- (void)testTakeIf_falseLeavesValue {
+  FakePerfHandle *handle = [[FakePerfHandle alloc] init];
+  XCTAssertTrue([self.registry put:@8 value:handle error:nil]);
+  XCTAssertNil([self.registry takeIf:@8
+                                when:^BOOL(id value) {
+                                  XCTAssertEqual(handle, value);
+                                  return NO;
+                                }]);
+  XCTAssertEqual(handle, [self.registry get:@8]);
+}
+
+- (void)testTakeIf_trueRemovesAndReturns {
+  FakePerfHandle *handle = [[FakePerfHandle alloc] init];
+  XCTAssertTrue([self.registry put:@9 value:handle error:nil]);
+  XCTAssertEqual(handle, [self.registry takeIf:@9
+                                          when:^BOOL(id value) {
+                                            return value == handle;
+                                          }]);
+  XCTAssertNil([self.registry get:@9]);
+  XCTAssertEqual(handle.stopCount, 0);
 }
 
 - (void)testPutReplacing_moduleCollisionPattern_stopsDisplacedOutsideLock {

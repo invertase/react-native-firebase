@@ -23,8 +23,18 @@
 #import "RNFBApp/RNFBHandleMap.h"
 #endif
 
+#if __has_include(<RNFBPerf/RNFBPerf-Swift.h>)
+#import <RNFBPerf/RNFBPerf-Swift.h>
+#elif __has_include("RNFBPerf-Swift.h")
+#import "RNFBPerf-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBPerfHandleRegistryStorage Swift interface not found"
+#endif
+
 @interface RNFBPerfHandleRegistry ()
-@property(nonatomic, strong) RNFBHandleMap *map;
+@property(nonatomic, strong) RNFBPerfHandleRegistryStorage *storage;
 @end
 
 @implementation RNFBPerfHandleRegistry
@@ -32,37 +42,46 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [[RNFBHandleMap alloc] init];
+    _storage = [[RNFBPerfHandleRegistryStorage alloc] init];
   }
   return self;
 }
 
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
-  return [self.map put:key value:value error:error];
+  if (![self.storage putOrDiscard:key value:value]) {
+    if (error != nil) {
+      NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
+      *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
+                                   code:RNFBHandleMapErrorCollision
+                               userInfo:@{NSLocalizedDescriptionKey : message}];
+    }
+    return NO;
+  }
+  return YES;
 }
 
 - (BOOL)putOrDiscard:(id)key value:(id)value {
-  return [self.map putIfAbsent:key value:value];
+  return [self.storage putOrDiscard:key value:value];
 }
 
 - (id)putReplacing:(id)key value:(id)value {
-  return [self.map putReplacing:key value:value];
+  return [self.storage putReplacing:key value:value];
 }
 
 - (id)get:(id)key {
-  return [self.map get:key];
+  return [self.storage get:key];
 }
 
 - (id)take:(id)key {
-  return [self.map take:key];
+  return [self.storage take:key];
 }
 
 - (id)takeIf:(id)key when:(BOOL (^)(id))condition {
-  return [self.map takeIf:key when:condition];
+  return [self.storage takeIf:key when:condition];
 }
 
 - (NSArray *)takeAll {
-  return [self.map takeAll];
+  return [self.storage takeAll];
 }
 
 @end
