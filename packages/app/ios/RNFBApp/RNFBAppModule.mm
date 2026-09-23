@@ -276,16 +276,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
-  int level = FIRLoggerLevelError;
-  if ([logLevel isEqualToString:@"verbose"]) {
-    level = FIRLoggerLevelDebug;
-  } else if ([logLevel isEqualToString:@"debug"]) {
-    level = FIRLoggerLevelDebug;
-  } else if ([logLevel isEqualToString:@"info"]) {
-    level = FIRLoggerLevelInfo;
-  } else if ([logLevel isEqualToString:@"warn"]) {
-    level = FIRLoggerLevelWarning;
-  }
+  int level = (int)[RNFBAppLogLevelMapper loggerLevelForString:logLevel];
   DLog(@"RNFBSetLogLevel: setting level to %d from %@.", level, logLevel);
   [[FIRConfiguration sharedInstance] setLoggerLevel:(FIRLoggerLevel)level];
 }
