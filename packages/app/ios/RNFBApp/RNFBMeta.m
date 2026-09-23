@@ -17,45 +17,43 @@
 
 #import "RNFBMeta.h"
 
-@interface RNFBMeta ()
-@property(nonatomic, strong) NSDictionary *firebaseJson;
-@end
-
-NSString *const RNFBMetaPrefix = @"rnfirebase_";
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBMetaStorage Swift interface not found"
+#endif
 
 @implementation RNFBMeta
 
++ (RNFBMetaStorage *)sharedStorage {
+  static dispatch_once_t once;
+  static RNFBMetaStorage *sharedStorage;
+
+  dispatch_once(&once, ^{
+    sharedStorage = [[RNFBMetaStorage alloc] init];
+  });
+
+  return sharedStorage;
+}
+
 + (BOOL)contains:(NSString *)key {
-  id keyValue = [[NSBundle mainBundle].infoDictionary
-      valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
-  return keyValue != nil;
+  return [[self sharedStorage] contains:key];
 }
 
 + (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
-  NSNumber *keyValue = [[NSBundle mainBundle].infoDictionary
-      valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
-  if (keyValue == nil) return defaultValue;
-  return [keyValue boolValue];
+  return [[self sharedStorage] getBooleanValue:key defaultValue:defaultValue];
 }
 
 + (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
-  NSString *keyValue = [[NSBundle mainBundle].infoDictionary
-      valueForKey:[RNFBMetaPrefix stringByAppendingString:key]];
-  if (keyValue == nil) return defaultValue;
-  return keyValue;
+  return [[self sharedStorage] getStringValue:key defaultValue:defaultValue];
 }
 
 + (NSDictionary *)getAll {
-  NSMutableDictionary *allMetaValues = [NSMutableDictionary dictionary];
-
-  NSArray *keys = [[NSBundle mainBundle].infoDictionary allKeys];
-  for (NSString *key in keys) {
-    if ([key hasPrefix:RNFBMetaPrefix]) {
-      allMetaValues[key] = [NSBundle mainBundle].infoDictionary[key];
-    }
-  }
-
-  return allMetaValues;
+  return [[self sharedStorage] getAll];
 }
 
 @end
