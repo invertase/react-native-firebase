@@ -114,7 +114,7 @@
     "@types/react-native": "^0.73.0",
     "@typescript-eslint/parser": "^8.59.1",
     "babel-jest": "^30.3.0",
-    "clang-format": "^1.8.0",
+    "clang-format": "1.7.0",
     "conventional-changelog-cli": "^4.1.0",
     "cross-env": "^10.1.0",
     "dependency-cruiser": "^17.3.9",

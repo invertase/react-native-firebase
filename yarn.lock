@@ -10688,9 +10688,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clang-format@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "clang-format@npm:1.8.0"
+"clang-format@npm:1.7.0":
+  version: 1.7.0
+  resolution: "clang-format@npm:1.7.0"
   dependencies:
     async: "npm:^3.2.3"
     glob: "npm:^7.0.0"
@@ -10699,7 +10699,7 @@ __metadata:
     check-clang-format: bin/check-clang-format.js
     clang-format: index.js
     git-clang-format: bin/git-clang-format
-  checksum: 10/d4a25ae743d09b8aecc7afb7cb29c531ae3fcc9cb3195b69cc76e1a9ada69d423f341fbccc47458ab35c1c8746856a778de8f7ba51b2886c66ef78f779c842f7
+  checksum: 10/4d45dfa155d1379fbce487550c65e33689dbfbb8e8ebd8dae5064515ae6075711bab6dba0580745d2d42340cae25f15908ea2f1fd5b6e2f02684f7ea3962bae5
   languageName: node
   linkType: hard
 
@@ -23619,7 +23619,7 @@ __metadata:
     "@types/react-native": "npm:^0.73.0"
     "@typescript-eslint/parser": "npm:^8.59.1"
     babel-jest: "npm:^30.3.0"
-    clang-format: "npm:^1.8.0"
+    clang-format: "npm:1.7.0"
     conventional-changelog-cli: "npm:^4.1.0"
     cross-env: "npm:^10.1.0"
     dependency-cruiser: "npm:^17.3.9"
