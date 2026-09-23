@@ -186,6 +186,12 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     return this.native.getIsHeadless();
   }
 
+  /**
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+   */
   getToken(options?: { appName?: string; senderId?: string }): Promise<string> {
     if (!isUndefined(options?.appName) && !isString(options?.appName)) {
       throw new Error("getMessaging().getToken(*) 'appName' expected a string.");
@@ -201,6 +207,12 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     return this.native.getToken(appName, senderId || '');
   }
 
+  /**
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+   */
   deleteToken(options?: { appName?: string; senderId?: string }): Promise<void> {
     if (!isUndefined(options?.appName) && !isString(options?.appName)) {
       throw new Error("getMessaging().deleteToken(*) 'appName' expected a string.");
@@ -234,6 +246,12 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     return () => subscription.remove();
   }
 
+  /**
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+   */
   onTokenRefresh(listener: (token: string) => any): () => void {
     if (!isFunction(listener)) {
       throw new Error("getMessaging().onTokenRefresh(*) 'listener' expected a function.");
@@ -563,6 +581,11 @@ export function getMessaging(app?: FirebaseApp): Messaging {
 
 /**
  * Removes access to an FCM token previously authorized by its scope.
+ *
+ * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+ * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+ * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+ * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
  */
 export function deleteToken(
   messaging: Messaging,
@@ -573,6 +596,11 @@ export function deleteToken(
 
 /**
  * Returns an FCM token for this device.
+ *
+ * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+ * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+ * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+ * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
  */
 export function getToken(
   messaging: Messaging,
@@ -610,6 +638,11 @@ export function onNotificationOpenedApp(
 
 /**
  * Called when a new registration token is generated for the device.
+ *
+ * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+ * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+ * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
+ * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
  *
  * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
  * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
