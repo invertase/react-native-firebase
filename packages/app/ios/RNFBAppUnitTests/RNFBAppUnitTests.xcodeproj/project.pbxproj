@@ -61,6 +61,9 @@
 		A10000000000000000000080 /* RNFBUtilsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000081 /* RNFBUtilsModule.m */; };
 		A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */; };
 		A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */; };
+		A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */; };
+		A10000000000000000000089 /* RNFBAppCustomAuthDomainsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */; };
+		A1000000000000000000008B /* RNFBAppCustomAuthDomainsFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -130,6 +133,9 @@
 		A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpersTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBUtilsModuleFacadeTests.m; sourceTree = "<group>"; };
 		A10000000000000000000086 /* RNFBUtilsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBUtilsModule.h; path = ../RNFBApp/RNFBUtilsModule.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppCustomAuthDomains.swift; path = ../RNFBApp/RNFBAppCustomAuthDomains.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppCustomAuthDomainsTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppCustomAuthDomainsFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +233,9 @@
 				A10000000000000000000081 /* RNFBUtilsModule.m */,
 				A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */,
 				A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */,
+				A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */,
+				A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */,
+				A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -341,6 +350,9 @@
 				A10000000000000000000080 /* RNFBUtilsModule.m in Sources */,
 				A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */,
 				A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */,
+				A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */,
+				A10000000000000000000089 /* RNFBAppCustomAuthDomainsTests.swift in Sources */,
+				A1000000000000000000008B /* RNFBAppCustomAuthDomainsFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
