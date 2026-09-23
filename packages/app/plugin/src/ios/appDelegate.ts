@@ -101,14 +101,14 @@ export function modifyObjcAppDelegate(contents: string): string {
 export function modifySwiftAppDelegate(contents: string): string {
   const methodInvocationBlock = `FirebaseApp.configure()`;
   const methodInvocationLineMatcher =
-    /(?:self\.moduleName\s*=\s*"([^"]*)")|(?:factory\.startReactNative\()/;
+    /(?:self\.moduleName\s*=\s*"([^"]*)")|(?:factory\.startReactNative\()|(?:return\s+super\.application\(\s*application\s*,\s*didFinishLaunchingWithOptions:\s*launchOptions\s*\))/;
 
   // Add import
   contents = addImport(
     contents,
     'import FirebaseCore',
     /^[ \t]*import\s+FirebaseCore[ \t]*$/m,
-    /^[ \t]*import\s+Expo[ \t]*$/m,
+    /^[ \t]*(?:internal\s+)?import\s+Expo[ \t]*$/m,
     /^[ \t]*import\b[^\r\n]*$/m,
   );
 
