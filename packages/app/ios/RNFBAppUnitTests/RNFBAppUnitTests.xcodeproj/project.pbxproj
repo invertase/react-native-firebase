@@ -30,6 +30,9 @@
 		A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */; };
 		A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* RNFBAppModuleHostStub.m */; };
 		A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */; };
+		A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */; };
+		A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */; };
+		A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +67,9 @@
 		A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitterHostStub.m; path = HostStubs/RNFBRCTEventEmitterHostStub.m; sourceTree = "<group>"; };
 		A10000000000000000000042 /* RNFBAppModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppModule.h; path = ../RNFBApp/RNFBAppModule.h; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000043 /* RNFBRCTEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBRCTEventEmitter.h; path = ../RNFBApp/RNFBRCTEventEmitter.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFormatting.swift; path = ../RNFBApp/RNFBSharedUtilsFormatting.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFormattingTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsFormattingFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,7 +127,10 @@
 				A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */,
 				A1000000000000000000003E /* RNFBSharedUtils.h */,
 				A1000000000000000000003D /* RNFBSharedUtils.m */,
+				A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */,
 				A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */,
+				A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */,
+				A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */,
 				A10000000000000000000042 /* RNFBAppModule.h */,
 				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
 				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
@@ -206,7 +215,10 @@
 				A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */,
 				A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */,
 				A10000000000000000000039 /* RNFBSharedUtils.m in Sources */,
+				A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */,
 				A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */,
+				A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */,
+				A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */,
 				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
 				A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */,
 			);
