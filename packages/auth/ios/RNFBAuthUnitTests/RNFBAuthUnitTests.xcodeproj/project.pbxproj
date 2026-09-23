@@ -17,6 +17,8 @@
 		A90000000000000000000038 /* RNFBAuthNullSentinelDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000039 /* RNFBAuthNullSentinelDecodeTests.m */; };
 		A90000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* XCTest.framework */; };
 		A90000000000000000000020 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000021 /* RNFBHandleMapStorage.swift */; };
+		A90000000000000000000022 /* RNFBAuthCacheRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000023 /* RNFBAuthCacheRegistryStorage.swift */; };
+		A90000000000000000000024 /* RNFBAuthCacheRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000025 /* RNFBAuthCacheRegistryStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,8 @@
 		A90000000000000000000039 /* RNFBAuthNullSentinelDecodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAuthNullSentinelDecodeTests.m; sourceTree = "<group>"; };
 		A90000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A90000000000000000000021 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000023 /* RNFBAuthCacheRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthCacheRegistryStorage.swift; path = ../RNFBAuth/RNFBAuthCacheRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000025 /* RNFBAuthCacheRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAuthCacheRegistryStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,11 +80,13 @@
 				A90000000000000000000009 /* RNFBAuthListenerRegistryTests.m */,
 				A90000000000000000000019 /* RNFBAuthCacheRegistry.h */,
 				A9000000000000000000001C /* RNFBAuthCacheRegistry.m */,
+				A90000000000000000000023 /* RNFBAuthCacheRegistryStorage.swift */,
 				A9000000000000000000001D /* RNFBAuthCacheRegistryTests.m */,
 				A90000000000000000000031 /* RNFBNullSentinelDecoding.swift */,
 				A9000000000000000000003B /* RNFBAuthNullSentinelDecoder.h */,
 				A90000000000000000000033 /* RNFBAuthNullSentinelDecoder.m */,
 				A90000000000000000000039 /* RNFBAuthNullSentinelDecodeTests.m */,
+				A90000000000000000000025 /* RNFBAuthCacheRegistryStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -147,10 +153,12 @@
 				A9000000000000000000000B /* RNFBAuthListenerRegistry.m in Sources */,
 				A9000000000000000000000C /* RNFBAuthListenerRegistryTests.m in Sources */,
 				A9000000000000000000001E /* RNFBAuthCacheRegistry.m in Sources */,
+				A90000000000000000000022 /* RNFBAuthCacheRegistryStorage.swift in Sources */,
 				A9000000000000000000001F /* RNFBAuthCacheRegistryTests.m in Sources */,
 				A90000000000000000000030 /* RNFBNullSentinelDecoding.swift in Sources */,
 				A90000000000000000000032 /* RNFBAuthNullSentinelDecoder.m in Sources */,
 				A90000000000000000000038 /* RNFBAuthNullSentinelDecodeTests.m in Sources */,
+				A90000000000000000000024 /* RNFBAuthCacheRegistryStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
