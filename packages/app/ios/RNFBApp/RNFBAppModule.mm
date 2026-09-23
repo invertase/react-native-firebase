@@ -35,6 +35,16 @@
 #import "RNFBSharedUtils.h"
 #import "RNFBVersion.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
 #if __has_include(<FirebaseCore/FIRAppInternal.h>)
 #import <FirebaseCore/FIRAppInternal.h>
 #define REGISTER_LIB
@@ -45,8 +55,6 @@
 + (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName;
 
 @end
-
-static NSMutableDictionary<NSString *, NSString *> *customAuthDomains;
 
 @implementation RNFBAppModule
 
@@ -260,24 +268,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
 }
 
 + (NSString *)getCustomDomain:(NSString *)appName {
-  @synchronized(self) {
-    DLog(@"authDomains: %@", customAuthDomains);
-    return customAuthDomains[appName];
-  }
+  return [RNFBAppCustomAuthDomains getCustomDomain:appName];
 }
 
 + (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName {
-  @synchronized(self) {
-    if (authDomain != nil) {
-      DLog(@"RNFBAuth app: %@ customAuthDomain: %@", appName, authDomain);
-      if (customAuthDomains == nil) {
-        customAuthDomains = [[NSMutableDictionary alloc] init];
-      }
-      customAuthDomains[appName] = authDomain;
-    } else {
-      [customAuthDomains removeObjectForKey:appName];
-    }
-  }
+  [RNFBAppCustomAuthDomains setCustomDomain:authDomain forAppName:appName];
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
