@@ -17,25 +17,23 @@
 
 #import "RNFBRCTEventEmitter.h"
 
+#import <React/RCTBridge.h>
+
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBRCTEventEmitterCore Swift interface not found"
+#endif
+
 @interface RNFBRCTEventEmitter ()
-@property(atomic, assign) BOOL jsReady;
-@property(atomic, assign) NSInteger jsListenerCount;
-@property(nonatomic, strong) NSMutableDictionary *jsListeners;
-@property(nonatomic, strong) NSMutableArray *queuedEvents;
-@property(readonly) BOOL isObserving;
+@property(nonatomic, strong) RNFBRCTEventEmitterCore *core;
 @end
 
-NSString *const RNFBRCTEventNameKey = @"name";
-NSString *const RNFBRCTEventBodyKey = @"body";
-
 @implementation RNFBRCTEventEmitter
-
-- (void)invalidate {
-  self.jsReady = FALSE;
-  self.queuedEvents = [NSMutableArray array];
-  self.jsListeners = [NSMutableDictionary dictionary];
-  self.jsListenerCount = 0;
-}
 
 + (instancetype)shared {
   static dispatch_once_t once;
@@ -50,102 +48,47 @@ NSString *const RNFBRCTEventBodyKey = @"body";
   self = [super init];
 
   if (self) {
-    self.jsReady = FALSE;
-    self.queuedEvents = [NSMutableArray array];
-    self.jsListeners = [NSMutableDictionary dictionary];
+    __weak typeof(self) weakSelf = self;
+    _core = [[RNFBRCTEventEmitterCore alloc]
+        initWithIsBridgePresent:^BOOL {
+          return weakSelf.bridge != nil;
+        }
+        emitHandler:^(NSString *eventName, id body) {
+          __strong typeof(weakSelf) strongSelf = weakSelf;
+          NSString *prefixedEventName = [@"rnfb_" stringByAppendingString:eventName];
+          [strongSelf.bridge
+              enqueueJSCall:@"RCTDeviceEventEmitter"
+                     method:@"emit"
+                       args:body ? @[ prefixedEventName, body ] : @[ prefixedEventName ]
+                 completion:NULL];
+        }];
   }
 
   return self;
 }
 
+- (void)invalidate {
+  [self.core invalidate];
+}
+
 - (void)notifyJsReady:(BOOL)jsReady {
-  @synchronized(self.jsListeners) {
-    self.jsReady = jsReady;
-    if (jsReady) {
-      for (id event in [self.queuedEvents copy]) {
-        [self sendEventWithName:event[RNFBRCTEventNameKey] body:event[RNFBRCTEventBodyKey]];
-        @synchronized(self.queuedEvents) {
-          [self.queuedEvents removeObject:event];
-        }
-      }
-    }
-  }
+  [self.core notifyJsReady:jsReady];
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body {
-  @synchronized(self.jsListeners) {
-    if (self.bridge && self.isObserving && self.jsListeners[eventName] != nil) {
-      NSString *prefixedEventName = [@"rnfb_" stringByAppendingString:eventName];
-      [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter"
-                          method:@"emit"
-                            args:body ? @[ prefixedEventName, body ] : @[ prefixedEventName ]
-                      completion:NULL];
-    } else {
-      @synchronized(self.queuedEvents) {
-        [self.queuedEvents
-            addObject:@{RNFBRCTEventNameKey : eventName, RNFBRCTEventBodyKey : body}];
-      }
-    }
-  }
+  [self.core sendEventWithName:eventName body:body];
 }
 
 - (void)addListener:(NSString *)eventName {
-  @synchronized(self.jsListeners) {
-    self.jsListenerCount++;
-
-    if (self.jsListeners[eventName] == nil) {
-      self.jsListeners[eventName] = @([@1 integerValue]);
-    } else {
-      self.jsListeners[eventName] =
-          @([self.jsListeners[eventName] integerValue] + [@1 integerValue]);
-    }
-
-    for (id event in [self.queuedEvents copy]) {
-      if ([event[RNFBRCTEventNameKey] isEqualToString:eventName]) {
-        [self sendEventWithName:event[RNFBRCTEventNameKey] body:event[RNFBRCTEventBodyKey]];
-        @synchronized(self.queuedEvents) {
-          [self.queuedEvents removeObject:event];
-        }
-      }
-    }
-  }
+  [self.core addListener:eventName];
 }
 
 - (void)removeListeners:(NSString *)eventName all:(BOOL)all {
-  @synchronized(self.jsListeners) {
-    if (self.jsListeners[eventName] != nil) {
-      NSInteger listenersForEvent = [self.jsListeners[eventName] integerValue];
-
-      if (listenersForEvent <= 1 || all) {
-        @synchronized(self.jsListeners) {
-          [self.jsListeners removeObjectForKey:eventName];
-        }
-      } else {
-        @synchronized(self.jsListeners) {
-          self.jsListeners[eventName] =
-              @([self.jsListeners[eventName] integerValue] - [@1 integerValue]);
-        }
-      }
-
-      if (all) {
-        self.jsListenerCount = self.jsListenerCount - listenersForEvent;
-      } else {
-        self.jsListenerCount = self.jsListenerCount - [@1 integerValue];
-      }
-    }
-  }
+  [self.core removeListeners:eventName all:all];
 }
 
 - (NSDictionary *)getListenersDictionary {
-  NSMutableDictionary *listenersDictionary = [NSMutableDictionary new];
-  listenersDictionary[@"listeners"] = @(self.jsListenerCount);
-  listenersDictionary[@"queued"] = @([self.queuedEvents count]);
-  listenersDictionary[@"events"] = [self.jsListeners copy];
-  return listenersDictionary;
-}
-
-- (BOOL)isObserving {
-  return self.jsReady && self.jsListenerCount > 0;
+  return [self.core getListenersDictionary];
 }
 
 @end
