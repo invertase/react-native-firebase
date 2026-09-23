@@ -18,6 +18,8 @@
 		A90000000000000000000024 /* RNFBAuthCacheRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000025 /* RNFBAuthCacheRegistryStorageTests.swift */; };
 		A90000000000000000000026 /* RNFBAuthListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000027 /* RNFBAuthListenerRegistryStorage.swift */; };
 		A90000000000000000000028 /* RNFBAuthListenerRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000029 /* RNFBAuthListenerRegistryStorageTests.swift */; };
+		A9000000000000000000002A /* RNFBAuthErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000002B /* RNFBAuthErrorCodeMapper.swift */; };
+		A9000000000000000000002C /* RNFBAuthErrorCodeMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000002D /* RNFBAuthErrorCodeMapperTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		A90000000000000000000025 /* RNFBAuthCacheRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAuthCacheRegistryStorageTests.swift; sourceTree = "<group>"; };
 		A90000000000000000000027 /* RNFBAuthListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthListenerRegistryStorage.swift; path = ../RNFBAuth/RNFBAuthListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 		A90000000000000000000029 /* RNFBAuthListenerRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAuthListenerRegistryStorageTests.swift; sourceTree = "<group>"; };
+		A9000000000000000000002B /* RNFBAuthErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthErrorCodeMapper.swift; path = ../RNFBAuth/RNFBAuthErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
+		A9000000000000000000002D /* RNFBAuthErrorCodeMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAuthErrorCodeMapperTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +86,8 @@
 				A90000000000000000000023 /* RNFBAuthCacheRegistryStorage.swift */,
 				A9000000000000000000001D /* RNFBAuthCacheRegistryTests.m */,
 				A90000000000000000000025 /* RNFBAuthCacheRegistryStorageTests.swift */,
+				A9000000000000000000002B /* RNFBAuthErrorCodeMapper.swift */,
+				A9000000000000000000002D /* RNFBAuthErrorCodeMapperTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -153,6 +159,8 @@
 				A90000000000000000000022 /* RNFBAuthCacheRegistryStorage.swift in Sources */,
 				A9000000000000000000001F /* RNFBAuthCacheRegistryTests.m in Sources */,
 				A90000000000000000000024 /* RNFBAuthCacheRegistryStorageTests.swift in Sources */,
+				A9000000000000000000002A /* RNFBAuthErrorCodeMapper.swift in Sources */,
+				A9000000000000000000002C /* RNFBAuthErrorCodeMapperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

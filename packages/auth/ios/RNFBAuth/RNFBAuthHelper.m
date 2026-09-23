@@ -40,6 +40,16 @@
 #import "RNFBAuthHelper.h"
 #import "RNFBAuthListenerRegistry.h"
 
+#if __has_include(<RNFBAuth/RNFBAuth-Swift.h>)
+#import <RNFBAuth/RNFBAuth-Swift.h>
+#elif __has_include("RNFBAuth-Swift.h")
+#import "RNFBAuth-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBAuthErrorCodeMapper Swift interface not found"
+#endif
+
 @interface RNFBAuthListenerRemover : NSObject
 @property(nonatomic, copy, nullable) void (^onRemove)(void);
 - (void)remove;
@@ -87,68 +97,6 @@ static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"auth_state_changed";
 static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"auth_id_token_changed";
 static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"phone_auth_state_changed";
-
-static NSString *const AuthErrorCode_toJSErrorCode[] = {
-    [FIRAuthErrorCodeInvalidCustomToken] = @"invalid-custom-token",
-    [FIRAuthErrorCodeCustomTokenMismatch] = @"custom-token-mismatch",
-    [FIRAuthErrorCodeInvalidCredential] = @"invalid-credential",
-    [FIRAuthErrorCodeUserDisabled] = @"user-disabled",
-    [FIRAuthErrorCodeOperationNotAllowed] = @"operation-not-allowed",
-    [FIRAuthErrorCodeEmailAlreadyInUse] = @"email-already-in-use",
-    [FIRAuthErrorCodeInvalidEmail] = @"invalid-email",
-    [FIRAuthErrorCodeWrongPassword] = @"wrong-password",
-    [FIRAuthErrorCodeTooManyRequests] = @"too-many-requests",
-    [FIRAuthErrorCodeUserNotFound] = @"user-not-found",
-    [FIRAuthErrorCodeAccountExistsWithDifferentCredential] =
-        @"account-exists-with-different-credential",
-    [FIRAuthErrorCodeRequiresRecentLogin] = @"requires-recent-login",
-    [FIRAuthErrorCodeProviderAlreadyLinked] = @"provider-already-linked",
-    [FIRAuthErrorCodeNoSuchProvider] = @"no-such-provider",
-    [FIRAuthErrorCodeInvalidUserToken] = @"invalid-user-token",
-    [FIRAuthErrorCodeNetworkError] = @"network-request-failed",
-    [FIRAuthErrorCodeUserTokenExpired] = @"user-token-expired",
-    [FIRAuthErrorCodeInvalidAPIKey] = @"invalid-api-key",
-    [FIRAuthErrorCodeUserMismatch] = @"user-mismatch",
-    [FIRAuthErrorCodeCredentialAlreadyInUse] = @"credential-already-in-use",
-    [FIRAuthErrorCodeWeakPassword] = @"weak-password",
-    [FIRAuthErrorCodeAppNotAuthorized] = @"app-not-authorized",
-    [FIRAuthErrorCodeExpiredActionCode] = @"expired-action-code",
-    [FIRAuthErrorCodeInvalidActionCode] = @"invalid-action-code",
-    [FIRAuthErrorCodeInvalidMessagePayload] = @"invalid-message-payload",
-    [FIRAuthErrorCodeInvalidSender] = @"invalid-sender",
-    [FIRAuthErrorCodeInvalidRecipientEmail] = @"invalid-recipient-email",
-    [FIRAuthErrorCodeMissingEmail] = @"invalid-email",
-    [FIRAuthErrorCodeMissingIosBundleID] = @"missing-ios-bundle-id",
-    [FIRAuthErrorCodeMissingAndroidPackageName] = @"missing-android-pkg-name",
-    [FIRAuthErrorCodeUnauthorizedDomain] = @"unauthorized-domain",
-    [FIRAuthErrorCodeInvalidContinueURI] = @"invalid-continue-uri",
-    [FIRAuthErrorCodeMissingContinueURI] = @"missing-continue-uri",
-    [FIRAuthErrorCodeMissingPhoneNumber] = @"missing-phone-number",
-    [FIRAuthErrorCodeInvalidPhoneNumber] = @"invalid-phone-number",
-    [FIRAuthErrorCodeMissingVerificationCode] = @"missing-verification-code",
-    [FIRAuthErrorCodeInvalidVerificationCode] = @"invalid-verification-code",
-    [FIRAuthErrorCodeMissingVerificationID] = @"missing-verification-id",
-    [FIRAuthErrorCodeInvalidVerificationID] = @"invalid-verification-id",
-    [FIRAuthErrorCodeMissingAppCredential] = @"missing-app-credential",
-    [FIRAuthErrorCodeInvalidAppCredential] = @"invalid-app-credential",
-    [FIRAuthErrorCodeSessionExpired] = @"code-expired",
-    [FIRAuthErrorCodeQuotaExceeded] = @"quota-exceeded",
-    [FIRAuthErrorCodeMissingAppToken] = @"missing-apns-token",
-    [FIRAuthErrorCodeNotificationNotForwarded] = @"notification-not-forwarded",
-    [FIRAuthErrorCodeAppNotVerified] = @"app-not-verified",
-    [FIRAuthErrorCodeCaptchaCheckFailed] = @"captcha-check-failed",
-    [FIRAuthErrorCodeWebContextAlreadyPresented] = @"cancelled-popup-request",
-    [FIRAuthErrorCodeWebContextCancelled] = @"popup-closed-by-user",
-    [FIRAuthErrorCodeAppVerificationUserInteractionFailure] =
-        @"app-verification-user-interaction-failure",
-    [FIRAuthErrorCodeInvalidClientID] = @"invalid-oauth-client-id",
-    [FIRAuthErrorCodeWebNetworkRequestFailed] = @"network-request-failed",
-    [FIRAuthErrorCodeWebInternalError] = @"internal-error",
-    [FIRAuthErrorCodeNullUser] = @"null-user",
-    [FIRAuthErrorCodeKeychainError] = @"keychain-error",
-    [FIRAuthErrorCodeInternalError] = @"internal-error",
-    [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt",
-    [FIRAuthErrorCodeSecondFactorRequired] = @"multi-factor-auth-required"};
 
 static __strong RNFBAuthListenerRegistry *authStateHandlers;
 static __strong RNFBAuthListenerRegistry *idTokenHandlers;
@@ -1895,7 +1843,7 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
 
 + (NSDictionary *)getJSError:(NSError *)error {
   [self initializeSharedStateOnce];
-  NSString *code = AuthErrorCode_toJSErrorCode[error.code];
+  NSString *code = [RNFBAuthErrorCodeMapper jsErrorCodeForAuthErrorCode:error.code];
   NSString *message = [error localizedDescription];
   NSString *nativeErrorMessage = [error localizedDescription];
 
