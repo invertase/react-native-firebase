@@ -11,6 +11,7 @@
 		RNFBAUTH0000000000000001 /* RNFBAuthCacheRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH0000000000000002 /* RNFBAuthCacheRegistry.m */; };
 		RNFBAUTH0000000000000003 /* RNFBAuthCacheRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH0000000000000004 /* RNFBAuthCacheRegistryStorage.swift */; };
 		RNFBAUTH0000000000000008 /* RNFBAuthListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH0000000000000009 /* RNFBAuthListenerRegistryStorage.swift */; };
+		RNFBAUTH000000000000000A /* RNFBAuthErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH000000000000000B /* RNFBAuthErrorCodeMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +34,7 @@
 		RNFBAUTH0000000000000002 /* RNFBAuthCacheRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAuthCacheRegistry.m; path = RNFBAuth/RNFBAuthCacheRegistry.m; sourceTree = SOURCE_ROOT; };
 		RNFBAUTH0000000000000004 /* RNFBAuthCacheRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthCacheRegistryStorage.swift; path = RNFBAuth/RNFBAuthCacheRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 		RNFBAUTH0000000000000009 /* RNFBAuthListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthListenerRegistryStorage.swift; path = RNFBAuth/RNFBAuthListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBAUTH000000000000000B /* RNFBAuthErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthErrorCodeMapper.swift; path = RNFBAuth/RNFBAuthErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				RNFBAUTH0000000000000002 /* RNFBAuthCacheRegistry.m */,
 				RNFBAUTH0000000000000004 /* RNFBAuthCacheRegistryStorage.swift */,
 				RNFBAUTH0000000000000009 /* RNFBAuthListenerRegistryStorage.swift */,
+				RNFBAUTH000000000000000B /* RNFBAuthErrorCodeMapper.swift */,
 				2744B98421F45429004F8E3F /* RNFBAuthModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAuthModule.mm */,
 			);
@@ -138,6 +141,7 @@
 				RNFBAUTH0000000000000003 /* RNFBAuthCacheRegistryStorage.swift in Sources */,
 				RNFBAUTH0000000000000001 /* RNFBAuthCacheRegistry.m in Sources */,
 				RNFBAUTH0000000000000008 /* RNFBAuthListenerRegistryStorage.swift in Sources */,
+				RNFBAUTH000000000000000A /* RNFBAuthErrorCodeMapper.swift in Sources */,
 				2744B98621F45429004F8E3F /* RNFBAuthModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
