@@ -38,6 +38,16 @@
 #import "RNFBPerfHandleRegistry.h"
 #import "RNFBPerfModule.h"
 
+#if __has_include(<RNFBPerf/RNFBPerf-Swift.h>)
+#import <RNFBPerf/RNFBPerf-Swift.h>
+#elif __has_include("RNFBPerf-Swift.h")
+#import "RNFBPerf-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBPerfHttpMethodMapper Swift interface not found"
+#endif
+
 static RNFBPerfHandleRegistry *traces;
 static RNFBPerfHandleRegistry *httpMetrics;
 
@@ -192,24 +202,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 
 - (void)startHttpMetric:(double)id url:(NSString *)url httpMethod:(NSString *)httpMethod {
 #if RNFB_PERF_SDK_AVAILABLE
-  FIRHTTPMethod method = FIRHTTPMethodGET;
+  FIRHTTPMethod method =
+      (FIRHTTPMethod)[RNFBPerfHttpMethodMapper httpMethodRawValueForString:httpMethod];
   NSURL *toNSURL = [NSURL URLWithString:url];
-  if ([httpMethod compare:@"put" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPUT;
-  if ([httpMethod compare:@"post" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPOST;
-  if ([httpMethod compare:@"head" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodHEAD;
-  if ([httpMethod compare:@"trace" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodTRACE;
-  if ([httpMethod compare:@"patch" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPATCH;
-  if ([httpMethod compare:@"delete" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodDELETE;
-  if ([httpMethod compare:@"options" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodOPTIONS;
-  if ([httpMethod compare:@"connect" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodCONNECT;
 
   FIRHTTPMetric *httpMetric = [[FIRHTTPMetric alloc] initWithURL:toNSURL HTTPMethod:method];
   [httpMetric start];
