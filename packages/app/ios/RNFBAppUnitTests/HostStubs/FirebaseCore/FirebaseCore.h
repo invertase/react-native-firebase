@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, FIRLoggerLevel) {
 @property(nonatomic, copy, nullable) NSString *GCMSenderID;
 @property(nonatomic, copy, nullable) NSString *clientID;
 @property(nonatomic, copy, nullable) NSString *bundleID;
+@property(nonatomic, copy, nullable) NSString *appGroupID;
 @end
 
 @interface FIRApp : NSObject
