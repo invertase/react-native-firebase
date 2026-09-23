@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#import "FirebaseCore/FirebaseCore.h"
 #import "RNFBAppModule.h"
 
 #if __has_include(<RNFBApp/RNFBApp-Swift.h>)
@@ -57,7 +58,8 @@
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
-  (void)logLevel;
+  int level = (int)[RNFBAppLogLevelMapper loggerLevelForString:logLevel];
+  [[FIRConfiguration sharedInstance] setLoggerLevel:(FIRLoggerLevel)level];
 }
 
 @end

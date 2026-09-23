@@ -34,6 +34,7 @@
 		RNFB00001A20260923000000C1 /* RNFBUtilsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */; };
 		RNFB00001A20260923000000C3 /* RNFBUtilsModule+Foundation.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */; };
 		RNFB00001A20260923000000D1 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000D2 /* RNFBAppCustomAuthDomains.swift */; };
+		RNFB00001A20260923000000E1 /* RNFBAppLogLevelMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000E2 /* RNFBAppLogLevelMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -89,6 +90,7 @@
 		RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpers.swift; sourceTree = "<group>"; };
 		RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBUtilsModule+Foundation.m"; sourceTree = "<group>"; };
 		RNFB00001A20260923000000D2 /* RNFBAppCustomAuthDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppCustomAuthDomains.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000E2 /* RNFBAppLogLevelMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppLogLevelMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 				2744B98421F45429004F8E3F /* RNFBAppModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAppModule.mm */,
 				RNFB00001A20260923000000D2 /* RNFBAppCustomAuthDomains.swift */,
+				RNFB00001A20260923000000E2 /* RNFBAppLogLevelMapper.swift */,
 				2748D8162236428100FC8DC8 /* RNFBJSON.h */,
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
 				RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */,
@@ -250,6 +253,7 @@
 				RNFB00001A20260923000000C1 /* RNFBUtilsHelpers.swift in Sources */,
 				RNFB00001A20260923000000C3 /* RNFBUtilsModule+Foundation.m in Sources */,
 				RNFB00001A20260923000000D1 /* RNFBAppCustomAuthDomains.swift in Sources */,
+				RNFB00001A20260923000000E1 /* RNFBAppLogLevelMapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
