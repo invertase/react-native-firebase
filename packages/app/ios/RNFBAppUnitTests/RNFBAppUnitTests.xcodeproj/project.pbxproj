@@ -24,6 +24,12 @@
 		A1000000000000000000002E /* RNFBMetaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* RNFBMetaStorage.swift */; };
 		A10000000000000000000030 /* RNFBMetaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* RNFBMetaTests.m */; };
 		A10000000000000000000032 /* RNFBMetaStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* RNFBMetaStorageTests.swift */; };
+		A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */; };
+		A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */; };
+		A10000000000000000000039 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003D /* RNFBSharedUtils.m */; };
+		A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */; };
+		A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* RNFBAppModuleHostStub.m */; };
+		A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +55,15 @@
 		A10000000000000000000031 /* RNFBMetaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMetaTests.m; sourceTree = "<group>"; };
 		A10000000000000000000033 /* RNFBMetaStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMetaStorageTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000034 /* RNFBMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMeta.h; path = ../RNFBApp/RNFBMeta.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBNullSentinelDecoding.swift; path = ../RNFBApp/RNFBNullSentinelDecoding.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBNullSentinelDecodingTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000003D /* RNFBSharedUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtils.m; path = ../RNFBApp/RNFBSharedUtils.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000003E /* RNFBSharedUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBSharedUtils.h; path = ../RNFBApp/RNFBSharedUtils.h; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsNullSentinelTests.m; sourceTree = "<group>"; };
+		A10000000000000000000040 /* RNFBAppModuleHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppModuleHostStub.m; path = HostStubs/RNFBAppModuleHostStub.m; sourceTree = "<group>"; };
+		A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitterHostStub.m; path = HostStubs/RNFBRCTEventEmitterHostStub.m; sourceTree = "<group>"; };
+		A10000000000000000000042 /* RNFBAppModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppModule.h; path = ../RNFBApp/RNFBAppModule.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000043 /* RNFBRCTEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBRCTEventEmitter.h; path = ../RNFBApp/RNFBRCTEventEmitter.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +117,15 @@
 				A1000000000000000000002F /* RNFBMetaStorage.swift */,
 				A10000000000000000000031 /* RNFBMetaTests.m */,
 				A10000000000000000000033 /* RNFBMetaStorageTests.swift */,
+				A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */,
+				A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */,
+				A1000000000000000000003E /* RNFBSharedUtils.h */,
+				A1000000000000000000003D /* RNFBSharedUtils.m */,
+				A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */,
+				A10000000000000000000042 /* RNFBAppModule.h */,
+				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
+				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
+				A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -179,6 +203,12 @@
 				A1000000000000000000002E /* RNFBMetaStorage.swift in Sources */,
 				A10000000000000000000030 /* RNFBMetaTests.m in Sources */,
 				A10000000000000000000032 /* RNFBMetaStorageTests.swift in Sources */,
+				A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */,
+				A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */,
+				A10000000000000000000039 /* RNFBSharedUtils.m in Sources */,
+				A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */,
+				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
+				A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,7 +261,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RNFBApp";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBApp",
+				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -265,7 +298,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RNFBApp";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBApp",
+				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
