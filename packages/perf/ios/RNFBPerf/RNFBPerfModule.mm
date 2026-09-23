@@ -224,26 +224,22 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   }
 
   NSDictionary *attributes = (NSDictionary *)metricData.attributes();
-  [attributes
-      enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *value, BOOL *stop) {
-        [httpMetric setValue:value forAttribute:attributeName];
-      }];
+  NSNumber *httpResponseCode = metricData.httpResponseCode().has_value()
+                                   ? @((NSInteger)metricData.httpResponseCode().value())
+                                   : nil;
+  NSNumber *requestPayloadSize = metricData.requestPayloadSize().has_value()
+                                     ? @((NSInteger)metricData.requestPayloadSize().value())
+                                     : nil;
+  NSNumber *responsePayloadSize = metricData.responsePayloadSize().has_value()
+                                      ? @((NSInteger)metricData.responsePayloadSize().value())
+                                      : nil;
 
-  if (metricData.httpResponseCode().has_value()) {
-    [httpMetric setResponseCode:(NSInteger)metricData.httpResponseCode().value()];
-  }
-
-  if (metricData.requestPayloadSize().has_value()) {
-    [httpMetric setRequestPayloadSize:(NSInteger)metricData.requestPayloadSize().value()];
-  }
-
-  if (metricData.responsePayloadSize().has_value()) {
-    [httpMetric setResponsePayloadSize:(NSInteger)metricData.responsePayloadSize().value()];
-  }
-
-  if (metricData.responseContentType() != nil) {
-    [httpMetric setResponseContentType:metricData.responseContentType()];
-  }
+  [RNFBPerfHttpMetricStopApplier applyAttributes:attributes
+                                httpResponseCode:httpResponseCode
+                              requestPayloadSize:requestPayloadSize
+                             responsePayloadSize:responsePayloadSize
+                             responseContentType:metricData.responseContentType()
+                                              to:(id<RNFBPerfHttpMetricApplying>)httpMetric];
 
   FIRHTTPMetric *expected = httpMetric;
   httpMetric = [httpMetrics takeIf:metricId

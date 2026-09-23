@@ -12,6 +12,7 @@
 		RNFBPERF0000000000000003 /* RNFBPerfHandleRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000004 /* RNFBPerfHandleRegistryStorage.swift */; };
 		RNFBPERF0000000000000006 /* RNFBPerfHttpMethodMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000007 /* RNFBPerfHttpMethodMapper.swift */; };
 		RNFBPERF0000000000000008 /* RNFBPerfTraceStopApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000009 /* RNFBPerfTraceStopApplier.swift */; };
+		RNFBPERF000000000000000A /* RNFBPerfHttpMetricStopApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF000000000000000B /* RNFBPerfHttpMetricStopApplier.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,7 @@
 		RNFBPERF0000000000000004 /* RNFBPerfHandleRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHandleRegistryStorage.swift; path = RNFBPerf/RNFBPerfHandleRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 		RNFBPERF0000000000000007 /* RNFBPerfHttpMethodMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMethodMapper.swift; path = RNFBPerf/RNFBPerfHttpMethodMapper.swift; sourceTree = SOURCE_ROOT; };
 		RNFBPERF0000000000000009 /* RNFBPerfTraceStopApplier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfTraceStopApplier.swift; path = RNFBPerf/RNFBPerfTraceStopApplier.swift; sourceTree = SOURCE_ROOT; };
+		RNFBPERF000000000000000B /* RNFBPerfHttpMetricStopApplier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMetricStopApplier.swift; path = RNFBPerf/RNFBPerfHttpMetricStopApplier.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				RNFBPERF0000000000000004 /* RNFBPerfHandleRegistryStorage.swift */,
 				RNFBPERF0000000000000007 /* RNFBPerfHttpMethodMapper.swift */,
 				RNFBPERF0000000000000009 /* RNFBPerfTraceStopApplier.swift */,
+				RNFBPERF000000000000000B /* RNFBPerfHttpMetricStopApplier.swift */,
 				2744B98421F45429004F8E3F /* RNFBPerfModule.h */,
 				2744B98521F45429004F8E3F /* RNFBPerfModule.mm */,
 			);
@@ -141,6 +144,7 @@
 				RNFBPERF0000000000000003 /* RNFBPerfHandleRegistryStorage.swift in Sources */,
 				RNFBPERF0000000000000006 /* RNFBPerfHttpMethodMapper.swift in Sources */,
 				RNFBPERF0000000000000008 /* RNFBPerfTraceStopApplier.swift in Sources */,
+				RNFBPERF000000000000000A /* RNFBPerfHttpMetricStopApplier.swift in Sources */,
 				RNFBPERF0000000000000001 /* RNFBPerfHandleRegistry.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBPerfModule.mm in Sources */,
 			);
