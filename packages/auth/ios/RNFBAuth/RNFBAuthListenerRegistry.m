@@ -23,12 +23,18 @@
 #import "RNFBApp/RNFBHandleMap.h"
 #endif
 
-@protocol RNFBAuthRemovable <NSObject>
-- (void)remove;
-@end
+#if __has_include(<RNFBAuth/RNFBAuth-Swift.h>)
+#import <RNFBAuth/RNFBAuth-Swift.h>
+#elif __has_include("RNFBAuth-Swift.h")
+#import "RNFBAuth-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBAuthListenerRegistryStorage Swift interface not found"
+#endif
 
 @interface RNFBAuthListenerRegistry ()
-@property(nonatomic, strong) RNFBHandleMap *map;
+@property(nonatomic, strong) RNFBAuthListenerRegistryStorage *storage;
 @end
 
 @implementation RNFBAuthListenerRegistry
@@ -36,48 +42,42 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [[RNFBHandleMap alloc] init];
+    _storage = [[RNFBAuthListenerRegistryStorage alloc] init];
   }
   return self;
 }
 
-- (void)rnfb_removeHandle:(id)handle {
-  if (handle && [handle respondsToSelector:@selector(remove)]) {
-    [(id<RNFBAuthRemovable>)handle remove];
-  }
-}
-
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
-  return [self.map put:key value:value error:error];
+  if (![self.storage putIfAbsent:key value:value]) {
+    if (error != nil) {
+      NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
+      *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
+                                   code:RNFBHandleMapErrorCollision
+                               userInfo:@{NSLocalizedDescriptionKey : message}];
+    }
+    return NO;
+  }
+  return YES;
 }
 
 - (BOOL)putOrDiscard:(id)key value:(id)value {
-  NSError *error = nil;
-  if ([self.map put:key value:value error:&error]) {
-    return YES;
-  }
-  [self rnfb_removeHandle:value];
-  return NO;
+  return [self.storage putOrDiscard:key value:value];
 }
 
 - (id)get:(id)key {
-  return [self.map get:key];
+  return [self.storage get:key];
 }
 
 - (id)take:(id)key {
-  return [self.map take:key];
+  return [self.storage take:key];
 }
 
 - (void)takeAndRemove:(id)key {
-  id handle = [self.map take:key];
-  [self rnfb_removeHandle:handle];
+  [self.storage takeAndRemove:key];
 }
 
 - (void)removeAll {
-  NSArray *handlers = [self.map takeAll];
-  for (id handler in handlers) {
-    [self rnfb_removeHandle:handler];
-  }
+  [self.storage removeAll];
 }
 
 @end
