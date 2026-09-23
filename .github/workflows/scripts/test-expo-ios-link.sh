@@ -257,7 +257,6 @@ xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
   ONLY_ACTIVE_ARCH=YES
-  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++
   -workspace "$WORKSPACE"
   -scheme "$SCHEME"
   -configuration Release
@@ -303,3 +302,82 @@ if grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG" ||
 fi
 
 log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"
+
+# #9322: without an explicit top-level spm_dependency declaration on
+# RNFBAnalytics.podspec / RNFBMessaging.podspec (see the comments there for
+# the full writeup, including what's confirmed vs. still an open question),
+# GoogleUtilities classes (GULNetwork, GULReachabilityChecker, etc.) end up
+# compiled privately into both RNFBAnalytics.framework and
+# RNFBMessaging.framework instead of one shared dynamic framework, and
+# collide at runtime once both are loaded in-process.
+#
+# Requires @react-native-firebase/analytics alongside messaging in
+# test-expo/package.json to actually exercise both sides of the graph.
+log "--- #9322 GoogleUtilities dedupe diagnosis ---"
+BUILT_PRODUCTS_DIR="$(grep -oE '/[^ ]*/Build/Products/[A-Za-z0-9_.-]+' "$XCODEBUILD_LOG" | head -1 || true)"
+if [[ -z "$BUILT_PRODUCTS_DIR" || ! -d "$BUILT_PRODUCTS_DIR" ]]; then
+  log "ERROR: could not determine BUILT_PRODUCTS_DIR from xcodebuild log for #9322 check"
+  exit 1
+fi
+
+nine322_classes=(
+  GULNetwork
+  GULMutableDictionary
+  GULNetworkURLSession
+  GULNetworkURLSessionWeakHolder
+  GULSessionDeallocTracker
+  GULReachabilityChecker
+  GULSwizzler
+  GoogleUtilities_GoogleUtilities_Network_SWIFTPM_MODULE_BUNDLER_FINDER
+  GoogleUtilities_GoogleUtilities_Reachability_SWIFTPM_MODULE_BUNDLER_FINDER
+)
+
+nine322_work_dir="$(mktemp -d)"
+trap 'rm -rf "$nine322_work_dir"' EXIT
+
+while IFS= read -r fw_dir; do
+  fw_name="$(basename "$fw_dir" .framework)"
+  bin="$fw_dir/$fw_name"
+  [[ -f "$bin" ]] || continue
+  fw_syms="$(nm -gU "$bin" 2>/dev/null || true)"
+  [[ -z "$fw_syms" ]] && continue
+  for class_name in "${nine322_classes[@]}"; do
+    if grep -qE '_OBJC_CLASS_\$_'"${class_name}"'$' <<<"$fw_syms"; then
+      echo "$fw_name" >>"${nine322_work_dir}/${class_name}.txt"
+    fi
+  done
+done < <(find "$BUILT_PRODUCTS_DIR" -type d -name "*.framework" ! -path "*/*.app/*" 2>/dev/null)
+
+nine322_failed=0
+for class_name in "${nine322_classes[@]}"; do
+  owners_file="${nine322_work_dir}/${class_name}.txt"
+  if [[ ! -f "$owners_file" ]]; then
+    log "ERROR: #9322 -- ${class_name} not defined in any built framework"
+    nine322_failed=1
+    continue
+  fi
+  owner_count="$(wc -l <"$owners_file" | tr -d ' ')"
+  owners="$(tr '\n' ' ' <"$owners_file")"
+  if [[ "$owner_count" -ne 1 ]]; then
+    log "ERROR: #9322 -- expected exactly 1 framework defining ${class_name}, found ${owner_count}: ${owners}"
+    nine322_failed=1
+    continue
+  fi
+  case "$owners" in
+    RNFB*)
+      log "ERROR: #9322 -- ${class_name} is privately duplicated into ${owners} instead of a shared framework"
+      nine322_failed=1
+      ;;
+    *)
+      log "ok: ${class_name} shared in ${owners}"
+      ;;
+  esac
+done
+log "--- end #9322 GoogleUtilities dedupe diagnosis ---"
+
+if [[ "$nine322_failed" -ne 0 ]]; then
+  log "ERROR: #9322 GoogleUtilities duplicate-class regression detected"
+  exit 1
+fi
+
+log "PASS: no RNFB* framework privately duplicates a shared GoogleUtilities class (#9322)"
