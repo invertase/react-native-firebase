@@ -30,6 +30,7 @@
 		RNFB00001A2026092300000081 /* RNFBSharedUtilsFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */; };
 		RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */; };
 		RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */; };
+		RNFB00001A20260923000000B1 /* RNFBRCTEventEmitterCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -81,6 +82,7 @@
 		RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFIRApp.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIRApp.swift; sourceTree = "<group>"; };
 		RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIROptions.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRCTEventEmitterCore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 				RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */,
 				2744B98D21F45E8B004F8E3F /* RNFBRCTEventEmitter.h */,
 				2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */,
+				RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */,
 				2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */,
 				2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */,
 				RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */,
@@ -234,6 +237,7 @@
 				RNFB00001A2026092300000081 /* RNFBSharedUtilsFIRApp.swift in Sources */,
 				RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */,
 				RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */,
+				RNFB00001A20260923000000B1 /* RNFBRCTEventEmitterCore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

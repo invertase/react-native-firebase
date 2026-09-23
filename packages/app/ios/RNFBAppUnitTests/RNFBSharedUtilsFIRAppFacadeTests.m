@@ -16,6 +16,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import <React/RCTBridge.h>
+
 #import "RNFBAppModule.h"
 #import "RNFBHandleMapStorage-Swift.inc"
 #import "RNFBRCTEventEmitter.h"
@@ -24,12 +26,6 @@
 @interface RNFBAppModule (Testing)
 + (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName;
 + (void)resetCustomDomainsForTesting;
-@end
-
-@interface RNFBRCTEventEmitter (Testing)
-@property(nonatomic, readonly, nullable) NSString *lastSentEventName;
-@property(nonatomic, readonly, nullable) id lastSentEventBody;
-- (void)resetLastSentEventForTesting;
 @end
 
 @interface RNFBSharedUtilsFIRAppFacadeTests : XCTestCase
@@ -51,7 +47,26 @@
 
 - (void)tearDown {
   [RNFBAppModule resetCustomDomainsForTesting];
-  [[RNFBRCTEventEmitter shared] resetLastSentEventForTesting];
+  RNFBRCTEventEmitter *emitter = [RNFBRCTEventEmitter shared];
+  // Rebuild a core whose bridge/emit closures capture *shared*, not a disposable
+  // template (stealing template.core leaves dangling weakSelf → permanent queue-only).
+  __weak RNFBRCTEventEmitter *weakEmitter = emitter;
+  RNFBRCTEventEmitterCore *restoredCore = [[RNFBRCTEventEmitterCore alloc]
+      initWithIsBridgePresent:^BOOL {
+        return weakEmitter.bridge != nil;
+      }
+      emitHandler:^(NSString *eventName, id body) {
+        __strong RNFBRCTEventEmitter *strongEmitter = weakEmitter;
+        NSString *prefixedEventName = [@"rnfb_" stringByAppendingString:eventName];
+        [strongEmitter.bridge
+            enqueueJSCall:@"RCTDeviceEventEmitter"
+                   method:@"emit"
+                     args:body ? @[ prefixedEventName, body ] : @[ prefixedEventName ]
+               completion:NULL];
+      }];
+  [emitter setValue:restoredCore forKey:@"core"];
+  [emitter invalidate];
+  emitter.bridge = nil;
   [super tearDown];
 }
 
@@ -98,13 +113,27 @@
 - (void)testFacadeSendJSEventInjectsAppNameAndForwards {
   FIRApp *app = [[FIRApp alloc] initWithName:DEFAULT_APP_NAME options:[self fullyPopulatedOptions]];
   RNFBRCTEventEmitter *emitter = [RNFBRCTEventEmitter shared];
-  [emitter resetLastSentEventForTesting];
+  [emitter invalidate];
+
+  __block NSString *capturedName = nil;
+  __block NSDictionary *capturedBody = nil;
+  RNFBRCTEventEmitterCore *recordingCore = [[RNFBRCTEventEmitterCore alloc]
+      initWithIsBridgePresent:^BOOL {
+        return YES;
+      }
+      emitHandler:^(NSString *eventName, id body) {
+        capturedName = [eventName copy];
+        capturedBody = body;
+      }];
+  [emitter setValue:recordingCore forKey:@"core"];
+  [emitter notifyJsReady:YES];
+  [emitter addListener:@"facade_event"];
 
   [RNFBSharedUtils sendJSEventForApp:app name:@"facade_event" body:@{@"foo" : @"bar"}];
 
-  XCTAssertEqualObjects(emitter.lastSentEventName, @"facade_event");
-  XCTAssertEqualObjects(emitter.lastSentEventBody[@"foo"], @"bar");
-  XCTAssertEqualObjects(emitter.lastSentEventBody[@"appName"], DEFAULT_APP_DISPLAY_NAME);
+  XCTAssertEqualObjects(capturedName, @"facade_event");
+  XCTAssertEqualObjects(capturedBody[@"foo"], @"bar");
+  XCTAssertEqualObjects(capturedBody[@"appName"], DEFAULT_APP_DISPLAY_NAME);
 }
 
 - (void)testFacadePublicSelectorsUnchanged {
