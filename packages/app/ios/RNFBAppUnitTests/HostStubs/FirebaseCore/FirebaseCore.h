@@ -4,6 +4,8 @@
 #import <Foundation/Foundation.h>
 
 @interface FIROptions : NSObject
+- (nonnull instancetype)initWithGoogleAppID:(nullable NSString *)googleAppID
+                                GCMSenderID:(nullable NSString *)GCMSenderID;
 @property(nonatomic, copy, nullable) NSString *APIKey;
 @property(nonatomic, copy, nullable) NSString *googleAppID;
 @property(nonatomic, copy, nullable) NSString *projectID;
@@ -11,6 +13,7 @@
 @property(nonatomic, copy, nullable) NSString *storageBucket;
 @property(nonatomic, copy, nullable) NSString *GCMSenderID;
 @property(nonatomic, copy, nullable) NSString *clientID;
+@property(nonatomic, copy, nullable) NSString *bundleID;
 @end
 
 @interface FIRApp : NSObject
@@ -20,4 +23,11 @@
                              options:(nullable FIROptions *)options;
 - (void)setDataCollectionDefaultEnabled:(BOOL)enabled;
 - (BOOL)isDataCollectionDefaultEnabled;
+
++ (nullable FIRApp *)defaultApp;
++ (nullable FIRApp *)appNamed:(nonnull NSString *)name;
+
++ (void)setDefaultAppForTesting:(nullable FIRApp *)app;
++ (void)registerAppForTesting:(nonnull FIRApp *)app;
++ (void)resetRegistryForTesting;
 @end

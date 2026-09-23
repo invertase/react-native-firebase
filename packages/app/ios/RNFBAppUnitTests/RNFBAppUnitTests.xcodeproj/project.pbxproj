@@ -43,6 +43,15 @@
 		A10000000000000000000058 /* RNFBSharedUtilsFIRAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */; };
 		A1000000000000000000005A /* RNFBSharedUtilsFIRAppFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */; };
 		A1000000000000000000005C /* FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005D /* FIRApp.m */; };
+		A1000000000000000000005E /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005F /* RCTConvertFIRApp.swift */; };
+		A10000000000000000000060 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000061 /* RCTConvertFIROptions.swift */; };
+		A10000000000000000000062 /* RCTConvertFIRAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000063 /* RCTConvertFIRAppTests.swift */; };
+		A10000000000000000000064 /* RCTConvertFIROptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000065 /* RCTConvertFIROptionsTests.swift */; };
+		A10000000000000000000066 /* RCTConvertFIRAppFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000067 /* RCTConvertFIRAppFacadeTests.m */; };
+		A10000000000000000000068 /* RCTConvertFIROptionsFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */; };
+		A1000000000000000000006A /* RCTConvert+FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006B /* RCTConvert+FIRApp.m */; };
+		A1000000000000000000006C /* RCTConvert+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006D /* RCTConvert+FIROptions.m */; };
+		A1000000000000000000006E /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006F /* RCTConvert.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -90,6 +99,17 @@
 		A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFIRAppTests.swift; sourceTree = "<group>"; };
 		A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsFIRAppFacadeTests.m; sourceTree = "<group>"; };
 		A1000000000000000000005D /* FIRApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRApp.m; path = HostStubs/FirebaseCore/FIRApp.m; sourceTree = "<group>"; };
+		A1000000000000000000005F /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RCTConvertFIRApp.swift; path = ../RNFBApp/RCTConvertFIRApp.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000061 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RCTConvertFIROptions.swift; path = ../RNFBApp/RCTConvertFIROptions.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000063 /* RCTConvertFIRAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIRAppTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000065 /* RCTConvertFIROptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIROptionsTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000067 /* RCTConvertFIRAppFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTConvertFIRAppFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTConvertFIROptionsFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000006B /* RCTConvert+FIRApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIRApp.m"; path = "../RNFBApp/RCTConvert+FIRApp.m"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000006D /* RCTConvert+FIROptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIROptions.m"; path = "../RNFBApp/RCTConvert+FIROptions.m"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000006F /* RCTConvert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTConvert.m; path = HostStubs/React/RCTConvert.m; sourceTree = "<group>"; };
+		A10000000000000000000070 /* RCTConvert+FIRApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIRApp.h"; path = "../RNFBApp/RCTConvert+FIRApp.h"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000071 /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIROptions.h"; path = "../RNFBApp/RCTConvert+FIROptions.h"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,11 +180,22 @@
 				A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */,
 				A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */,
 				A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */,
+				A1000000000000000000005F /* RCTConvertFIRApp.swift */,
+				A10000000000000000000061 /* RCTConvertFIROptions.swift */,
+				A10000000000000000000070 /* RCTConvert+FIRApp.h */,
+				A1000000000000000000006B /* RCTConvert+FIRApp.m */,
+				A10000000000000000000071 /* RCTConvert+FIROptions.h */,
+				A1000000000000000000006D /* RCTConvert+FIROptions.m */,
+				A10000000000000000000063 /* RCTConvertFIRAppTests.swift */,
+				A10000000000000000000065 /* RCTConvertFIROptionsTests.swift */,
+				A10000000000000000000067 /* RCTConvertFIRAppFacadeTests.m */,
+				A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */,
 				A10000000000000000000042 /* RNFBAppModule.h */,
 				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
 				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
 				A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */,
 				A1000000000000000000005D /* FIRApp.m */,
+				A1000000000000000000006F /* RCTConvert.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -258,6 +289,15 @@
 				A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */,
 				A10000000000000000000058 /* RNFBSharedUtilsFIRAppTests.swift in Sources */,
 				A1000000000000000000005A /* RNFBSharedUtilsFIRAppFacadeTests.m in Sources */,
+				A1000000000000000000005E /* RCTConvertFIRApp.swift in Sources */,
+				A10000000000000000000060 /* RCTConvertFIROptions.swift in Sources */,
+				A1000000000000000000006A /* RCTConvert+FIRApp.m in Sources */,
+				A1000000000000000000006C /* RCTConvert+FIROptions.m in Sources */,
+				A1000000000000000000006E /* RCTConvert.m in Sources */,
+				A10000000000000000000062 /* RCTConvertFIRAppTests.swift in Sources */,
+				A10000000000000000000064 /* RCTConvertFIROptionsTests.swift in Sources */,
+				A10000000000000000000066 /* RCTConvertFIRAppFacadeTests.m in Sources */,
+				A10000000000000000000068 /* RCTConvertFIROptionsFacadeTests.m in Sources */,
 				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
 				A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */,
 				A1000000000000000000005C /* FIRApp.m in Sources */,
