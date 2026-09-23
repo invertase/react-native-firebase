@@ -166,14 +166,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   NSDictionary *metrics = (NSDictionary *)traceData.metrics();
   NSDictionary *attributes = (NSDictionary *)traceData.attributes();
 
-  [metrics enumerateKeysAndObjectsUsingBlock:^(NSString *metricName, NSNumber *value, BOOL *stop) {
-    [trace setIntValue:[value longLongValue] forMetric:metricName];
-  }];
-
-  [attributes
-      enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *value, BOOL *stop) {
-        [trace setValue:value forAttribute:attributeName];
-      }];
+  [RNFBPerfTraceStopApplier applyMetrics:metrics
+                              attributes:attributes
+                                      to:(id<RNFBPerfTraceApplying>)trace];
 
   FIRTrace *expected = trace;
   trace = [traces takeIf:traceId
