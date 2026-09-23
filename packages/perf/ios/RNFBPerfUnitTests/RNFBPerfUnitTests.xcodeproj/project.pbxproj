@@ -16,6 +16,9 @@
 		B9000000000000000000001F /* RNFBPerfHttpMethodMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000020 /* RNFBPerfHttpMethodMapper.swift */; };
 		B90000000000000000000021 /* RNFBPerfHttpMethodMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000022 /* RNFBPerfHttpMethodMapperTests.swift */; };
 		B90000000000000000000023 /* RNFBPerfHttpMethodMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000024 /* RNFBPerfHttpMethodMapperFacadeTests.m */; };
+		B90000000000000000000025 /* RNFBPerfTraceStopApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000026 /* RNFBPerfTraceStopApplier.swift */; };
+		B90000000000000000000027 /* RNFBPerfTraceStopApplierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000028 /* RNFBPerfTraceStopApplierTests.swift */; };
+		B90000000000000000000029 /* RNFBPerfTraceStopApplierFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000002A /* RNFBPerfTraceStopApplierFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +34,9 @@
 		B90000000000000000000020 /* RNFBPerfHttpMethodMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMethodMapper.swift; path = ../RNFBPerf/RNFBPerfHttpMethodMapper.swift; sourceTree = SOURCE_ROOT; };
 		B90000000000000000000022 /* RNFBPerfHttpMethodMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPerfHttpMethodMapperTests.swift; sourceTree = "<group>"; };
 		B90000000000000000000024 /* RNFBPerfHttpMethodMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPerfHttpMethodMapperFacadeTests.m; sourceTree = "<group>"; };
+		B90000000000000000000026 /* RNFBPerfTraceStopApplier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfTraceStopApplier.swift; path = ../RNFBPerf/RNFBPerfTraceStopApplier.swift; sourceTree = SOURCE_ROOT; };
+		B90000000000000000000028 /* RNFBPerfTraceStopApplierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPerfTraceStopApplierTests.swift; sourceTree = "<group>"; };
+		B9000000000000000000002A /* RNFBPerfTraceStopApplierFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPerfTraceStopApplierFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,9 +77,12 @@
 				B90000000000000000000018 /* RNFBPerfHandleRegistry.m */,
 				B9000000000000000000001E /* RNFBPerfHandleRegistryStorage.swift */,
 				B90000000000000000000020 /* RNFBPerfHttpMethodMapper.swift */,
+				B90000000000000000000026 /* RNFBPerfTraceStopApplier.swift */,
 				B90000000000000000000009 /* RNFBPerfHandleRegistryTests.m */,
 				B90000000000000000000022 /* RNFBPerfHttpMethodMapperTests.swift */,
 				B90000000000000000000024 /* RNFBPerfHttpMethodMapperFacadeTests.m */,
+				B90000000000000000000028 /* RNFBPerfTraceStopApplierTests.swift */,
+				B9000000000000000000002A /* RNFBPerfTraceStopApplierFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -139,10 +148,13 @@
 				B90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
 				B9000000000000000000001D /* RNFBPerfHandleRegistryStorage.swift in Sources */,
 				B9000000000000000000001F /* RNFBPerfHttpMethodMapper.swift in Sources */,
+				B90000000000000000000025 /* RNFBPerfTraceStopApplier.swift in Sources */,
 				B9000000000000000000000B /* RNFBPerfHandleRegistry.m in Sources */,
 				B9000000000000000000000C /* RNFBPerfHandleRegistryTests.m in Sources */,
 				B90000000000000000000021 /* RNFBPerfHttpMethodMapperTests.swift in Sources */,
 				B90000000000000000000023 /* RNFBPerfHttpMethodMapperFacadeTests.m in Sources */,
+				B90000000000000000000027 /* RNFBPerfTraceStopApplierTests.swift in Sources */,
+				B90000000000000000000029 /* RNFBPerfTraceStopApplierFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
