@@ -39,6 +39,10 @@
 		A10000000000000000000050 /* RNFBSharedUtilsPromiseRejection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */; };
 		A10000000000000000000052 /* RNFBSharedUtilsPromiseRejectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */; };
 		A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */; };
+		A10000000000000000000056 /* RNFBSharedUtilsFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000057 /* RNFBSharedUtilsFIRApp.swift */; };
+		A10000000000000000000058 /* RNFBSharedUtilsFIRAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */; };
+		A1000000000000000000005A /* RNFBSharedUtilsFIRAppFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */; };
+		A1000000000000000000005C /* FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005D /* FIRApp.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +86,10 @@
 		A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsPromiseRejection.swift; path = ../RNFBApp/RNFBSharedUtilsPromiseRejection.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsPromiseRejectionTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsPromiseRejectionFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000057 /* RNFBSharedUtilsFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFIRApp.swift; path = ../RNFBApp/RNFBSharedUtilsFIRApp.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFIRAppTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsFIRAppFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000005D /* FIRApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRApp.m; path = HostStubs/FirebaseCore/FIRApp.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +150,7 @@
 				A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */,
 				A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */,
 				A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */,
+				A10000000000000000000057 /* RNFBSharedUtilsFIRApp.swift */,
 				A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */,
 				A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */,
 				A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */,
@@ -149,10 +158,13 @@
 				A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */,
 				A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */,
 				A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */,
+				A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */,
+				A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */,
 				A10000000000000000000042 /* RNFBAppModule.h */,
 				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
 				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
 				A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */,
+				A1000000000000000000005D /* FIRApp.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -236,6 +248,7 @@
 				A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */,
 				A1000000000000000000004A /* RNFBSharedUtilsConfig.swift in Sources */,
 				A10000000000000000000050 /* RNFBSharedUtilsPromiseRejection.swift in Sources */,
+				A10000000000000000000056 /* RNFBSharedUtilsFIRApp.swift in Sources */,
 				A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */,
 				A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */,
 				A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */,
@@ -243,8 +256,11 @@
 				A1000000000000000000004E /* RNFBSharedUtilsConfigFacadeTests.m in Sources */,
 				A10000000000000000000052 /* RNFBSharedUtilsPromiseRejectionTests.swift in Sources */,
 				A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */,
+				A10000000000000000000058 /* RNFBSharedUtilsFIRAppTests.swift in Sources */,
+				A1000000000000000000005A /* RNFBSharedUtilsFIRAppFacadeTests.m in Sources */,
 				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
 				A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */,
+				A1000000000000000000005C /* FIRApp.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,6 +16,11 @@
 
 #import "RNFBRCTEventEmitter.h"
 
+@interface RNFBRCTEventEmitter ()
+@property(nonatomic, copy, readwrite, nullable) NSString *lastSentEventName;
+@property(nonatomic, strong, readwrite, nullable) id lastSentEventBody;
+@end
+
 @implementation RNFBRCTEventEmitter
 
 + (RNFBRCTEventEmitter *)shared {
@@ -40,8 +45,13 @@
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body {
-  (void)eventName;
-  (void)body;
+  self.lastSentEventName = [eventName copy];
+  self.lastSentEventBody = body;
+}
+
+- (void)resetLastSentEventForTesting {
+  self.lastSentEventName = nil;
+  self.lastSentEventBody = nil;
 }
 
 - (void)notifyJsReady:(BOOL)ready {
