@@ -26,6 +26,7 @@ private final class StubFIROptions: NSObject, RNFBFIROptionsConfiguring {
   var databaseURL: String?
   var storageBucket: String?
   var bundleID: String?
+  var appGroupID: String?
 }
 
 private final class StubFIROptionsFactory: NSObject, RNFBFIROptionsCreating {
