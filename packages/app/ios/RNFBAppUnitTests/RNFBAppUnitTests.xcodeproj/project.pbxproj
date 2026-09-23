@@ -29,7 +29,11 @@
 		A10000000000000000000039 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003D /* RNFBSharedUtils.m */; };
 		A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */; };
 		A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* RNFBAppModuleHostStub.m */; };
-		A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */; };
+		A1000000000000000000003C /* RNFBRCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000072 /* RNFBRCTEventEmitter.m */; };
+		A10000000000000000000073 /* RNFBRCTEventEmitterCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000074 /* RNFBRCTEventEmitterCore.swift */; };
+		A10000000000000000000075 /* RNFBRCTEventEmitterCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000076 /* RNFBRCTEventEmitterCoreTests.swift */; };
+		A10000000000000000000077 /* RNFBRCTEventEmitterFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000078 /* RNFBRCTEventEmitterFacadeTests.m */; };
+		A10000000000000000000079 /* RCTBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007A /* RCTBridge.m */; };
 		A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */; };
 		A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */; };
 		A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */; };
@@ -83,7 +87,12 @@
 		A1000000000000000000003E /* RNFBSharedUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBSharedUtils.h; path = ../RNFBApp/RNFBSharedUtils.h; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsNullSentinelTests.m; sourceTree = "<group>"; };
 		A10000000000000000000040 /* RNFBAppModuleHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppModuleHostStub.m; path = HostStubs/RNFBAppModuleHostStub.m; sourceTree = "<group>"; };
-		A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitterHostStub.m; path = HostStubs/RNFBRCTEventEmitterHostStub.m; sourceTree = "<group>"; };
+		A10000000000000000000072 /* RNFBRCTEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitter.m; path = ../RNFBApp/RNFBRCTEventEmitter.m; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000074 /* RNFBRCTEventEmitterCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRCTEventEmitterCore.swift; path = ../RNFBApp/RNFBRCTEventEmitterCore.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000076 /* RNFBRCTEventEmitterCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRCTEventEmitterCoreTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000078 /* RNFBRCTEventEmitterFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRCTEventEmitterFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000007A /* RCTBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTBridge.m; path = HostStubs/React/RCTBridge.m; sourceTree = "<group>"; };
+		A1000000000000000000007B /* RCTBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RCTBridge.h; path = HostStubs/React/RCTBridge.h; sourceTree = "<group>"; };
 		A10000000000000000000042 /* RNFBAppModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppModule.h; path = ../RNFBApp/RNFBAppModule.h; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000043 /* RNFBRCTEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBRCTEventEmitter.h; path = ../RNFBApp/RNFBRCTEventEmitter.h; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFormatting.swift; path = ../RNFBApp/RNFBSharedUtilsFormatting.swift; sourceTree = SOURCE_ROOT; };
@@ -192,8 +201,13 @@
 				A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */,
 				A10000000000000000000042 /* RNFBAppModule.h */,
 				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
+				A10000000000000000000072 /* RNFBRCTEventEmitter.m */,
+				A10000000000000000000074 /* RNFBRCTEventEmitterCore.swift */,
+				A10000000000000000000076 /* RNFBRCTEventEmitterCoreTests.swift */,
+				A10000000000000000000078 /* RNFBRCTEventEmitterFacadeTests.m */,
 				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
-				A10000000000000000000041 /* RNFBRCTEventEmitterHostStub.m */,
+				A1000000000000000000007B /* RCTBridge.h */,
+				A1000000000000000000007A /* RCTBridge.m */,
 				A1000000000000000000005D /* FIRApp.m */,
 				A1000000000000000000006F /* RCTConvert.m */,
 			);
@@ -299,7 +313,11 @@
 				A10000000000000000000066 /* RCTConvertFIRAppFacadeTests.m in Sources */,
 				A10000000000000000000068 /* RCTConvertFIROptionsFacadeTests.m in Sources */,
 				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
-				A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */,
+				A1000000000000000000003C /* RNFBRCTEventEmitter.m in Sources */,
+				A10000000000000000000073 /* RNFBRCTEventEmitterCore.swift in Sources */,
+				A10000000000000000000075 /* RNFBRCTEventEmitterCoreTests.swift in Sources */,
+				A10000000000000000000077 /* RNFBRCTEventEmitterFacadeTests.m in Sources */,
+				A10000000000000000000079 /* RCTBridge.m in Sources */,
 				A1000000000000000000005C /* FIRApp.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
