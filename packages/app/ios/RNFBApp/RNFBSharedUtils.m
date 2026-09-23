@@ -38,6 +38,34 @@
 NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
 NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
+/**
+ * Adapts `RNFBMeta` class methods to the instance-based config source protocol used by
+ * `RNFBSharedUtilsConfig`.
+ */
+@interface RNFBConfigMetaSource : NSObject <RNFBConfigBooleanProviding>
+@end
+
+@implementation RNFBConfigMetaSource
+
+- (BOOL)contains:(NSString *)key {
+  return [RNFBMeta contains:key];
+}
+
+- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
+  return [RNFBMeta getBooleanValue:key defaultValue:defaultValue];
+}
+
+@end
+
+static id<RNFBConfigBooleanProviding> RNFBSharedUtilsMetaConfigSource(void) {
+  static RNFBConfigMetaSource *sharedSource;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedSource = [[RNFBConfigMetaSource alloc] init];
+  });
+  return sharedSource;
+}
+
 @implementation RNFBSharedUtils
 static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
@@ -130,34 +158,23 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 }
 
 + (BOOL)configContains:(NSString *)key {
-  return [[RNFBPreferences shared] contains:key] || [[RNFBJSON shared] contains:key] ||
-         [RNFBMeta contains:key];
+  return [RNFBSharedUtilsConfig
+      configContainsKey:key
+            preferences:(id<RNFBConfigBooleanProviding>)[RNFBPreferences shared]
+                   json:(id<RNFBConfigBooleanProviding>)[RNFBJSON shared]
+                   meta:RNFBSharedUtilsMetaConfigSource()];
 }
 
 + (BOOL)getConfigBooleanValue:(NSString *)tag key:(NSString *)key defaultValue:(BOOL)defaultValue {
-  BOOL enabled;
-
-  if ([[RNFBPreferences shared] contains:key]) {
-    enabled = [[RNFBPreferences shared] getBooleanValue:key defaultValue:defaultValue];
-    DLog(@"%@ %@ via "
-         @"RNFBPreferences: %d",
-         tag, key, enabled);
-  } else if ([[RNFBJSON shared] contains:key]) {
-    enabled = [[RNFBJSON shared] getBooleanValue:key defaultValue:defaultValue];
-    DLog(@"%@ %@ via "
-         @"RNFBJSON: %d",
-         tag, key, enabled);
-  } else {
-    // Note that if we're here, and the key is not set on the app's bundle, our final default is the
-    // one passed in
-    enabled = [RNFBMeta getBooleanValue:key defaultValue:defaultValue];
-    DLog(@"%@ %@ via "
-         @"RNFBMeta: %d",
-         tag, key, enabled);
-  }
-
+  BOOL enabled = [RNFBSharedUtilsConfig
+      getConfigBooleanValueForKey:key
+                     defaultValue:defaultValue
+                      preferences:(id<RNFBConfigBooleanProviding>)[RNFBPreferences shared]
+                             json:(id<RNFBConfigBooleanProviding>)[RNFBJSON shared]
+                             meta:RNFBSharedUtilsMetaConfigSource()];
+  // Branch-specific "via Preferences/JSON/Meta" DLogs lived in the pre-port body; keep the
+  // final-value log on the ObjC façade (DLog is an ObjC macro; return value unchanged).
   DLog(@"%@ %@ final value: %d", tag, key, enabled);
-
   return enabled;
 }
 
