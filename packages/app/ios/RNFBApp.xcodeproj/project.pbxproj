@@ -25,6 +25,7 @@
 		RNFB00001A2026092200000031 /* RNFBMetaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */; };
 		RNFB00001A2026092200000041 /* RNFBNullSentinelDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */; };
 		RNFB00001A2026092200000051 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */; };
+		RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -71,6 +72,7 @@
 		RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMetaStorage.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBNullSentinelDecoding.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFormatting.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +100,7 @@
 				2748D8112236417700FC8DC8 /* RNFBSharedUtils.h */,
 				2748D8102236417700FC8DC8 /* RNFBSharedUtils.m */,
 				RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */,
+				RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */,
 				2744B98D21F45E8B004F8E3F /* RNFBRCTEventEmitter.h */,
 				2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */,
 				2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */,
@@ -214,6 +217,7 @@
 				RNFB00001A2026092200000031 /* RNFBMetaStorage.swift in Sources */,
 				RNFB00001A2026092200000041 /* RNFBNullSentinelDecoding.swift in Sources */,
 				RNFB00001A2026092200000051 /* RNFBSharedUtilsFormatting.swift in Sources */,
+				RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
