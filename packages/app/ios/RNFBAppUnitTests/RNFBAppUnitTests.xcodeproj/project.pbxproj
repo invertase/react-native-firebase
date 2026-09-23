@@ -36,6 +36,9 @@
 		A1000000000000000000004A /* RNFBSharedUtilsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */; };
 		A1000000000000000000004C /* RNFBSharedUtilsConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004D /* RNFBSharedUtilsConfigTests.swift */; };
 		A1000000000000000000004E /* RNFBSharedUtilsConfigFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */; };
+		A10000000000000000000050 /* RNFBSharedUtilsPromiseRejection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */; };
+		A10000000000000000000052 /* RNFBSharedUtilsPromiseRejectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */; };
+		A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +79,9 @@
 		A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsConfig.swift; path = ../RNFBApp/RNFBSharedUtilsConfig.swift; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000004D /* RNFBSharedUtilsConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsConfigTests.swift; sourceTree = "<group>"; };
 		A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsConfigFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsPromiseRejection.swift; path = ../RNFBApp/RNFBSharedUtilsPromiseRejection.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsPromiseRejectionTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsPromiseRejectionFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,11 +141,14 @@
 				A1000000000000000000003D /* RNFBSharedUtils.m */,
 				A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */,
 				A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */,
+				A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */,
 				A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */,
 				A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */,
 				A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */,
 				A1000000000000000000004D /* RNFBSharedUtilsConfigTests.swift */,
 				A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */,
+				A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */,
+				A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */,
 				A10000000000000000000042 /* RNFBAppModule.h */,
 				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
 				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
@@ -226,11 +235,14 @@
 				A10000000000000000000039 /* RNFBSharedUtils.m in Sources */,
 				A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */,
 				A1000000000000000000004A /* RNFBSharedUtilsConfig.swift in Sources */,
+				A10000000000000000000050 /* RNFBSharedUtilsPromiseRejection.swift in Sources */,
 				A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */,
 				A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */,
 				A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */,
 				A1000000000000000000004C /* RNFBSharedUtilsConfigTests.swift in Sources */,
 				A1000000000000000000004E /* RNFBSharedUtilsConfigFacadeTests.m in Sources */,
+				A10000000000000000000052 /* RNFBSharedUtilsPromiseRejectionTests.swift in Sources */,
+				A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */,
 				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
 				A1000000000000000000003C /* RNFBRCTEventEmitterHostStub.m in Sources */,
 			);
