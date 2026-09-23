@@ -66,6 +66,125 @@ static id<RNFBConfigBooleanProviding> RNFBSharedUtilsMetaConfigSource(void) {
   return sharedSource;
 }
 
+/**
+ * Adapts live `FIROptions` to the injectable protocol used by `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBFIROptionsAdapter : NSObject <RNFBFIROptionsProviding>
+@property(nonatomic, strong) FIROptions *options;
+@end
+
+@implementation RNFBFIROptionsAdapter
+
+- (NSString *)apiKey {
+  return self.options.APIKey;
+}
+
+- (NSString *)googleAppID {
+  return self.options.googleAppID;
+}
+
+- (NSString *)projectID {
+  return self.options.projectID;
+}
+
+- (NSString *)databaseURL {
+  return self.options.databaseURL;
+}
+
+- (NSString *)storageBucket {
+  return self.options.storageBucket;
+}
+
+- (NSString *)gcmSenderID {
+  return self.options.GCMSenderID;
+}
+
+- (NSString *)clientID {
+  return self.options.clientID;
+}
+
+@end
+
+/**
+ * Adapts live `FIRApp` to the injectable protocol used by `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBFIRAppAdapter : NSObject <RNFBFIRAppProviding>
+@property(nonatomic, strong) FIRApp *app;
+@property(nonatomic, strong) RNFBFIROptionsAdapter *optionsAdapter;
+@end
+
+@implementation RNFBFIRAppAdapter
+
+- (instancetype)initWithFIRApp:(FIRApp *)app {
+  self = [super init];
+  if (self) {
+    _app = app;
+    _optionsAdapter = [RNFBFIROptionsAdapter new];
+    _optionsAdapter.options = app.options;
+  }
+  return self;
+}
+
+- (NSString *)name {
+  return self.app.name;
+}
+
+- (id<RNFBFIROptionsProviding>)options {
+  return self.optionsAdapter;
+}
+
+- (BOOL)isDataCollectionDefaultEnabled {
+  return [self.app isDataCollectionDefaultEnabled];
+}
+
+@end
+
+/**
+ * Adapts `RNFBAppModule getCustomDomain:` for `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBCustomDomainProvider : NSObject <RNFBCustomDomainProviding>
+@end
+
+@implementation RNFBCustomDomainProvider
+
+- (NSString *)getCustomDomain:(NSString *)appName {
+  return [RNFBAppModule getCustomDomain:appName];
+}
+
+@end
+
+/**
+ * Adapts `RNFBRCTEventEmitter.shared` for `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBJSEventSender : NSObject <RNFBJSEventSending>
+@end
+
+@implementation RNFBJSEventSender
+
+- (void)sendEventWithName:(NSString *)name body:(id)body {
+  [[RNFBRCTEventEmitter shared] sendEventWithName:name body:body];
+}
+
+@end
+
+static id<RNFBCustomDomainProviding> RNFBSharedUtilsCustomDomainProvider(void) {
+  static RNFBCustomDomainProvider *sharedProvider;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedProvider = [[RNFBCustomDomainProvider alloc] init];
+  });
+  return sharedProvider;
+}
+
+static id<RNFBJSEventSending> RNFBSharedUtilsJSEventSender(void) {
+  static RNFBJSEventSender *sharedSender;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedSender = [[RNFBJSEventSender alloc] init];
+  });
+  return sharedSender;
+}
+
 @implementation RNFBSharedUtils
 
 #pragma mark -
@@ -76,37 +195,9 @@ static id<RNFBConfigBooleanProviding> RNFBSharedUtilsMetaConfigSource(void) {
 }
 
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
-  FIROptions *firOptions = [firApp options];
-  NSMutableDictionary *firAppDictionary = [NSMutableDictionary new];
-  NSMutableDictionary *firAppOptions = [NSMutableDictionary new];
-  NSMutableDictionary *firAppConfig = [NSMutableDictionary new];
-
-  NSString *name = [firApp name];
-  if ([name isEqualToString:DEFAULT_APP_NAME]) {
-    name = DEFAULT_APP_DISPLAY_NAME;
-  }
-
-  firAppConfig[@"name"] = name;
-  firAppConfig[@"automaticDataCollectionEnabled"] = @([firApp isDataCollectionDefaultEnabled]);
-
-  firAppOptions[@"apiKey"] = firOptions.APIKey;
-  firAppOptions[@"appId"] = firOptions.googleAppID;
-  firAppOptions[@"projectId"] = firOptions.projectID;
-  firAppOptions[@"databaseURL"] = firOptions.databaseURL;
-  firAppOptions[@"storageBucket"] = firOptions.storageBucket;
-  firAppOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
-  // missing from android sdk - ios only:
-  firAppOptions[@"clientId"] = firOptions.clientID;
-  // not in FIROptions API but in JS SDK and project config JSON
-  NSString *customAuthDomain = [RNFBAppModule getCustomDomain:name];
-  if (customAuthDomain != nil) {
-    firAppOptions[@"authDomain"] = customAuthDomain;
-  }
-
-  firAppDictionary[@"options"] = firAppOptions;
-  firAppDictionary[@"appConfig"] = firAppConfig;
-
-  return firAppDictionary;
+  RNFBFIRAppAdapter *adapter = [[RNFBFIRAppAdapter alloc] initWithFIRApp:firApp];
+  return [RNFBSharedUtilsFIRApp firAppToDictionary:adapter
+                              customDomainProvider:RNFBSharedUtilsCustomDomainProvider()];
 }
 
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject
@@ -125,9 +216,11 @@ static id<RNFBConfigBooleanProviding> RNFBSharedUtilsMetaConfigSource(void) {
 
 // for easier v5 migration
 + (void)sendJSEventForApp:(FIRApp *)app name:(NSString *)name body:(NSDictionary *)body {
-  NSMutableDictionary *newBody = [body mutableCopy];
-  newBody[@"appName"] = [self getAppJavaScriptName:app.name];
-  [[RNFBRCTEventEmitter shared] sendEventWithName:name body:newBody];
+  RNFBFIRAppAdapter *adapter = [[RNFBFIRAppAdapter alloc] initWithFIRApp:app];
+  [RNFBSharedUtilsFIRApp sendJSEventForApp:adapter
+                                      name:name
+                                      body:body
+                               eventSender:RNFBSharedUtilsJSEventSender()];
 }
 
 + (NSString *)getISO8601String:(NSDate *)date {

@@ -16,5 +16,8 @@
 @interface FIRApp : NSObject
 @property(nonatomic, copy, readonly, nonnull) NSString *name;
 @property(nonatomic, strong, readonly, nonnull) FIROptions *options;
+- (nonnull instancetype)initWithName:(nonnull NSString *)name
+                             options:(nullable FIROptions *)options;
+- (void)setDataCollectionDefaultEnabled:(BOOL)enabled;
 - (BOOL)isDataCollectionDefaultEnabled;
 @end
