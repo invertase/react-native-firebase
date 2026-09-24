@@ -166,8 +166,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   NSDictionary *metrics = (NSDictionary *)traceData.metrics();
   NSDictionary *attributes = (NSDictionary *)traceData.attributes();
 
-  // ObjC++ cannot name Swift @protocol types as id<…>; cast to id (ABI matches).
-  [RNFBPerfTraceStopApplier applyMetrics:metrics attributes:attributes to:(id)trace];
+  // ObjC++ cannot name Swift @protocol types as id<…>. Cast via NSObject *: the
+  // TurboModule `(double)id` parameter shadows the ObjC `id` type in this scope.
+  NSObject *traceTarget = trace;
+  [RNFBPerfTraceStopApplier applyMetrics:metrics attributes:attributes to:traceTarget];
 
   FIRTrace *expected = trace;
   trace = [traces takeIf:traceId
@@ -233,13 +235,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
                                       ? @((NSInteger)metricData.responsePayloadSize().value())
                                       : nil;
 
-  // ObjC++ cannot name Swift @protocol types as id<…>; cast to id (ABI matches).
+  // ObjC++ cannot name Swift @protocol types as id<…>. Cast via NSObject *: the
+  // TurboModule `(double)id` parameter shadows the ObjC `id` type in this scope.
+  NSObject *httpMetricTarget = httpMetric;
   [RNFBPerfHttpMetricStopApplier applyAttributes:attributes
                                 httpResponseCode:httpResponseCode
                               requestPayloadSize:requestPayloadSize
                              responsePayloadSize:responsePayloadSize
                              responseContentType:metricData.responseContentType()
-                                              to:(id)httpMetric];
+                                              to:httpMetricTarget];
 
   FIRHTTPMetric *expected = httpMetric;
   httpMetric = [httpMetrics takeIf:metricId
