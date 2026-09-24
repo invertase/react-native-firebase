@@ -16,6 +16,8 @@
 		A9000000000000000000001F /* RNFBRemoteConfigListenerRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000020 /* RNFBRemoteConfigListenerRegistryStorageTests.swift */; };
 		A90000000000000000000021 /* RNFBRemoteConfigEnumMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000022 /* RNFBRemoteConfigEnumMapper.swift */; };
 		A90000000000000000000023 /* RNFBRemoteConfigEnumMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000024 /* RNFBRemoteConfigEnumMapperTests.swift */; };
+		A90000000000000000000025 /* RNFBRemoteConfigValueMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000026 /* RNFBRemoteConfigValueMapper.swift */; };
+		A90000000000000000000027 /* RNFBRemoteConfigValueMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000028 /* RNFBRemoteConfigValueMapperTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,8 @@
 		A90000000000000000000020 /* RNFBRemoteConfigListenerRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRemoteConfigListenerRegistryStorageTests.swift; sourceTree = "<group>"; };
 		A90000000000000000000022 /* RNFBRemoteConfigEnumMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRemoteConfigEnumMapper.swift; path = ../RNFBConfig/RNFBRemoteConfigEnumMapper.swift; sourceTree = SOURCE_ROOT; };
 		A90000000000000000000024 /* RNFBRemoteConfigEnumMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRemoteConfigEnumMapperTests.swift; sourceTree = "<group>"; };
+		A90000000000000000000026 /* RNFBRemoteConfigValueMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRemoteConfigValueMapper.swift; path = ../RNFBConfig/RNFBRemoteConfigValueMapper.swift; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000028 /* RNFBRemoteConfigValueMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRemoteConfigValueMapperTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,11 +73,13 @@
 				A9000000000000000000001C /* RNFBHandleMapStorage.swift */,
 				A9000000000000000000001E /* RNFBRemoteConfigListenerRegistryStorage.swift */,
 				A90000000000000000000022 /* RNFBRemoteConfigEnumMapper.swift */,
+				A90000000000000000000026 /* RNFBRemoteConfigValueMapper.swift */,
 				A90000000000000000000016 /* RNFBRemoteConfigListenerRegistry.h */,
 				A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */,
 				A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */,
 				A90000000000000000000020 /* RNFBRemoteConfigListenerRegistryStorageTests.swift */,
 				A90000000000000000000024 /* RNFBRemoteConfigEnumMapperTests.swift */,
+				A90000000000000000000028 /* RNFBRemoteConfigValueMapperTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -139,10 +145,12 @@
 				A90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
 				A9000000000000000000001D /* RNFBRemoteConfigListenerRegistryStorage.swift in Sources */,
 				A90000000000000000000021 /* RNFBRemoteConfigEnumMapper.swift in Sources */,
+				A90000000000000000000025 /* RNFBRemoteConfigValueMapper.swift in Sources */,
 				A9000000000000000000000B /* RNFBRemoteConfigListenerRegistry.m in Sources */,
 				A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */,
 				A9000000000000000000001F /* RNFBRemoteConfigListenerRegistryStorageTests.swift in Sources */,
 				A90000000000000000000023 /* RNFBRemoteConfigEnumMapperTests.swift in Sources */,
+				A90000000000000000000027 /* RNFBRemoteConfigValueMapperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
