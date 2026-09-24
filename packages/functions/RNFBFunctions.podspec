@@ -31,14 +31,18 @@ Pod::Spec.new do |s|
   s.swift_version = '5.10'
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.private_header_files = "ios/**/*.h"
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
+  # CocoaPods FileList uses FNM_PATHNAME: `ios/*UnitTests/**` does not match nested
+  # files under HostStubs; use `ios/*UnitTests/**/*` (same as sibling packages).
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**/*'
 
   # Must be set before install_modules_dependencies so RN can append use_frameworks
   # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths
   # and breaks from-source builds: react/timing/primitives.h → react/debug/flags.h.
   # CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES is required so the
   # framework module validates when consumers build with use_frameworks!.
+  # DEFINES_MODULE is required for the generated RNFBFunctions-Swift.h interface.
   s.pod_target_xcconfig = {
+    "DEFINES_MODULE" => "YES",
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
