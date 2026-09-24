@@ -23,6 +23,8 @@
 #import "RNFBApp-Swift.h"
 #elif __has_include("RNFBHandleMapStorage-Swift.inc")
 #import "RNFBHandleMapStorage-Swift.inc"
+#elif __has_include("RNFBAnalyticsJavascriptParamsCleaner-Swift.inc")
+#import "RNFBAnalyticsJavascriptParamsCleaner-Swift.inc"
 #else
 #error "RNFBApp Swift interface not found"
 #endif
