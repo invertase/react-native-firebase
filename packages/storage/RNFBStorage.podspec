@@ -28,18 +28,23 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.source_files        = 'ios/**/*.{h,m,mm,cpp}'
+  s.swift_version       = '5.10'
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.private_header_files = [
     'ios/RNFBStorage/*.h',
     'ios/generated/**/*.h',
   ]
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
+  # CocoaPods FileList uses FNM_PATHNAME: `ios/*UnitTests/**` does not match nested
+  # paths like `ios/RNFBStorageUnitTests/HostStubs/**` (those would compile into the pod).
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**/*'
 
   # Must be set before install_modules_dependencies so RN can append use_frameworks
   # HEADER_SEARCH_PATHS (React-debug etc.). Assigning after overwrites those paths
   # and breaks from-source builds: react/timing/primitives.h → react/debug/flags.h.
+  # DEFINES_MODULE is required for the generated RNFBStorage-Swift.h interface.
   s.pod_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBStorageTurboModules" "$(PODS_TARGET_SRCROOT)/ios/generated"',
+    "DEFINES_MODULE" => "YES",
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
