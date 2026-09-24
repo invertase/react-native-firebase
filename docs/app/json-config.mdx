@@ -1,19 +1,32 @@
 ---
 title: Firebase JSON Config
-description: Configure @react-native-firebase modules via firebase.json in the project root, including schema-driven editor Intellisense.
+description: Configure @react-native-firebase modules via firebase.json in the project root, including schema-driven editor IntelliSense.
 next: /app/utils
 previous: /app/usage
 ---
 
-You can configure your installed modules by creating a file named `firebase.json` at the root of your project directory.
-An example configuration file is available for inspection in our internal test app: [`<repo>/tests/firebase.json`](https://github.com/invertase/react-native-firebase/blob/main/tests/firebase.json)
+## Prerequisites
+
+- A React Native or Expo project with `@react-native-firebase/app` installed per [Getting Started](/).
+- Native config in place when you rely on platform SDKs: Android `google-services.json`, iOS `GoogleService-Info.plist`, or Expo `googleServicesFile` fields.
+
+You configure installed React Native Firebase modules by creating `firebase.json` at the **project root** (next to `package.json`).
+
+Order:
+
+1. Create or edit `<project-root>/firebase.json` (schema snippet below).
+2. Rebuild the native app (or re-run Expo prebuild / EAS Build) so native code picks up the constants.
+
+An example configuration file is available for inspection in the repo test app: [`<repo>/tests/firebase.json`](https://github.com/invertase/react-native-firebase/blob/main/tests/firebase.json).
 
 ## JSON Schema
 
-Add the [Config Schema](https://github.com/invertase/react-native-firebase/blob/main/packages/app/firebase-schema.json) to your `firebase.json` file to use the Editor Intellisense
+Add the [Config Schema](https://github.com/invertase/react-native-firebase/blob/main/packages/app/firebase-schema.json) to your `firebase.json` file to enable editor IntelliSense. The `$schema` path is relative to the project root after `@react-native-firebase/app` is installed:
 
 ```json
+// File: <project-root>/firebase.json. Create or update before the next native build / Expo prebuild.
 {
-  "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json"
+  "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json",
+  "react-native": {}
 }
 ```

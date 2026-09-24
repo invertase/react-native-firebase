@@ -5,29 +5,36 @@ next: /app/json-config
 previous: /storage/usage
 ---
 
-The App module is available by default once you have installed the React Native Firebase library by following the
-[Getting Started](/) documentation. The App module currently provides the following functionality:
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Secondary-app examples below also import `@react-native-firebase/auth` to show passing a secondary app into another module. Install that package only if you use Auth: `npm install --save @react-native-firebase/auth` or `yarn add @react-native-firebase/auth`, then rebuild native apps.
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/app.tsx
+
+The App module ships with `@react-native-firebase/app` and provides:
 
 - Creating [Secondary Firebase App Instances](/app/usage#secondary-apps).
 - Exposing [Utilities](/app/utils) to aid development.
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
 **Platform notes:** `initializeApp` is async on React Native (native bridge). `registerVersion` is **web only** and throws on native platforms.
 
 # Secondary Apps
 
-Unlike the Firebase Web SDK, there is no need to manually call the [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
-method with your project credentials. The native Android & iOS SDKs automatically connect to your Firebase project using
-the credentials provided during the [Getting Started](/) installation steps. The app module does however provide support
+Unlike the Firebase Web SDK, you do not need to manually call [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
+with your default project credentials on Android and iOS. The native Android and iOS SDKs connect to your Firebase project using
+the credentials provided during the [Getting Started](/) installation steps. The app module does provide support
 for manually initializing secondary Firebase app instances.
 
-Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the following services:
+The native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
 - [App Check](/app-check/usage).
 - [Authentication](/auth/usage).
@@ -42,108 +49,139 @@ Currently, the native Firebase SDKs only provide functionality for creating seco
 ## Initializing secondary apps
 
 The module exposes an `initializeApp` method which accepts arguments containing the credentials and options for your secondary
-apps:
+apps. Replace the placeholder credential strings with values from the Firebase console for that secondary project:
 
 ```js
 import { initializeApp } from '@react-native-firebase/app';
 
-// Your secondary Firebase project credentials...
+// Secondary Firebase project credentials (replace placeholders).
 const credentials = {
-  clientId: '',
-  appId: '',
-  apiKey: '',
-  databaseURL: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  projectId: '',
+  clientId: '1234567890-abc.apps.googleusercontent.com',
+  appId: '1:1234567890:ios:abcdef123456',
+  apiKey: 'AIzaSyExampleApiKeyForSecondaryApp',
+  databaseURL: 'https://my-secondary-project.firebaseio.com',
+  storageBucket: 'my-secondary-project.appspot.com',
+  messagingSenderId: '1234567890',
+  projectId: 'my-secondary-project',
 };
 
 const config = {
   name: 'SECONDARY_APP',
 };
 
-await initializeApp(credentials, config);
+async function createSecondaryApp() {
+  const secondaryApp = await initializeApp(credentials, config);
+  return secondaryApp;
+}
 ```
 
-Note that if you use multiple platforms, you will need to use the credentials relevant to that platform:
+If you use multiple platforms, select the credentials for the platform that is running:
 
 ```js
 import { initializeApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 
-// Your secondary Firebase project credentials for Android...
+// Secondary Firebase project credentials for Android (replace placeholders).
 const androidCredentials = {
-  clientId: '',
-  appId: '',
-  apiKey: '',
-  databaseURL: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  projectId: '',
+  clientId: '1234567890-android.apps.googleusercontent.com',
+  appId: '1:1234567890:android:abcdef123456',
+  apiKey: 'AIzaSyExampleAndroidApiKey',
+  databaseURL: 'https://my-secondary-project.firebaseio.com',
+  storageBucket: 'my-secondary-project.appspot.com',
+  messagingSenderId: '1234567890',
+  projectId: 'my-secondary-project',
 };
 
-// Your secondary Firebase project credentials for iOS...
+// Secondary Firebase project credentials for iOS (replace placeholders).
 const iosCredentials = {
-  clientId: '',
-  appId: '',
-  apiKey: '',
-  databaseURL: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  projectId: '',
+  clientId: '1234567890-ios.apps.googleusercontent.com',
+  appId: '1:1234567890:ios:abcdef123456',
+  apiKey: 'AIzaSyExampleIosApiKey',
+  databaseURL: 'https://my-secondary-project.firebaseio.com',
+  storageBucket: 'my-secondary-project.appspot.com',
+  messagingSenderId: '1234567890',
+  projectId: 'my-secondary-project',
 };
-
-// Select the relevant credentials
-const credentials = Platform.select({
-  android: androidCredentials,
-  ios: iosCredentials,
-});
 
 const config = {
   name: 'SECONDARY_APP',
 };
 
-await initializeApp(credentials, config);
+async function createSecondaryAppForPlatform() {
+  const credentials = Platform.select({
+    android: androidCredentials,
+    ios: iosCredentials,
+    default: androidCredentials,
+  });
+
+  const secondaryApp = await initializeApp(credentials, config);
+  return secondaryApp;
+}
 ```
 
-Once created, you can confirm the app instance has been created by accessing the `apps` property on the module:
+Once created, confirm the app instance exists by reading `getApps()`:
 
 ```js
 import { getApps } from '@react-native-firebase/app';
 
-const apps = getApps();
+function listApps() {
+  const apps = getApps();
 
-apps.forEach(app => {
-  console.log('App name: ', app.name);
-});
+  apps.forEach(app => {
+    console.log('App name: ', app.name);
+  });
+}
 ```
 
 ## Switching app instance
 
-You can switch app instances at any time whilst developing by calling the `app` method with the name of the secondary app:
+Switch app instances by calling `getApp` with the secondary app name, then pass that app into another module:
 
 ```js
 import { getApp } from '@react-native-firebase/app';
 import { getAuth } from '@react-native-firebase/auth';
 
-getAuth(getApp('SECONDARY_APP')).currentUser;
+function currentUserOnSecondaryApp() {
+  const secondaryApp = getApp('SECONDARY_APP');
+  return getAuth(secondaryApp).currentUser;
+}
 ```
 
-Or pass the secondary app instance you created above directly to the desired module, for example:
+Or pass the `FirebaseApp` returned from `initializeApp` directly:
 
 ```js
-import { getApp, initializeApp } from '@react-native-firebase/app';
+import { initializeApp } from '@react-native-firebase/app';
 import { getAuth } from '@react-native-firebase/auth';
 
-const secondaryApp = await initializeApp(credentials, config);
+async function currentUserFromInitializedApp() {
+  const credentials = {
+    clientId: '1234567890-abc.apps.googleusercontent.com',
+    appId: '1:1234567890:ios:abcdef123456',
+    apiKey: 'AIzaSyExampleApiKeyForSecondaryApp',
+    databaseURL: 'https://my-secondary-project.firebaseio.com',
+    storageBucket: 'my-secondary-project.appspot.com',
+    messagingSenderId: '1234567890',
+    projectId: 'my-secondary-project',
+  };
 
-getAuth(secondaryApp).currentUser;
+  const config = {
+    name: 'SECONDARY_APP',
+  };
+
+  const secondaryApp = await initializeApp(credentials, config);
+  return getAuth(secondaryApp).currentUser;
+}
 ```
 
 ## Deleting instances
 
-You can delete any secondary instances by calling the `delete` method on the instance:
+Delete a secondary instance with `deleteApp` (or `app.delete()` on the instance):
 
 ```js
-await getApp('SECONDARY_APP').delete();
+import { deleteApp, getApp } from '@react-native-firebase/app';
+
+async function deleteSecondaryApp() {
+  const secondaryApp = getApp('SECONDARY_APP');
+  await deleteApp(secondaryApp);
+}
 ```
