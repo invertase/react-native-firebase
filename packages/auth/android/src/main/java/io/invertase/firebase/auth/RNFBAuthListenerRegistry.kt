@@ -24,6 +24,10 @@ import io.invertase.firebase.common.RNFBHandleMap
  * Auth-state / id-token listener map. Unique [put] / [putOrDiscard]; callers [take] or
  * [takeAllAndRemove] then `remove()` outside the HandleMap lock. Skip-if-registered is
  * `get(appName) != null`.
+ *
+ * Null-key note: [get]/[take]/[takeAndRemove] keep non-null [String] keys. Call sites always
+ * pass TurboModule `appName` (never null). Unlike [RNFBAuthCacheRegistry], no Java path passes a
+ * null lookup key.
  */
 internal class RNFBAuthListenerRegistry {
   private val map = RNFBHandleMap<String, AuthListenerHandle?>()
