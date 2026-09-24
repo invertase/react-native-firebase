@@ -17,11 +17,13 @@
 import Foundation
 
 /**
- * `FIRAuthErrorCode` raw value → JS error-code string mapping previously held in
- * the static sparse array `AuthErrorCode_toJSErrorCode` in `RNFBAuthHelper.m`.
+ * `FIRAuthErrorCode` raw value → JS error-code / message mapping previously held
+ * in `RNFBAuthHelper.m` (`AuthErrorCode_toJSErrorCode` and the message override
+ * `switch` in `+[RNFBAuthHelper getJSError:]`).
  *
- * Called from `+[RNFBAuthHelper getJSError:]`. Unmapped codes return `nil`; the
- * ObjC caller still substitutes `@"unknown"`.
+ * Called from `+[RNFBAuthHelper getJSError:]`. Unmapped codes return `nil`:
+ * - code: ObjC caller substitutes `@"unknown"`
+ * - message: ObjC caller keeps `[error localizedDescription]`
  *
  * Raw ints from Firebase Auth `AuthErrorCode` / `FIRAuthErrorCode`
  * (`FirebaseAuth` `AuthErrors.swift` / generated `FirebaseAuth-Swift.h`).
@@ -269,6 +271,61 @@ public final class RNFBAuthErrorCodeMapper: NSObject {
       return "malformed-jwt"
     case secondFactorRequired:
       return "multi-factor-auth-required"
+    default:
+      return nil
+    }
+  }
+
+  /// Pre-port `getJSError:` message overrides. Unmapped / default → `nil`.
+  @objc(jsErrorMessageForAuthErrorCode:)
+  public static func jsErrorMessage(forAuthErrorCode code: Int) -> String? {
+    switch code {
+    case invalidCustomToken:
+      return "The custom token format is incorrect. Please check the documentation."
+    case customTokenMismatch:
+      return "The custom token corresponds to a different audience."
+    case invalidCredential:
+      return "The supplied auth credential is malformed or has expired."
+    case invalidEmail:
+      return "The email address is badly formatted."
+    case wrongPassword:
+      return "The password is invalid or the user does not have a password."
+    case userMismatch:
+      return "The supplied credentials do not correspond to the previously signed in user."
+    case requiresRecentLogin:
+      return "This operation is sensitive and requires recent authentication. Log in again "
+        + "before retrying this request."
+    case secondFactorRequired:
+      return "Please complete a second factor challenge to finish signing into this account."
+    case accountExistsWithDifferentCredential:
+      return "An account already exists with the same email address but different sign-in "
+        + "credentials. Sign in using a provider associated with this email address."
+    case emailAlreadyInUse:
+      return "The email address is already in use by another account."
+    case credentialAlreadyInUse:
+      return "This credential is already associated with a different user account."
+    case userDisabled:
+      return "The user account has been disabled by an administrator."
+    case userTokenExpired:
+      return "The user's credential is no longer valid. The user must sign in again."
+    case userNotFound:
+      return "There is no user record corresponding to this identifier. The user may have been "
+        + "deleted."
+    case invalidUserToken:
+      return "The user's credential is no longer valid. The user must sign in again."
+    case weakPassword:
+      return "The given password is invalid."
+    case operationNotAllowed:
+      return "This operation is not allowed. You must enable this service in the console."
+    case networkError:
+      return "A network error has occurred, please try again."
+    case internalError:
+      return "An internal error has occurred, please try again."
+    case invalidPhoneNumber:
+      return "The format of the phone number provided is incorrect. "
+        + "Please enter the phone number in a format that can be parsed into E.164 format. "
+        + "E.164 phone numbers are written in the format [+][country code][subscriber "
+        + "number including area code]."
     default:
       return nil
     }
