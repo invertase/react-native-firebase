@@ -41,7 +41,7 @@
 #elif __has_include("RNFBHandleMapStorage-Swift.inc")
 #import "RNFBHandleMapStorage-Swift.inc"
 #else
-#error "RNFBStorageTaskStatusMapper Swift interface not found"
+#error "RNFBStorage Swift interface not found"
 #endif
 
 @implementation RNFBStorageCommon
@@ -472,81 +472,7 @@
 }
 
 + (NSArray *)getErrorCodeMessage:(NSError *)error {
-  NSString *code = @"unknown";
-
-  if (error == nil) {
-    return @[ code, @"An unknown error has occurred." ];
-  }
-
-  NSString *message = [error localizedDescription];
-  NSDictionary *userInfo = [error userInfo];
-  NSError *underlyingError = userInfo[NSUnderlyingErrorKey];
-  NSString *underlyingErrorDescription = [underlyingError localizedDescription];
-
-  switch (error.code) {
-    case FIRStorageErrorCodeUnknown:
-      if ([underlyingErrorDescription
-              isEqualToString:@"The operation couldn’t be completed. Permission denied"]) {
-        code = @"invalid-device-file-path";
-        message = @"The specified device file path is invalid or is restricted.";
-      } else {
-        if (userInfo[@"ResponseBody"]) {
-          message =
-              [NSString stringWithFormat:@"An unknown error has occurred. (underlying reason '%@')",
-                                         userInfo[@"ResponseBody"]];
-        } else {
-          message = @"An unknown error has occurred.";
-        }
-      }
-      break;
-    case FIRStorageErrorCodeObjectNotFound:
-      code = @"object-not-found";
-      message = @"No object exists at the desired reference.";
-      break;
-    case FIRStorageErrorCodeBucketNotFound:
-      code = @"bucket-not-found";
-      message = @"No bucket is configured for Firebase Storage.";
-      break;
-    case FIRStorageErrorCodeProjectNotFound:
-      code = @"project-not-found";
-      message = @"No project is configured for Firebase Storage.";
-      break;
-    case FIRStorageErrorCodeQuotaExceeded:
-      code = @"quota-exceeded";
-      message = @"Quota on your Firebase Storage bucket has been exceeded.";
-      break;
-    case FIRStorageErrorCodeUnauthenticated:
-      code = @"unauthenticated";
-      message = @"User is unauthenticated. Authenticate and try again.";
-      break;
-    case FIRStorageErrorCodeUnauthorized:
-      code = @"unauthorized";
-      message = @"User is not authorized to perform the desired action.";
-      break;
-    case FIRStorageErrorCodeRetryLimitExceeded:
-      code = @"retry-limit-exceeded";
-      message = @"The maximum time limit on an operation (upload, download, delete, etc.) has been "
-                @"exceeded.";
-      break;
-    case FIRStorageErrorCodeNonMatchingChecksum:
-      code = @"non-matching-checksum";
-      message =
-          @"File on the client does not match the checksum of the file received by the server.";
-      break;
-    case FIRStorageErrorCodeDownloadSizeExceeded:
-      code = @"download-size-exceeded";
-      message =
-          @"Size of the downloaded file exceeds the amount of memory allocated for the download.";
-      break;
-    case FIRStorageErrorCodeCancelled:
-      code = @"cancelled";
-      message = @"User cancelled the operation.";
-      break;
-    default:
-      break;
-  }
-
-  return @[ code, message ];
+  return [RNFBStorageErrorCodeMapper codeAndMessageForError:error];
 }
 
 @end
