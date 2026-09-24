@@ -340,6 +340,12 @@ yarn tests:e2e:check   # must exit 0
 
 A live overlapping multi-slot wave must not run `yarn tests:e2e:release --all-slots` until that wave is declared dead.
 
+**Functions build lock.** `yarn tests:emulator:start` takes `.github/workflows/scripts/functions/.build.lock.d` while the functions package builds. A killed start used to leave that directory behind, and the next start waited 300s. A lock whose holder pid is gone is removed automatically. `yarn tests:e2e:release` does not clear it. If a start still fails with `timed out waiting for functions build lock` and no emulator start is running:
+
+```bash
+rm -rf .github/workflows/scripts/functions/.build.lock.d
+```
+
 Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([what not to do](#what-not-to-do)).
 
 **Packager start** — `yarn tests:packager:jet` / `jet-reset-cache` (and macOS variants). Honor `RCT_METRO_PORT`. **Always kill** the listener on that port (SIGTERM then SIGKILL of **that port’s PIDs**), then start clean — a control layer (human or Mellifera) owns the slot, so reuse detection is not required. `TMPDIR` is per listen port (e.g. `$HOME/.metro/rnfb-${RCT_METRO_PORT}`). Wait until `http://127.0.0.1:${RCT_METRO_PORT}/status` contains `packager-status:running` (long documented timeout), then succeed or **fail** — no hidden restart inside `:test-cover`. Before start, drop a stale Watchman watch for **this Metro project root** and watch **only** the trees Metro would reload (allowlist), not the whole monorepo plus native `*/build`.

@@ -164,23 +164,41 @@ PY
 echo "[emulator-${TAG}] config=${CONFIG} firestore=${FS_PORT} functions=${FN_PORT} websocket=${WS_PORT} eventarc=${EVENTARC_PORT} tasks=${TASKS_PORT}"
 
 LOCK_DIR="${SCRIPTS}/functions/.build.lock.d"
+LOCK_PID="${LOCK_DIR}/pid"
 mkdir -p "${SCRIPTS}/functions"
+cleanup_lock() { rm -rf "${LOCK_DIR}" 2>/dev/null || true; }
+# Empty lock, or a pid that is gone: a killed start never ran the EXIT trap.
+lock_holder_dead() {
+  [[ -f "${LOCK_PID}" ]] || return 0
+  local holder
+  holder="$(cat "${LOCK_PID}" 2>/dev/null || true)"
+  [[ -n "${holder}" ]] || return 0
+  kill -0 "${holder}" 2>/dev/null && return 1
+  return 0
+}
 deadline=$((SECONDS + 300))
-while ! mkdir "${LOCK_DIR}" 2>/dev/null; do
+while true; do
+  if mkdir "${LOCK_DIR}" 2>/dev/null; then
+    echo $$ >"${LOCK_PID}"
+    break
+  fi
+  if lock_holder_dead; then
+    cleanup_lock
+    continue
+  fi
   if (( SECONDS >= deadline )); then
-    echo "error: timed out waiting for functions build lock ${LOCK_DIR}" >&2
+    echo "error: timed out waiting for functions build lock ${LOCK_DIR} (holder still running). If the holder is gone: rm -rf ${LOCK_DIR}" >&2
     exit 1
   fi
   sleep 1
 done
-cleanup_lock() { rmdir "${LOCK_DIR}" 2>/dev/null || true; }
-trap cleanup_lock EXIT
+trap cleanup_lock EXIT INT TERM
 pushd "${SCRIPTS}/functions" >/dev/null
 yarn >/dev/null 2>&1 || yarn
 yarn build
 popd >/dev/null
 cleanup_lock
-trap - EXIT
+trap - EXIT INT TERM
 
 EMU_LOG="${RNFB_EMULATOR_LOG:-/tmp/rnfb-emulator-${TAG}-s${SLOT}.log}"
 READY_TIMEOUT="${RNFB_EMULATOR_READY_TIMEOUT:-300}"
