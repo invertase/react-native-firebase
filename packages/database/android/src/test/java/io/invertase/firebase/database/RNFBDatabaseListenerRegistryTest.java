@@ -110,6 +110,37 @@ public class RNFBDatabaseListenerRegistryTest {
   }
 
   @Test
+  public void getValue_nullKey_returnsNull_noNpe() {
+    RNFBDatabaseListenerRegistry registry = new RNFBDatabaseListenerRegistry();
+    assertNull(registry.getValue(null));
+  }
+
+  @Test
+  public void getChild_nullKey_returnsNull_noNpe() {
+    RNFBDatabaseListenerRegistry registry = new RNFBDatabaseListenerRegistry();
+    assertNull(registry.getChild(null));
+  }
+
+  @Test
+  public void takeValue_nullKey_returnsNull_noNpe() {
+    RNFBDatabaseListenerRegistry registry = new RNFBDatabaseListenerRegistry();
+    assertNull(registry.takeValue(null));
+    assertFalse(registry.hasListeners());
+  }
+
+  @Test
+  public void takeChild_nullKey_returnsNull_noNpe() {
+    RNFBDatabaseListenerRegistry registry = new RNFBDatabaseListenerRegistry();
+    assertNull(registry.takeChild(null));
+  }
+
+  @Test
+  public void hasEventListener_nullKey_returnsFalse_noNpe() {
+    RNFBDatabaseListenerRegistry registry = new RNFBDatabaseListenerRegistry();
+    assertFalse(registry.hasEventListener(null));
+  }
+
+  @Test
   public void takeChild_missingKey_isNoOp() {
     RNFBDatabaseListenerRegistry registry = new RNFBDatabaseListenerRegistry();
     assertNull(registry.takeChild("missing"));
