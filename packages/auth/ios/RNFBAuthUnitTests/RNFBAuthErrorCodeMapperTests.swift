@@ -64,6 +64,118 @@ final class RNFBAuthErrorCodeMapperTests: XCTestCase {
     XCTAssertNil(RNFBAuthErrorCodeMapper.jsErrorCode(forAuthErrorCode: -1))
   }
 
+  /// Sample of known FIRAuthErrorCode raw values → JS message overrides.
+  func testSampleKnownMessageOverrides() {
+    XCTAssertEqual(
+      RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17000),
+      "The custom token format is incorrect. Please check the documentation."
+    )
+    XCTAssertEqual(
+      RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17008),
+      "The email address is badly formatted."
+    )
+    XCTAssertEqual(
+      RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17020),
+      "A network error has occurred, please try again."
+    )
+    XCTAssertEqual(
+      RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17078),
+      "Please complete a second factor challenge to finish signing into this account."
+    )
+    XCTAssertEqual(
+      RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17999),
+      "An internal error has occurred, please try again."
+    )
+    XCTAssertEqual(
+      RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17042),
+      "The format of the phone number provided is incorrect. "
+        + "Please enter the phone number in a format that can be parsed into E.164 format. "
+        + "E.164 phone numbers are written in the format [+][country code][subscriber "
+        + "number including area code]."
+    )
+  }
+
+  func testUnknownMessageOverrideReturnsNil() {
+    XCTAssertNil(RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 0))
+    XCTAssertNil(RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17001))
+    XCTAssertNil(RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 17034))
+    XCTAssertNil(RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: 99999))
+    XCTAssertNil(RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: -1))
+  }
+
+  /// Full table — every pre-port `getJSError:` message override (coverage of switch DA).
+  func testAllPrePortMessageOverrides() {
+    let expected: [(Int, String)] = [
+      (
+        17000,
+        "The custom token format is incorrect. Please check the documentation."
+      ),
+      (17002, "The custom token corresponds to a different audience."),
+      (17004, "The supplied auth credential is malformed or has expired."),
+      (17008, "The email address is badly formatted."),
+      (17009, "The password is invalid or the user does not have a password."),
+      (
+        17024,
+        "The supplied credentials do not correspond to the previously signed in user."
+      ),
+      (
+        17014,
+        "This operation is sensitive and requires recent authentication. Log in again "
+          + "before retrying this request."
+      ),
+      (
+        17078,
+        "Please complete a second factor challenge to finish signing into this account."
+      ),
+      (
+        17012,
+        "An account already exists with the same email address but different sign-in "
+          + "credentials. Sign in using a provider associated with this email address."
+      ),
+      (17007, "The email address is already in use by another account."),
+      (
+        17025,
+        "This credential is already associated with a different user account."
+      ),
+      (17005, "The user account has been disabled by an administrator."),
+      (
+        17021,
+        "The user's credential is no longer valid. The user must sign in again."
+      ),
+      (
+        17011,
+        "There is no user record corresponding to this identifier. The user may have been "
+          + "deleted."
+      ),
+      (
+        17017,
+        "The user's credential is no longer valid. The user must sign in again."
+      ),
+      (17026, "The given password is invalid."),
+      (
+        17006,
+        "This operation is not allowed. You must enable this service in the console."
+      ),
+      (17020, "A network error has occurred, please try again."),
+      (17999, "An internal error has occurred, please try again."),
+      (
+        17042,
+        "The format of the phone number provided is incorrect. "
+          + "Please enter the phone number in a format that can be parsed into E.164 format. "
+          + "E.164 phone numbers are written in the format [+][country code][subscriber "
+          + "number including area code]."
+      ),
+    ]
+
+    for (code, message) in expected {
+      XCTAssertEqual(
+        RNFBAuthErrorCodeMapper.jsErrorMessage(forAuthErrorCode: code),
+        message,
+        "FIRAuthErrorCode raw \(code) message override"
+      )
+    }
+  }
+
   /// Full table — preserves every pre-port sparse-array entry (coverage of switch DA).
   func testAllPrePortMappings() {
     let expected: [(Int, String)] = [
