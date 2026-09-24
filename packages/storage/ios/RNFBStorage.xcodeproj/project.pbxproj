@@ -15,6 +15,7 @@
 		RNFBSTOR0000000000000001 /* RNFBStorageTaskRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBSTOR0000000000000002 /* RNFBStorageTaskRegistry.m */; };
 		RNFBSTOR0000000000000003 /* RNFBStorageTaskRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBSTOR0000000000000004 /* RNFBStorageTaskRegistryStorage.swift */; };
 		RNFBSTOR0000000000000006 /* RNFBStorageTaskStatusMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBSTOR0000000000000007 /* RNFBStorageTaskStatusMapper.swift */; };
+		RNFBSTOR0000000000000008 /* RNFBStorageErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBSTOR0000000000000009 /* RNFBStorageErrorCodeMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +46,7 @@
 		RNFBSTOR0000000000000002 /* RNFBStorageTaskRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBStorageTaskRegistry.m; path = RNFBStorage/RNFBStorageTaskRegistry.m; sourceTree = SOURCE_ROOT; };
 		RNFBSTOR0000000000000004 /* RNFBStorageTaskRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskRegistryStorage.swift; path = RNFBStorage/RNFBStorageTaskRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 		RNFBSTOR0000000000000007 /* RNFBStorageTaskStatusMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskStatusMapper.swift; path = RNFBStorage/RNFBStorageTaskStatusMapper.swift; sourceTree = SOURCE_ROOT; };
+		RNFBSTOR0000000000000009 /* RNFBStorageErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageErrorCodeMapper.swift; path = RNFBStorage/RNFBStorageErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,7 @@
 				RNFBSTOR0000000000000002 /* RNFBStorageTaskRegistry.m */,
 				RNFBSTOR0000000000000004 /* RNFBStorageTaskRegistryStorage.swift */,
 				RNFBSTOR0000000000000007 /* RNFBStorageTaskStatusMapper.swift */,
+				RNFBSTOR0000000000000009 /* RNFBStorageErrorCodeMapper.swift */,
 				27A35B612268E0AB005BE5A8 /* RNFBStorageTask.m */,
 				27A35B632268E0CD005BE5A8 /* RNFBStorageTask.h */,
 				27A35B642268E118005BE5A8 /* RNFBStorageDownloadTask.m */,
@@ -155,6 +158,7 @@
 			files = (
 				RNFBSTOR0000000000000003 /* RNFBStorageTaskRegistryStorage.swift in Sources */,
 				RNFBSTOR0000000000000006 /* RNFBStorageTaskStatusMapper.swift in Sources */,
+				RNFBSTOR0000000000000008 /* RNFBStorageErrorCodeMapper.swift in Sources */,
 				RNFBSTOR0000000000000001 /* RNFBStorageTaskRegistry.m in Sources */,
 				27A35B622268E0AB005BE5A8 /* RNFBStorageTask.m in Sources */,
 				27A35B6B2268E1BE005BE5A8 /* RNFBStorageCommon.m in Sources */,
