@@ -7,14 +7,61 @@
 #
 # Leftover slots 0..E2E_SLOTTED_MAX are collected only with --all-slots (E2E_ALL_SLOTS=1).
 # Default check/release is serial ports/devices only.
-# Aligned with Detox slot configs 0–4 (tests/.detoxrc.js).
-E2E_SLOTTED_MAX="${E2E_SLOTTED_MAX:-${E2E_MACOS_SLOTTED_MAX:-4}}"
+# Aligned with Detox slot configs 0–7 (tests/.detoxrc.js).
+# Env may lower the leftover-sweep ceiling (tests). Raising above the Detox hard
+# max is unsafe — env selection never accepts a slot past E2E_SLOTTED_HARD_MAX.
+E2E_SLOTTED_HARD_MAX=7
+E2E_SLOTTED_MAX="${E2E_SLOTTED_MAX:-${E2E_MACOS_SLOTTED_MAX:-$E2E_SLOTTED_HARD_MAX}}"
 #
 # macOS: concurrent slots require distinct PRODUCT_NAME via RNFB_MACOS_PRODUCT_NAME
 # (io.invertase.testing.s${SLOT}). Do not pass PRODUCT_NAME= on the xcodebuild CLI —
 # yarn tests:macos:build derives RNFB_MACOS_PRODUCT_NAME_SUFFIX for pbxproj expansion.
 #
 # shellcheck shell=bash
+
+# Effective slot ceiling for selection and every all-slot resource sweep:
+# documented E2E_SLOTTED_MAX, never above Detox 0–7.
+e2e_effective_slot_max() {
+  local max="${E2E_SLOTTED_MAX:-$E2E_SLOTTED_HARD_MAX}"
+  if ! [[ "$max" =~ ^[0-9]+$ ]]; then
+    echo "$E2E_SLOTTED_HARD_MAX"
+    return 0
+  fi
+  if ((max > E2E_SLOTTED_HARD_MAX)); then
+    echo "$E2E_SLOTTED_HARD_MAX"
+  else
+    echo "$max"
+  fi
+}
+
+# Fail-fast before any slot env is computed or printed. Decimal integer only
+# (no sign, fraction, or leading zeros except 0).
+e2e_validate_slot() {
+  local slot=$1
+  local max
+  max=$(e2e_effective_slot_max)
+  if ! [[ "$slot" =~ ^[0-9]+$ ]] || [[ "$slot" =~ ^0[0-9] ]]; then
+    echo "error: slot must be an integer 0..${max} (got ${slot})" >&2
+    return 1
+  fi
+  if ((slot > max)); then
+    echo "error: slot must be an integer 0..${max} (got ${slot})" >&2
+    return 1
+  fi
+  return 0
+}
+
+# Provisioning count maps directly to slots 0..count-1 and is intentionally
+# bounded by the hard Detox inventory, independent of a lowered sweep override.
+e2e_validate_slot_count() {
+  local count=$1
+  local max_count=$((E2E_SLOTTED_HARD_MAX + 1))
+  if ! [[ "$count" =~ ^[1-9][0-9]*$ ]] || ((count > max_count)); then
+    echo "error: count must be an integer 1..${max_count} (got ${count})" >&2
+    return 2
+  fi
+  return 0
+}
 
 e2e_slot_platform_offset() {
   case "$1" in
@@ -121,6 +168,7 @@ e2e_slot_env_apply() {
   local slot=$2
   local base off blk metro jet jc
 
+  e2e_validate_slot "$slot" || return 1
   base=$(e2e_slot_base "$slot")
   off=$(e2e_slot_platform_offset "$platform") || return 1
   blk=$((base + off))
@@ -142,7 +190,7 @@ e2e_slot_env_apply() {
   export JET_REMOTE_PORT="$jet" RNFB_JET_CONTROL_PORT="$jc"
 
   # Slot-owned device / process identity for every platform in this worktree wave.
-  # Slotted slot 0 uses TestingAVD-0 / RNFB E2E iOS slot-0 (not serial TestingAVD /
+  # Slotted slot 0 uses TestingAVD-0 / RN E2E iOS slot-0 (not serial TestingAVD /
   # iPhone 17) so a slotted wave can run beside an unslotted serial run safely.
   # check/release use these so a slot-N env never falls back to serial defaults
   # that would hit other slots or wipe-all .s0..sN.
@@ -153,7 +201,7 @@ e2e_slot_env_apply() {
   export RNFB_ANDROID_CONSOLE_PORT="$(e2e_slot_android_console_port "$slot")"
   export ANDROID_SERIAL="emulator-${RNFB_ANDROID_CONSOLE_PORT}"
   export RNFB_DETOX_IOS_CONFIG="ios.sim.debug.slot${slot}"
-  export RNFB_IOS_SIMULATOR="RNFB E2E iOS slot-${slot}"
+  export RNFB_IOS_SIMULATOR="RN E2E iOS slot-${slot}"
   export RNFB_MACOS_PRODUCT_NAME="${RNFB_MACOS_PRODUCT_NAME_OVERRIDE:-io.invertase.testing.s${slot}}"
   export RNFB_MACOS_BUNDLE_IDENTIFIER="${RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE:-org.reactjs.native.${RNFB_MACOS_PRODUCT_NAME//./-}}"
 

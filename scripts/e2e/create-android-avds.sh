@@ -4,7 +4,13 @@
 # Serial unslotted runs keep using TestingAVD; slotted slot 0 uses TestingAVD-0.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/e2e-slot-env.sh
+source "${SCRIPT_DIR}/lib/e2e-slot-env.sh"
+
 COUNT="${1:-1}"
+e2e_validate_slot_count "$COUNT"
+
 BASE_AVD="${RNFB_ANDROID_BASE_AVD:-TestingAVD}"
 ANDROID_HOME="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}"
 AVD_DIR="${ANDROID_AVD_HOME:-$HOME/.android/avd}"
@@ -44,11 +50,6 @@ clone_avd() {
     }
   " "$dst_ini" "${dst_avd}/config.ini" "$src" "$dst"
 }
-
-if [[ "$COUNT" -lt 1 ]]; then
-  echo "error: count must be >= 1 (got ${COUNT})" >&2
-  exit 2
-fi
 
 for ((i = 0; i < COUNT; i++)); do
   clone_avd "$BASE_AVD" "${BASE_AVD}-${i}"

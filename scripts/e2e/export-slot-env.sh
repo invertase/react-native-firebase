@@ -13,7 +13,7 @@
 #   yarn tests:e2e:release [--devices]
 #
 # Always sets full RNFB_{ANDROID,IOS,MACOS}_* ports plus slot device identities
-# (TestingAVD-N / RNFB E2E iOS slot-N / RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot>).
+# (TestingAVD-N / RN E2E iOS slot-N / RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.s<slot>).
 # Pins RNFB_ANDROID_CONSOLE_PORT=$((5556+2*slot)) and ANDROID_SERIAL=emulator-${port}
 # (adb-safe; not FreePortFinder 10000–20000). Emits unset for other parent leftovers
 # (AVD_NAME, …) that apply clears.
@@ -26,6 +26,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/e2e-slot-env.sh"
 
 PLATFORM="${1:?platform required: android|ios|macos}"
-SLOT="${2:?slot required: non-negative integer}"
+SLOT="${2:?slot required: integer 0..E2E_SLOTTED_MAX}"
 
 e2e_slot_env_print "$PLATFORM" "$SLOT"

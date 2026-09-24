@@ -44,9 +44,12 @@ function iosXcodebuildPrefix() {
 
 // Slotted devices (including slot 0) — distinct from serial iPhone 17 / TestingAVD
 // so a slotted wave can run beside an unslotted serial run.
+const E2E_SLOTTED_MAX = 7;
+
 function iosSimulatorDevice(slot) {
   const deviceType = process.env.RNFB_IOS_BASE_SIMULATOR || 'iPhone 17';
-  const slotName = `RNFB E2E iOS slot-${slot}`;
+  // Patched Detox must reuse this exact neutral base or fail if it is allocated.
+  const slotName = `RN E2E iOS slot-${slot}`;
   return {
     type: 'ios.simulator',
     device: { type: deviceType, name: slotName },
@@ -114,7 +117,7 @@ const devices = {
   },
 };
 
-for (let slot = 0; slot < 5; slot += 1) {
+for (let slot = 0; slot <= E2E_SLOTTED_MAX; slot += 1) {
   devices[`simulator-slot${slot}`] = iosSimulatorDevice(slot);
   devices[`emulator-slot${slot}`] = androidEmulatorDevice(slot);
 }
@@ -139,7 +142,7 @@ const apps = {
   },
 };
 
-for (let slot = 0; slot < 5; slot += 1) {
+for (let slot = 0; slot <= E2E_SLOTTED_MAX; slot += 1) {
   apps[`android.debug.slot${slot}`] = androidApp(ANDROID_REVERSE_DEFAULT);
   apps[`android.debug.slot${slot}.windows`] = androidAppWindows(ANDROID_REVERSE_DEFAULT);
 }
@@ -154,7 +157,7 @@ const configurations = {
   'android.emu.release': { device: 'emulator', app: 'android.release' },
 };
 
-for (let slot = 0; slot < 5; slot += 1) {
+for (let slot = 0; slot <= E2E_SLOTTED_MAX; slot += 1) {
   configurations[`ios.sim.debug.slot${slot}`] = {
     device: `simulator-slot${slot}`,
     app: 'ios.debug',

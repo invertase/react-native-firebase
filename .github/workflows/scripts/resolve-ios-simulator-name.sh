@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Resolve the iOS simulator *device name* for boot-simulator.sh (CI + Jet reboot).
-# Prefer RNFB_IOS_SIMULATOR (slot env already exports `RNFB E2E iOS slot-N`;
+# Prefer RNFB_IOS_SIMULATOR (slot env already exports `RN E2E iOS slot-N`;
 # serial default follows scripts/e2e/create-ios-simulators.sh / E2E_DEFAULT_IOS_SIMULATOR /
 # RNFB_IOS_BASE_SIMULATOR). Detoxrc fallback skips comment lines so a comment
 # mentioning iPhone cannot become the device name.

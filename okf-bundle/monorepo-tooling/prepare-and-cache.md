@@ -105,7 +105,7 @@ Add `nx.json`; keep the `yarn lerna:prepare` entrypoint name, with `NX_NO_CLOUD`
 
 Most packages' `prepare` is bob transpile (`lib/**` → `dist/**`) and is correctly cached under [MonoTool-AD-11](architecture-decisions.md#monotool-ad-11--scope-prepare-cache-inputs-with-a-jssource-namedinput--accepted). The **tests** and **tests-macos** workspaces are different: their `prepare` script is **`patch-package`**, which mutates that app's `node_modules/**`.
 
-- **`tests/`** (mobile RN **0.86.2**): still runs `patch-package` for non-fmt patches (e.g. `@firebase+rules-unit-testing`). Mobile RN ships fmt **12.1.0** upstream; there is **no** `tests/patches/react-native+*.patch` fmt bump.
+- **`tests/`** (mobile RN **0.86.2**): still runs `patch-package` for non-fmt patches (e.g. `@firebase+rules-unit-testing`, [`detox+20.51.0.patch`](../../tests/patches/detox+20.51.0.patch) — [iOS slot simulators](../testing/running-e2e.md#ios-slot-simulators)). Mobile RN ships fmt **12.1.0** upstream; there is **no** `tests/patches/react-native+*.patch` fmt bump.
 - **`tests-macos/`** (RN **0.78.3** + `react-native-macos@0.78.6`): applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch) (fmt **12.1.0**) and the macos patch.
 
 Those targets must set **`"cache": false`** on the project-level Nx `prepare` override. Reasons:
