@@ -1,0 +1,245 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CL100000000000000000000B /* RNFBCrashlyticsDebuggerProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000009 /* RNFBCrashlyticsDebuggerProbe.swift */; };
+		CL100000000000000000000C /* RNFBCrashlyticsDebuggerProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CL100000000000000000000D /* RNFBCrashlyticsDebuggerProbeTests.swift */; };
+		CL1000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000014 /* XCTest.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CL1000000000000000000003 /* RNFBCrashlyticsUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBCrashlyticsUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CL1000000000000000000009 /* RNFBCrashlyticsDebuggerProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBCrashlyticsDebuggerProbe.swift; path = ../RNFBCrashlytics/RNFBCrashlyticsDebuggerProbe.swift; sourceTree = SOURCE_ROOT; };
+		CL100000000000000000000D /* RNFBCrashlyticsDebuggerProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBCrashlyticsDebuggerProbeTests.swift; sourceTree = "<group>"; };
+		CL1000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CL1000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CL1000000000000000000015 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CL1000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				CL1000000000000000000006 /* Sources */,
+				CL1000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CL1000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CL1000000000000000000003 /* RNFBCrashlyticsUnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CL1000000000000000000006 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				CL1000000000000000000009 /* RNFBCrashlyticsDebuggerProbe.swift */,
+				CL100000000000000000000D /* RNFBCrashlyticsDebuggerProbeTests.swift */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CL1000000000000000000002 /* RNFBCrashlyticsUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CL1000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBCrashlyticsUnitTests" */;
+			buildPhases = (
+				CL1000000000000000000016 /* Sources */,
+				CL1000000000000000000012 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFBCrashlyticsUnitTests;
+			productName = RNFBCrashlyticsUnitTests;
+			productReference = CL1000000000000000000003 /* RNFBCrashlyticsUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CL1000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					CL1000000000000000000002 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = CL1000000000000000000017 /* Build configuration list for PBXProject "RNFBCrashlyticsUnitTests" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CL1000000000000000000004;
+			productRefGroup = CL1000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CL1000000000000000000002 /* RNFBCrashlyticsUnitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CL1000000000000000000016 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CL100000000000000000000B /* RNFBCrashlyticsDebuggerProbe.swift in Sources */,
+				CL100000000000000000000C /* RNFBCrashlyticsDebuggerProbeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CL1000000000000000000018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		CL1000000000000000000019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		CL100000000000000000001A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../RNFBCrashlytics",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fprofile-instr-generate",
+					"-fcoverage-mapping",
+				);
+				OTHER_LDFLAGS = (
+					"-fprofile-instr-generate",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBCrashlyticsUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBCrashlyticsDebuggerProbe-Swift.inc";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		CL100000000000000000001B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../RNFBCrashlytics",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBCrashlyticsUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBCrashlyticsDebuggerProbe-Swift.inc";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CL1000000000000000000017 /* Build configuration list for PBXProject "RNFBCrashlyticsUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CL1000000000000000000018 /* Debug */,
+				CL1000000000000000000019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CL1000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBCrashlyticsUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CL100000000000000000001A /* Debug */,
+				CL100000000000000000001B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CL1000000000000000000001 /* Project object */;
+}
