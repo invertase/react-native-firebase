@@ -16,248 +16,34 @@
  */
 
 #import "RNFBMessagingSerializer.h"
-#import <React/RCTConvert.h>
-#include <limits.h>
+
+#if __has_include(<RNFBMessaging/RNFBMessaging-Swift.h>)
+#import <RNFBMessaging/RNFBMessaging-Swift.h>
+#elif __has_include("RNFBMessaging-Swift.h")
+#import "RNFBMessaging-Swift.h"
+#elif __has_include("RNFBMessagingSerializerStorage-Swift.inc")
+#import "RNFBMessagingSerializerStorage-Swift.inc"
+#else
+#error "RNFBMessagingSerializerStorage Swift interface not found"
+#endif
 
 @implementation RNFBMessagingSerializer
 
 + (nullable NSData *)APNSTokenDataFromNSString:(NSString *)token {
-  NSString *string = [token lowercaseString];
-  NSUInteger length = string.length;
-  if (length == 0 || length % 2 != 0) {
-    return nil;
-  }
-
-  NSMutableData *data = [NSMutableData dataWithLength:length / 2];
-  unsigned char *bytes = data.mutableBytes;
-  for (NSUInteger i = 0; i < length; i += 2) {
-    unichar highCharacter = [string characterAtIndex:i];
-    unichar lowCharacter = [string characterAtIndex:i + 1];
-    if ((highCharacter < '0' || (highCharacter > '9' && highCharacter < 'a') ||
-         highCharacter > 'f') ||
-        (lowCharacter < '0' || (lowCharacter > '9' && lowCharacter < 'a') || lowCharacter > 'f')) {
-      return nil;
-    }
-
-    unsigned char high = highCharacter <= '9' ? highCharacter - '0' : highCharacter - 'a' + 10;
-    unsigned char low = lowCharacter <= '9' ? lowCharacter - '0' : lowCharacter - 'a' + 10;
-    bytes[i / 2] = (high << 4) | low;
-  }
-  return data;
+  return [RNFBMessagingSerializerStorage APNSTokenDataFromNSString:token];
 }
 
 + (NSString *)APNSTokenFromNSData:(NSData *)tokenData {
-  const char *data = [tokenData bytes];
-
-  NSMutableString *token = [NSMutableString string];
-  for (NSInteger i = 0; i < tokenData.length; i++) {
-    [token appendFormat:@"%02.2hhX", data[i]];
-  }
-
-  return [token copy];
+  return [RNFBMessagingSerializerStorage APNSTokenFromNSData:tokenData];
 }
 
 + (NSDictionary *)notificationToDict:(UNNotification *)notification {
-  return [self remoteMessageUserInfoToDict:notification.request.content.userInfo];
+  return [RNFBMessagingSerializerStorage
+      remoteMessageUserInfoToDict:notification.request.content.userInfo];
 }
 
 + (NSDictionary *)remoteMessageUserInfoToDict:(NSDictionary *)userInfo {
-  NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
-  NSMutableDictionary *notificationIOS = [[NSMutableDictionary alloc] init];
-
-  // message.data
-  for (id key in userInfo) {
-    // message.messageId
-    if ([key isEqualToString:@"gcm.message_id"] || [key isEqualToString:@"google.message_id"] ||
-        [key isEqualToString:@"message_id"]) {
-      message[@"messageId"] = userInfo[key];
-      continue;
-    }
-
-    // message.messageType
-    if ([key isEqualToString:@"message_type"]) {
-      message[@"messageType"] = userInfo[key];
-      continue;
-    }
-
-    // message.collapseKey
-    if ([key isEqualToString:@"collapse_key"]) {
-      message[@"collapseKey"] = userInfo[key];
-      continue;
-    }
-
-    // message.from
-    if ([key isEqualToString:@"from"] || [key isEqualToString:@"google.c.sender.id"]) {
-      message[@"from"] = userInfo[key];
-      continue;
-    }
-
-    // message.sentTime
-    if ([key isEqualToString:@"google.c.a.ts"]) {
-      id timestamp = userInfo[key];
-      NSString *timestampString = nil;
-      if ([timestamp isKindOfClass:[NSString class]]) {
-        timestampString = timestamp;
-      } else if ([timestamp isKindOfClass:[NSNumber class]]) {
-        timestampString = [timestamp stringValue];
-      }
-
-      BOOL isDecimalInteger = timestampString.length > 0;
-      for (NSUInteger i = 0; i < timestampString.length && isDecimalInteger; i++) {
-        unichar character = [timestampString characterAtIndex:i];
-        isDecimalInteger = character >= '0' && character <= '9';
-      }
-
-      if (isDecimalInteger) {
-        long long sentTimeSeconds = timestampString.longLongValue;
-        if (sentTimeSeconds > 0 && sentTimeSeconds <= LLONG_MAX / 1000) {
-          message[@"sentTime"] = @(sentTimeSeconds * 1000);
-        }
-      }
-      continue;
-    }
-
-    // message.to
-    if ([key isEqualToString:@"to"] || [key isEqualToString:@"google.to"]) {
-      message[@"to"] = userInfo[key];
-      continue;
-    }
-
-    // build data dict from remaining keys but skip keys that shouldn't be included in data
-    if ([key isEqualToString:@"aps"] || [key hasPrefix:@"gcm."] || [key hasPrefix:@"google."]) {
-      continue;
-    }
-    data[key] = userInfo[key];
-  }
-  message[@"data"] = data;
-
-  if (userInfo[@"aps"] != nil) {
-    NSDictionary *apsDict = userInfo[@"aps"];
-    // message.category
-    if (apsDict[@"category"] != nil) {
-      message[@"category"] = apsDict[@"category"];
-    }
-
-    // message.threadId
-    if (apsDict[@"thread-id"] != nil) {
-      message[@"threadId"] = apsDict[@"thread-id"];
-    }
-
-    // message.contentAvailable
-    if (apsDict[@"content-available"] != nil) {
-      message[@"contentAvailable"] = @([RCTConvert BOOL:apsDict[@"content-available"]]);
-    }
-
-    // message.mutableContent
-    if (apsDict[@"mutable-content"] != nil && [apsDict[@"mutable-content"] intValue] == 1) {
-      message[@"mutableContent"] = @([RCTConvert BOOL:apsDict[@"mutable-content"]]);
-    }
-
-    // iOS only
-    // message.notification.ios.badge
-    id badge = apsDict[@"badge"];
-    if (badge != nil) {
-      notificationIOS[@"badge"] = [badge description];
-    }
-
-    // message.notification.*
-    if (apsDict[@"alert"] != nil) {
-      // can be a string or dictionary
-      if ([apsDict[@"alert"] isKindOfClass:[NSString class]]) {
-        // message.notification.title
-        notification[@"title"] = apsDict[@"alert"];
-      } else if ([apsDict[@"alert"] isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *apsAlertDict = apsDict[@"alert"];
-
-        // message.notification.title
-        if (apsAlertDict[@"title"] != nil) {
-          notification[@"title"] = apsAlertDict[@"title"];
-        }
-
-        // message.notification.titleLocKey
-        if (apsAlertDict[@"title-loc-key"] != nil) {
-          notification[@"titleLocKey"] = apsAlertDict[@"title-loc-key"];
-        }
-
-        // message.notification.titleLocArgs
-        if (apsAlertDict[@"title-loc-args"] != nil) {
-          notification[@"titleLocArgs"] = apsAlertDict[@"title-loc-args"];
-        }
-
-        // message.notification.body
-        if (apsAlertDict[@"body"] != nil) {
-          notification[@"body"] = apsAlertDict[@"body"];
-        }
-
-        // message.notification.bodyLocKey
-        if (apsAlertDict[@"loc-key"] != nil) {
-          notification[@"bodyLocKey"] = apsAlertDict[@"loc-key"];
-        }
-
-        // message.notification.bodyLocArgs
-        if (apsAlertDict[@"loc-args"] != nil) {
-          notification[@"bodyLocArgs"] = apsAlertDict[@"loc-args"];
-        }
-
-        // iOS only
-        // message.notification.ios.subtitle
-        if (apsAlertDict[@"subtitle"] != nil) {
-          notificationIOS[@"subtitle"] = apsAlertDict[@"subtitle"];
-        }
-
-        // iOS only
-        // message.notification.ios.subtitleLocKey
-        if (apsAlertDict[@"subtitle-loc-key"] != nil) {
-          notificationIOS[@"subtitleLocKey"] = apsAlertDict[@"subtitle-loc-key"];
-        }
-
-        // iOS only
-        // message.notification.ios.subtitleLocArgs
-        if (apsAlertDict[@"subtitle-loc-args"] != nil) {
-          notificationIOS[@"subtitleLocArgs"] = apsAlertDict[@"subtitle-loc-args"];
-        }
-      }
-    }
-
-    // message.notification.ios.sound
-    if (apsDict[@"sound"] != nil) {
-      if ([apsDict[@"sound"] isKindOfClass:[NSString class]]) {
-        // message.notification.ios.sound
-        notificationIOS[@"sound"] = apsDict[@"sound"];
-      } else if ([apsDict[@"sound"] isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *apsSoundDict = apsDict[@"sound"];
-        NSMutableDictionary *notificationIOSSound = [[NSMutableDictionary alloc] init];
-
-        // message.notification.ios.sound.name String
-        if (apsSoundDict[@"name"] != nil) {
-          notificationIOSSound[@"name"] = apsSoundDict[@"name"];
-        }
-
-        // message.notification.ios.sound.critical Boolean
-        if (apsSoundDict[@"critical"] != nil) {
-          notificationIOSSound[@"critical"] = @([RCTConvert BOOL:apsSoundDict[@"critical"]]);
-        }
-
-        // message.notification.ios.sound.volume Number
-        if (apsSoundDict[@"volume"] != nil) {
-          notificationIOSSound[@"volume"] = apsSoundDict[@"volume"];
-        }
-
-        // message.notification.ios.sound
-        notificationIOS[@"sound"] = notificationIOSSound;
-      }
-    }
-  }
-  if ([notificationIOS count] > 0) {
-    notification[@"ios"] = notificationIOS;
-  }
-  if ([notification count] > 0) {
-    message[@"notification"] = notification;
-  }
-
-  return message;
+  return [RNFBMessagingSerializerStorage remoteMessageUserInfoToDict:userInfo];
 }
 
 @end

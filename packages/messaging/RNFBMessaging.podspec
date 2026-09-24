@@ -28,6 +28,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
+  s.swift_version       = '5.10'
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.public_header_files = [
     'ios/RNFBMessaging/RNFBMessagingModule.h',
@@ -37,9 +38,13 @@ Pod::Spec.new do |s|
     'ios/RNFBMessaging/RNFBMessagingSerializer.h',
     'ios/generated/**/*.h',
   ]
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+  # CocoaPods FileList uses FNM_PATHNAME: `ios/*UnitTests/**` does not match nested
+  # files under HostStubs; use `ios/*UnitTests/**/*` (same as sibling packages).
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**/*'
 
+  # DEFINES_MODULE is required for the generated RNFBMessaging-Swift.h interface.
   s.pod_target_xcconfig = {
+    "DEFINES_MODULE" => "YES",
     'HEADER_SEARCH_PATHS' => '"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBMessagingTurboModules" "$(PODS_TARGET_SRCROOT)/ios/generated"',
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
