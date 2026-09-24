@@ -17,6 +17,9 @@
 		E70000000000000000000021 /* RNFBStorageTaskStatusMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000022 /* RNFBStorageTaskStatusMapper.swift */; };
 		E70000000000000000000023 /* RNFBStorageTaskStatusMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000024 /* RNFBStorageTaskStatusMapperTests.swift */; };
 		E70000000000000000000025 /* RNFBStorageTaskStatusMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000026 /* RNFBStorageTaskStatusMapperFacadeTests.m */; };
+		E70000000000000000000027 /* RNFBStorageErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */; };
+		E70000000000000000000029 /* RNFBStorageErrorCodeMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */; };
+		E7000000000000000000002B /* RNFBStorageErrorCodeMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +36,9 @@
 		E70000000000000000000022 /* RNFBStorageTaskStatusMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskStatusMapper.swift; path = ../RNFBStorage/RNFBStorageTaskStatusMapper.swift; sourceTree = SOURCE_ROOT; };
 		E70000000000000000000024 /* RNFBStorageTaskStatusMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageTaskStatusMapperTests.swift; sourceTree = "<group>"; };
 		E70000000000000000000026 /* RNFBStorageTaskStatusMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageTaskStatusMapperFacadeTests.m; sourceTree = "<group>"; };
+		E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageErrorCodeMapper.swift; path = ../RNFBStorage/RNFBStorageErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
+		E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageErrorCodeMapperTests.swift; sourceTree = "<group>"; };
+		E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageErrorCodeMapperFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +83,9 @@
 				E70000000000000000000022 /* RNFBStorageTaskStatusMapper.swift */,
 				E70000000000000000000024 /* RNFBStorageTaskStatusMapperTests.swift */,
 				E70000000000000000000026 /* RNFBStorageTaskStatusMapperFacadeTests.m */,
+				E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */,
+				E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */,
+				E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -147,6 +156,9 @@
 				E70000000000000000000021 /* RNFBStorageTaskStatusMapper.swift in Sources */,
 				E70000000000000000000023 /* RNFBStorageTaskStatusMapperTests.swift in Sources */,
 				E70000000000000000000025 /* RNFBStorageTaskStatusMapperFacadeTests.m in Sources */,
+				E70000000000000000000027 /* RNFBStorageErrorCodeMapper.swift in Sources */,
+				E70000000000000000000029 /* RNFBStorageErrorCodeMapperTests.swift in Sources */,
+				E7000000000000000000002B /* RNFBStorageErrorCodeMapperFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
