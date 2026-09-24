@@ -28,6 +28,12 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTUtils.h>
 
+#if __has_include(<RNFBAppCheck/RNFBAppCheck-Swift.h>)
+#import <RNFBAppCheck/RNFBAppCheck-Swift.h>
+#elif __has_include("RNFBAppCheck-Swift.h")
+#import "RNFBAppCheck-Swift.h"
+#endif
+
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAppCheckModule.h"
@@ -124,25 +130,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppCheck)
   resolve([NSNumber numberWithBool:isTokenAutoRefreshEnabled]);
 }
 
-// AppCheck-AD-8: map pending fail-closed to provider-not-ready (not token-error).
-// Walk NSUnderlyingErrorKey because FIRAppCheck wraps non-SDK errors via
-// publicDomainErrorWithError: and drops top-level userInfo[@"code"].
-// Locked message: kRNFBAppCheckProviderNotReadyMessage (RNFBAppCheckProvider.h).
-static NSString *RNFBAppCheckRejectCodeForError(NSError *error) {
-  NSError *current = error;
-  while (current != nil) {
-    id code = current.userInfo[@"code"];
-    if ([code isKindOfClass:[NSString class]] && [code isEqualToString:@"provider-not-ready"]) {
-      return @"provider-not-ready";
-    }
-    current = current.userInfo[NSUnderlyingErrorKey];
-    if (![current isKindOfClass:[NSError class]]) {
-      break;
-    }
-  }
-  return @"token-error";
-}
-
 // AppCheck-AD-8 durable path: reject before FIRAppCheck token APIs when the
 // factory-held facade still has a nil delegateProvider (pending / not configured).
 static BOOL RNFBAppCheckRejectIfProviderNotReady(FIRApp *firebaseApp,
@@ -176,7 +163,7 @@ static BOOL RNFBAppCheckRejectIfProviderNotReady(FIRApp *firebaseApp,
                completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
                  if (error != nil) {
                    DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token: %@", error);
-                   NSString *code = RNFBAppCheckRejectCodeForError(error);
+                   NSString *code = [RNFBAppCheckRejectCodeMapper rejectCodeForError:error];
                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                                      userInfo:(NSMutableDictionary *)@{
                                                        @"code" : code,
@@ -213,7 +200,7 @@ static BOOL RNFBAppCheckRejectIfProviderNotReady(FIRApp *firebaseApp,
                                             NSError *_Nullable error) {
     if (error != nil) {
       DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check token: %@", error);
-      NSString *code = RNFBAppCheckRejectCodeForError(error);
+      NSString *code = [RNFBAppCheckRejectCodeMapper rejectCodeForError:error];
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                         userInfo:(NSMutableDictionary *)@{
                                           @"code" : code,
