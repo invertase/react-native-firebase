@@ -5,33 +5,59 @@ next: /auth/phone-auth
 previous: /auth/usage
 ---
 
-React Native Firebase provides support for integrating with different social platforms. The authentication with these
-different platforms is left to the developer to implement due to the various implementations and flows possible using
-their OAuth APIs.
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/auth` installed and native config completed per [Authentication usage](/auth/usage) / [Getting Started](/). From v26, New Architecture is required for packages with a native bridge.
+- Enable each social provider you use under [Firebase Console → Authentication → Sign-in method](https://console.firebase.google.com/project/_/authentication/providers).
+- Install and configure the community OAuth library for that provider (Apple, Facebook, Google, Twitter). Those packages are not React Native Firebase workspace dependencies; end-to-end fences that import them use `// codeblock-ignore` so `docs:tsc:check` can skip missing types. Firebase-only credential fences type-check without that marker.
+
+React Native Firebase supports integrating with social platforms. Obtaining the provider credential is left to your app because OAuth flows differ. After you have a provider token, exchange it with the matching `*AuthProvider.credential()` and `signInWithCredential()` (or Microsoft's redirect helpers).
 
 # Social providers
 
 ## Apple
 
-Starting April 2020, all existing applications using external 3rd party login services (such as Facebook, Twitter, Google etc)
-must ensure that Apple Sign-In is also provided. To learn more about these new guidelines, view the [Apple announcement](https://developer.apple.com/news/?id=09122019b).
-Apple Sign-In is not required for Android devices.
+Starting April 2020, apps that offer third-party login on the App Store must also offer Sign in with Apple when applicable. See [Apple's announcement](https://developer.apple.com/news/?id=09122019b). Apple Sign-In is not required for Android devices.
 
-To integrate Apple Sign-In on your iOS applications, you need to install a 3rd party library to authenticate with Apple.
-Once authentication is successful, a Firebase credential can be used to sign the user into Firebase with their Apple account.
+Install [`react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) and complete its [prerequisites](https://github.com/invertase/react-native-apple-authentication#prerequisites-to-using-this-library) and [Apple Developer setup](https://github.com/invertase/react-native-apple-authentication/blob/main/docs/INITIAL_SETUP.md). Enable the **Apple** provider in the Firebase Console.
 
-To get started, you must first install the [`react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication)
-library. There are a number of [prerequisites](https://github.com/invertase/react-native-apple-authentication#prerequisites-to-using-this-library) to using the library, including
-[setting up your Apple Developer account](https://github.com/invertase/react-native-apple-authentication/blob/main/docs/INITIAL_SETUP.md) to enable Apple Sign-In.
+Firebase credential exchange once you have an Apple identity token and nonce:
 
-Ensure the "Apple" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
+```js
+import { AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 
-Once setup, we can trigger an initial request to allow the user to sign in with their Apple account, using a pre-rendered
-button the `react-native-apple-authentication` library provides:
+async function signInWithAppleIdentityToken(identityToken, nonce) {
+  const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+  return signInWithCredential(getAuth(), appleCredential);
+}
 
-```jsx
+await signInWithAppleIdentityToken('APPLE_IDENTITY_TOKEN', 'NONCE');
+```
+
+End-to-end UI + `react-native-apple-authentication` (install that package in your app):
+
+```js
+// codeblock-ignore: @invertase/react-native-apple-authentication is not a workspace dependency; types unavailable to docs:tsc:check
 import React from 'react';
-import { AppleButton } from '@invertase/react-native-apple-authentication';
+import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication';
+import { AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+async function onAppleButtonPress() {
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+    requestedOperation: appleAuth.Operation.LOGIN,
+    // As per the FAQ of react-native-apple-authentication, the name should come first.
+    // See: https://github.com/invertase/react-native-apple-authentication#faqs
+    requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+  });
+
+  if (!appleAuthRequestResponse.identityToken) {
+    throw new Error('Apple Sign-In failed - no identity token returned');
+  }
+
+  const { identityToken, nonce } = appleAuthRequestResponse;
+  const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+  return signInWithCredential(getAuth(), appleCredential);
+}
 
 function AppleSignIn() {
   return (
@@ -48,78 +74,69 @@ function AppleSignIn() {
 }
 ```
 
-When the user presses the pre-rendered button, we can trigger the initial sign-in request using the `performRequest` method,
-passing in the scope required for our application:
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
+
+Apple also requires that the app revoke the Sign in with Apple token when the user deletes their account. Use `revokeToken`:
 
 ```js
-import { AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
-import { appleAuth } from '@invertase/react-native-apple-authentication';
-
-async function onAppleButtonPress() {
-  // Start the sign-in request
-  const appleAuthRequestResponse = await appleAuth.performRequest({
-    requestedOperation: appleAuth.Operation.LOGIN,
-    // As per the FAQ of react-native-apple-authentication, the name should come first in the following array.
-    // See: https://github.com/invertase/react-native-apple-authentication#faqs
-    requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
-  });
-
-  // Ensure Apple returned a user identityToken
-  if (!appleAuthRequestResponse.identityToken) {
-    throw new Error('Apple Sign-In failed - no identify token returned');
-  }
-
-  // Create a Firebase credential from the response
-  const { identityToken, nonce } = appleAuthRequestResponse;
-  const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
-
-  // Sign the user in with the credential
-  return signInWithCredential(getAuth(), appleCredential);
-}
-```
-
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
-
-Apple also requires that the app revoke the `Sign in with Apple` token when the user chooses to delete their account. This can be accomplished with the `revokeToken` API.
-
-```js
+// codeblock-ignore: @invertase/react-native-apple-authentication is not a workspace dependency; types unavailable to docs:tsc:check
 import { getAuth, revokeToken } from '@react-native-firebase/auth';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function revokeSignInWithAppleToken() {
-  // Get an authorizationCode from Apple
   const { authorizationCode } = await appleAuth.performRequest({
     requestedOperation: appleAuth.Operation.REFRESH,
   });
 
-  // Ensure Apple returned an authorizationCode
   if (!authorizationCode) {
     throw new Error('Apple Revocation failed - no authorizationCode returned');
   }
 
-  // Revoke the token
   return revokeToken(getAuth(), authorizationCode);
 }
 ```
 
 ## Facebook
 
-There is a [community-supported React Native library](https://github.com/thebergamo/react-native-fbsdk-next) which wraps around
-the native Facebook SDKs to enable Facebook sign-in.
+Use the community library [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next). Install it, [configure Android and iOS](https://developers.facebook.com/docs/android/getting-started/), and set up your [Facebook Developer account](https://github.com/thebergamo/react-native-fbsdk-next#3-configure-projects). Enable the **Facebook** provider in the Firebase Console.
 
-Before getting started, ensure you have installed the library, [configured your Android & iOS applications](https://developers.facebook.com/docs/android/getting-started/) and
-setup your [Facebook Developer Account](https://github.com/thebergamo/react-native-fbsdk-next#3-configure-projects)
-to enable Facebook Login.
+Firebase credential exchange once you have a Facebook access token:
 
-Ensure the "Facebook" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
+```js
+import { FacebookAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 
-Once setup, we can trigger the login flow with Facebook by calling the `logInWithPermissions` method on the `LoginManager`
-class:
+async function signInWithFacebookAccessToken(accessToken) {
+  const facebookCredential = FacebookAuthProvider.credential(accessToken);
+  return signInWithCredential(getAuth(), facebookCredential);
+}
 
-```jsx
+await signInWithFacebookAccessToken('FACEBOOK_ACCESS_TOKEN');
+```
+
+End-to-end classic Facebook Login:
+
+```js
+// codeblock-ignore: react-native-fbsdk-next is not a workspace dependency; types unavailable to docs:tsc:check
 import React from 'react';
 import { Button } from 'react-native';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+import { FacebookAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+async function onFacebookButtonPress() {
+  const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+
+  if (result.isCancelled) {
+    throw new Error('User cancelled the login process');
+  }
+
+  const data = await AccessToken.getCurrentAccessToken();
+  if (!data) {
+    throw new Error('Something went wrong obtaining access token');
+  }
+
+  const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
+  return signInWithCredential(getAuth(), facebookCredential);
+}
 
 function FacebookSignIn() {
   return (
@@ -131,50 +148,17 @@ function FacebookSignIn() {
 }
 ```
 
-The `onFacebookButtonPress` can then be implemented as follows:
-
-```js
-import { FacebookAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
-import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
-
-async function onFacebookButtonPress() {
-  // Attempt login with permissions
-  const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-
-  if (result.isCancelled) {
-    throw 'User cancelled the login process';
-  }
-
-  // Once signed in, get the users AccessToken
-  const data = await AccessToken.getCurrentAccessToken();
-
-  if (!data) {
-    throw 'Something went wrong obtaining access token';
-  }
-
-  // Create a Firebase credential with the AccessToken
-  const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
-
-  // Sign-in the user with the credential
-  return signInWithCredential(getAuth(), facebookCredential);
-}
-```
-
 ### Facebook Limited Login (iOS only)
 
-To use Facebook Limited Login instead of "classic" Facebook Login, the `onFacebookButtonPress` can then be implemented as follows:
-
 ```js
+// codeblock-ignore: react-native-fbsdk-next and react-native-sha256 are not workspace dependencies; types unavailable to docs:tsc:check
 import { FacebookAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { LoginManager, AuthenticationToken } from 'react-native-fbsdk-next';
 import { sha256 } from 'react-native-sha256';
 
-async function onFacebookButtonPress() {
-  // Create a nonce and the corresponding
-  // sha256 hash of the nonce
+async function onFacebookLimitedLoginButtonPress() {
   const nonce = '123456';
   const nonceSha256 = await sha256(nonce);
-  // Attempt login with permissions and limited login
   const result = await LoginManager.logInWithPermissions(
     ['public_profile', 'email'],
     'limited',
@@ -182,48 +166,54 @@ async function onFacebookButtonPress() {
   );
 
   if (result.isCancelled) {
-    throw 'User cancelled the login process';
+    throw new Error('User cancelled the login process');
   }
 
-  // Once signed in, get the users AuthenticationToken
   const data = await AuthenticationToken.getAuthenticationTokenIOS();
-
   if (!data) {
-    throw 'Something went wrong obtaining authentication token';
+    throw new Error('Something went wrong obtaining authentication token');
   }
 
-  // Create a Firebase credential with the AuthenticationToken
-  // and the nonce (Firebase will validates the hash against the nonce)
+  // Firebase validates the hash against the nonce.
   const facebookCredential = FacebookAuthProvider.credential(data.authenticationToken, nonce);
-
-  // Sign-in the user with the credential
   return signInWithCredential(getAuth(), facebookCredential);
 }
 ```
 
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
 ## Google
 
-Firebase does not ship a Google sign-in UI. You install a community library to obtain a Google **ID token**, then pass it to `GoogleAuthProvider.credential()` and `signInWithCredential()`.
+Firebase does not ship a Google sign-in UI. Install a community library to obtain a Google **ID token**, then pass it to `GoogleAuthProvider.credential()` and `signInWithCredential()`.
 
-Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
+Enable the **Google** sign-in provider in the Firebase Console.
 
 On **Android**, Google recommends [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager-siwg-implementation) for Sign in with Google. Two maintained React Native libraries can provide that flow:
 
-| Library                                                                                                    | Credential Manager (Android)                                                                                                          | Cost                                                     | Notes                                                                                                               |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin)       | Yes                                                                                                                                   | Free (MIT)                                               | Universal / One Tap-style API via [Nitro Modules](https://nitro.margelo.com); requires `react-native-nitro-modules` |
-| [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) | Yes with [Universal Sign-In](https://react-native-google-signin.github.io/docs/install); **no** on the free public `GoogleSignin` API | Paid for Credential Manager; free for legacy Android SDK | Universal Sign-In uses `GoogleOneTapSignIn`; the free public build is documented in the section below               |
+{/* prettier-ignore */}
+| Library | Credential Manager (Android) | Cost | Notes |
+| --- | --- | --- | --- |
+| [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin) | Yes | Free (MIT) | Universal / One Tap-style API via [Nitro Modules](https://nitro.margelo.com); requires `react-native-nitro-modules` |
+| [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) | Yes with [Universal Sign-In](https://react-native-google-signin.github.io/docs/install); **no** on the free public `GoogleSignin` API | Paid for Credential Manager; free for legacy Android SDK | Universal Sign-In uses `GoogleOneTapSignIn`; the free public build is documented below |
 
 The sections below show Firebase integration for each approach. For native setup (OAuth clients, SHA-1, Expo config plugins), follow that library's documentation.
 
+Firebase credential exchange once you have a Google ID token:
+
+```js
+import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+async function signInWithGoogleIdToken(idToken) {
+  const googleCredential = GoogleAuthProvider.credential(idToken);
+  return signInWithCredential(getAuth(), googleCredential);
+}
+
+await signInWithGoogleIdToken('GOOGLE_ID_TOKEN');
+```
+
 ### react-native-nitro-google-signin
 
-[`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin) is a free, MIT-licensed option that uses **Credential Manager** on Android and the Google Sign-In SDK on iOS. It is a good fit when you want modern Android sign-in without a paid Universal Sign-In license from `@react-native-google-signin/google-signin`.
-
-Install the package and its peer dependency:
+[`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin) is an MIT-licensed option that uses **Credential Manager** on Android and the Google Sign-In SDK on iOS.
 
 ```bash
 yarn add react-native-nitro-google-signin react-native-nitro-modules
@@ -233,36 +223,18 @@ Then follow the [installation](https://react-native-nitro-google-sign-in.github.
 
 #### Using Google Sign-In with Firebase
 
-Configure once (with Firebase config files present, `webClientId: 'autoDetect'` reads the Web client ID from `google-services.json` / `GoogleService-Info.plist`):
-
 ```js
-import { GoogleOneTapSignIn } from 'react-native-nitro-google-signin';
-
-GoogleOneTapSignIn.configure({ webClientId: 'autoDetect' });
-```
-
-Trigger sign-in from your UI, then exchange the ID token with Firebase:
-
-```jsx
+// codeblock-ignore: react-native-nitro-google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+import React from 'react';
 import { Button } from 'react-native';
-
-function GoogleSignIn() {
-  return (
-    <Button
-      title="Google Sign-In"
-      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
-    />
-  );
-}
-```
-
-```js
 import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import {
   GoogleOneTapSignIn,
   isNoSavedCredentialFoundResponse,
   isSuccessResponse,
 } from 'react-native-nitro-google-signin';
+
+GoogleOneTapSignIn.configure({ webClientId: 'autoDetect' });
 
 async function onGoogleButtonPress() {
   await GoogleOneTapSignIn.checkPlayServices();
@@ -288,46 +260,6 @@ async function onGoogleButtonPress() {
   const googleCredential = GoogleAuthProvider.credential(idToken);
   return signInWithCredential(getAuth(), googleCredential);
 }
-```
-
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger with the new authentication state.
-
-If you test on an Android emulator, use an image with **Google APIs** or **Google Play** system images.
-
-Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-sign-in.github.io/).
-
-### @react-native-google-signin/google-signin
-
-The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) package is widely used and offers two tiers:
-
-- **Universal Sign-In** ([paid](https://universal-sign-in.com/#pricing)): Cross-platform One Tap-style API (`GoogleOneTapSignIn`) with **Credential Manager** on Android. Licensed builds are installed from the package maintainer's registry — see [their installation guide](https://react-native-google-signin.github.io/docs/install).
-- **Public (free) version**: `GoogleSignin` API for Android and iOS using the **legacy** Android Google Sign-In SDK. Google has deprecated that stack; it does not use Credential Manager. The examples below use this free API.
-
-#### Configure an Expo project
-
-For Expo projects, follow [the setup instructions for Expo](https://react-native-google-signin.github.io/docs/category/setting-up) from `@react-native-google-signin/google-signin`.
-
-#### Configure a React-Native (non-Expo) project
-
-For bare React-Native projects, most configuration is already setup when using Google Sign-In with React-Native-Firebase's configuration, however you need to ensure your machines SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/) documentation.
-
-#### Using Google Sign-In
-
-Before triggering a sign-in request, you must initialize the Google SDK with any required scopes and the
-`webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Make sure to pick the `client_id` with `client_type: 3`
-
-```js
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-
-GoogleSignin.configure({
-  webClientId: '',
-});
-```
-
-Once initialized, setup your application to trigger a sign-in request with Google using the `signIn` method.
-
-```jsx
-import { Button } from 'react-native';
 
 function GoogleSignIn() {
   return (
@@ -339,57 +271,105 @@ function GoogleSignIn() {
 }
 ```
 
-The `onGoogleButtonPress` can then be implemented as follows:
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
+
+If you test on an Android emulator, use an image with **Google APIs** or **Google Play** system images.
+
+Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-sign-in.github.io/).
+
+### @react-native-google-signin/google-signin
+
+The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) package offers two tiers:
+
+- **Universal Sign-In** ([paid](https://universal-sign-in.com/#pricing)): Cross-platform One Tap-style API (`GoogleOneTapSignIn`) with **Credential Manager** on Android. Licensed builds are installed from the package maintainer's registry — see [their installation guide](https://react-native-google-signin.github.io/docs/install).
+- **Public (free) version**: `GoogleSignin` API for Android and iOS using the **legacy** Android Google Sign-In SDK. Google has deprecated that stack; it does not use Credential Manager. The examples below use this free API.
+
+#### Configure an Expo project
+
+For Expo projects, follow [the setup instructions for Expo](https://react-native-google-signin.github.io/docs/category/setting-up) from `@react-native-google-signin/google-signin`.
+
+#### Configure a React Native (non-Expo) project
+
+For bare React Native projects, most configuration is already in place when using Google Sign-In with React Native Firebase's configuration. Ensure your machine's SHA-1 key is configured for Android (see [Getting Started](/)).
+
+#### Using Google Sign-In
+
+Initialize the Google SDK with any required scopes and the `webClientId` from `android/app/google-services.json` as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Pick the `client_id` with `client_type: 3`.
 
 ```js
-import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+// codeblock-ignore: @react-native-google-signin/google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+import React from 'react';
+import { Button } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+GoogleSignin.configure({
+  webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+});
 
 async function onGoogleButtonPress() {
-  // Check if your device supports Google Play
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  // Get the users ID token
   const signInResult = await GoogleSignin.signIn();
 
-  // Try the new style of google-sign in result, from v13+ of that module
-  idToken = signInResult.data?.idToken;
+  // From @react-native-google-signin/google-signin v13+, prefer signInResult.data?.idToken.
+  // Older library versions returned idToken on the top-level result object.
+  let idToken = signInResult.data?.idToken;
   if (!idToken) {
-    // if you are using older versions of google-signin, try old style result
     idToken = signInResult.idToken;
   }
   if (!idToken) {
     throw new Error('No ID token found');
   }
 
-  // Create a Google credential with the token
-  const googleCredential = GoogleAuthProvider.credential(signInResult.data.idToken);
-
-  // Sign-in the user with the credential
+  const googleCredential = GoogleAuthProvider.credential(idToken);
   return signInWithCredential(getAuth(), googleCredential);
+}
+
+function GoogleSignIn() {
+  return (
+    <Button
+      title="Google Sign-In"
+      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+    />
+  );
 }
 ```
 
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
-If you are testing this feature on an android emulator ensure that the emulate is either the Google APIs or Google Play flavor.
+If you are testing this feature on an Android emulator, ensure the image is either the Google APIs or Google Play flavor.
 
 > If you need Credential Manager on Android without a paid license, use [`react-native-nitro-google-signin`](/auth/social-auth#react-native-nitro-google-signin) instead of upgrading to Universal Sign-In.
 
 ## Microsoft
 
-Per the [documentation](https://firebase.google.com/docs/auth/android/microsoft-oauth#expandable-1), we cannot handle the Sign-In flow manually, by getting the access token from a library such as `react-native-app-auth`, and then calling `signInWithCredential`.
-Instead, we must use the native's Sign-In flow from the Firebase SDK.
+Per the [Firebase documentation](https://firebase.google.com/docs/auth/android/microsoft-oauth#expandable-1), do not handle the Sign-In flow by obtaining an access token from a library such as `react-native-app-auth` and then calling `signInWithCredential`.
+Use the native Sign-In flow from the Firebase SDK instead.
 
-To get started, please follow the prerequisites and setup instructions from the documentation: [Android](https://firebase.google.com/docs/auth/android/microsoft-oauth#before_you_begin), [iOS](https://firebase.google.com/docs/auth/ios/microsoft-oauth#before_you_begin).
+Follow the prerequisites and setup instructions: [Android](https://firebase.google.com/docs/auth/android/microsoft-oauth#before_you_begin), [iOS](https://firebase.google.com/docs/auth/ios/microsoft-oauth#before_you_begin).
+For iOS, also complete step 1 of [Handle sign-in flow](https://firebase.google.com/docs/auth/ios/microsoft-oauth#handle_the_sign-in_flow_with_the_firebase_sdk) (custom URL scheme in Xcode).
 
-Additionally, for iOS, please follow step 1 of the "Handle sign-in flow" [section](https://firebase.google.com/docs/auth/ios/microsoft-oauth#handle_the_sign-in_flow_with_the_firebase_sdk), which is to add the custom URL scheme to your Xcode project
-
-Once completed, setup your application to trigger a sign-in request with Microsoft using either of the `signInWithPopup` or `signInWithRedirect` methods. The underlying implementation is the same and will not operate exactly as the firebase-js-sdk web-based implementations do, but will provide drop-in compatibility for a web implementation if your project has one.
+Then trigger Microsoft sign-in with `signInWithPopup` or `signInWithRedirect`. The underlying implementation is the same and will not behave exactly like the firebase-js-sdk web implementations, but provides drop-in compatibility when your project also has a web target.
 
 ```jsx
 import React from 'react';
 import { Button } from 'react-native';
+import { OAuthProvider, getAuth, signInWithRedirect } from '@react-native-firebase/auth';
+
+async function onMicrosoftButtonPress() {
+  const provider = new OAuthProvider('microsoft.com');
+  provider.addScope('offline_access');
+  provider.setCustomParameters({
+    prompt: 'consent',
+    // Optional "tenant" parameter for optional use of Azure AD tenant.
+    // e.g., specific ID - 9aaa9999-9999-999a-a9aa-9999aa9aa99a or domain - example.com
+    // defaults to "common" for tenant-independent tokens.
+    tenant: 'tenant_name_or_id',
+  });
+
+  // OAuthProvider satisfies AuthProvider at runtime; cast for the docs type harness.
+  return signInWithRedirect(getAuth(), /** @type {any} */ (provider));
+}
 
 function MicrosoftSignIn() {
   return (
@@ -401,60 +381,51 @@ function MicrosoftSignIn() {
 }
 ```
 
-`onMicrosoftButtonPress` can be implemented as the following:
+`linkWithRedirect` and `linkWithPopup` can link an existing user account with Microsoft the same way after authentication.
 
-```js
-import { OAuthProvider, getAuth, signInWithRedirect } from '@react-native-firebase/auth';
-
-const onMicrosoftButtonPress = async () => {
-  // Generate the provider object
-  const provider = new OAuthProvider('microsoft.com');
-  // Optionally add scopes
-  provider.addScope('offline_access');
-  // Optionally add custom parameters
-  provider.setCustomParameters({
-    prompt: 'consent',
-    // Optional "tenant" parameter for optional use of Azure AD tenant.
-    // e.g., specific ID - 9aaa9999-9999-999a-a9aa-9999aa9aa99a or domain - example.com
-    // defaults to "common" for tenant-independent tokens.
-    tenant: 'tenant_name_or_id',
-  });
-
-  // Sign-in the user with the provider
-  return signInWithRedirect(getAuth(), provider);
-};
-```
-
-Additionally, the similar `linkWithRedirect` and `linkWithPopup` methods may be used in the same way to link an existing user account with the Microsoft account after it is authenticated.
-
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
 ## Twitter
 
-Using the external [`@react-native-twitter-signin/twitter-signin`](https://github.com/react-native-twitter-signin/twitter-signin) library,
-we can sign-in the user with Twitter and generate a credential which can be used to sign-in with Firebase.
+Using [`@react-native-twitter-signin/twitter-signin`](https://github.com/react-native-twitter-signin/twitter-signin), sign in with Twitter and build a Firebase credential. Install the library and complete its [prerequisites](https://github.com/react-native-twitter-signin/twitter-signin#prerequisites). Enable the **Twitter** provider in the Firebase Console.
 
-To get started, install the library and ensure you have completed setup, following the required [prerequisites](https://github.com/react-native-twitter-signin/twitter-signin#prerequisites) list.
-
-Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
-
-Before triggering a sign-in request, you must initialize the Twitter SDK using your accounts consumer key & secret:
+The library exposes a native module. Initialize it with your Twitter consumer key and secret, then call `logIn`:
 
 ```js
 import { NativeModules } from 'react-native';
+import { TwitterAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
 const { RNTwitterSignIn } = NativeModules;
 
-RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET').then(() =>
-  console.log('Twitter SDK initialized'),
-);
+async function initTwitterSdk() {
+  await RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET');
+  console.log('Twitter SDK initialized');
+}
+
+async function onTwitterButtonPress() {
+  const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
+  const twitterCredential = TwitterAuthProvider.credential(authToken, authTokenSecret);
+  return signInWithCredential(getAuth(), twitterCredential);
+}
+
+await initTwitterSdk();
+await onTwitterButtonPress();
 ```
 
-Once initialized, setup your application to trigger a sign-in request with Twitter using the `login` method.
+UI trigger:
 
 ```jsx
 import React from 'react';
-import { Button } from 'react-native';
+import { Button, NativeModules } from 'react-native';
+import { TwitterAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+const { RNTwitterSignIn } = NativeModules;
+
+async function onTwitterButtonPress() {
+  const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
+  const twitterCredential = TwitterAuthProvider.credential(authToken, authTokenSecret);
+  return signInWithCredential(getAuth(), twitterCredential);
+}
 
 function TwitterSignIn() {
   return (
@@ -466,27 +437,7 @@ function TwitterSignIn() {
 }
 ```
 
-The `onTwitterButtonPress` can then be implemented as follows:
-
-```js
-import { TwitterAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
-import { NativeModules } from 'react-native';
-const { RNTwitterSignIn } = NativeModules;
-
-async function onTwitterButtonPress() {
-  // Perform the login request
-  const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
-
-  // Create a Twitter credential with the tokens
-  const twitterCredential = TwitterAuthProvider.credential(authToken, authTokenSecret);
-
-  // Sign-in the user with the credential
-  return signInWithCredential(getAuth(), twitterCredential);
-}
-```
-
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
 ## Link Multiple Auth Providers to a Firebase Account
 
@@ -494,16 +445,33 @@ with the new authentication state of the user.
 
 > If you enabled the **One account per email address** setting in the Firebase console, when a user tries to sign in a to a provider (such as Google) with an email that already exists for another Firebase user's provider (such as Facebook), the error `auth/account-exists-with-different-credential` is thrown along with an `AuthCredential` object (Google ID token). To complete the sign in to the intended provider, the user has to sign first to the existing provider (Facebook) and then link to the former `AuthCredential` (Google ID token).
 
-To provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account.
-This is possible for any social provider that uses `signInWithCredential()`.
-To achieve this, you should replace the sign-in method in any of the supported social sign-in code snippets with `linkWithCredential()` on the signed-in user. Ensure `getAuth().currentUser` is not null before linking.
+To provide users with an additional login method, link their social account (or email and password) with their Firebase account.
+This works for any social provider that uses `signInWithCredential()`.
+Replace `signInWithCredential` with modular `linkWithCredential(user, credential)` on the signed-in user. Ensure `getAuth().currentUser` is not null before linking.
 
-This code demonstrates linking a Google provider to an account that is already signed in using Firebase authentication.
+Firebase-only linking once you have a Google ID token:
+
+```js
+import { GoogleAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
+
+async function linkGoogleIdTokenToCurrentUser(idToken) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const googleCredential = GoogleAuthProvider.credential(idToken);
+  return linkWithCredential(user, googleCredential);
+}
+
+await linkGoogleIdTokenToCurrentUser('GOOGLE_ID_TOKEN');
+```
 
 With [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin):
 
 ```js
-import { GoogleAuthProvider, getAuth } from '@react-native-firebase/auth';
+// codeblock-ignore: react-native-nitro-google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+import { GoogleAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
 import {
   GoogleOneTapSignIn,
   isNoSavedCredentialFoundResponse,
@@ -527,14 +495,15 @@ async function onGoogleLinkButtonPress() {
   }
 
   const googleCredential = GoogleAuthProvider.credential(response.data.idToken);
-  await user.linkWithCredential(googleCredential);
+  return linkWithCredential(user, googleCredential);
 }
 ```
 
 With the free `@react-native-google-signin/google-signin` (`GoogleSignin`) API:
 
 ```js
-import { GoogleAuthProvider, getAuth } from '@react-native-firebase/auth';
+// codeblock-ignore: @react-native-google-signin/google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+import { GoogleAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 async function onGoogleLinkButtonPress() {
@@ -552,6 +521,6 @@ async function onGoogleLinkButtonPress() {
   }
 
   const googleCredential = GoogleAuthProvider.credential(idToken);
-  await user.linkWithCredential(googleCredential);
+  return linkWithCredential(user, googleCredential);
 }
 ```

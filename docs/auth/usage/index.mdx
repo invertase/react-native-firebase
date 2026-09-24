@@ -5,10 +5,15 @@ next: /auth/social-auth
 previous: /app-distribution/usage
 ---
 
-# Installation
+## Prerequisites
 
-This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app"
-module, view the [Getting Started](/) documentation.
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install Auth: `npm install --save @react-native-firebase/auth` or `yarn add @react-native-firebase/auth`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Enable the sign-in providers you use under [Firebase Console → Authentication → Sign-in method](https://console.firebase.google.com/project/_/authentication/providers).
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/index.tsx
+
+# Installation
 
 ```bash
 # Install & setup the app module
@@ -26,9 +31,10 @@ you can follow the manual installation steps for [iOS](/auth/usage/installation/
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
 **Platform notes:** Several firebase-js-sdk web helpers throw on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). `useUserAccessGroup` is **iOS only**. See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
@@ -47,9 +53,9 @@ Firebase Authentication integrates tightly with other Firebase services, and it 
 
 ## Listening to authentication state
 
-In most scenarios using Authentication, you will want to know whether your users are currently signed-in or signed-out
+In most scenarios using Authentication, you will want to know whether your users are signed-in or signed-out
 of your application. The module provides a method called `onAuthStateChanged` which allows you to subscribe to the users
-current authentication state, and receive an event whenever that state changes.
+authentication state, and receive an event whenever that state changes.
 
 It is important to remember the `onAuthStateChanged` listener is asynchronous and will trigger an initial state once
 a connection with Firebase has been established. Therefore it is important to setup an "initializing" state which blocks
@@ -63,12 +69,16 @@ import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 function App() {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(
+    /** @type {import('@react-native-firebase/auth').User | null} */ (null),
+  );
 
   // Handle user state changes
-  function handleAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
+  function handleAuthStateChanged(nextUser) {
+    setUser(nextUser);
+    if (initializing) {
+      setInitializing(false);
+    }
   }
 
   useEffect(() => {
@@ -94,7 +104,7 @@ function App() {
 }
 ```
 
-If the `user` returned within the handler is `null` we assume the user is currently signed-out, otherwise they are
+If the `user` returned within the handler is `null` we assume the user is signed-out, otherwise they are
 signed-in and a [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) interface is returned.
 
 The `onAuthStateChanged` method also returns an unsubscriber function which allows us to stop listening for events whenever
@@ -180,9 +190,28 @@ to the error. For a full list of error codes available, view the [Firebase docum
 
 The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/User.html#getIdToken) method. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication.
 
+```js
+import { getAuth } from '@react-native-firebase/auth';
+
+async function fetchBackendWithIdToken() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const idToken = await user.getIdToken();
+  const response = await fetch('https://example.com/api/protected', {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+  return response.json();
+}
+```
+
 ## Signing out
 
-If you'd like to sign the user out of their current authentication state, call the `signOut` method:
+If you'd like to sign the user out of their authentication state, call the `signOut` method:
 
 ```js
 import { getAuth, signOut } from '@react-native-firebase/auth';
@@ -197,7 +226,7 @@ Additionally, calling `revokeAccess()` on your Google sign-in library forgets th
 
 ## Other sign-in methods
 
-Firebase also supports authenticating with external provides. To learn more, view the documentation for your authentication
+Firebase also supports authenticating with external providers. To learn more, view the documentation for your authentication
 method:
 
 - [Apple Sign-In](/auth/social-auth#apple).

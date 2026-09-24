@@ -5,30 +5,25 @@ next: /firestore/usage
 previous: /auth/oidc-auth
 ---
 
-> Before a user can enroll a second factor they need to verify their email. See
-> [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#sendemailverification) interface is returned.
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/auth` installed and native config completed per [Authentication usage](/auth/usage) / [Getting Started](/). From v26, New Architecture is required for packages with a native bridge.
+- Multi-factor authentication enabled for your project via [Google Cloud Identity Platform](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication) (paid Identity Platform features). Follow the platform guides for iOS and Android app verification.
+- The user must verify their email before enrolling a second factor. Use [`sendEmailVerification`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#sendemailverification) on the signed-in [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html).
 
 # TOTP MFA
 
-The [official guide for Firebase web TOTP authentication](https://firebase.google.com/docs/auth/web/totp-mfa) explains the TOTP process well, including project prerequisites to enable the feature, as well as code examples.
+The [Firebase web TOTP MFA guide](https://firebase.google.com/docs/auth/web/totp-mfa) covers project prerequisites and the TOTP API. Combine those APIs with the phone MFA flows below when you need both TOTP and SMS factors.
 
-The API details and usage examples may be combined with the full Phone auth example below to give you an MFA solution that fully supports TOTP or SMS MFA.
-
-You may also find it useful to investigate [the local / manual test screens](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-mfa-demonstrator.tsx) that we use to verify this functionality.
+Local manual test screens used in this repo: [auth-mfa-demonstrator.tsx](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-mfa-demonstrator.tsx).
 
 # Phone MFA
 
 ## iOS Setup
 
-Make sure to follow [the official Identity Platform
-documentation](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication)
-to enable multi-factor authentication for your project and verify your app.
+Follow the [Identity Platform iOS MFA guide](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication) to enable multi-factor authentication and verify your app.
 
 ## Enroll a new factor
-
-Begin by obtaining a [`MultiFactorUser`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/MultiFactorUser.html)
-instance for the current user. This is the entry point for most multi-factor
-operations:
 
 ```js
 import {
@@ -38,40 +33,31 @@ import {
   multiFactor,
 } from '@react-native-firebase/auth';
 
-const multiFactorUser = await multiFactor(getAuth().currentUser);
+async function enrollPhoneMultiFactor(phoneNumber, verificationCode) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const multiFactorUser = multiFactor(user);
+  const session = await multiFactorUser.getSession();
+
+  const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+    phoneNumber,
+    session,
+  });
+
+  const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+  const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+  await multiFactorUser.enroll(multiFactorAssertion, 'Primary phone');
+}
 ```
 
-Request the session identifier and use the phone number obtained from the user
-to send a verification code:
-
-```js
-const session = await multiFactorUser.getSession();
-const phoneOptions = {
-  phoneNumber,
-  session,
-};
-
-// Sends a text message to the user
-const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber(phoneOptions);
-```
-
-Once the user has provided the verification code received by text message, you
-can complete the process:
-
-```js
-const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
-const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
-await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user');
-```
-
-You can inspect [`User#multiFactor`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#multifactor) for
-information about the user's enrolled factors.
+Inspect [`User#multiFactor`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#multifactor) for enrolled factors after enrollment.
 
 ## Sign-in flow using phone multi-factor
 
-Ensure the account has already enrolled a second factor. Begin by calling the
-default sign-in methods, for example email and password. If the account requires
-a second factor to complete login, an exception will be raised:
+Ensure the account has already enrolled a second factor. Call a first-factor sign-in method (for example email and password). If a second factor is required, the promise rejects with `auth/multi-factor-auth-required`:
 
 ```js
 import {
@@ -82,120 +68,43 @@ import {
   getMultiFactorResolver,
 } from '@react-native-firebase/auth';
 
-signInWithEmailAndPassword(getAuth(), email, password)
-  .then(() => {
-    // User has not enrolled a second factor
-  })
-  .catch(error => {
-    const { code } = error;
-    // Make sure to check if multi factor authentication is required
-    if (code === 'auth/multi-factor-auth-required') {
-      return;
+async function signInWithEmailAndPhoneMfa(email, password, verificationCodeFromSms) {
+  try {
+    await signInWithEmailAndPassword(getAuth(), email, password);
+    // User has not enrolled a second factor (or MFA was not required).
+    return;
+  } catch (error) {
+    if (error.code !== 'auth/multi-factor-auth-required') {
+      throw error;
     }
 
-    // Other error
-  });
-```
+    const resolver = getMultiFactorResolver(getAuth(), error);
 
-Using the error object you can obtain a
-[`MultiFactorResolver`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/MultiFactorResolver.html) instance and
-continue the flow:
-
-```js
-const resolver = getMultiFactorResolver(getAuth(), error);
-```
-
-The resolver object has all the required information to prompt the user for a
-specific factor:
-
-```js
-if (resolver.hints.length > 1) {
-  // Use resolver.hints to display a list of second factors to the user
-}
-
-if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
-  // Continue with the sign-in flow
-}
-```
-
-Using a multi-factor hint and the session information you can send a
-verification code to the user:
-
-```js
-const hint = resolver.hints[0];
-
-const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
-  multiFactorHint: hint,
-  session: resolver.session,
-}); // Triggers message to user
-```
-
-Once the user has entered the verification code you can create a multi-factor
-assertion and finish the flow:
-
-```js
-const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
-
-const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
-
-resolver.resolveSignIn(multiFactorAssertion).then(userCredential => {
-  // additionally onAuthStateChanged will be triggered as well
-});
-```
-
-Upon successful sign-in, any
-[`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners
-will trigger with the new authentication state of the user.
-
-To put the example together:
-
-```js
-import {
-  PhoneAuthProvider,
-  PhoneMultiFactorGenerator,
-  getAuth,
-  signInWithEmailAndPassword,
-  getMultiFactorResolver,
-} from '@react-native-firebase/auth';
-
-signInWithEmailAndPassword(getAuth(), email, password)
-  .then(() => {
-    // User has not enrolled a second factor
-  })
-  .catch(error => {
-    const { code } = error;
-    // Make sure to check if multi factor authentication is required
-    if (code === 'auth/multi-factor-auth-required') {
-      const resolver = getMultiFactorResolver(getAuth(), error);
-
-      if (resolver.hints.length > 1) {
-        // Use resolver.hints to display a list of second factors to the user
-      }
-
-      if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
-        const hint = resolver.hints[0];
-
-        new PhoneAuthProvider(getAuth())
-          .verifyPhoneNumber({ multiFactorHint: hint, session: resolver.session }) // triggers the message to the user
-          .then(verificationId => setVerificationId(verificationId));
-
-        // Request verificationCode from user
-
-        const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
-
-        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
-
-        resolver.resolveSignIn(multiFactorAssertion).then(userCredential => {
-          // additionally onAuthStateChanged will be triggered as well
-        });
-      }
+    if (resolver.hints.length > 1) {
+      // Present resolver.hints so the user can pick a second factor.
     }
-  });
+
+    const hint = resolver.hints[0];
+    if (hint.factorId !== PhoneMultiFactorGenerator.FACTOR_ID) {
+      throw new Error(`Unsupported second factor: ${hint.factorId}`);
+    }
+
+    const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+      multiFactorHint: hint,
+      session: resolver.session,
+    });
+
+    const credential = PhoneAuthProvider.credential(verificationId, verificationCodeFromSms);
+    const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
+    await resolver.resolveSignIn(multiFactorAssertion);
+  }
+}
+
+await signInWithEmailAndPhoneMfa('jane.doe@example.com', 'SuperSecretPassword!', '123456');
 ```
+
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
 ## Testing
 
-You can define test phone numbers and corresponding verification codes. The
-official[official
-guide](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication)
-contains more information on setting this up.
+You can define test phone numbers and corresponding verification codes. The [Identity Platform iOS MFA guide](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication) covers that setup.
