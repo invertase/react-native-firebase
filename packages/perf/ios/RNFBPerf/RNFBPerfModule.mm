@@ -166,9 +166,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   NSDictionary *metrics = (NSDictionary *)traceData.metrics();
   NSDictionary *attributes = (NSDictionary *)traceData.attributes();
 
-  [RNFBPerfTraceStopApplier applyMetrics:metrics
-                              attributes:attributes
-                                      to:(id<RNFBPerfTraceApplying>)trace];
+  // ObjC++ cannot name Swift @protocol types as id<…>; cast to id (ABI matches).
+  [RNFBPerfTraceStopApplier applyMetrics:metrics attributes:attributes to:(id)trace];
 
   FIRTrace *expected = trace;
   trace = [traces takeIf:traceId
@@ -234,12 +233,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
                                       ? @((NSInteger)metricData.responsePayloadSize().value())
                                       : nil;
 
+  // ObjC++ cannot name Swift @protocol types as id<…>; cast to id (ABI matches).
   [RNFBPerfHttpMetricStopApplier applyAttributes:attributes
                                 httpResponseCode:httpResponseCode
                               requestPayloadSize:requestPayloadSize
                              responsePayloadSize:responsePayloadSize
                              responseContentType:metricData.responseContentType()
-                                              to:(id<RNFBPerfHttpMetricApplying>)httpMetric];
+                                              to:(id)httpMetric];
 
   FIRHTTPMetric *expected = httpMetric;
   httpMetric = [httpMetrics takeIf:metricId
