@@ -10,6 +10,7 @@
 		2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.mm */; };
 		2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */; };
 		C66637BB25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */; };
+		RNFBCL000000000000000001 /* RNFBCrashlyticsDebuggerProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBCL000000000000000002 /* RNFBCrashlyticsDebuggerProbe.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,7 @@
 		2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsInitProvider.m; sourceTree = "<group>"; };
 		C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsNativeHelper.m; sourceTree = "<group>"; };
 		C66637BD25FA561D00DCAA51 /* RNFBCrashlyticsNativeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBCrashlyticsNativeHelper.h; sourceTree = "<group>"; };
+		RNFBCL000000000000000002 /* RNFBCrashlyticsDebuggerProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBCrashlyticsDebuggerProbe.swift; path = RNFBCrashlytics/RNFBCrashlyticsDebuggerProbe.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 			children = (
 				2744B98421F45429004F8E3F /* RNFBCrashlyticsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.mm */,
+				RNFBCL000000000000000002 /* RNFBCrashlyticsDebuggerProbe.swift */,
 				2748D82222371C0900FC8DC8 /* RNFBCrashlyticsInitProvider.h */,
 				2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */,
 				C66637BD25FA561D00DCAA51 /* RNFBCrashlyticsNativeHelper.h */,
@@ -135,6 +138,7 @@
 				C66637BB25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m in Sources */,
 				2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.mm in Sources */,
+				RNFBCL000000000000000001 /* RNFBCrashlyticsDebuggerProbe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,6 +164,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -176,6 +181,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -199,6 +205,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -210,6 +217,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
