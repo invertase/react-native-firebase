@@ -12,6 +12,8 @@
 		C1000000000000000000000C /* RNFBFunctionsStreamingRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000009 /* RNFBFunctionsStreamingRegistryTests.m */; };
 		C10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C10000000000000000000014 /* XCTest.framework */; };
 		C10000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000001C /* RNFBHandleMapStorage.swift */; };
+		C10000000000000000000020 /* RNFBFunctionsStreamingRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000021 /* RNFBFunctionsStreamingRegistryStorage.swift */; };
+		C10000000000000000000022 /* RNFBFunctionsStreamingRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000023 /* RNFBFunctionsStreamingRegistryStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +25,8 @@
 		C10000000000000000000018 /* RNFBFunctionsStreamingRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFunctionsStreamingRegistry.m; path = ../RNFBFunctions/RNFBFunctionsStreamingRegistry.m; sourceTree = SOURCE_ROOT; };
 		C10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		C1000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000021 /* RNFBFunctionsStreamingRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFunctionsStreamingRegistryStorage.swift; path = ../RNFBFunctions/RNFBFunctionsStreamingRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		C10000000000000000000023 /* RNFBFunctionsStreamingRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBFunctionsStreamingRegistryStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +65,9 @@
 				C1000000000000000000001C /* RNFBHandleMapStorage.swift */,
 				C10000000000000000000016 /* RNFBFunctionsStreamingRegistry.h */,
 				C10000000000000000000018 /* RNFBFunctionsStreamingRegistry.m */,
+				C10000000000000000000021 /* RNFBFunctionsStreamingRegistryStorage.swift */,
 				C10000000000000000000009 /* RNFBFunctionsStreamingRegistryTests.m */,
+				C10000000000000000000023 /* RNFBFunctionsStreamingRegistryStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -125,8 +131,10 @@
 			files = (
 				C1000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				C10000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
+				C10000000000000000000020 /* RNFBFunctionsStreamingRegistryStorage.swift in Sources */,
 				C1000000000000000000000B /* RNFBFunctionsStreamingRegistry.m in Sources */,
 				C1000000000000000000000C /* RNFBFunctionsStreamingRegistryTests.m in Sources */,
+				C10000000000000000000022 /* RNFBFunctionsStreamingRegistryStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
