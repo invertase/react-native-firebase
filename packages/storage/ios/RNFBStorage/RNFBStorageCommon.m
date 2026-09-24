@@ -274,22 +274,15 @@
 
 + (NSDictionary *)buildErrorSnapshotDict:(NSError *)error
                         taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict {
-  NSArray *codeAndMessage = [self getErrorCodeMessage:error];
-  taskSnapshotDict[@"error"] = @{
-    @"code" : (NSString *)codeAndMessage[0],
-    @"message" : (NSString *)codeAndMessage[1],
-    @"nativeErrorMessage" : [error localizedDescription]
-  };
-  return taskSnapshotDict;
+  return [RNFBStorageErrorSnapshotDictBuilder buildErrorSnapshotDict:error
+                                                    taskSnapshotDict:taskSnapshotDict];
 }
 
 + (NSDictionary *)buildErrorSnapshotDictFromCodeAndMessage:(NSArray *)codeAndMessage
                                           taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict {
-  taskSnapshotDict[@"error"] = @{
-    @"code" : (NSString *)codeAndMessage[0],
-    @"message" : (NSString *)codeAndMessage[1],
-  };
-  return taskSnapshotDict;
+  return [RNFBStorageErrorSnapshotDictBuilder
+      buildErrorSnapshotDictFromCodeAndMessage:codeAndMessage
+                              taskSnapshotDict:taskSnapshotDict];
 }
 
 + (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata {
