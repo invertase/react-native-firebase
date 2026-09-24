@@ -23,8 +23,18 @@
 #import "RNFBApp/RNFBHandleMap.h"
 #endif
 
+#if __has_include(<RNFBFunctions/RNFBFunctions-Swift.h>)
+#import <RNFBFunctions/RNFBFunctions-Swift.h>
+#elif __has_include("RNFBFunctions-Swift.h")
+#import "RNFBFunctions-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBFunctionsStreamingRegistryStorage Swift interface not found"
+#endif
+
 @interface RNFBFunctionsStreamingRegistry ()
-@property(nonatomic, strong) RNFBHandleMap *map;
+@property(nonatomic, strong) RNFBFunctionsStreamingRegistryStorage *storage;
 @end
 
 @implementation RNFBFunctionsStreamingRegistry
@@ -32,13 +42,22 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [[RNFBHandleMap alloc] init];
+    _storage = [[RNFBFunctionsStreamingRegistryStorage alloc] init];
   }
   return self;
 }
 
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
-  return [self.map put:key value:value error:error];
+  if (![self.storage putIfAbsent:key value:value]) {
+    if (error != nil) {
+      NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
+      *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
+                                   code:RNFBHandleMapErrorCollision
+                               userInfo:@{NSLocalizedDescriptionKey : message}];
+    }
+    return NO;
+  }
+  return YES;
 }
 
 - (NSString *)putOrCollisionMessage:(id)key value:(id)value {
@@ -50,33 +69,23 @@
 }
 
 - (id)get:(id)key {
-  return [self.map get:key];
+  return [self.storage get:key];
 }
 
 - (id)take:(id)key {
-  return [self.map take:key];
+  return [self.storage take:key];
 }
 
 - (id)takeIf:(id)key when:(BOOL (^)(id))condition {
-  return [self.map takeIf:key when:condition];
-}
-
-- (void)rnfb_cancelHandle:(id)handle {
-  if (handle && [handle respondsToSelector:@selector(cancel)]) {
-    [handle cancel];
-  }
+  return [self.storage takeIf:key when:condition];
 }
 
 - (void)takeAndCancel:(id)key {
-  id handle = [self.map take:key];
-  [self rnfb_cancelHandle:handle];
+  [self.storage takeAndCancel:key];
 }
 
 - (void)cancelAll {
-  NSArray *handlers = [self.map takeAll];
-  for (id handler in handlers) {
-    [self rnfb_cancelHandle:handler];
-  }
+  [self.storage cancelAll];
 }
 
 - (BOOL)shouldForwardEvent:(NSDictionary *)event
