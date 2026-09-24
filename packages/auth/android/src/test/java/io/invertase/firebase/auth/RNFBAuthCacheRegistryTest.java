@@ -64,9 +64,21 @@ public class RNFBAuthCacheRegistryTest {
   }
 
   @Test
+  public void get_nullKey_returnsNull_noNpe() {
+    RNFBAuthCacheRegistry<String> registry = new RNFBAuthCacheRegistry<>();
+    assertNull(registry.get(null));
+  }
+
+  @Test
   public void take_whenFree_isNull() {
     RNFBAuthCacheRegistry<String> registry = new RNFBAuthCacheRegistry<>();
     assertNull(registry.take("missing"));
+  }
+
+  @Test
+  public void take_nullKey_returnsNull_noNpe() {
+    RNFBAuthCacheRegistry<String> registry = new RNFBAuthCacheRegistry<>();
+    assertNull(registry.take(null));
   }
 
   @Test
