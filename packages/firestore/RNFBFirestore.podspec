@@ -40,9 +40,13 @@ Pod::Spec.new do |s|
     'ios/RNFBFirestore/RNFBFirestoreTransactionAttempt.h',
     'ios/generated/**/*.h',
   ]
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
+  # CocoaPods FileList uses FNM_PATHNAME: `ios/*UnitTests/**` does not match nested
+  # paths like `ios/RNFBFirestoreUnitTests/HostStubs/**` (those would compile into the pod).
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**/*'
 
+  # DEFINES_MODULE is required for the generated RNFBFirestore-Swift.h interface.
   s.pod_target_xcconfig = {
+    "DEFINES_MODULE" => "YES",
     "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ios/generated/RNFBFirestoreTurboModules\" \"$(PODS_TARGET_SRCROOT)/ios/generated\"",
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
