@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A90000000000000000000002"
+               BlueprintIdentifier = "A10000000000000000000002"
                BuildableName = "RNFBAnalyticsUnitTests.xctest"
                BlueprintName = "RNFBAnalyticsUnitTests"
                ReferencedContainer = "container:RNFBAnalyticsUnitTests.xcodeproj">
@@ -33,7 +33,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A90000000000000000000002"
+               BlueprintIdentifier = "A10000000000000000000002"
                BuildableName = "RNFBAnalyticsUnitTests.xctest"
                BlueprintName = "RNFBAnalyticsUnitTests"
                ReferencedContainer = "container:RNFBAnalyticsUnitTests.xcodeproj">
