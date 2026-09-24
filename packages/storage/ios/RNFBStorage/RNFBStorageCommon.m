@@ -34,6 +34,16 @@
 #import "RNFBStorageCommon.h"
 #import "RNFBUtilsModule.h"
 
+#if __has_include(<RNFBStorage/RNFBStorage-Swift.h>)
+#import <RNFBStorage/RNFBStorage-Swift.h>
+#elif __has_include("RNFBStorage-Swift.h")
+#import "RNFBStorage-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBStorageTaskStatusMapper Swift interface not found"
+#endif
+
 @implementation RNFBStorageCommon
 
 + (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format {
@@ -390,17 +400,7 @@
 }
 
 + (NSString *)getTaskStatus:(FIRStorageTaskStatus)status {
-  if (status == FIRStorageTaskStatusResume || status == FIRStorageTaskStatusProgress) {
-    return @"running";
-  } else if (status == FIRStorageTaskStatusPause) {
-    return @"paused";
-  } else if (status == FIRStorageTaskStatusSuccess) {
-    return @"success";
-  } else if (status == FIRStorageTaskStatusFailure) {
-    return @"error";
-  } else {
-    return @"unknown";
-  }
+  return [RNFBStorageTaskStatusMapper stringForTaskStatus:(NSInteger)status];
 }
 
 + (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata
