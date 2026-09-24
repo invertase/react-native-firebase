@@ -20,13 +20,24 @@ Use the plain **[firebase-js-sdk](https://github.com/firebase/firebase-js-sdk)**
 
 ## Prerequisites
 
-Before getting started, the documentation assumes you are able to create a project with React Native and that you have an active Firebase project.
-If you do not meet these prerequisites, follow the links below:
+Before installing, confirm these version pins. You also need a React Native or Expo app and a Firebase project:
 
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
-Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 26.2 and the Swift 6.2.3+ toolchain, which implies a minimum macOS version of 15 (Xcode 26.2 is supported on macOS 15). See Apple's [Upcoming SDK minimum requirements](https://developer.apple.com/news/?id=ueeok6yw) for details.
+{/* prettier-ignore */}
+| Requirement | Version |
+| --- | --- |
+| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| Expo (when using Expo) | `>= 47.0.0` |
+| Xcode (iOS builds) | `>= 26.2` |
+| Firebase Apple SDK | `12.19.0` (default pin) |
+| Firebase Android SDK | `34.19.0` (default pin) |
+| Android `minSdk` | `23` |
+| iOS deployment target | `15.0` |
+| JDK (Android builds) | `>= 17` |
+
+From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0`. Apple's [Upcoming SDK minimum requirements](https://developer.apple.com/news/?id=ueeok6yw) state that App Store Connect uploads from 2026-04-28 must use the platform 26 SDKs.
 
 ## Installation for Expo projects
 

@@ -5,7 +5,22 @@ description: 'Manual Android linking for @react-native-firebase/app: settings.gr
 
 # Android Manual Installation
 
-The following steps are only required if you are using React Native 0.59 or earlier and need to manually integrate the library.
+## Version requirements
+
+{/* prettier-ignore */}
+| Requirement | Version |
+| --- | --- |
+| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| Expo (when using Expo) | `>= 47.0.0` |
+| Xcode (iOS builds) | `>= 26.2` |
+| Firebase Android SDK | `34.19.0` (default pin) |
+| Firebase Apple SDK | `12.19.0` (default pin) |
+| Android `minSdk` | `23` |
+| JDK | `>= 17` |
+
+From v26, every React Native Firebase package with a native bridge requires New Architecture. This release pins `firebase-android-sdk` `34.19.0` and firebase-ios-sdk `12.19.0`. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer.
+
+The following steps are only required if you are using React Native 0.59 or earlier and need to manually integrate the library. Autolinking projects follow [Getting Started](/).
 
 ## 1. Update Gradle Settings
 

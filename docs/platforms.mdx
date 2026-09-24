@@ -7,14 +7,30 @@ next: /ios-spm
 
 ## Status
 
-By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform:
+By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform.
+
+### Tooling and SDK pins
+
+Confirm these before install or upgrade:
+
+{/* prettier-ignore */}
+| Requirement | Version |
+| --- | --- |
+| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| Expo (when using Expo) | `>= 47.0.0` |
+| Xcode (iOS builds) | `>= 26.2` |
+| Firebase Apple SDK | `12.19.0` (default pin) |
+| Firebase Android SDK | `34.19.0` (default pin) |
+| JDK (Android builds) | `>= 17` |
+
+From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0` and `firebase-android-sdk` `34.19.0`.
+
+### OS minimums
 
 | Platform | Minimum Version            |
 | -------- | -------------------------- |
 | Android  | 6.0 (API 23 / Marshmallow) |
 | iOS      | 15.0                       |
-
-**Important** - To compile your application for Android, you will need a minimum JDK (Java Development Kit) version of `>= 17`.
 
 However, for platforms that we don't provide a Native Module for, React Native Firebase instead implements a fallback Firebase JS SDK implementation to support
 these 'Other' platforms, e.g.;
