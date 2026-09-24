@@ -14,6 +14,7 @@
 		8B9DD3C622A11F4F00A16945 /* RNFBDatabaseReferenceModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C522A11F4F00A16945 /* RNFBDatabaseReferenceModule.mm */; };
 		8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.mm */; };
 		8B9DD3CE22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm */; };
+		RNFBDB000000000000000001 /* RNFBDatabaseListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBDB000000000000000002 /* RNFBDatabaseListenerRegistryStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,7 @@
 		8B9DD3CA22A1259F00A16945 /* RNFBDatabaseQueryModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseQueryModule.h; sourceTree = "<group>"; };
 		8B9DD3CC22A43D0300A16945 /* RNFBDatabaseTransactionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseTransactionModule.h; sourceTree = "<group>"; };
 		8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseTransactionModule.mm; sourceTree = "<group>"; };
+		RNFBDB000000000000000002 /* RNFBDatabaseListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBDatabaseListenerRegistryStorage.swift; path = RNFBDatabase/RNFBDatabaseListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 			children = (
 				2744B98421F45429004F8E3F /* RNFBDatabaseModule.h */,
 				2744B98521F45429004F8E3F /* RNFBDatabaseModule.mm */,
+				RNFBDB000000000000000002 /* RNFBDatabaseListenerRegistryStorage.swift */,
 				8B9DD3B822A03C6700A16945 /* RNFBDatabaseQuery.h */,
 				8B9DD3B922A03C7900A16945 /* RNFBDatabaseQuery.m */,
 				8B9DD3BC22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.mm */,
@@ -153,6 +156,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				RNFBDB000000000000000001 /* RNFBDatabaseListenerRegistryStorage.swift in Sources */,
 				8B9DD3BD22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.mm in Sources */,
 				8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.mm in Sources */,
 				8B9DD3CE22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm in Sources */,
@@ -185,6 +189,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -201,6 +206,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -224,6 +230,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -235,6 +242,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
