@@ -16,6 +16,8 @@
 		D80000000000000000000025 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000026 /* RNFBHandleMapStorage.swift */; };
 		D80000000000000000000028 /* RNFBDatabaseListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000027 /* RNFBDatabaseListenerRegistryStorage.swift */; };
 		D8000000000000000000002A /* RNFBDatabaseListenerRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000029 /* RNFBDatabaseListenerRegistryStorageTests.swift */; };
+		D8000000000000000000002C /* RNFBDatabaseQueryRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8000000000000000000002B /* RNFBDatabaseQueryRegistryStorage.swift */; };
+		D8000000000000000000002E /* RNFBDatabaseQueryRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8000000000000000000002D /* RNFBDatabaseQueryRegistryStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		D80000000000000000000026 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 		D80000000000000000000027 /* RNFBDatabaseListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBDatabaseListenerRegistryStorage.swift; path = ../RNFBDatabase/RNFBDatabaseListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 		D80000000000000000000029 /* RNFBDatabaseListenerRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBDatabaseListenerRegistryStorageTests.swift; sourceTree = "<group>"; };
+		D8000000000000000000002B /* RNFBDatabaseQueryRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBDatabaseQueryRegistryStorage.swift; path = ../RNFBDatabase/RNFBDatabaseQueryRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		D8000000000000000000002D /* RNFBDatabaseQueryRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBDatabaseQueryRegistryStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,9 +77,11 @@
 				D80000000000000000000027 /* RNFBDatabaseListenerRegistryStorage.swift */,
 				D80000000000000000000024 /* RNFBDatabaseQueryRegistry.h */,
 				D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */,
+				D8000000000000000000002B /* RNFBDatabaseQueryRegistryStorage.swift */,
 				D80000000000000000000009 /* RNFBDatabaseListenerRegistryTests.m */,
 				D80000000000000000000029 /* RNFBDatabaseListenerRegistryStorageTests.swift */,
 				D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */,
+				D8000000000000000000002D /* RNFBDatabaseQueryRegistryStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -141,10 +147,12 @@
 				D80000000000000000000025 /* RNFBHandleMapStorage.swift in Sources */,
 				D80000000000000000000028 /* RNFBDatabaseListenerRegistryStorage.swift in Sources */,
 				D8000000000000000000000B /* RNFBDatabaseListenerRegistry.m in Sources */,
+				D8000000000000000000002C /* RNFBDatabaseQueryRegistryStorage.swift in Sources */,
 				D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */,
 				D8000000000000000000000C /* RNFBDatabaseListenerRegistryTests.m in Sources */,
 				D8000000000000000000002A /* RNFBDatabaseListenerRegistryStorageTests.swift in Sources */,
 				D80000000000000000000022 /* RNFBDatabaseQueryRegistryTests.m in Sources */,
+				D8000000000000000000002E /* RNFBDatabaseQueryRegistryStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
