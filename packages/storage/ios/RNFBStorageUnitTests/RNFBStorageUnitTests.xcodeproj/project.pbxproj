@@ -20,6 +20,8 @@
 		E70000000000000000000027 /* RNFBStorageErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */; };
 		E70000000000000000000029 /* RNFBStorageErrorCodeMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */; };
 		E7000000000000000000002B /* RNFBStorageErrorCodeMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */; };
+		E7000000000000000000002D /* RNFBStorageErrorSnapshotDictBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002E /* RNFBStorageErrorSnapshotDictBuilder.swift */; };
+		E7000000000000000000002F /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000030 /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageErrorCodeMapper.swift; path = ../RNFBStorage/RNFBStorageErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
 		E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageErrorCodeMapperTests.swift; sourceTree = "<group>"; };
 		E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageErrorCodeMapperFacadeTests.m; sourceTree = "<group>"; };
+		E7000000000000000000002E /* RNFBStorageErrorSnapshotDictBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageErrorSnapshotDictBuilder.swift; path = ../RNFBStorage/RNFBStorageErrorSnapshotDictBuilder.swift; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000030 /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageErrorSnapshotDictBuilderFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +90,8 @@
 				E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */,
 				E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */,
 				E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */,
+				E7000000000000000000002E /* RNFBStorageErrorSnapshotDictBuilder.swift */,
+				E70000000000000000000030 /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -159,6 +165,8 @@
 				E70000000000000000000027 /* RNFBStorageErrorCodeMapper.swift in Sources */,
 				E70000000000000000000029 /* RNFBStorageErrorCodeMapperTests.swift in Sources */,
 				E7000000000000000000002B /* RNFBStorageErrorCodeMapperFacadeTests.m in Sources */,
+				E7000000000000000000002D /* RNFBStorageErrorSnapshotDictBuilder.swift in Sources */,
+				E7000000000000000000002F /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
