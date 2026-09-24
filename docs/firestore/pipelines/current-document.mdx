@@ -1,21 +1,22 @@
 ---
 title: currentDocument
-description: 'Firestore pipelines currentDocument() expression helper: reference the document currently being processed, typically inside a select() stage.'
+description: 'Firestore pipelines currentDocument() expression helper: reference the document being processed, typically inside a select() stage.'
 next: /firestore/pipelines/if-null
 previous: /firestore/pipelines
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/).
+- `@react-native-firebase/firestore` installed and rebuilt into the native app.
+- A Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).
+- Import expression helpers from `@react-native-firebase/firestore/pipelines`.
+
 `currentDocument()` returns an [expression](/firestore/pipelines) representing the Firestore document row the pipeline is processing. Use it when you need the full document map in a projection or when binding the document to a variable in upstream firebase-js-sdk samples.
-
-Import from the pipelines entry point:
-
-```js
-import { currentDocument, mapGet } from '@react-native-firebase/firestore/pipelines';
-```
 
 # Basic example
 
-Read a field from the current document map with `mapGet`:
+Read a field from the document map with `mapGet`:
 
 ```js
 import { getFirestore } from '@react-native-firebase/firestore';
@@ -42,24 +43,46 @@ snapshot.results.forEach(row => {
 
 # Upstream define-stage pattern
 
-The [firebase-js-sdk](https://firebase.google.com/docs/reference/js/firestore_pipelines#currentdocument) also shows binding the document with a `define` stage:
+The [firebase-js-sdk](https://firebase.google.com/docs/reference/js/firestore_pipelines#currentdocument) also shows binding the document with a `define` stage. React Native Firebase exposes the same `define` stage and `variable()` helper. Bind the document, then read fields with `mapGet(variable('doc'), 'fieldName')`. For a direct projection without a named binding, prefer `mapGet(currentDocument(), 'fieldName')` as in the Basic example above.
+
+`currentDocument()` is typed as `Expression`, so the sample uses a JSDoc cast to `FunctionExpression` before calling `.as()`; `.as()` is not on every `Expression`.
 
 ```js
-firestore
-  .pipeline()
-  .collection('books')
-  .define(currentDocument().as('doc'))
-  .select(variable('doc').mapGet('title'));
-```
+import { getFirestore } from '@react-native-firebase/firestore';
+import {
+  currentDocument,
+  execute,
+  mapGet,
+  variable,
+} from '@react-native-firebase/firestore/pipelines';
 
-React Native Firebase does not expose the `define` stage yet. Until it does, prefer `mapGet(currentDocument(), 'fieldName')` or other helpers that accept expression arguments directly.
+const firestore = getFirestore('your-enterprise-database-id');
+
+const currentDoc =
+  /** @type {import('@react-native-firebase/firestore/pipelines').FunctionExpression} */ (
+    currentDocument()
+  );
+
+const snapshot = await execute(
+  firestore
+    .pipeline()
+    .collection('books')
+    .define(currentDoc.as('doc'))
+    .select(mapGet(variable('doc'), 'title')),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().title);
+});
+```
 
 # Platform support
 
-| Platform | Support                                 |
-| -------- | --------------------------------------- |
-| Android  | Supported (native Firestore SDK)        |
-| iOS      | Supported (native Firestore SDK)        |
-| macOS    | Supported (firebase-js-sdk web interop) |
+{/* prettier-ignore */}
+| Platform | Support |
+| --- | --- |
+| Android | Supported (native Firestore SDK) |
+| iOS | Supported (native Firestore SDK) |
+| macOS | Supported (firebase-js-sdk web interop) |
 
 Pipeline execution requires a Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).

@@ -1,9 +1,14 @@
 ---
 title: Pipeline SDK compatibility
-description: "Compare React Native Firebase's Firestore pipelines API to firebase-js-sdk: supported features, current gaps, and platform-specific execution notes."
+description: "Compare React Native Firebase's Firestore pipelines API to firebase-js-sdk: supported features, known gaps, and platform-specific execution notes."
 next: /functions/usage
 previous: /firestore/pipelines/subcollection
 ---
+
+## Prerequisites
+
+- Working knowledge of [Pipelines overview](/firestore/pipelines) (Enterprise database, cloud execution, `@react-native-firebase/firestore/pipelines` imports).
+- Access to the React Native Firebase repository if you plan to run `yarn compare:types` against the `firestore-pipelines` allowlist.
 
 React Native Firebase aims to be a **drop-in replacement** for the [firebase-js-sdk Firestore pipelines module](https://firebase.google.com/docs/reference/js/firestore_pipelines) on React Native targets. Most expression helpers, stage builders, and types match the JS SDK. This page summarizes deliberate gaps so you can plan migrations from web samples.
 
@@ -11,15 +16,16 @@ CI enforces parity through `yarn compare:types` and the `firestore-pipelines` al
 
 # Summary
 
-| Category                                                                    | Status                                   |
-| --------------------------------------------------------------------------- | ---------------------------------------- |
-| Core pipeline builder (`pipeline()`, stages, `execute()`)                   | **Supported** on Android, iOS, and macOS |
+{/* prettier-ignore */}
+| Category | Status |
+| --- | --- |
+| Core pipeline builder (`pipeline()`, stages, `execute()`) | **Supported** on Android, iOS, and macOS |
 | Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) | **Supported** on Android, iOS, and macOS |
-| Current firebase-js-sdk pipeline exports                                    | **Supported** through compare-types      |
+| firebase-js-sdk pipeline exports tracked in compare-types | **Supported** through compare-types |
 
-# Not yet available in React Native Firebase
+# Tracked firebase-js-sdk pipeline exports
 
-All pipeline exports currently tracked in the compare-types allowlist are supported. Check release notes when upgrading for newly added firebase-js-sdk pipeline APIs.
+Pipeline exports tracked in the compare-types allowlist are supported. Check release notes when upgrading for firebase-js-sdk pipeline APIs added after the pin you ship.
 
 ## Platform notes
 
@@ -29,17 +35,18 @@ If you depend on one of these, follow [Firebase pipeline release notes](https://
 
 # Type-shape parity
 
-The current `firestore-pipelines` compare-types config has no `differentShape` entries. `StageOptions`, `TimeGranularity`, `isType`, and `timestampDiff` now match the firebase-js-sdk declarations, including the lowercase `isoweek` and `isoyear` time granularity literals.
+The `firestore-pipelines` compare-types config has one `differentShape` entry: `CollectionStageOptions` (RN Firebase types `collection` as `string | Query`; firebase-js-sdk uses `string | CollectionReference`). `StageOptions`, `TimeGranularity`, `isType`, and `timestampDiff` match the firebase-js-sdk declarations, including the lowercase `isoweek` and `isoyear` time granularity literals.
 
 # Platform execution matrix
 
-| Platform | Execution backend               | Pipeline database  |
-| -------- | ------------------------------- | ------------------ |
-| Android  | Native Android Firestore SDK    | Enterprise (cloud) |
-| iOS      | Native iOS Firestore SDK        | Enterprise (cloud) |
-| macOS    | firebase-js-sdk via web interop | Enterprise (cloud) |
+{/* prettier-ignore */}
+| Platform | Execution backend | Pipeline database |
+| --- | --- | --- |
+| Android | Native Android Firestore SDK | Enterprise (cloud) |
+| iOS | Native iOS Firestore SDK | Enterprise (cloud) |
+| macOS | firebase-js-sdk via web interop | Enterprise (cloud) |
 
-All platforms require network access to your Firestore Enterprise database for pipeline `execute()`. The local Firestore emulator is not a supported target for pipeline development today.
+All platforms require network access to your Firestore Enterprise database for pipeline `execute()`. The local Firestore emulator is not a supported target for pipeline development.
 
 # Staying up to date
 

@@ -3,32 +3,55 @@ title: Cloud Firestore iOS Integration
 description: 'Manual iOS linking for @react-native-firebase/firestore: add the RNFBFirestore CocoaPods pod and run pod install --repo-update.'
 ---
 
-# iOS Manual Linking
+# iOS Manual Installation
 
-The following steps are only required if your environment does not have access to React Native auto-linking (0.59 or older) or you need to manually integrate the library.
+## Prerequisites
+
+These steps assume:
+
+- `@react-native-firebase/app` is already installed and linked (see [App iOS installation](/install-ios) or [Getting Started](/)).
+- `@react-native-firebase/firestore` is already listed in your app `package.json` (install with `npm install --save @react-native-firebase/firestore` or `yarn add @react-native-firebase/firestore`).
+- You are on React Native **0.59 or earlier** and must link the native module by hand. React Native 0.60+ projects use [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) and should follow [Cloud Firestore usage](/firestore/usage) instead.
+- Your iOS app already meets the version pins below.
+- CocoaPods is installed and you can run `pod` from a shell.
+
+## Version requirements
+
+{/* prettier-ignore */}
+| Requirement | Version |
+| --- | --- |
+| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| Expo (when using Expo) | `>= 47.0.0` |
+| Xcode | `>= 26.2` |
+| Firebase Apple SDK | `12.19.0` (default pin) |
+| Firebase Android SDK | `34.19.0` (default pin) |
+| iOS deployment target | `15.0` |
+
+From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0` and `firebase-android-sdk` `34.19.0`.
+
+Apply the two steps below **in order**, then rebuild.
 
 ## 1. Add the Pod
 
-Add the `RNFBFirestore` Pod to your projects `/ios/Podfile`:
+File: `/ios/Podfile`. Add the `RNFBFirestore` pod inside your app `target` block before running `pod install`.
 
 ```ruby
+# File: ios/Podfile. Step 1 of 2 (before pod install). Add inside your app target block.
 target 'app' do
-  # ...
   pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
 end
 ```
 
-## 2. Update Pods & rebuild the project
+Replace `'app'` with your real Xcode target name if it differs.
 
-You may need to update your local Pods in order for the `RNFBFirestore` Pod to be installed in your project:
+## 2. Update Pods and rebuild the project
 
-```bash
-$ cd ios/
-$ pod install --repo-update
-```
-
-Once the Pods have installed locally, rebuild your iOS project:
+From the project root, install pods then rebuild iOS. Do this only after the Podfile change in step 1.
 
 ```bash
+# Project root. Step 2 of 2 (after ios/Podfile RNFBFirestore pod entry).
+cd ios/
+pod install --repo-update
+cd ..
 npx react-native run-ios
 ```

@@ -5,13 +5,15 @@ next: /firestore/pipelines/timestamp-diff
 previous: /firestore/pipelines/if-null
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/).
+- `@react-native-firebase/firestore` installed and rebuilt into the native app.
+- A Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).
+- Import expression helpers from `@react-native-firebase/firestore/pipelines`.
+- On **iOS**, native pipeline runtime support for `switchOn` requires Firebase Apple SDK **12.12.0** or newer. This release pins firebase-ios-sdk **12.19.0**.
+
 `switchOn()` behaves like a `switch` statement: pass alternating **condition / result** pairs, plus an optional default result as the final argument when no condition matches.
-
-Import from the pipelines entry point:
-
-```js
-import { switchOn, field, constant, equal } from '@react-native-firebase/firestore/pipelines';
-```
 
 # Basic example
 
@@ -49,12 +51,11 @@ snapshot.results.forEach(row => {
 
 # Comparison with conditional
 
-| Helper        | Use when                                          |
-| ------------- | ------------------------------------------------- |
+{/* prettier-ignore */}
+| Helper | Use when |
+| --- | --- |
 | `conditional` | One boolean test with explicit then/else branches |
-| `switchOn`    | Multiple discrete cases plus optional default     |
-
-On **iOS**, the native pipeline runtime evaluates `switchOn` on Firebase iOS SDK **12.12.0+** (RNFB pins **12.15.0**); unified cross-platform e2e.
+| `switchOn` | Multiple discrete cases plus optional default |
 
 # Upstream reference
 

@@ -5,13 +5,14 @@ next: /firestore/pipelines/switch-on
 previous: /firestore/pipelines/current-document
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/).
+- `@react-native-firebase/firestore` installed and rebuilt into the native app.
+- A Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).
+- Import expression helpers from `@react-native-firebase/firestore/pipelines`.
+
 `ifNull()` returns a fallback when the first argument evaluates to **null** or is **absent**. Unlike [`ifAbsent()`](/firestore/pipelines), which only substitutes missing fields, `ifNull()` also replaces explicit `null` values stored on the document.
-
-Import from the pipelines entry point:
-
-```js
-import { ifNull, field, constant } from '@react-native-firebase/firestore/pipelines';
-```
 
 # Basic example
 
@@ -35,16 +36,33 @@ snapshot.results.forEach(row => {
 
 # Fluent form
 
+The same expression can be built from the field helper:
+
 ```js
-field('displayName').ifNull(constant('Anonymous')).as('displayName');
+import { getFirestore } from '@react-native-firebase/firestore';
+import { execute, field, constant } from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('users')
+    .select(field('displayName').ifNull(constant('Anonymous')).as('displayName')),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().displayName);
+});
 ```
 
 # Comparison with ifAbsent
 
-| Helper     | Missing field | Explicit `null` on document |
-| ---------- | ------------- | --------------------------- |
-| `ifAbsent` | fallback      | keeps `null`                |
-| `ifNull`   | fallback      | fallback                    |
+{/* prettier-ignore */}
+| Helper | Missing field | Explicit `null` on document |
+| --- | --- | --- |
+| `ifAbsent` | fallback | keeps `null` |
+| `ifNull` | fallback | fallback |
 
 Use `ifNull` when you want one expression to cover both absent and null values.
 

@@ -5,8 +5,14 @@ next: /firestore/pipelines
 previous: /firestore/usage-with-flatlists
 ---
 
-Pagination using cloud firestore may be done in various ways but here's a basic way to do it using the firestore query features:
-[`orderBy`, `limit`, `startAfter`]
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- `@react-native-firebase/firestore` installed: `npm install --save @react-native-firebase/firestore` or `yarn add @react-native-firebase/firestore`, then rebuild native apps (`cd ios && pod install` on iOS).
+- A Cloud Firestore collection named `Users` with documents that include `name` and `age` fields (adjust the field names and page size below to match your schema).
+
+Pagination using Cloud Firestore may be done in various ways. This page shows a basic approach using the Firestore query features
+`orderBy`, `limit`, and `startAfter`.
 
 # Setup state
 
@@ -14,32 +20,45 @@ First, create a list display component with 2 state items; `lastDocument` and `u
 
 ```jsx
 import React, { useState } from 'react';
-import type { Node } from 'react';
-import { Text, View, Button, Alert } from 'react-native';
-
+import { Text, View, Button } from 'react-native';
 import { collection, getFirestore } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 const usersRef = collection(db, 'Users');
 
-const App: () => Node = () => {
-  const [lastDocument, setLastDocument] = useState();
+function App() {
+  const [lastDocument, setLastDocument] = useState(undefined);
   const [userData, setUserData] = useState([]);
-};
+
+  return (
+    <View>
+      {userData}
+      <Button
+        onPress={() => {
+          console.log('Wire LoadData in the next example. usersRef:', usersRef.path);
+          console.log('lastDocument:', lastDocument);
+          setLastDocument(lastDocument);
+          setUserData(userData);
+        }}
+        title="Load Next"
+      />
+    </View>
+  );
+}
+
+export default App;
 ```
 
 # `LoadData` function
 
-Next, make a function called `LoadData` that fetches data from `Users` collection, and call it when a `Button` is pressed.
+Next, make a function called `LoadData` that fetches data from the `Users` collection, and call it when a `Button` is pressed.
 
-If lastDocument is not assigned (meaning initial load), the function will fetch from the start.
-After successful fetch from the collection, store the last snapshot data by `setLastDocument`.
+If `lastDocument` is not assigned (meaning initial load), the function will fetch from the start.
+After a successful fetch from the collection, store the last snapshot via `setLastDocument`.
 
 ```jsx
 import React, { useState } from 'react';
-import type { Node } from 'react';
-import { Text, View, Button, Alert } from 'react-native';
-
+import { Text, View, Button } from 'react-native';
 import {
   collection,
   getDocs,
@@ -53,19 +72,33 @@ import {
 const db = getFirestore();
 const usersRef = collection(db, 'Users');
 
-const App: () => Node = () => {
-  const [lastDocument, setLastDocument] = useState();
+function App() {
+  const [lastDocument, setLastDocument] = useState(undefined);
   const [userData, setUserData] = useState([]);
+
+  function MakeUserData(docs) {
+    const templist = [];
+    docs.forEach((docSnapshot, i) => {
+      const data = docSnapshot.data();
+      console.log(data);
+      templist.push(
+        <View key={i} style={{ margin: 10 }}>
+          <Text>{data.name}</Text>
+          <Text>{data.age}</Text>
+        </View>,
+      );
+    });
+    setUserData(templist);
+  }
 
   function LoadData() {
     console.log('LOAD');
-    const constraints = [orderBy('age')]; // sort the data
-    if (lastDocument !== undefined) {
-      constraints.push(startAfter(lastDocument)); // fetch data following the last document accessed
-    }
-    constraints.push(limit(3)); // limit to your page size, 3 is just an example
+    const pageQuery =
+      lastDocument !== undefined
+        ? query(usersRef, orderBy('age'), startAfter(lastDocument), limit(3))
+        : query(usersRef, orderBy('age'), limit(3));
 
-    getDocs(query(usersRef, ...constraints)).then(querySnapshot => {
+    getDocs(pageQuery).then(querySnapshot => {
       setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
       MakeUserData(querySnapshot.docs);
     });
@@ -82,42 +115,23 @@ const App: () => Node = () => {
       />
     </View>
   );
-};
+}
+
+export default App;
 ```
 
 # `MakeUserData` function
 
-This is just an example function, alter it to process the data to meet your requirements.
-In this specific example, it will replace the userData component with the new data fetched.
-
-```js
-function MakeUserData(docs) {
-  let templist = []; //[...userData] <- use this instead of [] if you want to save the previous data.
-  docs.forEach((doc, i) => {
-    console.log(doc._data);
-    let temp = (
-      <View key={i} style={{ margin: 10 }}>
-        <Text>{doc._data.name}</Text>
-        <Text>{doc._data.age}</Text>
-      </View>
-    );
-    templist.push(temp);
-  });
-  setUserData(templist); //replace with the new data
-}
-```
-
-Now, every time the button is pressed, `Users` collection data will be fetched one page at a time.
+`MakeUserData` is an example helper that turns query documents into React Native views. Alter it to process the data to meet your requirements.
+In this specific example, it replaces the `userData` component tree with the page just fetched. To append pages instead of replacing them, start from `[...userData]` rather than `[]`.
 
 # Conclusion
 
-Here's the full example code
+Here is the full example code:
 
 ```jsx
 import React, { useState } from 'react';
-import type { Node } from 'react';
-import { Text, View, Button, Alert } from 'react-native';
-
+import { Text, View, Button } from 'react-native';
 import {
   collection,
   getDocs,
@@ -131,35 +145,34 @@ import {
 const db = getFirestore();
 const usersRef = collection(db, 'Users');
 
-const App: () => Node = () => {
-  const [lastDocument, setLastDocument] = useState();
+function App() {
+  const [lastDocument, setLastDocument] = useState(undefined);
   const [userData, setUserData] = useState([]);
 
   function LoadData() {
     console.log('LOAD');
-    const constraints = [orderBy('age')]; // sort the data
-    if (lastDocument !== undefined) {
-      constraints.push(startAfter(lastDocument)); // fetch data following the last document accessed
-    }
-    constraints.push(limit(3)); // limit to your page size, 3 is just an example
+    const pageQuery =
+      lastDocument !== undefined
+        ? query(usersRef, orderBy('age'), startAfter(lastDocument), limit(3))
+        : query(usersRef, orderBy('age'), limit(3));
 
-    getDocs(query(usersRef, ...constraints)).then(querySnapshot => {
+    getDocs(pageQuery).then(querySnapshot => {
       setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
       MakeUserData(querySnapshot.docs);
     });
   }
 
   function MakeUserData(docs) {
-    let templist = [];
-    docs.forEach((doc, i) => {
-      console.log(doc._data);
-      let temp = (
+    const templist = [];
+    docs.forEach((docSnapshot, i) => {
+      const data = docSnapshot.data();
+      console.log(data);
+      templist.push(
         <View key={i} style={{ margin: 10 }}>
-          <Text>{doc._data.name}</Text>
-          <Text>{doc._data.age}</Text>
-        </View>
+          <Text>{data.name}</Text>
+          <Text>{data.age}</Text>
+        </View>,
       );
-      templist.push(temp);
     });
     setUserData(templist);
   }
@@ -175,7 +188,9 @@ const App: () => Node = () => {
       />
     </View>
   );
-};
+}
 
 export default App;
 ```
+
+Every time the button is pressed, `Users` collection data is fetched one page at a time.
