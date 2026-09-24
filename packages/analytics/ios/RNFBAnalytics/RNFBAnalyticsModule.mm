@@ -40,24 +40,6 @@
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
 
-/** GA4 parameters that must be sent as integer NSNumber values (not doubles from JS). */
-static NSArray<NSString *> *RNFBAnalyticsLongNumericParameterKeys(void) {
-  static NSArray<NSString *> *keys;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    keys = @[
-      kFIRParameterQuantity,
-      kFIRParameterIndex,
-      kFIRParameterLevel,
-      kFIRParameterNumberOfNights,
-      kFIRParameterNumberOfPassengers,
-      kFIRParameterNumberOfRooms,
-      kFIRParameterScore,
-    ];
-  });
-  return keys;
-}
-
 static void RNFBAnalyticsAddConsentStatus(NSMutableDictionary *consent,
                                           NSDictionary *consentSettings, NSString *key,
                                           FIRConsentType type) {
@@ -65,37 +47,6 @@ static void RNFBAnalyticsAddConsentStatus(NSMutableDictionary *consent,
   if (value != nil) {
     consent[type] = value.boolValue ? FIRConsentStatusGranted : FIRConsentStatusDenied;
   }
-}
-
-static int RNFBAnalyticsHexDigit(unichar character) {
-  if (character >= '0' && character <= '9') {
-    return character - '0';
-  }
-  if (character >= 'a' && character <= 'f') {
-    return character - 'a' + 10;
-  }
-  if (character >= 'A' && character <= 'F') {
-    return character - 'A' + 10;
-  }
-  return -1;
-}
-
-static NSData *RNFBAnalyticsDataFromSHA256HexString(NSString *hexString) {
-  if (hexString.length != 64) {
-    return nil;
-  }
-
-  unsigned char bytes[32];
-  for (NSUInteger i = 0; i < sizeof(bytes); i++) {
-    int high = RNFBAnalyticsHexDigit([hexString characterAtIndex:i * 2]);
-    int low = RNFBAnalyticsHexDigit([hexString characterAtIndex:i * 2 + 1]);
-    if (high < 0 || low < 0) {
-      return nil;
-    }
-    bytes[i] = (high << 4) | low;
-  }
-
-  return [NSData dataWithBytes:bytes length:sizeof(bytes)];
 }
 
 @implementation RNFBAnalyticsModule
@@ -121,7 +72,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
   @try {
-    [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:params]];
+    [FIRAnalytics
+        logEventWithName:name
+              parameters:[RNFBAnalyticsJavascriptParamsCleaner cleanJavascriptParams:params]];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -145,7 +98,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
           resolve:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject {
   @try {
-    [FIRAnalytics setUserID:[self convertNSNullToNil:id]];
+    [FIRAnalytics setUserID:[RNFBAnalyticsJavascriptParamsCleaner convertNSNullToNil:id]];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -157,7 +110,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject {
   @try {
-    [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:name];
+    [FIRAnalytics
+        setUserPropertyString:[RNFBAnalyticsJavascriptParamsCleaner convertNSNullToNil:value]
+                      forName:name];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -169,7 +124,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                    reject:(RCTPromiseRejectBlock)reject {
   @try {
     [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-      [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:key];
+      [FIRAnalytics
+          setUserPropertyString:[RNFBAnalyticsJavascriptParamsCleaner convertNSNullToNil:value]
+                        forName:key];
     }];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -240,7 +197,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                           resolve:(RCTPromiseResolveBlock)resolve
                            reject:(RCTPromiseRejectBlock)reject {
   @try {
-    [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
+    [FIRAnalytics setDefaultEventParameters:[RNFBAnalyticsJavascriptParamsCleaner
+                                                cleanJavascriptParams:params]];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -264,7 +222,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                                                             resolve:(RCTPromiseResolveBlock)resolve
                                                              reject:(RCTPromiseRejectBlock)reject {
   @try {
-    NSData *emailAddress = RNFBAnalyticsDataFromSHA256HexString(hashedEmailAddress);
+    NSData *emailAddress =
+        [RNFBAnalyticsJavascriptParamsCleaner dataFromSHA256HexString:hashedEmailAddress];
     if (emailAddress == nil) {
       reject(@"firebase_analytics", @"Expected a 64-character SHA-256 hex string", nil);
       return;
@@ -293,7 +252,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
                                                            resolve:(RCTPromiseResolveBlock)resolve
                                                             reject:(RCTPromiseRejectBlock)reject {
   @try {
-    NSData *phoneNumber = RNFBAnalyticsDataFromSHA256HexString(hashedPhoneNumber);
+    NSData *phoneNumber =
+        [RNFBAnalyticsJavascriptParamsCleaner dataFromSHA256HexString:hashedPhoneNumber];
     if (phoneNumber == nil) {
       reject(@"firebase_analytics", @"Expected a 64-character SHA-256 hex string", nil);
       return;
@@ -334,63 +294,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
   return resolve([NSNull null]);
-}
-
-#pragma mark -
-#pragma mark Private methods
-
-- (NSDictionary *)cleanJavascriptParams:(NSDictionary *)params {
-  NSMutableDictionary *newParams = [params mutableCopy];
-  if (newParams[kFIRParameterItems]) {
-    NSMutableArray *newItems = [NSMutableArray array];
-    [(NSArray *)newParams[kFIRParameterItems]
-        enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-          NSMutableDictionary *item = [obj mutableCopy];
-          [self rnfb_coerceLongNumericParametersInMutableDictionary:item];
-          [newItems addObject:[item copy]];
-        }];
-    newParams[kFIRParameterItems] = [newItems copy];
-  }
-  [self rnfb_coerceLongNumericParametersInMutableDictionary:newParams];
-  [self rnfb_coerceSuccessParameterInMutableDictionary:newParams];
-  NSNumber *extendSession = [newParams valueForKey:kFIRParameterExtendSession];
-  if ([extendSession isEqualToNumber:@1]) {
-    newParams[kFIRParameterExtendSession] = @YES;
-  }
-  return [newParams copy];
-}
-
-- (void)rnfb_coerceLongNumericParametersInMutableDictionary:(NSMutableDictionary *)dict {
-  for (NSString *key in RNFBAnalyticsLongNumericParameterKeys()) {
-    id value = dict[key];
-    if (value != nil && value != [NSNull null]) {
-      dict[key] = @([value integerValue]);
-    }
-  }
-}
-
-- (void)rnfb_coerceSuccessParameterInMutableDictionary:(NSMutableDictionary *)dict {
-  id value = dict[kFIRParameterSuccess];
-  if (value == nil || value == [NSNull null]) {
-    return;
-  }
-  int success = 0;
-  if ([value isKindOfClass:[NSString class]]) {
-    NSString *lower = [(NSString *)value lowercaseString];
-    if ([lower isEqualToString:@"true"] || [lower isEqualToString:@"yes"] ||
-        [lower isEqualToString:@"1"]) {
-      success = 1;
-    }
-  } else {
-    success = [value boolValue] ? 1 : 0;
-  }
-  dict[kFIRParameterSuccess] = @(success);
-}
-
-/// Converts null values received over the bridge from NSNull to nil
-/// @param value Nullable string value
-- (NSString *)convertNSNullToNil:(NSString *)value {
-  return [value isEqual:[NSNull null]] ? nil : value;
 }
 
 @end
