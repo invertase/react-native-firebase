@@ -115,6 +115,36 @@ public class RNFBPerfHandleRegistryTest {
   }
 
   @Test
+  public void takeIf_whenMissing_returnsNullWithoutCallingPredicate() {
+    RNFBPerfHandleRegistry<String> registry = new RNFBPerfHandleRegistry<>();
+    boolean[] called = {false};
+    assertNull(
+        registry.takeIf(
+            99,
+            value -> {
+              called[0] = true;
+              return true;
+            }));
+    assertFalse(called[0]);
+  }
+
+  @Test
+  public void takeIf_whenPredicateFalse_leavesMapping() throws Exception {
+    RNFBPerfHandleRegistry<String> registry = new RNFBPerfHandleRegistry<>();
+    registry.put(1, "trace");
+    assertNull(registry.takeIf(1, value -> false));
+    assertSame("trace", registry.get(1));
+  }
+
+  @Test
+  public void takeIf_whenPredicateTrue_removesAndReturns() throws Exception {
+    RNFBPerfHandleRegistry<String> registry = new RNFBPerfHandleRegistry<>();
+    registry.put(1, "trace");
+    assertSame("trace", registry.takeIf(1, value -> value == "trace"));
+    assertNull(registry.get(1));
+  }
+
+  @Test
   public void get_whenFree_isNull() {
     RNFBPerfHandleRegistry<String> registry = new RNFBPerfHandleRegistry<>();
     assertNull(registry.get(99));
