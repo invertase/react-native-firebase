@@ -69,7 +69,10 @@ The following is an example `app.json` to enable the React Native Firebase modul
 
 You will need to add a plugin entry for each react-native-firebase module you use that defines an Expo config plugin - these are documented on the specific module install pages.
 
+Place `google-services.json` and `GoogleService-Info.plist` at the paths referenced below (or update the paths). Then write this config **before** running `npx expo prebuild` / EAS Build.
+
 ```json
+// File: app.json (or the object returned by app.config.js). Apply before npx expo prebuild / EAS Build.
 {
   "expo": {
     "android": {
@@ -99,27 +102,36 @@ You will need to add a plugin entry for each react-native-firebase module you us
 
 > Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins"` entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g.`node_modules/@react-native-firebase/app/app.plugin.js`).
 
-If you use `@react-native-firebase/analytics` with Expo, including EAS Build, and want to configure iOS Analytics Podfile flags, add the Analytics config plugin with the relevant iOS options:
+If you use `@react-native-firebase/analytics` with Expo, including EAS Build, and want to configure iOS Analytics Podfile flags, add the Analytics config plugin to the same `expo.plugins` array in `app.json` / `app.config.js` (after `@react-native-firebase/app`), then re-run prebuild:
 
 ```json
-[
-  "@react-native-firebase/analytics",
-  {
-    "ios": {
-      "withoutAdIdSupport": true,
-      "googleAppMeasurementOnDeviceConversion": true
-    }
+// File: app.json — one entry inside expo.plugins[]. Add after @react-native-firebase/app; re-run prebuild after editing.
+{
+  "expo": {
+    "plugins": [
+      "@react-native-firebase/app",
+      [
+        "@react-native-firebase/analytics",
+        {
+          "ios": {
+            "withoutAdIdSupport": true,
+            "googleAppMeasurementOnDeviceConversion": true
+          }
+        }
+      ]
+    ]
   }
-]
+}
 ```
 
-The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to opt out of iOS Ad ID support. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to include Google Analytics on-device conversion measurement support. You may omit either option if it is not needed.
+The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to opt out of iOS Ad ID support. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to include Google Analytics on-device conversion measurement support. You may omit either option if it is not needed. Merge this Analytics plugin entry into your existing `plugins` list rather than replacing unrelated plugins.
 
 #### CocoaPods / static frameworks (opt-out)
 
-Do **not** combine RNFB's default SPM mode with static frameworks. To use CocoaPods instead of SPM (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), pass `disableSPM: true` to the `@react-native-firebase/app` config plugin and set `"useFrameworks": "static"`. With React Native 0.84+ / Expo 54+ prebuilt core, list every RNFB native module you use in `forceStaticLinking`. See [iOS SPM Support](/ios-spm) for details:
+Do **not** combine RNFB's default SPM mode with static frameworks. To use CocoaPods instead of SPM (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), pass `disableSPM: true` to the `@react-native-firebase/app` config plugin and set `"useFrameworks": "static"`. With React Native 0.84+ / Expo 54+ prebuilt core, list every RNFB native module you use in `forceStaticLinking`. See [iOS SPM Support](/ios-spm) for details. Write this into `app.json` / `app.config.js` **before** the next `npx expo prebuild --clean`:
 
 ```json
+// File: app.json (or app.config.js). CocoaPods / static opt-out. Apply before npx expo prebuild --clean.
 {
   "expo": {
     "plugins": [
@@ -174,10 +186,11 @@ rebuilding your application.
 Install the React Native Firebase "app" module to the root of your React Native project with NPM or Yarn:
 
 ```bash
-# Using npm
+# Project root. Step 1 of React Native CLI install (before Android/iOS native config).
+# Using npm:
 npm install --save @react-native-firebase/app
 
-# Using Yarn
+# Using Yarn:
 yarn add @react-native-firebase/app
 ```
 
@@ -204,25 +217,22 @@ Download the `google-services.json` file and place it inside of your project at 
 #### Configure Firebase with Android credentials
 
 To allow Firebase on Android to use the credentials, the `google-services` plugin must be enabled on the project. This requires modification to two
-files in the Android directory.
+files in the Android directory. Apply them **in order**: project `build.gradle` first, then app `build.gradle`.
 
 First, add the `google-services` plugin as a dependency inside of your `/android/build.gradle` file:
 
 ```groovy
-buildscript {
-  dependencies {
-    // ... other dependencies
-    classpath 'com.google.gms:google-services:4.5.0'
-    // Add me --- /\
-  }
-}
+// File: android/build.gradle (project-level). Step 1 of 2 for google-services (before android/app/build.gradle).
+// Add this classpath inside the existing buildscript { dependencies { } } block:
+classpath 'com.google.gms:google-services:4.5.0'
 ```
 
-Lastly, execute the plugin by adding the following to your `/android/app/build.gradle` file:
+Next, execute the plugin by adding the following to your `/android/app/build.gradle` file:
 
 ```groovy
+// File: android/app/build.gradle. Step 2 of 2 for google-services (after project-level classpath).
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services' // <- Add this line
+apply plugin: 'com.google.gms.google-services'
 ```
 
 ### 3. React Native CLI - iOS Setup
@@ -250,55 +260,56 @@ Select the downloaded `GoogleService-Info.plist` file from your computer, and en
 
 To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be configured during the bootstrap phase of your application.
 
-To do this, open your `/ios/{projectName}/AppDelegate.swift` file and add the following:
-
-At the top of the file, import the Firebase SDK right after `'import ReactAppDependencyProvider'`:
+Open `/ios/{projectName}/AppDelegate.swift`. Add `import Firebase` with your other imports (for example after `import ReactAppDependencyProvider`), then call `FirebaseApp.configure()` at the start of `application(_:didFinishLaunchingWithOptions:)` **before** the rest of your startup code:
 
 ```swift
+// File: ios/{projectName}/AppDelegate.swift (React Native 0.77+).
+// 1) Add `import Firebase` with your other imports.
+// 2) Call FirebaseApp.configure() at the top of didFinishLaunchingWithOptions before other startup work.
 import Firebase
-```
 
-Within your existing `application` method, add the following to the top of the method:
-
-```swift
-  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-  // Add me --- \/
+func application(
+  _ application: UIApplication,
+  didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+) -> Bool {
   FirebaseApp.configure()
-  // Add me --- /\
-  // ...
+  // Keep your existing React Native / app startup code below this line.
+  return true
 }
 ```
+
+Merge the `FirebaseApp.configure()` call into your existing `application` method rather than replacing the whole method if your `AppDelegate` already returns a value from additional setup.
 
 #### Configure Firebase with iOS credentials (react-native < 0.77)
 
 To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be configured during the bootstrap phase of your application.
 
-To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.m` if on older react-native), and add the following:
-
-At the top of the file, import the Firebase SDK right after `'#import "AppDelegate.h"'`:
+Open `/ios/{projectName}/AppDelegate.mm` (or `AppDelegate.m` on older React Native). Add `#import <Firebase.h>` after `#import "AppDelegate.h"`, then call `[FIRApp configure]` at the start of `application:didFinishLaunchingWithOptions:` **before** the rest of your startup code:
 
 ```objectivec
+// File: ios/{projectName}/AppDelegate.mm (or AppDelegate.m) for React Native < 0.77.
+// 1) Add #import <Firebase.h> after #import "AppDelegate.h".
+// 2) Call [FIRApp configure] at the top of didFinishLaunchingWithOptions before other startup work.
+#import "AppDelegate.h"
 #import <Firebase.h>
-```
 
-Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
-
-```objectivec
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  // Add me --- \/
   [FIRApp configure];
-  // Add me --- /\
-  // ...
+  // Keep your existing React Native / app startup code below this line.
+  return YES;
 }
 ```
+
+Merge the `[FIRApp configure]` call into your existing method rather than replacing the whole method if your `AppDelegate` already performs additional setup.
 
 #### Altering CocoaPods to use frameworks
 
 Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks. On React Native 0.75+, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm), which **requires dynamic linkage**.
 
-Open the file `./ios/Podfile` and add this line inside your targets (right before the `use_react_native` line in current react-native releases that calls the react native Podfile function to get the native modules config):
+Open the file `./ios/Podfile` and add this line inside your targets (right before the `use_react_native` line in current react-native releases that calls the react native Podfile function to get the native modules config). Do this **before** `pod install`:
 
 ```ruby
+# File: ios/Podfile. Inside your app target, before use_react_native!. Required for SPM default (RN 0.75+) and for CocoaPods Firebase. Run pod install after editing.
 use_frameworks! :linkage => :dynamic
 ```
 
@@ -306,13 +317,14 @@ Do **not** combine RNFB's default SPM mode with `use_frameworks! :linkage => :st
 
 ##### CocoaPods / static frameworks (opt-out)
 
-To opt out of SPM and use CocoaPods for Firebase (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), set `$RNFirebaseDisableSPM = true` **before** any target block, then configure static frameworks:
+To opt out of SPM and use CocoaPods for Firebase (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), set `$RNFirebaseDisableSPM = true` **before** any target block, then configure static frameworks. Edit `ios/Podfile` in this order, then run `pod install`:
 
 ```ruby
-# before any target block
+# File: ios/Podfile. CocoaPods / static opt-out. 1) Set $RNFirebaseDisableSPM before any target. 2) Inside the app target, before use_react_native!, set static frameworks. 3) pod install.
+# before any target block:
 $RNFirebaseDisableSPM = true
 
-# inside your app target, before use_react_native!
+# inside your app target, before use_react_native!:
 use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
 ```
@@ -324,13 +336,14 @@ $RNFirebaseAsStaticFramework = true
 Once the above steps have been completed, the React Native Firebase library must be linked to your project and your application needs to be rebuilt.
 
 Users on React Native 0.60+ automatically have access to "[autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md)",
-requiring no further manual installation steps. To automatically link the package, rebuild your project:
+requiring no further manual installation steps. To automatically link the package, rebuild your project after the Android and iOS steps above:
 
 ```bash
-# Android apps
+# Project root. Final React Native CLI step after npm install and Android/iOS native config.
+# Android:
 npx react-native run-android
 
-# iOS apps
+# iOS:
 cd ios/
 pod install --repo-update
 cd ..
@@ -343,27 +356,35 @@ Once successfully linked and rebuilt, your application will be connected to Fire
 
 ## Other / Web
 
-If you are using the firebase-js-sdk fallback support for [web or "other" platforms](platforms#other-platforms) then you must initialize Firebase dynamically by calling [`initializeApp`](https://invertase.github.io/react-native-firebase/_react-native-firebase/app/initializeApp.html).
+If you are using the firebase-js-sdk fallback support for [web or "other" platforms](/platforms#other-platforms) then you must initialize Firebase dynamically by calling [`initializeApp`](https://invertase.github.io/react-native-firebase/_react-native-firebase/app/initializeApp.html).
 
-However, you only want to do this for the web platform. For non-web / native apps the "default" firebase app instance will already be configured by the native google-services.json / GoogleServices-Info.plist files as mentioned above.
+Prerequisites for this section: `@react-native-firebase/app` installed; on Android/iOS you still complete the native config above. On web / Other platforms only, call `initializeApp` with your Firebase web app config (from the Firebase console) during bootstrap. Do **not** call `initializeApp` for the default app on native Android/iOS when `google-services.json` / `GoogleService-Info.plist` already configure the default app.
 
 At some point during your application's bootstrap processes, initialize firebase like this:
 
-```javascript
+```js
+import { Platform } from 'react-native';
 import { getApp, initializeApp } from '@react-native-firebase/app';
 
-// web requires dynamic initialization on web prior to using firebase
 if (Platform.OS === 'web') {
   const firebaseConfig = {
-    // ... config items pasted from firebase console for your web app here
+    apiKey: 'api-key',
+    authDomain: 'project-id.firebaseapp.com',
+    databaseURL: 'https://project-id.firebaseio.com',
+    projectId: 'project-id',
+    storageBucket: 'project-id.appspot.com',
+    messagingSenderId: 'sender-id',
+    appId: 'app-id',
+    measurementId: 'G-measurement-id',
   };
 
-  initializeApp(firebaseConfig);
+  await initializeApp(firebaseConfig);
 }
 
-// ...now throughout your app, use firebase APIs normally, for example:
 const firebaseApp = getApp();
 ```
+
+Replace the placeholder `firebaseConfig` values with the web app config from the Firebase console. After initialization, use React Native Firebase modular APIs as on native (for example `getApp()` above).
 
 ---
 
@@ -382,23 +403,21 @@ manually overriding these native SDK versions.
 
 #### Android
 
-Within your projects /android/build.gradle file, provide your own versions by specifying any of the following options shown below:
+Within your projects `/android/build.gradle` file, provide your own versions by specifying any of the following options shown below. Edit this file **before** rebuilding with `npx react-native run-android`:
 
 ```groovy
+// File: android/build.gradle (project-level). Optional SDK overrides. Apply before the next Android rebuild.
 project.ext {
   set('react-native', [
     versions: [
-      // Overriding Build/Android SDK Versions if desired
       android : [
         minSdk    : 23,
         targetSdk : 33,
         compileSdk: 34,
       ],
 
-      // Overriding Library SDK Versions if desired
       firebase: [
-        // Override Firebase SDK Version
-        bom           : "34.18.0"
+        bom: "34.18.0"
       ],
     ],
   ])
@@ -409,10 +428,10 @@ Once changed, rebuild your application with `npx react-native run-android`.
 
 #### iOS
 
-Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file:
+Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file **before** `pod install`:
 
 ```ruby
-# Override Firebase SDK Version if desired
+# File: ios/Podfile (top of file, before target blocks). Optional Firebase iOS SDK override. Run pod install after editing.
 $FirebaseSDKVersion = '12.18.0'
 ```
 
@@ -423,10 +442,10 @@ Alternatively, if you cannot edit the Podfile easily (as when using Expo), you m
 ### Android Performance
 
 On Android, React Native Firebase uses [thread pool executor](https://developer.android.com/reference/java/util/concurrent/ThreadPoolExecutor) to provide improved performance and managed resources.
-To increase throughput, you can tune the thread pool executor via `firebase.json` file within the root of your project:
+To increase throughput, you can tune the thread pool executor via `firebase.json` file within the root of your project. Create or edit this file **before** the next native rebuild:
 
 ```json
-// <project-root>/firebase.json
+// File: <project-root>/firebase.json. Optional Android executor tuning. Apply before the next native rebuild.
 {
   "react-native": {
     "android_task_executor_maximum_pool_size": 10,
@@ -435,7 +454,8 @@ To increase throughput, you can tune the thread pool executor via `firebase.json
 }
 ```
 
-| Key                                        | Description                                                                                                                                                                                                                                                                                     |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `android_task_executor_maximum_pool_size`  | Maximum pool size of ThreadPoolExecutor. Defaults to `1`. Larger values typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries. Setting this value to `0` completely disables the pooled executor and all tasks execute in serial per module. |
-| `android_task_executor_keep_alive_seconds` | Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`. Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time. This value doesn't have any effect when the maximum pool size is lower than `2`.                           |
+{/* prettier-ignore */}
+| Key | Description |
+| --- | --- |
+| `android_task_executor_maximum_pool_size` | Maximum pool size of ThreadPoolExecutor. Defaults to `1`. Larger values typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries. Setting this value to `0` completely disables the pooled executor and all tasks execute in serial per module. |
+| `android_task_executor_keep_alive_seconds` | Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`. Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time. This value doesn't have any effect when the maximum pool size is lower than `2`. |

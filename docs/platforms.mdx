@@ -5,6 +5,11 @@ previous: /typescript
 next: /ios-spm
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed. For Android and iOS native SDKs, complete [Getting Started](/) (config files, Expo plugins, or React Native CLI native setup) before relying on platform behavior described here.
+- For web / macOS / Windows / other JavaScript-only targets ("Other" platforms below), you still install the same `@react-native-firebase/*` packages; the JS fallback runs automatically when no native module is present. Call `initializeApp` with a Firebase web config on those targets (see [Getting Started — Other / Web](/#other--web)).
+
 ## Status
 
 By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform.
@@ -38,7 +43,7 @@ these 'Other' platforms, e.g.;
 - Web
 - macOS
 - Windows
-- ...and any other RN based environment.
+- any other RN based environment without a React Native Firebase native module
 
 Below is a table outlining which Firebase modules are supported on each platform in React Native Firebase:
 
@@ -88,20 +93,45 @@ Further details of Firebase service specific limitations are summarized below.
 
 ### Async Storage
 
-Some services (currently Auth and Analytics) for our 'Other' platforms
-implementation require a Async Storage implementation to be provided to
-enable persistence, React Native Firebase provides an API to set this implementation:
+Auth and Analytics on 'Other' platforms require an Async Storage implementation
+to enable persistence. React Native Firebase provides an API to set this
+implementation.
+
+Install a storage package appropriate for your target (this example uses
+`@react-native-async-storage/async-storage`; substitute your platform's
+equivalent if needed):
+
+`npm install --save @react-native-async-storage/async-storage` or
+`yarn add @react-native-async-storage/async-storage`.
+
+Call `setReactNativeAsyncStorage` before `initializeApp` during app bootstrap on
+Other platforms:
 
 ```js
 import { initializeApp, setReactNativeAsyncStorage } from '@react-native-firebase/app';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-setReactNativeAsyncStorage(AsyncStorage);
+// Pass the default export from @react-native-async-storage/async-storage, or any
+// object that implements getItem / setItem / removeItem for your platform.
+const asyncStorage = {
+  getItem: async _key => null,
+  setItem: async (_key, _value) => {},
+  removeItem: async _key => {},
+};
 
-await initializeApp({ ... });
+setReactNativeAsyncStorage(asyncStorage);
+
+await initializeApp({
+  apiKey: 'api-key',
+  authDomain: 'project-id.firebaseapp.com',
+  projectId: 'project-id',
+  appId: 'app-id',
+});
 ```
 
-> Note: we use `@react-native-async-storage/async-storage` as an example, you should use the Async Storage implementation that is appropriate for your platform that you are targeting.
+> Note: replace the inline `asyncStorage` object with
+> `import AsyncStorage from '@react-native-async-storage/async-storage'` (or your
+> platform's Async Storage module) in a real app. The shape above matches the
+> `ReactNativeAsyncStorage` interface React Native Firebase expects.
 
 If you do not provide an Async Storage implementation, we use an in memory implementation
 which will result in resetting the data every time your app is restarted, in the case of
@@ -115,7 +145,7 @@ The other platform implementation of Analytics does not capture automatic metric
 
 ### App Check
 
-App Check for other platforms only supports the `CustomProvider` provider. Here's how to setup your own custom provider:
+App Check for other platforms only supports the `CustomProvider` provider. Prerequisites: `@react-native-firebase/app` and `@react-native-firebase/app-check` installed, and a default Firebase app already initialized (native config on Android/iOS, or `initializeApp` on Other platforms).
 
 - [Implement server support to get tokens](https://firebase.google.com/docs/app-check/custom-provider)
 - Create a custom provider in your app:
@@ -125,19 +155,18 @@ import { getApp } from '@react-native-firebase/app';
 import { CustomProvider, initializeAppCheck } from '@react-native-firebase/app-check';
 
 const myCustomProvider = new CustomProvider({
-  async getToken: () => {
+  getToken: async () => {
     const tokenFromServer = 'some-token-from-server';
     const expirationFromServer = 1000 * 60 * 60;
-    const appCheckToken = {
+    return {
       token: tokenFromServer,
-      expireTimeMillis: expirationFromServer * 1000
+      expireTimeMillis: Date.now() + expirationFromServer * 1000,
     };
-    return appCheckToken;
-  }
+  },
 });
 
 await initializeAppCheck(getApp(), {
-  provider: myCustomProvider
+  provider: myCustomProvider,
 });
 ```
 
@@ -193,6 +222,6 @@ Unsupported methods:
 
 ## Known Issues
 
-Known issues will be documented here and updated regularly.
+Known issues will be documented here and updated when they are confirmed.
 
-- There are currently no known issues.
+- No known Other-platform issues are recorded on this page.

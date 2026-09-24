@@ -7,6 +7,13 @@ previous: /platforms
 
 # iOS SPM Support
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed (and any other `@react-native-firebase/*` packages you use). Complete [Getting Started](/) so `GoogleService-Info.plist` / Expo `googleServicesFile` and `FirebaseApp.configure()` (React Native CLI) are in place.
+- React Native **0.75 or newer** for the SPM default. Older React Native versions use CocoaPods because their pod tooling does not provide `spm_dependency`.
+- Xcode `>= 26.2` when using firebase-ios-sdk `12.12.0` or newer (this release pins firebase-ios-sdk `12.19.0`).
+- Expo projects: use config plugins (`expo-build-properties`, `@react-native-firebase/app`); do not hand-edit a generated `ios/Podfile` if Expo regenerates it on prebuild.
+
 React Native Firebase can resolve its Firebase Apple SDK dependencies with
 [Swift Package Manager (SPM)](https://www.swift.org/package-manager/) or CocoaPods.
 This changes only how the native Firebase SDK is installed; your JavaScript and
@@ -24,9 +31,10 @@ native application code do not change.
   (`sdkVersions.ios.firebase` in `@react-native-firebase/app`). It does not
   float to a newer 12.x release.
 
-SPM requires dynamic framework linkage:
+SPM requires dynamic framework linkage. Edit `ios/Podfile` **before** `pod install`:
 
 ```ruby
+# File: ios/Podfile. Inside your app target, before use_react_native!. Required for SPM mode. Run pod install after editing.
 use_frameworks! :linkage => :dynamic
 ```
 
@@ -45,9 +53,11 @@ requirements of the other dependencies in your app.
 ## Expo projects
 
 Expo projects can select dynamic linkage with
-[`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/):
+[`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/).
+Write this into `app.json` / `app.config.js` **before** `npx expo prebuild`:
 
 ```json
+// File: app.json (or app.config.js). Apply before npx expo prebuild. Sets iOS useFrameworks for SPM (dynamic).
 {
   "expo": {
     "plugins": [
@@ -67,9 +77,10 @@ Expo projects can select dynamic linkage with
 To use CocoaPods mode in a generated project, pass `disableSPM` to the
 `@react-native-firebase/app` config plugin -- it adds
 `$RNFirebaseDisableSPM = true` before the target blocks during prebuild --
-and configure the linkage your project requires:
+and configure the linkage your project requires. Apply **before** the next prebuild:
 
 ```json
+// File: app.json (or app.config.js). CocoaPods opt-out via disableSPM. Apply before npx expo prebuild.
 {
   "expo": {
     "plugins": [
@@ -95,13 +106,15 @@ every prebuild, so a direct edit does not persist. Use `expo-build-properties`
 ## Use SPM (React Native CLI)
 
 For React Native 0.75 or newer, SPM is selected automatically. Configure dynamic
-linkage in your `ios/Podfile`, then install pods normally:
+linkage in your `ios/Podfile`, then install pods:
 
 ```ruby
+# File: ios/Podfile. Inside your app target, before use_react_native!. Step 1 of 2 for SPM (React Native CLI).
 use_frameworks! :linkage => :dynamic
 ```
 
 ```bash
+# Project root / ios/. Step 2 of 2 for SPM (after Podfile use_frameworks! :linkage => :dynamic).
 cd ios
 pod install
 ```
@@ -136,14 +149,15 @@ linkage, on every `pod install`/`pod update`:
 You do not need to configure either of these yourself. If `pod install` warns
 that they could not be applied automatically, or if Xcode still reports that a
 Firebase module cannot be resolved, add the fallback in your existing
-`post_install` block, after `react_native_post_install`:
+`post_install` block in `ios/Podfile`, after `react_native_post_install`, then
+re-run `pod install`:
 
 ```ruby
+# File: ios/Podfile. Fallback only when pod install warns SPM build settings were not applied. Place after react_native_post_install, then pod install.
 post_install do |installer|
   react_native_post_install(
     installer,
     config[:reactNativePath],
-    # your existing options
   )
 
   rnfirebase_apply_spm_build_settings(installer)
@@ -155,9 +169,11 @@ end
 RNFB normally installs its SPM framework-embedding phase automatically after
 CocoaPods has integrated `[CP] Embed Pods Frameworks` into the app target
 (`post_integrate`). If `pod install` warns that automatic embedding could not
-be configured, call the documented fallback from `post_integrate`:
+be configured, call the documented fallback from `post_integrate` in
+`ios/Podfile`, then re-run `pod install`:
 
 ```ruby
+# File: ios/Podfile. Fallback only when pod install warns SPM embed phase was not configured. Then pod install.
 post_integrate do |installer|
   rnfirebase_add_spm_embed_phase(installer)
 end
@@ -168,9 +184,11 @@ does not contain `[RNFB] Embed Firebase SPM Frameworks`.
 
 ## Use CocoaPods (React Native CLI)
 
-To opt out of SPM, add this before any target block in your Podfile:
+To opt out of SPM, add this before any target block in your `ios/Podfile`, then
+run `pod install`:
 
 ```ruby
+# File: ios/Podfile. Before any target block. Step 1 of CocoaPods opt-out; then set linkage and pod install.
 $RNFirebaseDisableSPM = true
 ```
 
@@ -205,9 +223,10 @@ Auth has a user).
 
 If a third-party native module must share the same configured `FirebaseApp`
 with RNFB, opt out of SPM and resolve Firebase through CocoaPods for every
-native consumer:
+native consumer. Set this in `ios/Podfile` before any target, then `pod install`:
 
 ```ruby
+# File: ios/Podfile. Before any target block. Required to share one FirebaseCore with other CocoaPods Firebase consumers.
 $RNFirebaseDisableSPM = true
 ```
 
@@ -250,6 +269,7 @@ time with duplicate symbols (and `pod install` rejects the combination).
   named artifact:
 
   ```bash
+  # Xcode app target → Build Phases → New Run Script. Only if archive fails with xcframework-ios.signature copy conflict and RNFB could not apply its automatic workaround.
   rm -f "${CONFIGURATION_BUILD_DIR}"/<NameFromTheErrorMessage>.xcframework-ios.signature
   ```
 
@@ -281,9 +301,12 @@ This is not the standard RNFB SPM configuration. Prefer a consistent linkage
 model. If the hybrid setup is unavoidable, first confirm the archived app binary
 no longer exports the Firebase symbols required by the RNFB frameworks. The
 reported workaround is to preserve those symbols on the main app target's
-Release configuration:
+Release configuration. Add this inside your existing `post_install` block in
+`ios/Podfile` (after reproducing the archive-only failure), then re-run
+`pod install`:
 
 ```ruby
+# File: ios/Podfile. Inside post_install. tvOS hybrid-linkage TestFlight workaround only; increases binary size.
 installer.aggregate_targets.each do |aggregate_target|
   aggregate_target.user_project.native_targets.each do |target|
     next unless target.name == 'YourAppTargetName' # main app target, not a Pod target

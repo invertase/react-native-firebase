@@ -5,6 +5,15 @@ description: 'Manual iOS linking for @react-native-firebase/app: add the RNFBApp
 
 # iOS Manual Installation
 
+## Prerequisites
+
+These steps assume:
+
+- `@react-native-firebase/app` is already listed in your app `package.json` (install with `npm install --save @react-native-firebase/app` or `yarn add @react-native-firebase/app`).
+- You are on React Native **0.59 or earlier** and must link the native module by hand. React Native 0.60+ projects use [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) and should follow [Getting Started](/) instead.
+- Your iOS app already meets the version pins below.
+- CocoaPods is installed and you can run `pod` from a shell.
+
 ## Version requirements
 
 {/* prettier-ignore */}
@@ -19,30 +28,29 @@ description: 'Manual iOS linking for @react-native-firebase/app: add the RNFBApp
 
 From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0` and `firebase-android-sdk` `34.19.0`.
 
-The following steps are only required if you are using React Native 0.59 or earlier, and need to manually integrate the library. Autolinking projects follow [Getting Started](/).
+Apply the two steps below **in order**, then rebuild.
 
 ## 1. Add the Pod
 
-Add the `RNFBApp` Pod to your projects `/ios/Podfile`:
+File: `/ios/Podfile`. Add the `RNFBApp` pod inside your app `target` block before running `pod install`.
 
 ```ruby
+# File: ios/Podfile. Step 1 of 2 (before pod install). Add inside your app target block.
 target 'app' do
-  #  ...
   pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
 end
 ```
 
-## 2. Update Pods & rebuild the project
+Replace `'app'` with your real Xcode target name if it differs.
 
-You may need to update your local Pods in order for the `RNFBApp` Pod to be installed in your project:
+## 2. Update Pods and rebuild the project
 
-```bash
-$ cd ios/
-$ pod install --repo-update
-```
-
-Once the Pods have installed locally, rebuild your iOS project:
+From the project root, install pods then rebuild iOS. Do this only after the Podfile change in step 1.
 
 ```bash
+# Project root. Step 2 of 2 (after ios/Podfile RNFBApp pod entry).
+cd ios/
+pod install --repo-update
+cd ..
 npx react-native run-ios
 ```
