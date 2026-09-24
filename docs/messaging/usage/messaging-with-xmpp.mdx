@@ -3,23 +3,31 @@ title: Messaging with XMPP
 description: Device-to-device FCM messaging over an XMPP connection using node-xcs and the Firebase Admin SDK for sending.
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then rebuild native apps (`cd ios && pod install` on iOS). From v26, New Architecture is required for packages with a native bridge.
+- Native Firebase config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup).
+- On iOS, complete [iOS Messaging Setup](/messaging/usage/ios-setup) (Push Notifications, Background Modes, APNs) before expecting delivery.
+- A custom XMPP server (for example the `node-xcs` npm package) and a Node.js environment with [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) if you follow the server samples below.
+- `sendMessage()` is **Android only**. Calling it on iOS throws `Error('getMessaging().sendMessage() is only supported on Android devices.')` in JavaScript before any native call.
+
 ## Introduction
 
-This is a reference for using the Firebase Messaging service to send and receive messages directly between devices. Although methods (e.g. `sendMessage()`) are provided for sending and receiving message, additional configuration is needed to ensure a working solution for direct messaging from devices.
+This is a reference for using the Firebase Messaging service to send and receive messages directly between devices. Although methods (for example `sendMessage()`) are provided for sending and receiving messages, additional configuration is needed for direct messaging from devices.
 
-> A custom solution is **only required** if plan to exchange messages directly between devices (including the message sender device)
-> please ensure a solution from this article has been configured to successfully send and receive messages from a device.
+> A custom solution is **only required** if you plan to exchange messages directly between devices (including the message sender device).
+> Configure a solution from this article before expecting device-to-device send/receive to work.
 
-The following describes how to set up a server to handle messages, including...
+The following describes how to set up a server to handle messages, including:
 
 - A custom XMPP server with XCS for receiving messages.
-- Firebase admin for sending messages.
+- Firebase Admin for sending messages.
 
-So what are we going to do?
+Flow:
 
-1. Send a message from a client device.
+1. Send a message from a client device (`sendMessage`, Android).
 2. Intercept using a custom XMPP server.
-3. Push the message to Firebase using firebase-admin
+3. Push the message to Firebase using `firebase-admin`.
 4. Receive the message and acknowledge on other connected devices.
 
 ## Why can't I send and receive messages?
@@ -38,17 +46,18 @@ import {
 const messaging = getMessaging();
 
 onMessage(messaging, message => {
-  console.log('Received a message');
+  console.log('Received a message', message);
 });
 
-onMessageSent(messaging, message => {
-  console.log('Sent a message');
+onMessageSent(messaging, messageId => {
+  console.log('Sent a message', messageId);
 });
 
-onSendError(messaging, message => {
-  console.log('Received an Error');
+onSendError(messaging, error => {
+  console.log('Received an Error', error);
 });
 
+// Android only. On iOS this throws Error in JavaScript (not a native reject).
 sendMessage(messaging, {
   data: {
     foo: 'bar',
@@ -56,17 +65,18 @@ sendMessage(messaging, {
 });
 ```
 
-Although correct, none of the listeners will acknowledge a `message` or `error`.
+Although correct for the client API surface, none of the listeners will acknowledge a `message` or `error` without a server that bridges FCM and your devices.
 
-Permissions are limited on the client meaning an additional solution is required to communicate between `FCM` and any connected devices.
+Permissions are limited on the client, so an additional solution is required to communicate between FCM and any connected devices.
 
 ## How do I receive messages?
 
-This is where you will need to deploy a custom server based, for example one based on Node XCS
+Deploy a custom server based, for example, on Node XCS.
 
 Below is an example of how to configure a custom XMPP server using `node-xcs`.
 
 ```js
+// codeblock-ignore: node-xcs is not a workspace dependency; types unavailable to docs:tsc:check
 const Sender = require('node-xcs').Sender;
 
 async function operation() {
@@ -99,9 +109,10 @@ app();
 
 ## How do I send messages?
 
-For sending messages we can use the Firebase Admin SDK.
+For sending messages from the server, use the Firebase Admin SDK.
 
 ```js
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
 const admin = require('firebase-admin');
 const serviceAccount = require('./service-account.json');
 

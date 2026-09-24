@@ -5,17 +5,29 @@ next: /messaging/ios-permissions
 previous: /messaging/usage
 ---
 
-Integrating the Cloud Messaging module on iOS devices requires additional setup before your devices receive messages.
-There are also a number of prerequisites which are required to enable messaging:
+## Prerequisites
 
-- You must have an active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
-- A **physical iOS device** is preferred for end-to-end FCM/APNs registration and message delivery.
+- `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then `cd ios && pod install` on iOS.
+- Native Firebase config in place per [Getting Started](/) (`GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- An active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
+- A **physical iOS device** for end-to-end FCM/APNs registration and message delivery.
   - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/).
-  - On **ARM64 iOS Simulator**, React Native Firebase skips UIKit `registerForRemoteNotifications`
-    (calling it can wedge the main thread). `registerDeviceForRemoteMessages` may then reject with
-    `messaging/registration-timeout` and will not yield a real APNs token — see
-    [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and
-    [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+  - On **ARM64 iOS Simulator**, React Native Firebase skips UIKit `registerForRemoteNotifications` (calling it can wedge the main thread). `registerDeviceForRemoteMessages` may then reject with `messaging/registration-timeout` and will not yield a real APNs token — see [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+
+## Version requirements
+
+{/* prettier-ignore */}
+| Requirement | Version |
+| --- | --- |
+| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| Expo (when using Expo) | `>= 47.0.0` |
+| Xcode | `>= 26.2` |
+| Firebase Apple SDK | `12.19.0` (default pin) |
+| iOS deployment target | `15.0` |
+
+From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0`.
+
+Integrating the Cloud Messaging module on iOS requires the Xcode capabilities and APNs linking steps below before devices receive messages.
 
 ## Configuring your app
 
@@ -57,13 +69,13 @@ This can be added via the "Capability" option on the "Signing & Capabilities" ta
 Once selected, the capability will be shown below the other enabled capabilities. If no option appears when searching, the
 capability may already be enabled.
 
-Now ensure that both the "Background fetch" and the "Remote notifications" sub-modes are enabled:
+Ensure that both the "Background fetch" and the "Remote notifications" sub-modes are enabled:
 
 ![Enabling the sub-modes](https://images.prismic.io/invertase/3a618574-dd9f-4478-9f39-9834d142b2e5_xcode-background-modes-check.gif?auto=compress,format)
 
 ## Linking APNs with FCM (iOS)
 
-> Note: APNs is now required for both `foreground` and `background` messaging to function correctly on iOS.
+> Note: APNs is required for both `foreground` and `background` messaging to function correctly on iOS.
 
 A few steps are required:
 
@@ -80,7 +92,7 @@ tab on the account sidebar:
 ### 1. Registering a key
 
 A key can be generated which gives the FCM full access over the Apple Push Notification service (APNs). On the "Keys" menu item,
-register a new key. The name of the key can be anything, however you must ensure the APNs service
+register a key. The name of the key can be anything, however you must ensure the APNs service
 is enabled:
 
 ![Enable "Apple Push Notification (APNs)"](https://images.prismic.io/invertase/01fefe19-132f-4b88-8c17-9dc40357e4ce_apple-key.png?auto=format)
@@ -90,7 +102,7 @@ to download the key. Copy the ID, and download the file to your local machine:
 
 ![Copy Key ID & Download File](https://images.prismic.io/invertase/2c7f194c-10a9-4011-8f80-78b8fc521af8_app-key-final.png?auto=format)
 
-The file & Key ID can now be added to your Firebase Project. On the [Firebase Console](https://console.firebase.google.com/project/_/settings/cloudmessaging),
+Add the file & Key ID to your Firebase Project. On the [Firebase Console](https://console.firebase.google.com/project/_/settings/cloudmessaging),
 navigate to the "Project settings" and select the "Cloud Messaging" tab. Select your iOS application under the "iOS app configuration" heading.
 
 Upload the downloaded file and enter the Key ID:
@@ -99,13 +111,13 @@ Upload the downloaded file and enter the Key ID:
 
 ### 2. Registering an App Identifier
 
-For messaging to work when your app is built for production, you must create a new App Identifier which is linked to the
+For messaging to work when your app is built for production, you must create an App Identifier which is linked to the
 application that you're developing.
 
 On the "Identifiers" menu item, register a App Identifier. Select the "App IDs" option and click "Continue".
 
 The following screen enables you to link the identifier to your application via the "Bundle ID". This is a unique string
-which was generated when starting your new React Native project. Your Bundle ID can be obtained within Xcode, under the
+which was generated when starting your React Native project. Your Bundle ID can be obtained within Xcode, under the
 "General" tab for your project target:
 
 ![Project Bundle ID](https://images.prismic.io/invertase/7108ff7f-ce94-4452-851d-fa5dde668a9a_xcode-bundle-id.png?auto=compress,format)
@@ -126,7 +138,7 @@ A provisioning profile enables signed communicate between Apple and your applica
 real devices, a signed certificate ensures that the app being installed on a device is genuine and has the correct
 permissions enabled.
 
-On the "Profiles" menu item, register a new Profile. Select the "iOS App Development" checkbox and click "Continue".
+On the "Profiles" menu item, register a Profile. Select the "iOS App Development" checkbox and click "Continue".
 
 If you followed [Step 2](/messaging/usage/ios-setup#2-registering-an-app-identifier) correctly, your App Identifier will be available in the drop down
 provided:
@@ -137,10 +149,10 @@ Click "Continue". On the next screen you will be presented with the Certificates
 certificates that you wish to assign this provisioning profile too. If you have not yet created a Certificate, you must set
 one up on your account.
 
-To create a new Certificate, follow the [Apple documentation](https://help.apple.com/developer-account/#/devbfa00fef7). Once
+To create a Certificate, follow the [Apple documentation](https://help.apple.com/developer-account/#/devbfa00fef7). Once
 the Certificate has been downloaded, upload it to the Apple Developer console via the "Certificates" menu item.
 
-The created provisioning profile can now be used when building your application (in both debug and release mode) onto a
+The created provisioning profile can be used when building your application (in both debug and release mode) onto a
 real device (using Xcode). Back within Xcode, select your project target and select the "Signing & Capabilities" tab.
 If Xcode (via Preferences) is linked to your Apple Account, Xcode can automatically sync the profile created above. Otherwise,
 you must manually add the profile from the Apple Developer console:
@@ -151,11 +163,40 @@ you must manually add the profile from the Apple Developer console:
 
 ![Assign the provisioning profile via Xcode](https://images.prismic.io/invertase/50349f49-19a0-45f4-b899-e6bc3015c509_xcode-assign-profile.png?auto=format)
 
+## Headless prop (AppDelegate)
+
+When iOS launches your app in the background to deliver a message, the root React component still mounts. To inject an `isHeadless` prop so your JS can render nothing in that case (see [Background Application State](/messaging/usage#background-application-state)):
+
+1. Import `"RNFBMessagingModule.h"` at the top of `AppDelegate.m`.
+2. In `application:didFinishLaunchingWithOptions:`, set `self.initialProps` (React Native >= 0.71.1) from:
+
+`[RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions]`
+
+Pass your own user props dictionary instead of `nil` if you already seed initial props. The same `addCustomPropsToUserProps` API is available from Swift.
+
+## Notification Service Extension Podfile (images)
+
+To show images in iOS push notifications you add a Notification Service Extension in Xcode, then give that target Firebase Messaging in the Podfile. File: `/ios/Podfile`. After creating the extension target (for example `ImageNotification`), add:
+
+```Ruby
+# File: ios/Podfile. After creating the ImageNotification Notification Service Extension target.
+# Requires $RNFirebaseDisableSPM = true (see iOS SPM Support). Run pod install after editing.
+target 'ImageNotification' do
+  use_frameworks! :linkage => :static
+  pod 'Firebase/Messaging'
+end
+```
+
+Then from the `ios` folder run `pod install`. Continue with the extension helper steps on [iOS Notification Images](/messaging/ios-notification-images).
+
 ## Next steps
 
-Once the above has been completed, you're ready to get started receiving messages on your iOS device for both
-testing and production. To rebuild your app, run the following command:
+Once the above has been completed, you're ready to receive messages on your iOS device for both
+testing and production. To rebuild your app, run the following command from the project root:
 
 ```bash
+# Project root. After Push Notifications + Background Modes capabilities and APNs key upload.
 npx react-native run-ios
 ```
+
+Then continue with receiving messages on [Cloud Messaging usage](/messaging/usage) (`onMessage`, `setBackgroundMessageHandler`, topics).

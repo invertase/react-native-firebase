@@ -1,19 +1,23 @@
 ---
 title: iOS Notification Images
-description: Display images in iOS push notifications using a Notification Service Extension in Xcode, including the required Podfile changes.
+description: Display images in iOS push notifications using a Notification Service Extension in Xcode.
 next: /messaging/server-integration
 previous: /messaging/notifications
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then `cd ios && pod install`.
+- [iOS Messaging Setup](/messaging/usage/ios-setup) completed (Push Notifications, Background Modes, APNs key linked in Firebase Console). From v26, New Architecture is required for packages with a native bridge.
+- Xcode `>= 26.2`, iOS deployment target `15.0`, firebase-ios-sdk `12.19.0` (default pin).
+- A physical iOS device for end-to-end image notification delivery testing.
+- This CocoaPods + static recipe for the Notification Service Extension requires opting out of RNFB's default SPM mode (`$RNFirebaseDisableSPM = true`). See [iOS SPM Support](/ios-spm).
 
 This is a quick guide to display an image in an incoming notification. Android handles this out of the box so this extra setup is **only necessary for iOS**.
 
 > If you want to know more about the specifics of this setup read the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image).
 
-**🚨 Before you start**
-Be sure you already have Cloud Messaging installed and set up. In case you don't [get started here](/messaging/usage).
-
-**🏁 Ready to start**
-The following steps will guide you through how to add a new target to your application to support payloads with an image. Open Xcode and let's get started.
+Open Xcode and follow the steps below to add a Notification Service Extension target that can populate rich notification content (including images).
 
 ### Step 1 - Add a notification service extension
 
@@ -24,23 +28,9 @@ The following steps will guide you through how to add a new target to your appli
 
 ![step-1](/assets/messaging/ios-notification-images-step-1.gif)
 
-### Step 2 - Add target to the Podfile
+### Step 2 - Add the extension target to the Podfile
 
-Ensure that your new extension has access to Firebase/Messaging pod by adding it in the Podfile:
-
-- From the Navigator open the Podfile: **Pods > Podfile**
-- Scroll down to the bottom of the file and add
-
-> This CocoaPods + static recipe requires opting out of RNFB's default SPM mode (`$RNFirebaseDisableSPM = true`). See [iOS SPM Support](/ios-spm).
-
-```Ruby
-target 'ImageNotification' do
-  use_frameworks! :linkage => :static
-  pod 'Firebase/Messaging'
-end
-```
-
-- Install or update your pods using `pod install` from the `ios` folder
+Give the extension access to Firebase Messaging by editing `/ios/Podfile`, then run `pod install`. The target block and apply order live on [iOS Messaging Setup](/messaging/usage/ios-setup#notification-service-extension-podfile-images) under **Notification Service Extension Podfile (images)**.
 
 ![step-2](/assets/messaging/ios-notification-images-step-2.gif)
 
@@ -101,4 +91,4 @@ class NotificationService: UNNotificationServiceExtension {
 
 ## All done
 
-Run the app and check it builds successfully – **make sure you have the correct target selected**. Now you can use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (`300KB` max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read this page to send [messages from a server](/messaging/server-integration).
+Run the app and check it builds successfully – **make sure you have the correct target selected**. Use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (`300KB` max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read [messages from a server](/messaging/server-integration) for Admin SDK payload shapes (including `mutable-content` / `imageUrl`).

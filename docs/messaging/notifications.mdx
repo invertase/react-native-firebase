@@ -5,6 +5,14 @@ next: /messaging/ios-notification-images
 previous: /messaging/ios-permissions
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then rebuild native apps (`cd ios && pod install` on iOS). From v26, New Architecture is required for packages with a native bridge.
+- Native Firebase config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup).
+- On iOS, complete [iOS Messaging Setup](/messaging/usage/ios-setup) and request notification permission (prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/); Messaging's `requestPermission` is deprecated — see [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283)).
+- On Android API 33+, request `POST_NOTIFICATIONS` before expecting notification UI.
+- Register `setBackgroundMessageHandler` in the entry file before `AppRegistry.registerComponent` if you handle background/quit messages (see [Cloud Messaging usage](/messaging/usage#background--quit-state-messages)).
+
 Notifications are an important tool used on the majority of Android & iOS applications, used to improve user
 experience, used to engage users with your application and much more. The Cloud Messaging module provides basic support for
 displaying and handling notifications.
@@ -17,7 +25,7 @@ The Firebase Cloud Messaging SDKs for Android and iOS allow for notifications to
 is either quit or in the background. The Firebase Console, Firebase Admin SDKs and REST API all allow a `notification`
 property to be attached to a message.
 
-If an incoming message with this property exists, and the app is not currently visible (quit or in the background),
+If an incoming message with this property exists, and the app is not visible (quit or in the background),
 a notification is displayed on the device. However, if the application is in the foreground, an event will be delivered
 containing the notification data and no visible notification will be displayed. See the [Usage](/messaging/usage) documentation
 to learn more about handling events.
@@ -48,10 +56,11 @@ For example, when using the [`firebase-admin`](https://www.npmjs.com/package/fir
 to send [messages from a server](/messaging/server-integration), a `notification` property can be added to the message payload:
 
 ```js
-await admin.messaging().sendMulticast({
-  tokens: [
-    /* ... */
-  ], // ['token_1', 'token_2', ...]
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+const admin = require('firebase-admin');
+
+await admin.messaging().sendEachForMulticast({
+  tokens: ['token_1', 'token_2'],
   notification: {
     title: 'Basic Notification',
     body: 'This is a basic notification sent from the server!',
@@ -61,8 +70,11 @@ await admin.messaging().sendMulticast({
 ```
 
 The Cloud Messaging module will intercept these messages and if the `notification` property is available, it will display
-a notification on the device (if the app is not in the foreground). Messages sent with both a `notification` and `data` property
-will display a notification and also trigger the `onMessage` handlers (see [Usage](/messaging/usage)).
+a system notification when the app is in the background or quit. In the foreground, no system notification is shown; the
+payload is delivered to `onMessage` instead. Messages with both a `notification` and `data` property follow the same split:
+foreground uses `onMessage` only (no system notification); background and quit show a system notification and call
+`setBackgroundMessageHandler` (not `onMessage`). Display and `onMessage` do not fire together. See the
+[message-handler table](/messaging/usage#message-handlers) on Usage.
 
 The different Admin SDKs available have similar implementation details on how to add a custom `notification` property to
 the FCM payload, however the Cloud Messaging module will handle all requests. To learn more, view the
@@ -115,24 +127,49 @@ To handle both scenarios, the code can be executed during setup. For example, us
 we can set an initial route when the app is opened from a quit state, and push to a new screen when the app is in a background state:
 
 ```jsx
-import React, { useState, useEffect } from 'react';
-import { Linking, ActivityIndicator } from 'react-native';
+// codeblock-ignore: @react-navigation/native and @react-navigation/stack are not workspace dependencies; types unavailable to docs:tsc:check
+import React from 'react';
+import { Linking, ActivityIndicator, View, Text } from 'react-native';
 import {
   getMessaging,
   getInitialNotification,
   onNotificationOpenedApp,
 } from '@react-native-firebase/messaging';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 const NAVIGATION_IDS = ['home', 'post', 'settings'];
 const messaging = getMessaging();
 
-function buildDeepLinkFromNotificationData(data): string | null {
+function HomeScreen() {
+  return (
+    <View>
+      <Text>Home</Text>
+    </View>
+  );
+}
+
+function PostScreen() {
+  return (
+    <View>
+      <Text>Post</Text>
+    </View>
+  );
+}
+
+function SettingsScreen() {
+  return (
+    <View>
+      <Text>Settings</Text>
+    </View>
+  );
+}
+
+function buildDeepLinkFromNotificationData(data) {
   const navigationId = data?.navigationId;
   if (!NAVIGATION_IDS.includes(navigationId)) {
-    console.warn('Unverified navigationId', navigationId)
+    console.warn('Unverified navigationId', navigationId);
     return null;
   }
   if (navigationId === 'home') {
@@ -143,10 +180,10 @@ function buildDeepLinkFromNotificationData(data): string | null {
   }
   const postId = data?.postId;
   if (typeof postId === 'string') {
-    return `myapp://post/${postId}`
+    return `myapp://post/${postId}`;
   }
-  console.warn('Missing postId')
-  return null
+  console.warn('Missing postId');
+  return null;
 }
 
 const linking = {
@@ -156,32 +193,29 @@ const linking = {
     screens: {
       Home: 'home',
       Post: 'post/:id',
-      Settings: 'settings'
-    }
+      Settings: 'settings',
+    },
   },
   async getInitialURL() {
     const url = await Linking.getInitialURL();
     if (typeof url === 'string') {
       return url;
     }
-    //getInitialNotification: When the application is opened from a quit state.
     const message = await getInitialNotification(messaging);
     const deeplinkURL = buildDeepLinkFromNotificationData(message?.data);
     if (typeof deeplinkURL === 'string') {
       return deeplinkURL;
     }
   },
-  subscribe(listener: (url: string) => void) {
-    const onReceiveURL = ({url}: {url: string}) => listener(url);
+  subscribe(listener) {
+    const onReceiveURL = ({ url }) => listener(url);
 
-    // Listen to incoming links from deep linking
     const linkingSubscription = Linking.addEventListener('url', onReceiveURL);
 
-    //onNotificationOpenedApp: When the application is running, but in the background.
     const unsubscribe = onNotificationOpenedApp(messaging, remoteMessage => {
-      const url = buildDeepLinkFromNotificationData(remoteMessage.data)
-      if (typeof url === 'string') {
-        listener(url)
+      const deepLinkUrl = buildDeepLinkFromNotificationData(remoteMessage.data);
+      if (typeof deepLinkUrl === 'string') {
+        listener(deepLinkUrl);
       }
     });
 
@@ -190,7 +224,7 @@ const linking = {
       unsubscribe();
     };
   },
-}
+};
 
 function App() {
   return (
@@ -203,6 +237,46 @@ function App() {
     </NavigationContainer>
   );
 }
+
+export default App;
+```
+
+A Messaging-only version without React Navigation:
+
+```jsx
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
+import {
+  getMessaging,
+  getInitialNotification,
+  onNotificationOpenedApp,
+} from '@react-native-firebase/messaging';
+
+function App() {
+  useEffect(() => {
+    const messaging = getMessaging();
+
+    getInitialNotification(messaging).then(remoteMessage => {
+      if (remoteMessage) {
+        console.log('Opened from quit state via notification:', remoteMessage.notification);
+      }
+    });
+
+    const unsubscribe = onNotificationOpenedApp(messaging, remoteMessage => {
+      console.log('Opened from background via notification:', remoteMessage.notification);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  return (
+    <View>
+      <Text>Notification interaction listeners registered</Text>
+    </View>
+  );
+}
+
+export default App;
 ```
 
 **Quick Tip:** On `Android` you can test receiving remote notifications on the emulator. On `iOS`,
@@ -214,7 +288,7 @@ is skipped intentionally so the main thread cannot hang) — see
 
 # Getting a Device Token
 
-To send messages to a device, you would need the FCM token for it, which you can get using the `getToken(messaging)` method. An example is available on '[Notifee pages](https://notifee.app/react-native/docs/integrations/fcm)'.
+To send messages to a device, you need the FCM token for it, which you can get using `getToken(messaging)`.
 
 On iOS, React Native Firebase Messaging automatically registers the device with APNs by default. You only need to
 manually call `registerDeviceForRemoteMessages(messaging)` before `getToken(messaging)` if you disabled
@@ -222,7 +296,7 @@ auto-registration with `messaging_ios_auto_register_for_remote_messages` in `fir
 `getToken(messaging)` before the app has registered for remote messages. See
 [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) for the manual registration example.
 
-```jsx
+```js
 import {
   getMessaging,
   registerDeviceForRemoteMessages,
@@ -233,7 +307,7 @@ const messaging = getMessaging();
 // Optional: not needed in most cases, and a no-op if already registered.
 await registerDeviceForRemoteMessages(messaging);
 const token = await getToken(messaging);
-// save the token to the db
+console.log('FCM token:', token);
 ```
 
 # Advanced Local Notifications

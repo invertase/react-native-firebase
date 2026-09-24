@@ -5,6 +5,14 @@ next: /storage/usage
 previous: /messaging/ios-notification-images
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then rebuild native apps (`cd ios && pod install` on iOS). From v26, New Architecture is required for packages with a native bridge.
+- Native Firebase config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup).
+- On iOS, complete [iOS Messaging Setup](/messaging/usage/ios-setup) and register for remote messages / request notification permission before calling `getToken` in production flows.
+- Optional for the datastore samples below: `@react-native-firebase/auth` and `@react-native-firebase/firestore` installed the same way, with Auth sign-in and a Firestore `users` collection available.
+- A server environment with a Firebase Admin SDK (examples use Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin)) or the FCM HTTP v1 API.
+
 The Cloud Messaging module provides the tools required to enable you to send custom messages directly from your own servers.
 For example, you could send a FCM message to a specific device when a new chat message is saved to your database
 and display a [notification](/messaging/notifications) or update local device storage so the message is instantly available.
@@ -26,7 +34,7 @@ be easily accessible when required.
 The examples below use a [Cloud Firestore](/firestore) database to store and manage the tokens, and [Authentication](/auth)
 to manage the users identity. You can however use any datastore or authentication method of your choice.
 
-> If using iOS, ensure you have read and followed the steps in [registered with FCM](/messaging#ios---registering-devices-with-fcm) and [requested user permission](/messaging#ios---requesting-permissions) before trying to receive messages!
+> If using iOS, ensure you have completed [iOS Messaging Setup](/messaging/usage/ios-setup) and requested user permission (prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/)) before trying to receive messages.
 
 ## Saving tokens
 
@@ -35,17 +43,24 @@ device token (if using a different push notification provider, such as Amazon SN
 
 ```jsx
 import React, { useEffect } from 'react';
-import { getMessaging, getToken, onTokenRefresh } from '@react-native-firebase/messaging';
+import { View, Text, Platform } from 'react-native';
+import {
+  getMessaging,
+  getToken,
+  getAPNSToken,
+  onTokenRefresh,
+} from '@react-native-firebase/messaging';
 import { getAuth } from '@react-native-firebase/auth';
 import { getFirestore, doc, updateDoc, arrayUnion } from '@react-native-firebase/firestore';
-import { Platform } from 'react-native';
 
 async function saveTokenToDatabase(token) {
-  // Assume user is already signed in
-  const userId = getAuth().currentUser.uid;
+  const currentUser = getAuth().currentUser;
+  if (!currentUser) {
+    console.warn('No signed-in user; skip saving FCM token');
+    return;
+  }
 
-  // Add the token to the users datastore
-  await updateDoc(doc(getFirestore(), 'users', userId), {
+  await updateDoc(doc(getFirestore(), 'users', currentUser.uid), {
     tokens: arrayUnion(token),
   });
 }
@@ -54,21 +69,32 @@ function App() {
   useEffect(() => {
     const messaging = getMessaging();
 
-    // Get the device token
     getToken(messaging).then(token => {
       return saveTokenToDatabase(token);
     });
 
-    // If using other push notification providers (ie Amazon SNS, etc)
-    // you may need to get the APNs token instead for iOS:
-    // if(Platform.OS == 'ios') { getAPNSToken(messaging).then(token => { return saveTokenToDatabase(token); }); }
+    if (Platform.OS === 'ios') {
+      getAPNSToken(messaging).then(token => {
+        if (token) {
+          return saveTokenToDatabase(token);
+        }
+        return undefined;
+      });
+    }
 
-    // Listen to whether the token changes
     return onTokenRefresh(messaging, token => {
       saveTokenToDatabase(token);
     });
   }, []);
+
+  return (
+    <View>
+      <Text>FCM token sync registered</Text>
+    </View>
+  );
 }
+
+export default App;
 ```
 
 The above code snippet has a single purpose; storing the device FCM token on a remote database. The `useEffect` is fired
@@ -81,12 +107,12 @@ so it's important to ensure that we store all tokens in the database.
 
 ## Using tokens
 
-With the tokens stored in a secure datastore, we now have the ability to send messages via FCM to those devices.
+With the tokens stored in a secure datastore, you can send messages via FCM to those devices.
 
 > The following example uses the Node.JS `firebase-admin` package to send messages to our devices, however any SDK (listed above)
 > can be used.
 
-Go ahead and setup the [`firebase-tools`](https://www.npmjs.com/package/firebase-admin) library on your server environment.
+Go ahead and setup the [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) library on your server environment.
 Once setup, our script needs to perform two actions:
 
 1. Fetch the tokens required to send the message.
@@ -97,42 +123,45 @@ Each time a post is liked, we want to send a message to the user that uploaded t
 which is called with all of the information required when a picture is liked:
 
 ```js
-// Node.js
-var admin = require('firebase-admin');
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+const admin = require('firebase-admin');
 
 // ownerId - who owns the picture someone liked
 // userId - id of the user who liked the picture
 // picture - metadata about the picture
 
 async function onUserPictureLiked(ownerId, userId, picture) {
-  // Get the owners details
-  const owner = admin.firestore().collection('users').doc(ownerId).get();
-
-  // Get the users details
-  const user = admin.firestore().collection('users').doc(userId).get();
+  const ownerSnap = await admin.firestore().collection('users').doc(ownerId).get();
+  const userSnap = await admin.firestore().collection('users').doc(userId).get();
+  const owner = ownerSnap.data();
+  const user = userSnap.data();
 
   await admin.messaging().sendEachForMulticast({
-    tokens: owner.tokens, // ['token_1', 'token_2', ...]
+    tokens: owner.tokens,
     data: {
       owner: JSON.stringify(owner),
       user: JSON.stringify(user),
       picture: JSON.stringify(picture),
+    },
+    android: {
+      // Required for background/quit data-only messages on Android
+      priority: 'high',
     },
     apns: {
       payload: {
         aps: {
           // Required for background/quit data-only messages on iOS
           // Note: iOS frequently will receive the message but decline to deliver it to your app.
-          //           This is an Apple design choice to favor user battery life over data-only delivery
-          //           reliability. It is not under app control, though you may see the behavior in device logs.
+          // This is an Apple design choice to favor user battery life over data-only delivery
+          // reliability. It is not under app control, though you may see the behavior in device logs.
           'content-available': true,
-          // Required for background/quit data-only messages on Android
-          priority: 'high',
         },
       },
     },
   });
 }
+
+await onUserPictureLiked('owner-id', 'user-id', { name: 'Sunset' });
 ```
 
 Data-only messages are sent as low priority on both Android and iOS and will not trigger the `setBackgroundMessageHandler`
@@ -147,27 +176,36 @@ Back within our application, as explained in the [Usage](/messaging/usage) docum
 [`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html) payload containing the message details sent from the server:
 
 ```jsx
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { View, Text } from 'react-native';
 import { getMessaging, onMessage } from '@react-native-firebase/messaging';
 
 function App() {
   useEffect(() => {
     const messaging = getMessaging();
     const unsubscribe = onMessage(messaging, async remoteMessage => {
-      const owner = JSON.parse(remoteMessage.data.owner);
-      const user = JSON.parse(remoteMessage.data.user);
-      const picture = JSON.parse(remoteMessage.data.picture);
+      const owner = JSON.parse(String(remoteMessage.data?.owner));
+      const user = JSON.parse(String(remoteMessage.data?.user));
+      const picture = JSON.parse(String(remoteMessage.data?.picture));
 
       console.log(`The user "${user.name}" liked your picture "${picture.name}"`);
     });
 
     return unsubscribe;
   }, []);
+
+  return (
+    <View>
+      <Text>Foreground message listener registered</Text>
+    </View>
+  );
 }
+
+export default App;
 ```
 
 Your application code can then handle messages as you see fit; updating local cache, displaying a [notification](/messaging/notifications)
-or updating UI. The possibilities are endless!
+or updating UI.
 
 ## Signing out users
 
@@ -177,7 +215,24 @@ This means that by default, if your app has users and you allow them to log out 
 
 How and when you invalidate a token and generate a new one will be specific to your project, but a common pattern is to delete the FCM token during logout and update your back end to remove it, then to fetch the FCM token during login and update your back end systems to associate the new token with the logged in user.
 
-Use [`deleteToken`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/deleteToken.html) and [`getToken`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/modular/getToken.html) from the modular API.
+```js
+import { getMessaging, deleteToken, getToken } from '@react-native-firebase/messaging';
+
+async function cycleFcmTokenOnLogout() {
+  const messaging = getMessaging();
+  await deleteToken(messaging);
+}
+
+async function cycleFcmTokenOnLogin() {
+  const messaging = getMessaging();
+  const token = await getToken(messaging);
+  console.log('Associate this token with the signed-in user:', token);
+  return token;
+}
+
+await cycleFcmTokenOnLogout();
+await cycleFcmTokenOnLogin();
+```
 
 Note that when a token is deleted by calling the `deleteToken` method, it is immediately and permanently invalid.
 
@@ -189,6 +244,7 @@ tokens.
 Using the `firebase-admin` Admin SDK as an example, we can send a message to devices subscribed to a topic:
 
 ```js
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
 const admin = require('firebase-admin');
 
 const message = {
@@ -223,6 +279,7 @@ condition: "'weather' in topics && ('news' in topics || 'traffic' in topics)"
 To send a message to this condition, replace the `topic` key with `condition`:
 
 ```js
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
 const admin = require('firebase-admin');
 
 const message = {
@@ -252,6 +309,7 @@ Both the Notifications composer and the FCM API support image links in the messa
 To successfully send an image using the Admin SDK it's important that the `ApnsConfig` options are set:
 
 ```js
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
 const payload = {
   notification: {
     body: 'This is an FCM notification that displays an image!',
@@ -260,7 +318,7 @@ const payload = {
   apns: {
     payload: {
       aps: {
-        'mutable-content': 1, // 1 or true
+        'mutable-content': 1,
       },
     },
     fcmOptions: {
@@ -268,6 +326,8 @@ const payload = {
     },
   },
 };
+
+console.log(payload);
 ```
 
 > Check out the [official Firebase documentation](https://firebase.google.com/docs/cloud-messaging/ios/send-image) to see the list of available configuration for iOS.
@@ -277,6 +337,7 @@ const payload = {
 Similarly to iOS, some configurations specific to Android are needed:
 
 ```js
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
 const payload = {
   notification: {
     body: 'This is an FCM notification that displays an image!',
@@ -288,6 +349,8 @@ const payload = {
     },
   },
 };
+
+console.log(payload);
 ```
 
 > If you want to know more about sending an image on Android have a look at [the documentation](https://firebase.google.com/docs/cloud-messaging/android/send-image).
@@ -297,10 +360,9 @@ const payload = {
 It's possible to send one notification that will be delivered to both platforms using the Admin SDK:
 
 ```js
+// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
 const admin = require('firebase-admin');
 
-// Create a list containing up to 500 registration tokens.
-// These registration tokens come from the client FCM SDKs.
 const registrationTokens = ['YOUR_REGISTRATION_TOKEN_1', 'YOUR_REGISTRATION_TOKEN_2'];
 
 const message = {
