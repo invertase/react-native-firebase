@@ -12,6 +12,8 @@
 		E7000000000000000000000C /* RNFBStorageTaskRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */; };
 		E70000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70000000000000000000014 /* XCTest.framework */; };
 		E70000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000001C /* RNFBHandleMapStorage.swift */; };
+		E7000000000000000000001D /* RNFBStorageTaskRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000001E /* RNFBStorageTaskRegistryStorage.swift */; };
+		E7000000000000000000001F /* RNFBStorageTaskRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000020 /* RNFBStorageTaskRegistryStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +25,8 @@
 		E70000000000000000000018 /* RNFBStorageTaskRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBStorageTaskRegistry.m; path = ../RNFBStorage/RNFBStorageTaskRegistry.m; sourceTree = SOURCE_ROOT; };
 		E70000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E7000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		E7000000000000000000001E /* RNFBStorageTaskRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskRegistryStorage.swift; path = ../RNFBStorage/RNFBStorageTaskRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000020 /* RNFBStorageTaskRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageTaskRegistryStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +65,9 @@
 				E7000000000000000000001C /* RNFBHandleMapStorage.swift */,
 				E70000000000000000000016 /* RNFBStorageTaskRegistry.h */,
 				E70000000000000000000018 /* RNFBStorageTaskRegistry.m */,
+				E7000000000000000000001E /* RNFBStorageTaskRegistryStorage.swift */,
 				E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */,
+				E70000000000000000000020 /* RNFBStorageTaskRegistryStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -125,8 +131,10 @@
 			files = (
 				E7000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				E70000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
+				E7000000000000000000001D /* RNFBStorageTaskRegistryStorage.swift in Sources */,
 				E7000000000000000000000B /* RNFBStorageTaskRegistry.m in Sources */,
 				E7000000000000000000000C /* RNFBStorageTaskRegistryTests.m in Sources */,
+				E7000000000000000000001F /* RNFBStorageTaskRegistryStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

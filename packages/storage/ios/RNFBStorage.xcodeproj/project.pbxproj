@@ -12,6 +12,8 @@
 		27A35B652268E118005BE5A8 /* RNFBStorageDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A35B642268E118005BE5A8 /* RNFBStorageDownloadTask.m */; };
 		27A35B682268E138005BE5A8 /* RNFBStorageUploadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A35B672268E138005BE5A8 /* RNFBStorageUploadTask.m */; };
 		27A35B6B2268E1BE005BE5A8 /* RNFBStorageCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 27A35B6A2268E1BE005BE5A8 /* RNFBStorageCommon.m */; };
+		RNFBSTOR0000000000000001 /* RNFBStorageTaskRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBSTOR0000000000000002 /* RNFBStorageTaskRegistry.m */; };
+		RNFBSTOR0000000000000003 /* RNFBStorageTaskRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBSTOR0000000000000004 /* RNFBStorageTaskRegistryStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +40,9 @@
 		27A35B692268E143005BE5A8 /* RNFBStorageUploadTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBStorageUploadTask.h; sourceTree = "<group>"; };
 		27A35B6A2268E1BE005BE5A8 /* RNFBStorageCommon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageCommon.m; sourceTree = "<group>"; };
 		27A35B6C2268E1C8005BE5A8 /* RNFBStorageCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBStorageCommon.h; sourceTree = "<group>"; };
+		RNFBSTOR0000000000000005 /* RNFBStorageTaskRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBStorageTaskRegistry.h; path = RNFBStorage/RNFBStorageTaskRegistry.h; sourceTree = SOURCE_ROOT; };
+		RNFBSTOR0000000000000002 /* RNFBStorageTaskRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBStorageTaskRegistry.m; path = RNFBStorage/RNFBStorageTaskRegistry.m; sourceTree = SOURCE_ROOT; };
+		RNFBSTOR0000000000000004 /* RNFBStorageTaskRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskRegistryStorage.swift; path = RNFBStorage/RNFBStorageTaskRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +69,9 @@
 			children = (
 				2744B98421F45429004F8E3F /* RNFBStorageModule.h */,
 				2744B98521F45429004F8E3F /* RNFBStorageModule.mm */,
+				RNFBSTOR0000000000000005 /* RNFBStorageTaskRegistry.h */,
+				RNFBSTOR0000000000000002 /* RNFBStorageTaskRegistry.m */,
+				RNFBSTOR0000000000000004 /* RNFBStorageTaskRegistryStorage.swift */,
 				27A35B612268E0AB005BE5A8 /* RNFBStorageTask.m */,
 				27A35B632268E0CD005BE5A8 /* RNFBStorageTask.h */,
 				27A35B642268E118005BE5A8 /* RNFBStorageDownloadTask.m */,
@@ -142,6 +150,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				RNFBSTOR0000000000000003 /* RNFBStorageTaskRegistryStorage.swift in Sources */,
+				RNFBSTOR0000000000000001 /* RNFBStorageTaskRegistry.m in Sources */,
 				27A35B622268E0AB005BE5A8 /* RNFBStorageTask.m in Sources */,
 				27A35B6B2268E1BE005BE5A8 /* RNFBStorageCommon.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBStorageModule.mm in Sources */,
@@ -172,6 +182,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -188,6 +199,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -211,6 +223,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -222,6 +235,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
