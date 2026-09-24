@@ -21,6 +21,16 @@
 #import "RNFBAppTurboModules.h"
 #import "RNFBUtilsModule.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
 @interface RNFBUtilsModule () <NativeRNFBTurboUtilsSpec>
 @end
 
@@ -42,31 +52,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
 #pragma mark -
 #pragma mark Constants
 
-- (NSString *)getPathForDirectory:(int)directory {
-  NSArray *paths =
-      NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory)directory, NSUserDomainMask, YES);
-  return [paths firstObject];
-}
-
 - (NSDictionary *)utilsConstantsDictionary {
-  NSMutableDictionary *constants = [@{
-    @"isRunningInTestLab" : @NO,
-    @"MAIN_BUNDLE" : [[NSBundle mainBundle] bundlePath],
-    @"CACHES_DIRECTORY" : [self getPathForDirectory:NSCachesDirectory],
-    @"DOCUMENT_DIRECTORY" : [self getPathForDirectory:NSDocumentDirectory],
-    @"PICTURES_DIRECTORY" : [self getPathForDirectory:NSPicturesDirectory],
-    @"MOVIES_DIRECTORY" : [self getPathForDirectory:NSMoviesDirectory],
-    @"TEMP_DIRECTORY" : NSTemporaryDirectory(),
-    @"LIBRARY_DIRECTORY" : [self getPathForDirectory:NSLibraryDirectory],
-  } mutableCopy];
-
-  NSString *appVersion =
-      [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-  if ([appVersion isKindOfClass:[NSString class]] && appVersion.length > 0) {
-    constants[@"appVersion"] = appVersion;
-  }
-
-  return [constants copy];
+  return [RNFBUtilsHelpers utilsConstantsDictionary];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)constantsToExport {
@@ -107,20 +94,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
 
 #pragma mark -
 #pragma mark Firebase Utils Methods
-
-+ (BOOL)isRemoteAsset:(NSString *)localFilePath {
-  return [localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"];
-}
-
-+ (BOOL)unused_isHeic:(NSString *)localFilePath {
-  return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
-}
-
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-  NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
-  return queryItem.value;
-}
 
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
   PHAsset *asset = nil;

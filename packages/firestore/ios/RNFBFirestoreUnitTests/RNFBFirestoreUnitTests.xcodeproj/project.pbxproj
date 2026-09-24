@@ -15,6 +15,7 @@
 		D20000000000000000000032 /* RNFBFirestoreTransactionAttempt.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */; };
 		D20000000000000000000034 /* RNFBFirestoreTransactionAttemptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */; };
 		D20000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D20000000000000000000014 /* XCTest.framework */; };
+		D20000000000000000000035 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000036 /* RNFBHandleMapStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreTransactionAttempt.m; path = ../RNFBFirestore/RNFBFirestoreTransactionAttempt.m; sourceTree = SOURCE_ROOT; };
 		D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionAttemptTests.m; sourceTree = "<group>"; };
 		D20000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		D20000000000000000000036 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 			children = (
 				D20000000000000000000007 /* RNFBHandleMap.h */,
 				D20000000000000000000008 /* RNFBHandleMap.m */,
+				D20000000000000000000036 /* RNFBHandleMapStorage.swift */,
 				D20000000000000000000016 /* RNFBFirestoreListenerRegistry.h */,
 				D20000000000000000000018 /* RNFBFirestoreListenerRegistry.m */,
 				D20000000000000000000024 /* RNFBFirestoreTransactionRegistry.h */,
@@ -137,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				D20000000000000000000035 /* RNFBHandleMapStorage.swift in Sources */,
 				D2000000000000000000000B /* RNFBFirestoreListenerRegistry.m in Sources */,
 				D20000000000000000000020 /* RNFBFirestoreTransactionRegistry.m in Sources */,
 				D20000000000000000000032 /* RNFBFirestoreTransactionAttempt.m in Sources */,
@@ -191,6 +195,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -214,6 +219,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -225,6 +232,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -241,6 +249,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};

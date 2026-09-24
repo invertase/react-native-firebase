@@ -10,6 +10,65 @@
 		A1000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* RNFBHandleMap.m */; };
 		A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* RNFBHandleMapTests.m */; };
 		A10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* XCTest.framework */; };
+		A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* RNFBHandleMapStorage.swift */; };
+		A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */; };
+		A1000000000000000000001A /* RNFBPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001B /* RNFBPreferences.m */; };
+		A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001C /* RNFBPreferencesStorage.swift */; };
+		A1000000000000000000001F /* RNFBPreferencesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* RNFBPreferencesTests.m */; };
+		A10000000000000000000021 /* RNFBPreferencesStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */; };
+		A10000000000000000000024 /* RNFBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* RNFBJSON.m */; };
+		A10000000000000000000026 /* RNFBJSONImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RNFBJSONImplementation.swift */; };
+		A10000000000000000000028 /* RNFBJSONTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000027 /* RNFBJSONTests.m */; };
+		A1000000000000000000002A /* RNFBJSONImplementationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000029 /* RNFBJSONImplementationTests.swift */; };
+		A1000000000000000000002C /* RNFBMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002D /* RNFBMeta.m */; };
+		A1000000000000000000002E /* RNFBMetaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* RNFBMetaStorage.swift */; };
+		A10000000000000000000030 /* RNFBMetaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* RNFBMetaTests.m */; };
+		A10000000000000000000032 /* RNFBMetaStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* RNFBMetaStorageTests.swift */; };
+		A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */; };
+		A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */; };
+		A10000000000000000000039 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003D /* RNFBSharedUtils.m */; };
+		A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */; };
+		A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* RNFBAppModuleHostStub.m */; };
+		A1000000000000000000003C /* RNFBRCTEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000072 /* RNFBRCTEventEmitter.m */; };
+		A10000000000000000000073 /* RNFBRCTEventEmitterCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000074 /* RNFBRCTEventEmitterCore.swift */; };
+		A10000000000000000000075 /* RNFBRCTEventEmitterCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000076 /* RNFBRCTEventEmitterCoreTests.swift */; };
+		A10000000000000000000077 /* RNFBRCTEventEmitterFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000078 /* RNFBRCTEventEmitterFacadeTests.m */; };
+		A10000000000000000000079 /* RCTBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007A /* RCTBridge.m */; };
+		A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */; };
+		A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */; };
+		A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */; };
+		A1000000000000000000004A /* RNFBSharedUtilsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */; };
+		A1000000000000000000004C /* RNFBSharedUtilsConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004D /* RNFBSharedUtilsConfigTests.swift */; };
+		A1000000000000000000004E /* RNFBSharedUtilsConfigFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */; };
+		A10000000000000000000050 /* RNFBSharedUtilsPromiseRejection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */; };
+		A10000000000000000000052 /* RNFBSharedUtilsPromiseRejectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */; };
+		A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */; };
+		A10000000000000000000056 /* RNFBSharedUtilsFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000057 /* RNFBSharedUtilsFIRApp.swift */; };
+		A10000000000000000000058 /* RNFBSharedUtilsFIRAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */; };
+		A1000000000000000000005A /* RNFBSharedUtilsFIRAppFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */; };
+		A1000000000000000000005C /* FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005D /* FIRApp.m */; };
+		A1000000000000000000005E /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005F /* RCTConvertFIRApp.swift */; };
+		A10000000000000000000060 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000061 /* RCTConvertFIROptions.swift */; };
+		A10000000000000000000062 /* RCTConvertFIRAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000063 /* RCTConvertFIRAppTests.swift */; };
+		A10000000000000000000064 /* RCTConvertFIROptionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000065 /* RCTConvertFIROptionsTests.swift */; };
+		A10000000000000000000066 /* RCTConvertFIRAppFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000067 /* RCTConvertFIRAppFacadeTests.m */; };
+		A10000000000000000000068 /* RCTConvertFIROptionsFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */; };
+		A1000000000000000000006A /* RCTConvert+FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006B /* RCTConvert+FIRApp.m */; };
+		A1000000000000000000006C /* RCTConvert+FIROptions.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006D /* RCTConvert+FIROptions.m */; };
+		A1000000000000000000006E /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006F /* RCTConvert.m */; };
+		A1000000000000000000007C /* RNFBUtilsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007D /* RNFBUtilsHelpers.swift */; };
+		A1000000000000000000007E /* RNFBUtilsModule+Foundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */; };
+		A10000000000000000000080 /* RNFBUtilsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000081 /* RNFBUtilsModule.m */; };
+		A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */; };
+		A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */; };
+		A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */; };
+		A10000000000000000000089 /* RNFBAppCustomAuthDomainsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */; };
+		A1000000000000000000008B /* RNFBAppCustomAuthDomainsFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */; };
+		A1000000000000000000008D /* RNFBAppLogLevelMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */; };
+		A1000000000000000000008F /* RNFBAppLogLevelMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */; };
+		A10000000000000000000091 /* RNFBAppLogLevelFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */; };
+		A10000000000000000000093 /* RNFBAppInitializeOptionsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000094 /* RNFBAppInitializeOptionsMapper.swift */; };
+		A10000000000000000000095 /* RNFBAppInitializeOptionsMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000096 /* RNFBAppInitializeOptionsMapperTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +77,75 @@
 		A10000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000009 /* RNFBHandleMapTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMapTests.m; sourceTree = "<group>"; };
 		A10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A10000000000000000000016 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorageTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000001B /* RNFBPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPreferences.m; path = ../RNFBApp/RNFBPreferences.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000001C /* RNFBPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPreferencesStorage.swift; path = ../RNFBApp/RNFBPreferencesStorage.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000001E /* RNFBPreferencesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPreferencesTests.m; sourceTree = "<group>"; };
+		A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPreferencesStorageTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000022 /* RNFBPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPreferences.h; path = ../RNFBApp/RNFBPreferences.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000023 /* RNFBJSON.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBJSON.m; path = ../RNFBApp/RNFBJSON.m; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000025 /* RNFBJSONImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBJSONImplementation.swift; path = ../RNFBApp/RNFBJSONImplementation.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000027 /* RNFBJSONTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBJSONTests.m; sourceTree = "<group>"; };
+		A10000000000000000000029 /* RNFBJSONImplementationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBJSONImplementationTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000002B /* RNFBJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBJSON.h; path = ../RNFBApp/RNFBJSON.h; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000002D /* RNFBMeta.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMeta.m; path = ../RNFBApp/RNFBMeta.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000002F /* RNFBMetaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBMetaStorage.swift; path = ../RNFBApp/RNFBMetaStorage.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000031 /* RNFBMetaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMetaTests.m; sourceTree = "<group>"; };
+		A10000000000000000000033 /* RNFBMetaStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMetaStorageTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000034 /* RNFBMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMeta.h; path = ../RNFBApp/RNFBMeta.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBNullSentinelDecoding.swift; path = ../RNFBApp/RNFBNullSentinelDecoding.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBNullSentinelDecodingTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000003D /* RNFBSharedUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtils.m; path = ../RNFBApp/RNFBSharedUtils.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000003E /* RNFBSharedUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBSharedUtils.h; path = ../RNFBApp/RNFBSharedUtils.h; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsNullSentinelTests.m; sourceTree = "<group>"; };
+		A10000000000000000000040 /* RNFBAppModuleHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppModuleHostStub.m; path = HostStubs/RNFBAppModuleHostStub.m; sourceTree = "<group>"; };
+		A10000000000000000000072 /* RNFBRCTEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitter.m; path = ../RNFBApp/RNFBRCTEventEmitter.m; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000074 /* RNFBRCTEventEmitterCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRCTEventEmitterCore.swift; path = ../RNFBApp/RNFBRCTEventEmitterCore.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000076 /* RNFBRCTEventEmitterCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRCTEventEmitterCoreTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000078 /* RNFBRCTEventEmitterFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRCTEventEmitterFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000007A /* RCTBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTBridge.m; path = HostStubs/React/RCTBridge.m; sourceTree = "<group>"; };
+		A1000000000000000000007B /* RCTBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RCTBridge.h; path = HostStubs/React/RCTBridge.h; sourceTree = "<group>"; };
+		A10000000000000000000042 /* RNFBAppModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppModule.h; path = ../RNFBApp/RNFBAppModule.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000043 /* RNFBRCTEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBRCTEventEmitter.h; path = ../RNFBApp/RNFBRCTEventEmitter.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFormatting.swift; path = ../RNFBApp/RNFBSharedUtilsFormatting.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFormattingTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsFormattingFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsConfig.swift; path = ../RNFBApp/RNFBSharedUtilsConfig.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000004D /* RNFBSharedUtilsConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsConfigTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsConfigFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsPromiseRejection.swift; path = ../RNFBApp/RNFBSharedUtilsPromiseRejection.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsPromiseRejectionTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsPromiseRejectionFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000057 /* RNFBSharedUtilsFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFIRApp.swift; path = ../RNFBApp/RNFBSharedUtilsFIRApp.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFIRAppTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsFIRAppFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000005D /* FIRApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRApp.m; path = HostStubs/FirebaseCore/FIRApp.m; sourceTree = "<group>"; };
+		A1000000000000000000005F /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RCTConvertFIRApp.swift; path = ../RNFBApp/RCTConvertFIRApp.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000061 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RCTConvertFIROptions.swift; path = ../RNFBApp/RCTConvertFIROptions.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000063 /* RCTConvertFIRAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIRAppTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000065 /* RCTConvertFIROptionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIROptionsTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000067 /* RCTConvertFIRAppFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTConvertFIRAppFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTConvertFIROptionsFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000006B /* RCTConvert+FIRApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIRApp.m"; path = "../RNFBApp/RCTConvert+FIRApp.m"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000006D /* RCTConvert+FIROptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIROptions.m"; path = "../RNFBApp/RCTConvert+FIROptions.m"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000006F /* RCTConvert.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTConvert.m; path = HostStubs/React/RCTConvert.m; sourceTree = "<group>"; };
+		A10000000000000000000070 /* RCTConvert+FIRApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIRApp.h"; path = "../RNFBApp/RCTConvert+FIRApp.h"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000071 /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIROptions.h"; path = "../RNFBApp/RCTConvert+FIROptions.h"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000007D /* RNFBUtilsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBUtilsHelpers.swift; path = ../RNFBApp/RNFBUtilsHelpers.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RNFBUtilsModule+Foundation.m"; path = "../RNFBApp/RNFBUtilsModule+Foundation.m"; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000081 /* RNFBUtilsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBUtilsModule.m; path = HostStubs/RNFBUtilsModule.m; sourceTree = "<group>"; };
+		A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpersTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBUtilsModuleFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000086 /* RNFBUtilsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBUtilsModule.h; path = ../RNFBApp/RNFBUtilsModule.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppCustomAuthDomains.swift; path = ../RNFBApp/RNFBAppCustomAuthDomains.swift; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppCustomAuthDomainsTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppCustomAuthDomainsFacadeTests.m; sourceTree = "<group>"; };
+		A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppLogLevelMapper.swift; path = ../RNFBApp/RNFBAppLogLevelMapper.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppLogLevelMapperTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppLogLevelFacadeTests.m; sourceTree = "<group>"; };
+		A10000000000000000000094 /* RNFBAppInitializeOptionsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppInitializeOptionsMapper.swift; path = ../RNFBApp/RNFBAppInitializeOptionsMapper.swift; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000096 /* RNFBAppInitializeOptionsMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppInitializeOptionsMapperTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +181,76 @@
 			children = (
 				A10000000000000000000007 /* RNFBHandleMap.h */,
 				A10000000000000000000008 /* RNFBHandleMap.m */,
+				A10000000000000000000016 /* RNFBHandleMapStorage.swift */,
 				A10000000000000000000009 /* RNFBHandleMapTests.m */,
+				A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */,
+				A10000000000000000000022 /* RNFBPreferences.h */,
+				A1000000000000000000001B /* RNFBPreferences.m */,
+				A1000000000000000000001C /* RNFBPreferencesStorage.swift */,
+				A1000000000000000000001E /* RNFBPreferencesTests.m */,
+				A10000000000000000000020 /* RNFBPreferencesStorageTests.swift */,
+				A1000000000000000000002B /* RNFBJSON.h */,
+				A10000000000000000000023 /* RNFBJSON.m */,
+				A10000000000000000000025 /* RNFBJSONImplementation.swift */,
+				A10000000000000000000027 /* RNFBJSONTests.m */,
+				A10000000000000000000029 /* RNFBJSONImplementationTests.swift */,
+				A10000000000000000000034 /* RNFBMeta.h */,
+				A1000000000000000000002D /* RNFBMeta.m */,
+				A1000000000000000000002F /* RNFBMetaStorage.swift */,
+				A10000000000000000000031 /* RNFBMetaTests.m */,
+				A10000000000000000000033 /* RNFBMetaStorageTests.swift */,
+				A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */,
+				A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */,
+				A1000000000000000000003E /* RNFBSharedUtils.h */,
+				A1000000000000000000003D /* RNFBSharedUtils.m */,
+				A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */,
+				A1000000000000000000004B /* RNFBSharedUtilsConfig.swift */,
+				A10000000000000000000051 /* RNFBSharedUtilsPromiseRejection.swift */,
+				A10000000000000000000057 /* RNFBSharedUtilsFIRApp.swift */,
+				A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */,
+				A10000000000000000000047 /* RNFBSharedUtilsFormattingTests.swift */,
+				A10000000000000000000049 /* RNFBSharedUtilsFormattingFacadeTests.m */,
+				A1000000000000000000004D /* RNFBSharedUtilsConfigTests.swift */,
+				A1000000000000000000004F /* RNFBSharedUtilsConfigFacadeTests.m */,
+				A10000000000000000000053 /* RNFBSharedUtilsPromiseRejectionTests.swift */,
+				A10000000000000000000055 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m */,
+				A10000000000000000000059 /* RNFBSharedUtilsFIRAppTests.swift */,
+				A1000000000000000000005B /* RNFBSharedUtilsFIRAppFacadeTests.m */,
+				A1000000000000000000005F /* RCTConvertFIRApp.swift */,
+				A10000000000000000000061 /* RCTConvertFIROptions.swift */,
+				A10000000000000000000070 /* RCTConvert+FIRApp.h */,
+				A1000000000000000000006B /* RCTConvert+FIRApp.m */,
+				A10000000000000000000071 /* RCTConvert+FIROptions.h */,
+				A1000000000000000000006D /* RCTConvert+FIROptions.m */,
+				A10000000000000000000063 /* RCTConvertFIRAppTests.swift */,
+				A10000000000000000000065 /* RCTConvertFIROptionsTests.swift */,
+				A10000000000000000000067 /* RCTConvertFIRAppFacadeTests.m */,
+				A10000000000000000000069 /* RCTConvertFIROptionsFacadeTests.m */,
+				A10000000000000000000042 /* RNFBAppModule.h */,
+				A10000000000000000000043 /* RNFBRCTEventEmitter.h */,
+				A10000000000000000000072 /* RNFBRCTEventEmitter.m */,
+				A10000000000000000000074 /* RNFBRCTEventEmitterCore.swift */,
+				A10000000000000000000076 /* RNFBRCTEventEmitterCoreTests.swift */,
+				A10000000000000000000078 /* RNFBRCTEventEmitterFacadeTests.m */,
+				A10000000000000000000040 /* RNFBAppModuleHostStub.m */,
+				A1000000000000000000007B /* RCTBridge.h */,
+				A1000000000000000000007A /* RCTBridge.m */,
+				A1000000000000000000005D /* FIRApp.m */,
+				A1000000000000000000006F /* RCTConvert.m */,
+				A10000000000000000000086 /* RNFBUtilsModule.h */,
+				A1000000000000000000007D /* RNFBUtilsHelpers.swift */,
+				A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */,
+				A10000000000000000000081 /* RNFBUtilsModule.m */,
+				A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */,
+				A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */,
+				A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */,
+				A1000000000000000000008A /* RNFBAppCustomAuthDomainsTests.swift */,
+				A1000000000000000000008C /* RNFBAppCustomAuthDomainsFacadeTests.m */,
+				A1000000000000000000008E /* RNFBAppLogLevelMapper.swift */,
+				A10000000000000000000090 /* RNFBAppLogLevelMapperTests.swift */,
+				A10000000000000000000092 /* RNFBAppLogLevelFacadeTests.m */,
+				A10000000000000000000094 /* RNFBAppInitializeOptionsMapper.swift */,
+				A10000000000000000000096 /* RNFBAppInitializeOptionsMapperTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -116,7 +313,66 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */,
 				A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */,
+				A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */,
+				A1000000000000000000001A /* RNFBPreferences.m in Sources */,
+				A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */,
+				A1000000000000000000001F /* RNFBPreferencesTests.m in Sources */,
+				A10000000000000000000021 /* RNFBPreferencesStorageTests.swift in Sources */,
+				A10000000000000000000024 /* RNFBJSON.m in Sources */,
+				A10000000000000000000026 /* RNFBJSONImplementation.swift in Sources */,
+				A10000000000000000000028 /* RNFBJSONTests.m in Sources */,
+				A1000000000000000000002A /* RNFBJSONImplementationTests.swift in Sources */,
+				A1000000000000000000002C /* RNFBMeta.m in Sources */,
+				A1000000000000000000002E /* RNFBMetaStorage.swift in Sources */,
+				A10000000000000000000030 /* RNFBMetaTests.m in Sources */,
+				A10000000000000000000032 /* RNFBMetaStorageTests.swift in Sources */,
+				A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */,
+				A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */,
+				A10000000000000000000039 /* RNFBSharedUtils.m in Sources */,
+				A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */,
+				A1000000000000000000004A /* RNFBSharedUtilsConfig.swift in Sources */,
+				A10000000000000000000050 /* RNFBSharedUtilsPromiseRejection.swift in Sources */,
+				A10000000000000000000056 /* RNFBSharedUtilsFIRApp.swift in Sources */,
+				A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */,
+				A10000000000000000000046 /* RNFBSharedUtilsFormattingTests.swift in Sources */,
+				A10000000000000000000048 /* RNFBSharedUtilsFormattingFacadeTests.m in Sources */,
+				A1000000000000000000004C /* RNFBSharedUtilsConfigTests.swift in Sources */,
+				A1000000000000000000004E /* RNFBSharedUtilsConfigFacadeTests.m in Sources */,
+				A10000000000000000000052 /* RNFBSharedUtilsPromiseRejectionTests.swift in Sources */,
+				A10000000000000000000054 /* RNFBSharedUtilsPromiseRejectionFacadeTests.m in Sources */,
+				A10000000000000000000058 /* RNFBSharedUtilsFIRAppTests.swift in Sources */,
+				A1000000000000000000005A /* RNFBSharedUtilsFIRAppFacadeTests.m in Sources */,
+				A1000000000000000000005E /* RCTConvertFIRApp.swift in Sources */,
+				A10000000000000000000060 /* RCTConvertFIROptions.swift in Sources */,
+				A1000000000000000000006A /* RCTConvert+FIRApp.m in Sources */,
+				A1000000000000000000006C /* RCTConvert+FIROptions.m in Sources */,
+				A1000000000000000000006E /* RCTConvert.m in Sources */,
+				A10000000000000000000062 /* RCTConvertFIRAppTests.swift in Sources */,
+				A10000000000000000000064 /* RCTConvertFIROptionsTests.swift in Sources */,
+				A10000000000000000000066 /* RCTConvertFIRAppFacadeTests.m in Sources */,
+				A10000000000000000000068 /* RCTConvertFIROptionsFacadeTests.m in Sources */,
+				A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */,
+				A1000000000000000000003C /* RNFBRCTEventEmitter.m in Sources */,
+				A10000000000000000000073 /* RNFBRCTEventEmitterCore.swift in Sources */,
+				A10000000000000000000075 /* RNFBRCTEventEmitterCoreTests.swift in Sources */,
+				A10000000000000000000077 /* RNFBRCTEventEmitterFacadeTests.m in Sources */,
+				A10000000000000000000079 /* RCTBridge.m in Sources */,
+				A1000000000000000000005C /* FIRApp.m in Sources */,
+				A1000000000000000000007C /* RNFBUtilsHelpers.swift in Sources */,
+				A1000000000000000000007E /* RNFBUtilsModule+Foundation.m in Sources */,
+				A10000000000000000000080 /* RNFBUtilsModule.m in Sources */,
+				A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */,
+				A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */,
+				A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */,
+				A10000000000000000000089 /* RNFBAppCustomAuthDomainsTests.swift in Sources */,
+				A1000000000000000000008B /* RNFBAppCustomAuthDomainsFacadeTests.m in Sources */,
+				A1000000000000000000008D /* RNFBAppLogLevelMapper.swift in Sources */,
+				A1000000000000000000008F /* RNFBAppLogLevelMapperTests.swift in Sources */,
+				A10000000000000000000091 /* RNFBAppLogLevelFacadeTests.m in Sources */,
+				A10000000000000000000093 /* RNFBAppInitializeOptionsMapper.swift in Sources */,
+				A10000000000000000000095 /* RNFBAppInitializeOptionsMapperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +395,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -154,6 +411,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};
@@ -165,8 +423,12 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RNFBApp";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBApp",
+				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -181,9 +443,12 @@
 					"-fprofile-instr-generate",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppUnitTests;
+				PRODUCT_MODULE_NAME = RNFBAppUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -195,8 +460,12 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../RNFBApp";
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBApp",
+				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -204,9 +473,12 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppUnitTests;
+				PRODUCT_MODULE_NAME = RNFBAppUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};

@@ -22,146 +22,229 @@
 #import "RNFBPreferences.h"
 #import "RNFBRCTEventEmitter.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
 #pragma mark -
 #pragma mark Constants
 
 NSString *const DEFAULT_APP_DISPLAY_NAME = @"[DEFAULT]";
 NSString *const DEFAULT_APP_NAME = @"__FIRAPP_DEFAULT";
 
+/**
+ * Adapts `RNFBMeta` class methods to the instance-based config source protocol used by
+ * `RNFBSharedUtilsConfig`.
+ */
+@interface RNFBConfigMetaSource : NSObject <RNFBConfigBooleanProviding>
+@end
+
+@implementation RNFBConfigMetaSource
+
+- (BOOL)contains:(NSString *)key {
+  return [RNFBMeta contains:key];
+}
+
+- (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
+  return [RNFBMeta getBooleanValue:key defaultValue:defaultValue];
+}
+
+@end
+
+static id<RNFBConfigBooleanProviding> RNFBSharedUtilsMetaConfigSource(void) {
+  static RNFBConfigMetaSource *sharedSource;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedSource = [[RNFBConfigMetaSource alloc] init];
+  });
+  return sharedSource;
+}
+
+/**
+ * Adapts live `FIROptions` to the injectable protocol used by `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBFIROptionsAdapter : NSObject <RNFBFIROptionsProviding>
+@property(nonatomic, strong) FIROptions *options;
+@end
+
+@implementation RNFBFIROptionsAdapter
+
+- (NSString *)apiKey {
+  return self.options.APIKey;
+}
+
+- (NSString *)googleAppID {
+  return self.options.googleAppID;
+}
+
+- (NSString *)projectID {
+  return self.options.projectID;
+}
+
+- (NSString *)databaseURL {
+  return self.options.databaseURL;
+}
+
+- (NSString *)storageBucket {
+  return self.options.storageBucket;
+}
+
+- (NSString *)gcmSenderID {
+  return self.options.GCMSenderID;
+}
+
+- (NSString *)clientID {
+  return self.options.clientID;
+}
+
+@end
+
+/**
+ * Adapts live `FIRApp` to the injectable protocol used by `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBFIRAppAdapter : NSObject <RNFBFIRAppProviding>
+@property(nonatomic, strong) FIRApp *app;
+@property(nonatomic, strong) RNFBFIROptionsAdapter *optionsAdapter;
+@end
+
+@implementation RNFBFIRAppAdapter
+
+- (instancetype)initWithFIRApp:(FIRApp *)app {
+  self = [super init];
+  if (self) {
+    _app = app;
+    _optionsAdapter = [RNFBFIROptionsAdapter new];
+    _optionsAdapter.options = app.options;
+  }
+  return self;
+}
+
+- (NSString *)name {
+  return self.app.name;
+}
+
+- (id<RNFBFIROptionsProviding>)options {
+  return self.optionsAdapter;
+}
+
+- (BOOL)isDataCollectionDefaultEnabled {
+  return [self.app isDataCollectionDefaultEnabled];
+}
+
+@end
+
+/**
+ * Adapts `RNFBAppModule getCustomDomain:` for `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBCustomDomainProvider : NSObject <RNFBCustomDomainProviding>
+@end
+
+@implementation RNFBCustomDomainProvider
+
+- (NSString *)getCustomDomain:(NSString *)appName {
+  return [RNFBAppModule getCustomDomain:appName];
+}
+
+@end
+
+/**
+ * Adapts `RNFBRCTEventEmitter.shared` for `RNFBSharedUtilsFIRApp`.
+ */
+@interface RNFBJSEventSender : NSObject <RNFBJSEventSending>
+@end
+
+@implementation RNFBJSEventSender
+
+- (void)sendEventWithName:(NSString *)name body:(id)body {
+  [[RNFBRCTEventEmitter shared] sendEventWithName:name body:body];
+}
+
+@end
+
+static id<RNFBCustomDomainProviding> RNFBSharedUtilsCustomDomainProvider(void) {
+  static RNFBCustomDomainProvider *sharedProvider;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedProvider = [[RNFBCustomDomainProvider alloc] init];
+  });
+  return sharedProvider;
+}
+
+static id<RNFBJSEventSending> RNFBSharedUtilsJSEventSender(void) {
+  static RNFBJSEventSender *sharedSender;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedSender = [[RNFBJSEventSender alloc] init];
+  });
+  return sharedSender;
+}
+
 @implementation RNFBSharedUtils
-static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
 #pragma mark -
 #pragma mark Methods
 
 + (NSString *)getAppJavaScriptName:(NSString *)appDisplayName {
-  if ([appDisplayName isEqualToString:DEFAULT_APP_NAME]) {
-    return DEFAULT_APP_DISPLAY_NAME;
-  }
-  return appDisplayName;
+  return [RNFBSharedUtilsFormatting getAppJavaScriptName:appDisplayName];
 }
 
 + (NSDictionary *)firAppToDictionary:(FIRApp *)firApp {
-  FIROptions *firOptions = [firApp options];
-  NSMutableDictionary *firAppDictionary = [NSMutableDictionary new];
-  NSMutableDictionary *firAppOptions = [NSMutableDictionary new];
-  NSMutableDictionary *firAppConfig = [NSMutableDictionary new];
-
-  NSString *name = [firApp name];
-  if ([name isEqualToString:DEFAULT_APP_NAME]) {
-    name = DEFAULT_APP_DISPLAY_NAME;
-  }
-
-  firAppConfig[@"name"] = name;
-  firAppConfig[@"automaticDataCollectionEnabled"] = @([firApp isDataCollectionDefaultEnabled]);
-
-  firAppOptions[@"apiKey"] = firOptions.APIKey;
-  firAppOptions[@"appId"] = firOptions.googleAppID;
-  firAppOptions[@"projectId"] = firOptions.projectID;
-  firAppOptions[@"databaseURL"] = firOptions.databaseURL;
-  firAppOptions[@"storageBucket"] = firOptions.storageBucket;
-  firAppOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
-  // missing from android sdk - ios only:
-  firAppOptions[@"clientId"] = firOptions.clientID;
-  // not in FIROptions API but in JS SDK and project config JSON
-  NSString *customAuthDomain = [RNFBAppModule getCustomDomain:name];
-  if (customAuthDomain != nil) {
-    firAppOptions[@"authDomain"] = customAuthDomain;
-  }
-
-  firAppDictionary[@"options"] = firAppOptions;
-  firAppDictionary[@"appConfig"] = firAppConfig;
-
-  return firAppDictionary;
+  RNFBFIRAppAdapter *adapter = [[RNFBFIRAppAdapter alloc] initWithFIRApp:firApp];
+  return [RNFBSharedUtilsFIRApp firAppToDictionary:adapter
+                              customDomainProvider:RNFBSharedUtilsCustomDomainProvider()];
 }
 
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject
                              exception:(NSException *)exception {
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-
-  [userInfo setValue:@(YES) forKey:@"fatal"];
-  [userInfo setValue:@"unknown" forKey:@"code"];
-  [userInfo setValue:exception.reason forKey:@"message"];
-  [userInfo setValue:exception.name forKey:@"nativeErrorCode"];
-  [userInfo setValue:exception.reason forKey:@"nativeErrorMessage"];
-
-  NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-
-  reject(exception.name, exception.reason, error);
+  [RNFBSharedUtilsPromiseRejection rejectPromiseWithException:reject exception:exception];
 }
 
 + (void)rejectPromiseWithNSError:(RCTPromiseRejectBlock)reject error:(NSError *)error {
-  NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-
-  [userInfo setValue:@(NO) forKey:@"fatal"];
-  [userInfo setValue:@"unknown" forKey:@"code"];
-  [userInfo setValue:error.localizedDescription forKey:@"message"];
-  [userInfo setValue:@(error.code) forKey:@"nativeErrorCode"];
-  [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
-
-  NSError *newErrorWithUserInfo = [NSError errorWithDomain:RNFBErrorDomain
-                                                      code:666
-                                                  userInfo:userInfo];
-  reject(@"unknown", error.localizedDescription, newErrorWithUserInfo);
+  [RNFBSharedUtilsPromiseRejection rejectPromiseWithNSError:reject error:error];
 }
 
 + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject
                          userInfo:(NSMutableDictionary *)userInfo {
-  NSError *error = [NSError errorWithDomain:RNFBErrorDomain code:666 userInfo:userInfo];
-  reject(userInfo[@"code"], userInfo[@"message"], error);
+  [RNFBSharedUtilsPromiseRejection rejectPromiseWithUserInfo:reject userInfo:userInfo];
 }
 
 // for easier v5 migration
 + (void)sendJSEventForApp:(FIRApp *)app name:(NSString *)name body:(NSDictionary *)body {
-  NSMutableDictionary *newBody = [body mutableCopy];
-  newBody[@"appName"] = [self getAppJavaScriptName:app.name];
-  [[RNFBRCTEventEmitter shared] sendEventWithName:name body:newBody];
+  RNFBFIRAppAdapter *adapter = [[RNFBFIRAppAdapter alloc] initWithFIRApp:app];
+  [RNFBSharedUtilsFIRApp sendJSEventForApp:adapter
+                                      name:name
+                                      body:body
+                               eventSender:RNFBSharedUtilsJSEventSender()];
 }
 
 + (NSString *)getISO8601String:(NSDate *)date {
-  static NSDateFormatter *formatter = nil;
-
-  if (!formatter) {
-    formatter = [[NSDateFormatter alloc] init];
-    [formatter setLocale:[NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"]];
-    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss"];
-  }
-
-  NSString *iso8601String = [formatter stringFromDate:date];
-
-  return [iso8601String stringByAppendingString:@"Z"];
+  return [RNFBSharedUtilsFormatting getISO8601String:date];
 }
 
 + (BOOL)configContains:(NSString *)key {
-  return [[RNFBPreferences shared] contains:key] || [[RNFBJSON shared] contains:key] ||
-         [RNFBMeta contains:key];
+  return [RNFBSharedUtilsConfig
+      configContainsKey:key
+            preferences:(id<RNFBConfigBooleanProviding>)[RNFBPreferences shared]
+                   json:(id<RNFBConfigBooleanProviding>)[RNFBJSON shared]
+                   meta:RNFBSharedUtilsMetaConfigSource()];
 }
 
 + (BOOL)getConfigBooleanValue:(NSString *)tag key:(NSString *)key defaultValue:(BOOL)defaultValue {
-  BOOL enabled;
-
-  if ([[RNFBPreferences shared] contains:key]) {
-    enabled = [[RNFBPreferences shared] getBooleanValue:key defaultValue:defaultValue];
-    DLog(@"%@ %@ via "
-         @"RNFBPreferences: %d",
-         tag, key, enabled);
-  } else if ([[RNFBJSON shared] contains:key]) {
-    enabled = [[RNFBJSON shared] getBooleanValue:key defaultValue:defaultValue];
-    DLog(@"%@ %@ via "
-         @"RNFBJSON: %d",
-         tag, key, enabled);
-  } else {
-    // Note that if we're here, and the key is not set on the app's bundle, our final default is the
-    // one passed in
-    enabled = [RNFBMeta getBooleanValue:key defaultValue:defaultValue];
-    DLog(@"%@ %@ via "
-         @"RNFBMeta: %d",
-         tag, key, enabled);
-  }
-
+  BOOL enabled = [RNFBSharedUtilsConfig
+      getConfigBooleanValueForKey:key
+                     defaultValue:defaultValue
+                      preferences:(id<RNFBConfigBooleanProviding>)[RNFBPreferences shared]
+                             json:(id<RNFBConfigBooleanProviding>)[RNFBJSON shared]
+                             meta:RNFBSharedUtilsMetaConfigSource()];
+  // Branch-specific "via Preferences/JSON/Meta" DLogs lived in the pre-port body; keep the
+  // final-value log on the ObjC façade (DLog is an ObjC macro; return value unchanged).
   DLog(@"%@ %@ final value: %d", tag, key, enabled);
-
   return enabled;
 }
 
@@ -183,104 +266,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
  * @return The decoded value with sentinels replaced by NSNull
  */
 + (id)decodeNullSentinels:(id)value {
-  // Non-container values are returned as-is
-  if (![value isKindOfClass:[NSDictionary class]] && ![value isKindOfClass:[NSArray class]]) {
-    return value;
-  }
-
-  // Helper to detect the sentinel
-  BOOL (^isNullSentinel)(NSDictionary *) = ^BOOL(NSDictionary *dict) {
-    id flag = dict[@"__rnfbNull"];
-    return (dict.count == 1 && flag != nil && [flag boolValue]);
-  };
-
-  // Helper to process a child element and add it to the parent container
-  void (^processChild)(id, id, id, BOOL, NSMutableArray *) =
-      ^void(id child, id parentMutable, id keyOrNil, BOOL isParentDict, NSMutableArray *stack) {
-        id processedValue = nil;
-
-        if ([child isKindOfClass:[NSDictionary class]]) {
-          NSDictionary *childDict = (NSDictionary *)child;
-
-          if (isNullSentinel(childDict)) {
-            // Replace sentinel with NSNull
-            processedValue = [NSNull null];
-          } else {
-            // Process nested dictionary
-            NSMutableDictionary *childMut =
-                [NSMutableDictionary dictionaryWithCapacity:childDict.count];
-            processedValue = childMut;
-            [stack addObject:@{@"original" : childDict, @"mutable" : childMut}];
-          }
-        } else if ([child isKindOfClass:[NSArray class]]) {
-          // Process nested array
-          NSArray *childArray = (NSArray *)child;
-          NSMutableArray *childMut = [NSMutableArray arrayWithCapacity:childArray.count];
-          processedValue = childMut;
-          [stack addObject:@{@"original" : childArray, @"mutable" : childMut}];
-        } else {
-          // Preserve primitive values
-          processedValue = child ?: [NSNull null];
-        }
-
-        // Add to parent container based on type
-        if (isParentDict) {
-          NSMutableDictionary *mutDict = (NSMutableDictionary *)parentMutable;
-          if (processedValue) {
-            mutDict[keyOrNil] = processedValue;
-          }
-          // NSDictionary can't store nil, and original code wouldn't see nil values either.
-        } else {
-          NSMutableArray *mutArray = (NSMutableArray *)parentMutable;
-          [mutArray addObject:processedValue];
-        }
-      };
-
-  // Root-level sentinel case
-  if ([value isKindOfClass:[NSDictionary class]] && isNullSentinel((NSDictionary *)value)) {
-    return [NSNull null];
-  }
-
-  id rootOriginal = value;
-  id rootMutable = nil;
-
-  if ([value isKindOfClass:[NSDictionary class]]) {
-    NSDictionary *dict = (NSDictionary *)value;
-    rootMutable = [NSMutableDictionary dictionaryWithCapacity:dict.count];
-  } else {
-    NSArray *array = (NSArray *)value;
-    rootMutable = [NSMutableArray arrayWithCapacity:array.count];
-  }
-
-  // Stack-based iteration to process nested structures without recursion
-  // Stack frames: { @"original": container, @"mutable": mutableContainer }
-  NSMutableArray<NSDictionary *> *stack = [NSMutableArray array];
-  [stack addObject:@{@"original" : rootOriginal, @"mutable" : rootMutable}];
-
-  while (stack.count > 0) {
-    NSDictionary *frame = [stack lastObject];
-    [stack removeLastObject];
-
-    id original = frame[@"original"];
-    id mutable = frame[@"mutable"];
-
-    if ([original isKindOfClass:[NSDictionary class]]) {
-      NSDictionary *origDict = (NSDictionary *)original;
-
-      for (id key in origDict) {
-        id child = origDict[key];
-        processChild(child, mutable, key, YES, stack);
-      }
-    } else if ([original isKindOfClass:[NSArray class]]) {
-      NSArray *origArray = (NSArray *)original;
-
-      for (id child in origArray) {
-        processChild(child, mutable, nil, NO, stack);
-      }
-    }
-  }
-
-  return rootMutable;
+  return [RNFBNullSentinelDecoder decode:value];
 }
 
 @end

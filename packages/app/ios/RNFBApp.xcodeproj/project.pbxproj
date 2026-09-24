@@ -19,6 +19,23 @@
 		DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */; };
 		RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */; };
 		RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026082000000002 /* RNFBHandleMap.m */; };
+		RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */; };
+		RNFB00001A2026092200000011 /* RNFBPreferencesStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */; };
+		RNFB00001A2026092200000021 /* RNFBJSONImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */; };
+		RNFB00001A2026092200000031 /* RNFBMetaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */; };
+		RNFB00001A2026092200000041 /* RNFBNullSentinelDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */; };
+		RNFB00001A2026092200000051 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */; };
+		RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */; };
+		RNFB00001A2026092300000071 /* RNFBSharedUtilsPromiseRejection.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */; };
+		RNFB00001A2026092300000081 /* RNFBSharedUtilsFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */; };
+		RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */; };
+		RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */; };
+		RNFB00001A20260923000000B1 /* RNFBRCTEventEmitterCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */; };
+		RNFB00001A20260923000000C1 /* RNFBUtilsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */; };
+		RNFB00001A20260923000000C3 /* RNFBUtilsModule+Foundation.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */; };
+		RNFB00001A20260923000000D1 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000D2 /* RNFBAppCustomAuthDomains.swift */; };
+		RNFB00001A20260923000000E1 /* RNFBAppLogLevelMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000E2 /* RNFBAppLogLevelMapper.swift */; };
+		RNFB00001A20260923000000F1 /* RNFBAppInitializeOptionsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A20260923000000F2 /* RNFBAppInitializeOptionsMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -59,6 +76,23 @@
 		RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBNullSentinelInterceptor.h; sourceTree = "<group>"; };
 		RNFB00001A2026082000000002 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMap.m; sourceTree = "<group>"; };
 		RNFB00001A2026082000000003 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBHandleMap.h; sourceTree = "<group>"; };
+		RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorage.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPreferencesStorage.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBJSONImplementation.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMetaStorage.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBNullSentinelDecoding.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFormatting.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsConfig.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsPromiseRejection.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFIRApp.swift; sourceTree = "<group>"; };
+		RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIRApp.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCTConvertFIROptions.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRCTEventEmitterCore.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpers.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBUtilsModule+Foundation.m"; sourceTree = "<group>"; };
+		RNFB00001A20260923000000D2 /* RNFBAppCustomAuthDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppCustomAuthDomains.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000E2 /* RNFBAppLogLevelMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppLogLevelMapper.swift; sourceTree = "<group>"; };
+		RNFB00001A20260923000000F2 /* RNFBAppInitializeOptionsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppInitializeOptionsMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,28 +119,45 @@
 			children = (
 				2748D8112236417700FC8DC8 /* RNFBSharedUtils.h */,
 				2748D8102236417700FC8DC8 /* RNFBSharedUtils.m */,
+				RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */,
+				RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */,
+				RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */,
+				RNFB00001A2026092300000082 /* RNFBSharedUtilsFIRApp.swift */,
 				2744B98D21F45E8B004F8E3F /* RNFBRCTEventEmitter.h */,
 				2744B99021F46140004F8E3F /* RNFBRCTEventEmitter.m */,
+				RNFB00001A20260923000000B2 /* RNFBRCTEventEmitterCore.swift */,
 				2744B9A221F48826004F8E3F /* RCTConvert+FIROptions.h */,
 				2744B9A321F48A4F004F8E3F /* RCTConvert+FIROptions.m */,
+				RNFB00001A20260923000000A2 /* RCTConvertFIROptions.swift */,
 				2748D81E2237012B00FC8DC8 /* RNFBMeta.h */,
 				2748D81F2237018600FC8DC8 /* RNFBMeta.m */,
+				RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */,
 				2744B9A521F57BD9004F8E3F /* RCTConvert+FIRApp.h */,
 				2744B9A621F57C2F004F8E3F /* RCTConvert+FIRApp.m */,
+				RNFB00001A2026092300000092 /* RCTConvertFIRApp.swift */,
 				2744B98421F45429004F8E3F /* RNFBAppModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAppModule.mm */,
+				RNFB00001A20260923000000D2 /* RNFBAppCustomAuthDomains.swift */,
+				RNFB00001A20260923000000E2 /* RNFBAppLogLevelMapper.swift */,
+				RNFB00001A20260923000000F2 /* RNFBAppInitializeOptionsMapper.swift */,
 				2748D8162236428100FC8DC8 /* RNFBJSON.h */,
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
+				RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */,
 				2748D81A223674B600FC8DC8 /* RNFBPreferences.h */,
 				2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */,
+				RNFB00001A2026092200000012 /* RNFBPreferencesStorage.swift */,
 				DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */,
 				DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */,
 				4D97BAD223042F0800077358 /* RNFBUtilsModule.h */,
 				4D97BAD323042F2700077358 /* RNFBUtilsModule.mm */,
+				RNFB00001A20260923000000C2 /* RNFBUtilsHelpers.swift */,
+				RNFB00001A20260923000000C4 /* RNFBUtilsModule+Foundation.m */,
 				RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */,
 				RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */,
+				RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */,
 				RNFB00001A2026082000000003 /* RNFBHandleMap.h */,
 				RNFB00001A2026082000000002 /* RNFBHandleMap.m */,
+				RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */,
 			);
 			path = RNFBApp;
 			sourceTree = "<group>";
@@ -190,6 +241,23 @@
 				2748D8152236426300FC8DC8 /* RNFBJSON.m in Sources */,
 				RNFB00001A2025011100000001 /* RNFBNullSentinelInterceptor.m in Sources */,
 				RNFB00001A2026082000000001 /* RNFBHandleMap.m in Sources */,
+				RNFB00001A2026092200000001 /* RNFBHandleMapStorage.swift in Sources */,
+				RNFB00001A2026092200000011 /* RNFBPreferencesStorage.swift in Sources */,
+				RNFB00001A2026092200000021 /* RNFBJSONImplementation.swift in Sources */,
+				RNFB00001A2026092200000031 /* RNFBMetaStorage.swift in Sources */,
+				RNFB00001A2026092200000041 /* RNFBNullSentinelDecoding.swift in Sources */,
+				RNFB00001A2026092200000051 /* RNFBSharedUtilsFormatting.swift in Sources */,
+				RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */,
+				RNFB00001A2026092300000071 /* RNFBSharedUtilsPromiseRejection.swift in Sources */,
+				RNFB00001A2026092300000081 /* RNFBSharedUtilsFIRApp.swift in Sources */,
+				RNFB00001A2026092300000091 /* RCTConvertFIRApp.swift in Sources */,
+				RNFB00001A20260923000000A1 /* RCTConvertFIROptions.swift in Sources */,
+				RNFB00001A20260923000000B1 /* RNFBRCTEventEmitterCore.swift in Sources */,
+				RNFB00001A20260923000000C1 /* RNFBUtilsHelpers.swift in Sources */,
+				RNFB00001A20260923000000C3 /* RNFBUtilsModule+Foundation.m in Sources */,
+				RNFB00001A20260923000000D1 /* RNFBAppCustomAuthDomains.swift in Sources */,
+				RNFB00001A20260923000000E1 /* RNFBAppLogLevelMapper.swift in Sources */,
+				RNFB00001A20260923000000F1 /* RNFBAppInitializeOptionsMapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +283,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -231,6 +300,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -254,6 +324,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -265,6 +336,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
