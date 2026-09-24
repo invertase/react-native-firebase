@@ -238,6 +238,31 @@ public class RNFBFunctionsStreamingRegistryTest {
   }
 
   @Test
+  public void takeIf_whenPredicateTrue_removesAndReturns() throws Exception {
+    RNFBFunctionsStreamingRegistry registry = new RNFBFunctionsStreamingRegistry();
+    StreamingHolder holder = new StreamingHolder();
+    registry.put(9, holder);
+    assertSame(holder, registry.takeIf(9, h -> h == holder));
+    assertNull(registry.get(9));
+  }
+
+  @Test
+  public void takeIf_whenPredicateFalse_leavesMapping() throws Exception {
+    RNFBFunctionsStreamingRegistry registry = new RNFBFunctionsStreamingRegistry();
+    StreamingHolder holder = new StreamingHolder();
+    StreamingHolder other = new StreamingHolder();
+    registry.put(9, holder);
+    assertNull(registry.takeIf(9, h -> h == other));
+    assertSame(holder, registry.get(9));
+  }
+
+  @Test
+  public void takeIf_whenMissing_returnsNull() {
+    RNFBFunctionsStreamingRegistry registry = new RNFBFunctionsStreamingRegistry();
+    assertNull(registry.takeIf(99, h -> true));
+  }
+
+  @Test
   public void takeAndCancel_missingKey_isNoOp() {
     RNFBFunctionsStreamingRegistry registry = new RNFBFunctionsStreamingRegistry();
     registry.takeAndCancel(99);
