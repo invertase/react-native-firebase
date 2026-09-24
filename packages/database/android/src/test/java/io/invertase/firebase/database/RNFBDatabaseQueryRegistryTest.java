@@ -210,6 +210,42 @@ public class RNFBDatabaseQueryRegistryTest {
   }
 
   /**
+   * Outside idle check saw the original query; before identity-take, a concurrent take+put replaced
+   * the mapping — takeIf predicate fails and the replacement stays registered.
+   */
+  @Test
+  public void takeIfIdle_identityMismatch_leavesReplacement() throws Exception {
+    RNFBDatabaseQueryRegistry registry = new RNFBDatabaseQueryRegistry();
+    GatedFakeQuery original = new GatedFakeQuery();
+    original.listeners = false;
+    registry.put("q", original);
+
+    FakeQuery replacement = new FakeQuery();
+    replacement.listeners = true;
+
+    CountDownLatch takeDone = new CountDownLatch(1);
+    Thread takeThread =
+        new Thread(
+            () -> {
+              try {
+                registry.takeIfIdle("q");
+              } finally {
+                takeDone.countDown();
+              }
+            });
+    takeThread.start();
+
+    assertTrue(original.hasListenersEntered.await(5, TimeUnit.SECONDS));
+    assertSame(original, registry.take("q"));
+    registry.put("q", replacement);
+    original.allowHasListenersReturn.countDown();
+    assertTrue(takeDone.await(5, TimeUnit.SECONDS));
+
+    assertSame(replacement, registry.get("q"));
+    assertEquals(0, replacement.removeCount);
+  }
+
+  /**
    * After identity-take, listeners appear but a concurrent put claimed the slot — put-back fails;
    * orphan must clear listeners so SDK callbacks are not left outside the registry.
    */
@@ -430,5 +466,24 @@ public class RNFBDatabaseQueryRegistryTest {
     RNFBDatabaseQueryRegistry registry = new RNFBDatabaseQueryRegistry();
     registry.takeIfIdle("missing");
     assertNull(registry.get("missing"));
+  }
+
+  @Test
+  public void get_nullKey_returnsNull_noNpe() {
+    RNFBDatabaseQueryRegistry registry = new RNFBDatabaseQueryRegistry();
+    assertNull(registry.get(null));
+  }
+
+  @Test
+  public void take_nullKey_returnsNull_noNpe() {
+    RNFBDatabaseQueryRegistry registry = new RNFBDatabaseQueryRegistry();
+    assertNull(registry.take(null));
+  }
+
+  @Test
+  public void takeIfIdle_nullKey_isNoOp() {
+    RNFBDatabaseQueryRegistry registry = new RNFBDatabaseQueryRegistry();
+    registry.takeIfIdle(null);
+    assertNull(registry.get(null));
   }
 }
