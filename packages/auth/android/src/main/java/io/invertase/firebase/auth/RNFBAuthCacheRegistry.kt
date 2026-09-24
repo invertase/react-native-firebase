@@ -60,9 +60,16 @@ internal class RNFBAuthCacheRegistry<V> {
     map.putReplacing(key, value)
   }
 
-  fun get(key: String): V? = map.get(key)
+  /**
+   * Peek. Nullable [key] matches prior Java `HashMap.get(null)` → null (no NPE). Java callers such
+   * as `promiseRejectAuthException` may pass a null sessionId when the error map has none.
+   */
+  fun get(key: String?): V? = if (key == null) null else map.get(key)
 
-  fun take(key: String): V? = map.take(key)
+  /**
+   * Remove. Nullable [key] matches prior Java `HashMap.remove(null)` → null (no NPE).
+   */
+  fun take(key: String?): V? = if (key == null) null else map.take(key)
 
   fun clear() {
     map.takeAll()
