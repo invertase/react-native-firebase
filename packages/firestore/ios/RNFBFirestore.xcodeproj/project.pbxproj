@@ -16,6 +16,7 @@
 		8B9B6AF122CCE2B90062975D /* RNFBFirestoreQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B9B6AF022CCE2B90062975D /* RNFBFirestoreQuery.m */; };
 		8B9B6AF722D634AC0062975D /* RNFBFirestoreTransactionModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B9B6AF622D634AC0062975D /* RNFBFirestoreTransactionModule.mm */; };
 		RNFBFS000000000000000001 /* RNFBFirestoreListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFS000000000000000002 /* RNFBFirestoreListenerRegistryStorage.swift */; };
+		RNFBFS000000000000000003 /* RNFBFirestoreTransactionRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFS000000000000000004 /* RNFBFirestoreTransactionRegistryStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +50,7 @@
 		8B9B6AF522D634A00062975D /* RNFBFirestoreTransactionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreTransactionModule.h; sourceTree = "<group>"; };
 		8B9B6AF622D634AC0062975D /* RNFBFirestoreTransactionModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionModule.mm; sourceTree = "<group>"; };
 		RNFBFS000000000000000002 /* RNFBFirestoreListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFirestoreListenerRegistryStorage.swift; path = RNFBFirestore/RNFBFirestoreListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBFS000000000000000004 /* RNFBFirestoreTransactionRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFirestoreTransactionRegistryStorage.swift; path = RNFBFirestore/RNFBFirestoreTransactionRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 				8B9B6AF522D634A00062975D /* RNFBFirestoreTransactionModule.h */,
 				8B9B6AF622D634AC0062975D /* RNFBFirestoreTransactionModule.mm */,
 				RNFBFS000000000000000002 /* RNFBFirestoreListenerRegistryStorage.swift */,
+				RNFBFS000000000000000004 /* RNFBFirestoreTransactionRegistryStorage.swift */,
 			);
 			path = RNFBFirestore;
 			sourceTree = "<group>";
@@ -170,6 +173,7 @@
 				2744B98621F45429004F8E3F /* RNFBFirestoreModule.mm in Sources */,
 				8B9B6AE922CC9DBD0062975D /* RNFBFirestoreSerialize.m in Sources */,
 				RNFBFS000000000000000001 /* RNFBFirestoreListenerRegistryStorage.swift in Sources */,
+				RNFBFS000000000000000003 /* RNFBFirestoreTransactionRegistryStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

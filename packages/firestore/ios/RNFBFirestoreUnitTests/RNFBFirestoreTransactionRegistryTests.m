@@ -58,6 +58,13 @@
   XCTAssertEqual(first, [self.registry get:@1]);
 }
 
+- (void)testPut_occupiedId_nilErrorOut_returnsNo {
+  RNFBFirestoreTransactionAttempt *first = [self attempt];
+  XCTAssertTrue([self.registry put:@1 value:first error:nil]);
+  XCTAssertFalse([self.registry put:@1 value:[self attempt] error:nil]);
+  XCTAssertEqual(first, [self.registry get:@1]);
+}
+
 - (void)testPutOrSkip_uniqueId_putsValue {
   RNFBFirestoreTransactionAttempt *state = [self attempt];
   XCTAssertTrue([self.registry putOrSkip:@1 value:state]);
