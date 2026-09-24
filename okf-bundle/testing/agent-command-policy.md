@@ -143,6 +143,8 @@ Expect `12.1.0` (or higher) on both `spec.version` and `:tag`.
 
 When a Shell command returns with **no exit status** (e.g. "execution backend unavailable") under default sandbox permissions, retry the **same** canonical command with `required_permissions: ["all"]` — do **not** invent an alternate command because the sandboxed attempt failed to start.
 
+`yarn test-expo:ios:link` needs unrestricted network on the first attempt. Expo prebuild updates the CocoaPods repo from `cdn.cocoapods.org`, which returns 403 under the default agent sandbox. Request full network up front. A 403 is not a product failure.
+
 Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native builds, and host pre-flight probes that need real devices/simulators typically need unrestricted permissions on this host. A "no exit status" result on those commands is a sandbox artifact, not evidence the run failed or is incomplete — see [running e2e § running one iteration](running-e2e.md#running-one-iteration) for checking the tee log footer before concluding anything from a missing exit code. Startup-fail markers on the tee are immediate hard infra — [startup fail-fast poll](running-e2e.md#startup-fail-fast-poll) (`TELNET` / `emulator-16` / `ReactContext is null` / serial leftover `:12007`+`5554`; idle APP_STATUS is healthy; `currentStatus` / status-query timeout is latency, not a wave-kill).
 
 <a id="agent-shell-is-zsh"></a>
