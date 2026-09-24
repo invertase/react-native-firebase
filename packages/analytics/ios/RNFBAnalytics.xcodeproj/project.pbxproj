@@ -10,6 +10,7 @@
 		2744B98621F45429004F8E3F /* RNFBAnalyticsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAnalyticsModule.mm */; };
 		2744B99021F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */; };
 		2744B99121F45429004F8E3F /* RNFBAnalyticsJavascriptParamsCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2744B99221F45429004F8E3F /* RNFBAnalyticsJavascriptParamsCleaner.swift */; };
+		2744B99321F45429004F8E3F /* RNFBAnalyticsConsentSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2744B99421F45429004F8E3F /* RNFBAnalyticsConsentSettingsMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +31,7 @@
 		2744B98521F45429004F8E3F /* RNFBAnalyticsModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAnalyticsModule.mm; path = RNFBAnalytics/RNFBAnalyticsModule.mm; sourceTree = SOURCE_ROOT; };
 		2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAnalyticsLogTransaction.swift; path = RNFBAnalytics/RNFBAnalyticsLogTransaction.swift; sourceTree = SOURCE_ROOT; };
 		2744B99221F45429004F8E3F /* RNFBAnalyticsJavascriptParamsCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAnalyticsJavascriptParamsCleaner.swift; path = RNFBAnalytics/RNFBAnalyticsJavascriptParamsCleaner.swift; sourceTree = SOURCE_ROOT; };
+		2744B99421F45429004F8E3F /* RNFBAnalyticsConsentSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAnalyticsConsentSettingsMapper.swift; path = RNFBAnalytics/RNFBAnalyticsConsentSettingsMapper.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 				2744B98521F45429004F8E3F /* RNFBAnalyticsModule.mm */,
 				2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */,
 				2744B99221F45429004F8E3F /* RNFBAnalyticsJavascriptParamsCleaner.swift */,
+				2744B99421F45429004F8E3F /* RNFBAnalyticsConsentSettingsMapper.swift */,
 			);
 			path = RNFBAnalytics;
 			sourceTree = "<group>";
@@ -133,6 +136,7 @@
 				2744B98621F45429004F8E3F /* RNFBAnalyticsModule.mm in Sources */,
 				2744B99021F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift in Sources */,
 				2744B99121F45429004F8E3F /* RNFBAnalyticsJavascriptParamsCleaner.swift in Sources */,
+				2744B99321F45429004F8E3F /* RNFBAnalyticsConsentSettingsMapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
