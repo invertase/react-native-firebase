@@ -3,54 +3,83 @@ title: Android Setup
 description: 'Manual Android linking for @react-native-firebase/database: settings.gradle module include, build.gradle dependency, and registering ReactNativeFirebaseDatabasePackage in MainApplication.java.'
 ---
 
-# Android Manual Linking
+# Android Manual Installation
 
-The following steps are only required if your environment does not have access to React Native auto-linking.
+## Prerequisites
+
+These steps assume:
+
+- `@react-native-firebase/app` is already installed and linked (see [App Android installation](/install-android) or [Getting Started](/)).
+- `@react-native-firebase/database` is already listed in your app `package.json` (install with `npm install --save @react-native-firebase/database` or `yarn add @react-native-firebase/database`).
+- You are on React Native **0.59 or earlier** and must link the native module by hand. React Native 0.60+ projects use [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) and should follow [Realtime Database usage](/database/usage) instead.
+- Your Android app already meets the version pins below.
+
+## Version requirements
+
+{/* prettier-ignore */}
+| Requirement | Version |
+| --- | --- |
+| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| Expo (when using Expo) | `>= 47.0.0` |
+| Xcode (iOS builds) | `>= 26.2` |
+| Firebase Android SDK | `34.19.0` (default pin) |
+| Firebase Apple SDK | `12.19.0` (default pin) |
+| Android `minSdk` | `23` |
+| JDK | `>= 17` |
+
+From v26, every React Native Firebase package with a native bridge requires New Architecture. This release pins `firebase-android-sdk` `34.19.0` and firebase-ios-sdk `12.19.0`. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer.
+
+Apply the four steps below **in order**, then rebuild.
 
 ## 1. Update Gradle Settings
 
-Add the following to your projects `/android/settings.gradle` file:
+File: `/android/settings.gradle`. Do this before editing `android/app/build.gradle`.
 
 ```groovy
+// File: android/settings.gradle. Step 1 of 4 (before android/app/build.gradle dependency).
 include ':@react-native-firebase_database'
 project(':@react-native-firebase_database').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/database/android')
 ```
 
 ## 2. Update Gradle Dependencies
 
-Add the React Native Firebase module dependency to your `/android/app/build.gradle` file:
+File: `/android/app/build.gradle`. Add the module inside the existing `dependencies { }` block after step 1.
 
 ```groovy
-// ..
-dependencies {
-  // ..
-  implementation project(path: ":@react-native-firebase_database")
-}
+// File: android/app/build.gradle. Step 2 of 4 (after settings.gradle include; before MainApplication.java).
+// Add this line inside the existing dependencies { } block:
+implementation project(path: ":@react-native-firebase_database")
 ```
 
 ## 3. Add package to the Android Application
 
-Import and apply the React Native Firebase module package to your `/android/app/src/main/java/**/MainApplication.java` file:
-
-Import the package:
+File: `/android/app/src/main/java/**/MainApplication.java` (path under `java/` matches your `applicationId` package). Register the package after steps 1 and 2.
 
 ```java
+// File: android/app/src/main/java/**/MainApplication.java. Step 3 of 4 (after Gradle settings and dependency; rebuild next).
+import java.util.Arrays;
+import java.util.List;
+
+import com.facebook.react.ReactPackage;
+import com.facebook.react.shell.MainReactPackage;
 import io.invertase.firebase.database.ReactNativeFirebaseDatabasePackage;
-```
 
-Add the package to the registry:
-
-```java
+@Override
 protected List<ReactPackage> getPackages() {
   return Arrays.asList(
     new MainReactPackage(),
-    new ReactNativeFirebaseDatabasePackage(),
+    new ReactNativeFirebaseDatabasePackage()
+  );
+}
 ```
+
+If `getPackages()` already exists on the class, add only `new ReactNativeFirebaseDatabasePackage(),` to the returned list.
 
 ## 4. Rebuild the project
 
-Once the above steps have been completed, rebuild your Android project:
+After steps 1–3, rebuild Android from the project root:
 
 ```bash
+# Project root. Step 4 of 4 (after settings.gradle, app/build.gradle, and MainApplication.java).
 npx react-native run-android
 ```

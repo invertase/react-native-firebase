@@ -5,6 +5,12 @@ next: /database/presence-detection
 previous: /database/usage
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- `@react-native-firebase/database` installed: `npm install --save @react-native-firebase/database` or `yarn add @react-native-firebase/database`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Call `setPersistenceEnabled` as early as possible in app startup (before other Database reads/writes in that process), or enable persistence via `firebase.json` as shown on [Realtime Database usage](/database/usage#enabling-persistence).
+
 The Realtime Database provides support for offline environments. By default, data will be stored locally on your device
 and automatically managed by the Firebase SDKs.
 
@@ -20,6 +26,10 @@ import { AppRegistry } from 'react-native';
 import { getDatabase, setPersistenceEnabled } from '@react-native-firebase/database';
 
 setPersistenceEnabled(getDatabase(), true);
+
+function App() {
+  return null;
+}
 
 AppRegistry.registerComponent('app', () => App);
 ```
@@ -46,7 +56,7 @@ function App() {
     const db = getDatabase();
     const userAgeRef = ref(db, '/users/123/age');
 
-    onValue(userAgeRef, snapshot => {
+    const unsubscribe = onValue(userAgeRef, snapshot => {
       console.log('Users age: ', snapshot.val());
     });
 
@@ -54,7 +64,11 @@ function App() {
     set(userAgeRef, 32).then(() => {
       console.log('User updated whilst offline.');
     });
+
+    return () => unsubscribe();
   }, []);
+
+  return null;
 }
 ```
 

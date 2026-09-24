@@ -5,6 +5,13 @@ next: /in-app-messaging/usage
 previous: /database/offline-support
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- `@react-native-firebase/database` installed: `npm install --save @react-native-firebase/database` or `yarn add @react-native-firebase/database`, then rebuild native apps (`cd ios && pod install` on iOS).
+- `@react-native-firebase/auth` installed and a signed-in user available (`getAuth().currentUser`), because the examples below key presence by `uid`. Install Auth with `npm install --save @react-native-firebase/auth` or `yarn add @react-native-firebase/auth`, then rebuild native apps.
+- Enable Realtime Database in the [Firebase Console](https://console.firebase.google.com/) and allow authenticated clients to write the `/online/{uid}` path in your security rules.
+
 Realtime Database provides the ability to trigger events on the Firebase servers whenever a device is disconnected. This
 could be whenever a user has no access to a network or when they quit the app.
 
@@ -27,14 +34,23 @@ import { getDatabase, ref, set } from '@react-native-firebase/database';
 
 function App() {
   useEffect(() => {
-    // Assuming user is logged in
-    const userId = getAuth().currentUser.uid;
+    const user = getAuth().currentUser;
+    if (!user) {
+      console.log('No user is signed in; skip presence write');
+      return undefined;
+    }
+
+    const userId = user.uid;
     const db = getDatabase();
     const reference = ref(db, `/online/${userId}`);
 
-    // Set the /users/:userId value to true
+    // Set the /online/:userId value to true
     set(reference, true).then(() => console.log('Online presence set'));
+
+    return undefined;
   }, []);
+
+  return null;
 }
 ```
 
@@ -60,19 +76,28 @@ import { getDatabase, ref, set, onDisconnect } from '@react-native-firebase/data
 
 function App() {
   useEffect(() => {
-    // Assuming user is logged in
-    const userId = getAuth().currentUser.uid;
+    const user = getAuth().currentUser;
+    if (!user) {
+      console.log('No user is signed in; skip presence and onDisconnect setup');
+      return undefined;
+    }
+
+    const userId = user.uid;
     const db = getDatabase();
     const reference = ref(db, `/online/${userId}`);
 
-    // Set the /users/:userId value to true
+    // Set the /online/:userId value to true
     set(reference, true).then(() => console.log('Online presence set'));
 
     // Remove the node whenever the client disconnects
     onDisconnect(reference)
       .remove()
       .then(() => console.log('On disconnect function configured.'));
+
+    return undefined;
   }, []);
+
+  return null;
 }
 ```
 
