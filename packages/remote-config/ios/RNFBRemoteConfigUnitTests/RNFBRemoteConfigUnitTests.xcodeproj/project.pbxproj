@@ -12,6 +12,8 @@
 		A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */; };
 		A90000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* XCTest.framework */; };
 		A90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000001C /* RNFBHandleMapStorage.swift */; };
+		A9000000000000000000001D /* RNFBRemoteConfigListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000001E /* RNFBRemoteConfigListenerRegistryStorage.swift */; };
+		A9000000000000000000001F /* RNFBRemoteConfigListenerRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000020 /* RNFBRemoteConfigListenerRegistryStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +25,8 @@
 		A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRemoteConfigListenerRegistry.m; path = ../RNFBConfig/RNFBRemoteConfigListenerRegistry.m; sourceTree = SOURCE_ROOT; };
 		A90000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A9000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		A9000000000000000000001E /* RNFBRemoteConfigListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRemoteConfigListenerRegistryStorage.swift; path = ../RNFBConfig/RNFBRemoteConfigListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000020 /* RNFBRemoteConfigListenerRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBRemoteConfigListenerRegistryStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,9 +63,11 @@
 				A90000000000000000000007 /* RNFBHandleMap.h */,
 				A90000000000000000000008 /* RNFBHandleMap.m */,
 				A9000000000000000000001C /* RNFBHandleMapStorage.swift */,
+				A9000000000000000000001E /* RNFBRemoteConfigListenerRegistryStorage.swift */,
 				A90000000000000000000016 /* RNFBRemoteConfigListenerRegistry.h */,
 				A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */,
 				A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */,
+				A90000000000000000000020 /* RNFBRemoteConfigListenerRegistryStorageTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -125,8 +131,10 @@
 			files = (
 				A9000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				A90000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
+				A9000000000000000000001D /* RNFBRemoteConfigListenerRegistryStorage.swift in Sources */,
 				A9000000000000000000000B /* RNFBRemoteConfigListenerRegistry.m in Sources */,
 				A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */,
+				A9000000000000000000001F /* RNFBRemoteConfigListenerRegistryStorageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
