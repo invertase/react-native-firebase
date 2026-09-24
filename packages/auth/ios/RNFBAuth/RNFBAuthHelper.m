@@ -1849,76 +1849,9 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
 
   if (code == nil) code = @"unknown";
 
-  // TODO(Salakar): replace these with a AuthErrorCode_toJSErrorMessage map (like codes now does)
-  switch (error.code) {
-    case FIRAuthErrorCodeInvalidCustomToken:
-      message = @"The custom token format is incorrect. Please check the documentation.";
-      break;
-    case FIRAuthErrorCodeCustomTokenMismatch:
-      message = @"The custom token corresponds to a different audience.";
-      break;
-    case FIRAuthErrorCodeInvalidCredential:
-      message = @"The supplied auth credential is malformed or has expired.";
-      break;
-    case FIRAuthErrorCodeInvalidEmail:
-      message = @"The email address is badly formatted.";
-      break;
-    case FIRAuthErrorCodeWrongPassword:
-      message = @"The password is invalid or the user does not have a password.";
-      break;
-    case FIRAuthErrorCodeUserMismatch:
-      message = @"The supplied credentials do not correspond to the previously signed in user.";
-      break;
-    case FIRAuthErrorCodeRequiresRecentLogin:
-      message = @"This operation is sensitive and requires recent authentication. Log in again "
-                @"before retrying this request.";
-      break;
-    case FIRAuthErrorCodeSecondFactorRequired:
-      message = @"Please complete a second factor challenge to finish signing into this account.";
-      break;
-    case FIRAuthErrorCodeAccountExistsWithDifferentCredential:
-      message = @"An account already exists with the same email address but different sign-in "
-                @"credentials. Sign in using a provider associated with this email address.";
-      break;
-    case FIRAuthErrorCodeEmailAlreadyInUse:
-      message = @"The email address is already in use by another account.";
-      break;
-    case FIRAuthErrorCodeCredentialAlreadyInUse:
-      message = @"This credential is already associated with a different user account.";
-      break;
-    case FIRAuthErrorCodeUserDisabled:
-      message = @"The user account has been disabled by an administrator.";
-      break;
-    case FIRAuthErrorCodeUserTokenExpired:
-      message = @"The user's credential is no longer valid. The user must sign in again.";
-      break;
-    case FIRAuthErrorCodeUserNotFound:
-      message = @"There is no user record corresponding to this identifier. The user may have been "
-                @"deleted.";
-      break;
-    case FIRAuthErrorCodeInvalidUserToken:
-      message = @"The user's credential is no longer valid. The user must sign in again.";
-      break;
-    case FIRAuthErrorCodeWeakPassword:
-      message = @"The given password is invalid.";
-      break;
-    case FIRAuthErrorCodeOperationNotAllowed:
-      message = @"This operation is not allowed. You must enable this service in the console.";
-      break;
-    case FIRAuthErrorCodeNetworkError:
-      message = @"A network error has occurred, please try again.";
-      break;
-    case FIRAuthErrorCodeInternalError:
-      message = @"An internal error has occurred, please try again.";
-      break;
-    case FIRAuthErrorCodeInvalidPhoneNumber:
-      message = @"The format of the phone number provided is incorrect. "
-                @"Please enter the phone number in a format that can be parsed into E.164 format. "
-                @"E.164 phone numbers are written in the format [+][country code][subscriber "
-                @"number including area code].";
-      break;
-    default:
-      break;
+  NSString *overrideMessage = [RNFBAuthErrorCodeMapper jsErrorMessageForAuthErrorCode:error.code];
+  if (overrideMessage != nil) {
+    message = overrideMessage;
   }
 
   NSDictionary *authCredentialDict = nil;
