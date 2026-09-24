@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBConfigModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBConfigModule.mm */; };
 		RNFBRC000000000000000001 /* RNFBRemoteConfigListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBRC000000000000000002 /* RNFBRemoteConfigListenerRegistryStorage.swift */; };
+		RNFBRC000000000000000003 /* RNFBRemoteConfigEnumMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBRC000000000000000004 /* RNFBRemoteConfigEnumMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,7 @@
 		2744B98421F45429004F8E3F /* RNFBConfigModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBConfigModule.h; path = RNFBConfig/RNFBConfigModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBConfigModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBConfigModule.mm; path = RNFBConfig/RNFBConfigModule.mm; sourceTree = SOURCE_ROOT; };
 		RNFBRC000000000000000002 /* RNFBRemoteConfigListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRemoteConfigListenerRegistryStorage.swift; path = RNFBConfig/RNFBRemoteConfigListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBRC000000000000000004 /* RNFBRemoteConfigEnumMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBRemoteConfigEnumMapper.swift; path = RNFBConfig/RNFBRemoteConfigEnumMapper.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
 				RNFBRC000000000000000002 /* RNFBRemoteConfigListenerRegistryStorage.swift */,
+				RNFBRC000000000000000004 /* RNFBRemoteConfigEnumMapper.swift */,
 				2744B98421F45429004F8E3F /* RNFBConfigModule.h */,
 				2744B98521F45429004F8E3F /* RNFBConfigModule.mm */,
 			);
@@ -128,6 +131,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				RNFBRC000000000000000001 /* RNFBRemoteConfigListenerRegistryStorage.swift in Sources */,
+				RNFBRC000000000000000003 /* RNFBRemoteConfigEnumMapper.swift in Sources */,
 				2744B98621F45429004F8E3F /* RNFBConfigModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
