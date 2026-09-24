@@ -43,10 +43,7 @@ static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
 static __strong RNFBRemoteConfigListenerRegistry *configUpdateHandlers;
 
 static NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
-  return @{
-    @"value" : (id)value.stringValue ?: [NSNull null],
-    @"source" : [RNFBRemoteConfigEnumMapper stringForSource:(NSInteger)value.source]
-  };
+  return [RNFBRemoteConfigValueMapper dictionaryForValue:(id<RNFBRemoteConfigValueReading>)value];
 }
 
 static FIRApp *firebaseAppForName(NSString *appName) {
