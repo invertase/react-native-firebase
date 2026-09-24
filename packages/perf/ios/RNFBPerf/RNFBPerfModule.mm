@@ -48,6 +48,11 @@
 #error "RNFBPerfHttpMethodMapper Swift interface not found"
 #endif
 
+// File-scope aliases: TurboModule methods take `(double)id`, which shadows ObjC `id`
+// inside those methods so `id<Protocol>` / `(id)` casts do not parse in ObjC++.
+typedef id<RNFBPerfTraceApplying> RNFBPerfTraceApplyingRef;
+typedef id<RNFBPerfHttpMetricApplying> RNFBPerfHttpMetricApplyingRef;
+
 static RNFBPerfHandleRegistry *traces;
 static RNFBPerfHandleRegistry *httpMetrics;
 
@@ -166,9 +171,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   NSDictionary *metrics = (NSDictionary *)traceData.metrics();
   NSDictionary *attributes = (NSDictionary *)traceData.attributes();
 
-  // ObjC++ cannot name Swift @protocol types as id<…>. Cast via NSObject *: the
-  // TurboModule `(double)id` parameter shadows the ObjC `id` type in this scope.
-  NSObject *traceTarget = trace;
+  RNFBPerfTraceApplyingRef traceTarget = (RNFBPerfTraceApplyingRef)trace;
   [RNFBPerfTraceStopApplier applyMetrics:metrics attributes:attributes to:traceTarget];
 
   FIRTrace *expected = trace;
@@ -235,9 +238,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
                                       ? @((NSInteger)metricData.responsePayloadSize().value())
                                       : nil;
 
-  // ObjC++ cannot name Swift @protocol types as id<…>. Cast via NSObject *: the
-  // TurboModule `(double)id` parameter shadows the ObjC `id` type in this scope.
-  NSObject *httpMetricTarget = httpMetric;
+  RNFBPerfHttpMetricApplyingRef httpMetricTarget = (RNFBPerfHttpMetricApplyingRef)httpMetric;
   [RNFBPerfHttpMetricStopApplier applyAttributes:attributes
                                 httpResponseCode:httpResponseCode
                               requestPayloadSize:requestPayloadSize
