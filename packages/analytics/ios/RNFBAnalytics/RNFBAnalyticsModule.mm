@@ -40,15 +40,6 @@
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
 
-static void RNFBAnalyticsAddConsentStatus(NSMutableDictionary *consent,
-                                          NSDictionary *consentSettings, NSString *key,
-                                          FIRConsentType type) {
-  NSNumber *value = consentSettings[key];
-  if (value != nil) {
-    consent[type] = value.boolValue ? FIRConsentStatusGranted : FIRConsentStatusDenied;
-  }
-}
-
 @implementation RNFBAnalyticsModule
 #pragma mark -
 #pragma mark Module Setup
@@ -281,14 +272,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAnalytics)
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
   @try {
-    NSMutableDictionary *consent = [NSMutableDictionary dictionaryWithCapacity:4];
-    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"analytics_storage",
-                                  FIRConsentTypeAnalyticsStorage);
-    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"ad_storage", FIRConsentTypeAdStorage);
-    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"ad_user_data",
-                                  FIRConsentTypeAdUserData);
-    RNFBAnalyticsAddConsentStatus(consent, consentSettings, @"ad_personalization",
-                                  FIRConsentTypeAdPersonalization);
+    NSDictionary *consent =
+        [RNFBAnalyticsConsentSettingsMapper consentDictionaryFromSettings:consentSettings];
     [FIRAnalytics setConsent:consent];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
