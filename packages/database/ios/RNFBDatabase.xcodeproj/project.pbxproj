@@ -15,6 +15,7 @@
 		8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3C822A1258B00A16945 /* RNFBDatabaseQueryModule.mm */; };
 		8B9DD3CE22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm */; };
 		RNFBDB000000000000000001 /* RNFBDatabaseListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBDB000000000000000002 /* RNFBDatabaseListenerRegistryStorage.swift */; };
+		RNFBDB000000000000000003 /* RNFBDatabaseQueryRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBDB000000000000000004 /* RNFBDatabaseQueryRegistryStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +47,7 @@
 		8B9DD3CC22A43D0300A16945 /* RNFBDatabaseTransactionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBDatabaseTransactionModule.h; sourceTree = "<group>"; };
 		8B9DD3CD22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseTransactionModule.mm; sourceTree = "<group>"; };
 		RNFBDB000000000000000002 /* RNFBDatabaseListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBDatabaseListenerRegistryStorage.swift; path = RNFBDatabase/RNFBDatabaseListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBDB000000000000000004 /* RNFBDatabaseQueryRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBDatabaseQueryRegistryStorage.swift; path = RNFBDatabase/RNFBDatabaseQueryRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +75,7 @@
 				2744B98421F45429004F8E3F /* RNFBDatabaseModule.h */,
 				2744B98521F45429004F8E3F /* RNFBDatabaseModule.mm */,
 				RNFBDB000000000000000002 /* RNFBDatabaseListenerRegistryStorage.swift */,
+				RNFBDB000000000000000004 /* RNFBDatabaseQueryRegistryStorage.swift */,
 				8B9DD3B822A03C6700A16945 /* RNFBDatabaseQuery.h */,
 				8B9DD3B922A03C7900A16945 /* RNFBDatabaseQuery.m */,
 				8B9DD3BC22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.mm */,
@@ -157,6 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				RNFBDB000000000000000001 /* RNFBDatabaseListenerRegistryStorage.swift in Sources */,
+				RNFBDB000000000000000003 /* RNFBDatabaseQueryRegistryStorage.swift in Sources */,
 				8B9DD3BD22A05CEB00A16945 /* RNFBDatabaseOnDisconnectModule.mm in Sources */,
 				8B9DD3C922A1258B00A16945 /* RNFBDatabaseQueryModule.mm in Sources */,
 				8B9DD3CE22A43D1400A16945 /* RNFBDatabaseTransactionModule.mm in Sources */,
