@@ -1,6 +1,6 @@
 ---
 title: Multi-factor Auth
-description: 'TOTP and phone multi-factor authentication: enrollment and sign-in flows using MultiFactorUser, PhoneAuthProvider, and MultiFactorResolver.'
+description: 'TOTP and phone multi-factor authentication: enrollment and sign-in flows using multiFactor() (MultiFactor / MultiFactorUser), PhoneAuthProvider, and MultiFactorResolver.'
 next: /firestore/usage
 previous: /auth/oidc-auth
 ---
@@ -18,6 +18,8 @@ The [Firebase web TOTP MFA guide](https://firebase.google.com/docs/auth/web/totp
 Local manual test screens used in this repo: [auth-mfa-demonstrator.tsx](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-mfa-demonstrator.tsx).
 
 # Phone MFA
+
+`multiFactor(user)` returns the enrolled-factor surface for a signed-in user. React Native Firebase also exports the `MultiFactor` interface type for that enrolled-factors shape; firebase-js-sdk exposes enrollment through the `multiFactor()` helper without exporting `MultiFactor` at the package root.
 
 ## iOS Setup
 

@@ -1,6 +1,6 @@
 ---
 title: OpenID Connect Authentication
-description: 'OpenID Connect sign-in: obtaining ID tokens with react-native-app-auth and exchanging them for a Firebase credential via OIDCAuthProvider.credential().'
+description: 'OpenID Connect sign-in: obtaining ID tokens with react-native-app-auth and exchanging them via OAuthProvider (preferred) or deprecated OIDCAuthProvider / OIDCProvider helpers.'
 next: /auth/multi-factor-auth
 previous: /auth/email-link-auth
 ---
@@ -12,7 +12,7 @@ previous: /auth/email-link-auth
 - The same provider added under Firebase Console → Authentication → Sign-in method → **OpenID Connect** (Custom providers). Note the Provider ID shown as `oidc.<name>` (for example `oidc.azure_test` when the Name field is `azure_test`).
 - [`react-native-app-auth`](https://github.com/FormidableLabs/react-native-app-auth) installed and its native redirect URL setup completed (or another OpenID Connect client that returns an ID token).
 
-React Native Firebase supports integrating with OpenID Connect providers. Obtaining the ID token is left to your app because provider flows differ. After you have an ID token, exchange it with `OIDCAuthProvider.credential()` and `signInWithCredential()`.
+React Native Firebase supports integrating with OpenID Connect providers. Obtaining the ID token is left to your app because provider flows differ. Prefer `OAuthProvider('oidc.<suffix>')` with `signInWithCredential()`, matching the [Firebase web OpenID Connect guide](https://firebase.google.com/docs/auth/web/openid-connect). `OIDCAuthProvider` / `OIDCProvider` remain as deprecated RN Firebase helpers.
 
 Also handle provider logout / token revocation for your provider when the user signs out of Firebase, if your product requires it.
 
@@ -36,31 +36,47 @@ If the provider is not added in the Firebase project, `signInWithCredential` wil
 4. Under **Custom providers**, choose **OpenID Connect**.
 5. Enable OpenID Connect.
 6. Fill in **Name**, **Client ID**, **Issuer (URL)**, and **Client secret** to match your OpenID Connect provider.
-7. Note the **Provider ID** under the Name field. If Name is `azure_test`, Firebase shows `Provider ID: oidc.azure_test`. Pass `azure_test` (without the `oidc.` prefix) to `OIDCAuthProvider.credential()`.
+7. Note the **Provider ID** under the Name field. If Name is `azure_test`, Firebase shows `Provider ID: oidc.azure_test`. Pass `oidc.azure_test` to `OAuthProvider`, or pass `azure_test` (without the `oidc.` prefix) to the deprecated `OIDCAuthProvider.credential()` helper.
 
 ## 3. Authenticate in the app
 
-Complete [`react-native-app-auth` getting started](https://github.com/FormidableLabs/react-native-app-auth#getting-started) before running this snippet.
+Complete [`react-native-app-auth` getting started](https://github.com/FormidableLabs/react-native-app-auth#getting-started) before running the end-to-end snippet.
 
-Firebase credential exchange only (no community OpenID Connect client):
+Preferred credential exchange (matches firebase-js-sdk):
 
 ```js
-import { OIDCAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { OAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 
 async function signInWithOidcIdToken(providerId, idToken) {
+  // providerId is the full Firebase Provider ID, e.g. 'oidc.azure_test'.
+  const provider = new OAuthProvider(providerId);
+  const credential = provider.credential({ idToken });
+  return signInWithCredential(getAuth(), credential);
+}
+
+await signInWithOidcIdToken('oidc.azure_test', 'PROVIDER_ID_TOKEN');
+```
+
+Deprecated helpers (`OIDCAuthProvider` implements the deprecated `OIDCProvider` interface shape):
+
+```js
+// Warning: OIDCAuthProvider / OIDCProvider are deprecated. Prefer OAuthProvider('oidc.<suffix>').
+import { OIDCAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+async function signInWithOidcIdTokenDeprecated(providerId, idToken) {
   // providerId is the Firebase console Name value (e.g. 'azure_test'), not 'oidc.azure_test'.
   const credential = OIDCAuthProvider.credential(providerId, idToken);
   return signInWithCredential(getAuth(), credential);
 }
 
-await signInWithOidcIdToken('azure_test', 'PROVIDER_ID_TOKEN');
+await signInWithOidcIdTokenDeprecated('azure_test', 'PROVIDER_ID_TOKEN');
 ```
 
 End-to-end example with `react-native-app-auth` (install that package in your app; it is not a React Native Firebase workspace dependency, so this fence is excluded from `docs:tsc:check`):
 
 ```js
 // codeblock-ignore: react-native-app-auth is not a workspace dependency; types unavailable to docs:tsc:check
-import { OIDCAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { OAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { authorize } from 'react-native-app-auth';
 
 const config = {
@@ -73,7 +89,8 @@ const config = {
 
 async function signInWithOidcViaAppAuth() {
   const authState = await authorize(config);
-  const credential = OIDCAuthProvider.credential('azure_test', authState.idToken);
+  const provider = new OAuthProvider('oidc.azure_test');
+  const credential = provider.credential({ idToken: authState.idToken });
   return signInWithCredential(getAuth(), credential);
 }
 

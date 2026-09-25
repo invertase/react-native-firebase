@@ -1,6 +1,6 @@
 ---
 title: Social Authentication
-description: Federated sign-in with Apple, Facebook, Google (react-native-nitro-google-signin or @react-native-google-signin/google-signin), Microsoft and Twitter, plus linking multiple providers to one account.
+description: 'Federated sign-in with Apple (AppleAuthProvider / OAuthProvider, AppleFullPersonName, revokeToken), Facebook, Google, GitHub, Microsoft and Twitter, plus linking providers and removing a linked provider with unlink().'
 next: /auth/phone-auth
 previous: /auth/usage
 ---
@@ -9,7 +9,7 @@ previous: /auth/usage
 
 - `@react-native-firebase/app` and `@react-native-firebase/auth` installed and native config completed per [Authentication usage](/auth/usage) / [Getting Started](/). From v26, New Architecture is required for packages with a native bridge.
 - Enable each social provider you use under [Firebase Console → Authentication → Sign-in method](https://console.firebase.google.com/project/_/authentication/providers).
-- Install and configure the community OAuth library for that provider (Apple, Facebook, Google, Twitter). Those packages are not React Native Firebase workspace dependencies; end-to-end fences that import them use `// codeblock-ignore` so `docs:tsc:check` can skip missing types. Firebase-only credential fences type-check without that marker.
+- Install and configure the community OAuth library for that provider (Apple, Facebook, Google, GitHub, Twitter). Those packages are not React Native Firebase workspace dependencies; end-to-end fences that import them use `// codeblock-ignore` so `docs:tsc:check` can skip missing types. Firebase-only credential fences type-check without that marker.
 
 React Native Firebase supports integrating with social platforms. Obtaining the provider credential is left to your app because OAuth flows differ. After you have a provider token, exchange it with the matching `*AuthProvider.credential()` and `signInWithCredential()` (or Microsoft's redirect helpers).
 
@@ -21,17 +21,46 @@ Starting April 2020, apps that offer third-party login on the App Store must als
 
 Install [`react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) and complete its [prerequisites](https://github.com/invertase/react-native-apple-authentication#prerequisites-to-using-this-library) and [Apple Developer setup](https://github.com/invertase/react-native-apple-authentication/blob/main/docs/INITIAL_SETUP.md). Enable the **Apple** provider in the Firebase Console.
 
-Firebase credential exchange once you have an Apple identity token and nonce:
+Prefer `OAuthProvider('apple.com')` (matches firebase-js-sdk). `AppleAuthProvider` remains as a deprecated RN Firebase helper.
+
+Preferred credential exchange with optional `AppleFullPersonName` (Apple only shares the full name on first authorization; iOS forwards non-empty name fields so Firebase can store `displayName`; Android ignores `fullName`, call `updateProfile` after sign-in instead):
 
 ```js
-import { AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { OAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 
-async function signInWithAppleIdentityToken(identityToken, nonce) {
-  const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+async function signInWithAppleViaOAuthProvider(identityToken, nonce, fullName) {
+  const provider = new OAuthProvider('apple.com');
+  /** @type {import('@react-native-firebase/auth').AppleFullPersonName | undefined} */
+  const appleFullName = fullName;
+  const appleCredential = provider.credential({
+    idToken: identityToken,
+    rawNonce: nonce,
+    fullName: appleFullName,
+  });
   return signInWithCredential(getAuth(), appleCredential);
 }
 
-await signInWithAppleIdentityToken('APPLE_IDENTITY_TOKEN', 'NONCE');
+await signInWithAppleViaOAuthProvider('APPLE_IDENTITY_TOKEN', 'NONCE', {
+  givenName: 'Jane',
+  familyName: 'Appleseed',
+});
+```
+
+Deprecated helper (same runtime as above):
+
+```js
+// Warning: AppleAuthProvider is deprecated. Prefer OAuthProvider('apple.com').
+import { AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+async function signInWithAppleIdentityToken(identityToken, nonce, fullName) {
+  const appleCredential = AppleAuthProvider.credential(identityToken, nonce, fullName);
+  return signInWithCredential(getAuth(), appleCredential);
+}
+
+await signInWithAppleIdentityToken('APPLE_IDENTITY_TOKEN', 'NONCE', {
+  givenName: 'Jane',
+  familyName: 'Appleseed',
+});
 ```
 
 End-to-end UI + `react-native-apple-authentication` (install that package in your app):
@@ -40,7 +69,7 @@ End-to-end UI + `react-native-apple-authentication` (install that package in you
 // codeblock-ignore: @invertase/react-native-apple-authentication is not a workspace dependency; types unavailable to docs:tsc:check
 import React from 'react';
 import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication';
-import { AppleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+import { OAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 
 async function onAppleButtonPress() {
   const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -54,8 +83,13 @@ async function onAppleButtonPress() {
     throw new Error('Apple Sign-In failed - no identity token returned');
   }
 
-  const { identityToken, nonce } = appleAuthRequestResponse;
-  const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+  const { identityToken, nonce, fullName } = appleAuthRequestResponse;
+  const provider = new OAuthProvider('apple.com');
+  const appleCredential = provider.credential({
+    idToken: identityToken,
+    rawNonce: nonce,
+    fullName,
+  });
   return signInWithCredential(getAuth(), appleCredential);
 }
 
@@ -76,7 +110,7 @@ function AppleSignIn() {
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
-Apple also requires that the app revoke the Sign in with Apple token when the user deletes their account. Use `revokeToken`:
+Apple also requires that the app revoke the Sign in with Apple token when the user deletes their account. Use `revokeToken`. It is supported on iOS via the native `revokeTokenWithAuthorizationCode` bridge. On Android and Web the bridge resolves without performing revocation (no-op). It is distinct from web-only `revokeAccessToken`, which revokes OAuth access tokens on Web and always throws on React Native Firebase.
 
 ```js
 // codeblock-ignore: @invertase/react-native-apple-authentication is not a workspace dependency; types unavailable to docs:tsc:check
@@ -341,6 +375,23 @@ If you are testing this feature on an Android emulator, ensure the image is eith
 
 > If you need Credential Manager on Android without a paid license, use [`react-native-nitro-google-signin`](/auth/social-auth#react-native-nitro-google-signin) instead of upgrading to Universal Sign-In.
 
+## GitHub
+
+Obtain a GitHub OAuth access token with a community OAuth client (for example [`react-native-app-auth`](https://github.com/FormidableLabs/react-native-app-auth)), then exchange it with `GithubAuthProvider.credential` and `signInWithCredential`. Enable the **GitHub** provider in the Firebase Console and register the Firebase OAuth redirect URL on the GitHub app.
+
+```js
+import { GithubAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+
+async function signInWithGithubAccessToken(accessToken) {
+  const githubCredential = GithubAuthProvider.credential(accessToken);
+  return signInWithCredential(getAuth(), githubCredential);
+}
+
+await signInWithGithubAccessToken('GITHUB_ACCESS_TOKEN');
+```
+
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
+
 ## Microsoft
 
 Per the [Firebase documentation](https://firebase.google.com/docs/auth/android/microsoft-oauth#expandable-1), do not handle the Sign-In flow by obtaining an access token from a library such as `react-native-app-auth` and then calling `signInWithCredential`.
@@ -523,4 +574,23 @@ async function onGoogleLinkButtonPress() {
   const googleCredential = GoogleAuthProvider.credential(idToken);
   return linkWithCredential(user, googleCredential);
 }
+```
+
+## Remove a linked provider
+
+Pass a provider ID from `user.providerData` to `unlink`. After you call `unlink`, signing in again with that provider creates a **new** Firebase user rather than restoring the previous link.
+
+```js
+import { getAuth, unlink } from '@react-native-firebase/auth';
+
+async function unlinkGoogleFromCurrentUser() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  return unlink(user, 'google.com');
+}
+
+await unlinkGoogleFromCurrentUser();
 ```

@@ -1,6 +1,6 @@
 ---
 title: Authentication
-description: 'Core Authentication module: onAuthStateChanged() listener, persisting sign-in state, anonymous and email/password sign-in, backend token verification, and signing out.'
+description: 'Core Authentication: getAuth(), connectAuthEmulator(), listeners (onAuthStateChanged, onIdTokenChanged), anonymous and email/password sign-in, custom tokens, validatePassword(), manage users (updateProfile, email/password, delete, reauthenticate, unlink()), email action codes, setLanguageCode(), useUserAccessGroup(), getCustomAuthDomain(), getAdditionalUserInfo(), ID tokens, and signOut().'
 next: /auth/social-auth
 previous: /app-distribution/usage
 ---
@@ -37,7 +37,7 @@ you can follow the manual installation steps for [iOS](/auth/usage/installation/
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** Several firebase-js-sdk web helpers throw on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). `useUserAccessGroup` is **iOS only**. See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
+**Platform notes:** Several firebase-js-sdk web helpers throw on React Native (`setPersistence`, `getRedirectResult`, `revokeAccessToken`, `useDeviceLanguage`, `linkWithPhoneNumber`, `reauthenticateWithPhoneNumber`). React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `setLanguageCode`, `useUserAccessGroup`, `getCustomAuthDomain`, `verifyPhoneNumber`, and related phone-listener types. Each is explained in the section that uses it (phone helpers live on [Phone Authentication](/auth/phone-auth)). See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
 
 # What does it do
 
@@ -50,6 +50,28 @@ Firebase Authentication integrates tightly with other Firebase services, and it 
 2.0 and OpenID Connect, so it can be easily integrated with your custom backend.
 
 # Usage
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Auth package version string exported from `@react-native-firebase/auth`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/auth`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/auth';
+
+console.log('Auth package version:', SDK_VERSION);
+```
+
+## Emulator
+
+Use `connectAuthEmulator` before any Auth calls when talking to the Local Emulator Suite (for example the auth emulator started by `yarn tests:emulator:start-ci` in this repository, default port `9099`). Pass a full URL. On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use).
+
+```js
+import { Platform } from 'react-native';
+import { connectAuthEmulator, getAuth } from '@react-native-firebase/auth';
+
+const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+connectAuthEmulator(getAuth(), `http://${host}:9099`);
+```
 
 ## Listening to authentication state
 
@@ -110,6 +132,39 @@ signed-in and a [`User`](https://invertase.github.io/react-native-firebase/_reac
 The `onAuthStateChanged` method also returns an unsubscriber function which allows us to stop listening for events whenever
 the hook is no longer in use.
 
+`AuthListenerCallback` is the exported callback type for that listener (`(user: User | null) => void`). `CallbackOrObserver` is the exported union that also accepts an observer-shaped `{ next }` object. firebase-js-sdk keeps those shapes inline on `onAuthStateChanged` / `onIdTokenChanged` rather than exporting the aliases.
+
+```js
+import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
+
+/** @type {import('@react-native-firebase/auth').AuthListenerCallback} */
+function handleUser(user) {
+  console.log('uid', user?.uid ?? null);
+}
+
+/** @type {import('@react-native-firebase/auth').CallbackOrObserver<import('@react-native-firebase/auth').AuthListenerCallback>} */
+const observer = { next: handleUser };
+
+const unsubscribeFn = onAuthStateChanged(getAuth(), handleUser);
+const unsubscribeObserver = onAuthStateChanged(getAuth(), observer);
+unsubscribeFn();
+unsubscribeObserver();
+```
+
+### ID token changes
+
+`onIdTokenChanged` fires when the signed-in user's ID token changes (refresh, sign-in, sign-out). Use the same `AuthListenerCallback` / `CallbackOrObserver` shapes as `onAuthStateChanged`.
+
+```js
+import { getAuth, onIdTokenChanged } from '@react-native-firebase/auth';
+
+const unsubscribe = onIdTokenChanged(getAuth(), user => {
+  console.log('ID token user:', user?.uid ?? null);
+});
+
+unsubscribe();
+```
+
 ## Persisting authentication state
 
 On web based applications, the Firebase Web SDK takes advantage of features such as cookies and local storage to persist
@@ -149,6 +204,26 @@ with the [`User`](https://invertase.github.io/react-native-firebase/_react-nativ
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
 to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/auth.md#autherrorcodes).
 
+### Upgrade an anonymous account
+
+When an anonymous user later signs up, link email/password (or another provider credential) so they keep the same Firebase uid:
+
+```js
+import { EmailAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
+
+async function linkEmailPasswordToCurrentUser(email, password) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const credential = EmailAuthProvider.credential(email, password);
+  return linkWithCredential(user, credential);
+}
+
+await linkEmailPasswordToCurrentUser('jane.doe@example.com', 'SuperSecretPassword!');
+```
+
 ## Email/Password sign-in
 
 Email/password sign in is a common method for user sign in on applications. This requires the user to provide an email
@@ -180,18 +255,342 @@ createUserWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPa
   });
 ```
 
+Sign in an existing account:
+
+```js
+import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
+
+signInWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPassword!')
+  .then(userCredential => {
+    console.log('Signed in:', userCredential.user.email);
+  })
+  .catch(error => {
+    console.error(error.code, error.message);
+  });
+```
+
 Once successfully created and/or signed in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger an event
 with the [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html) details.
 
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
 to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/auth.md#autherrorcodes).
 
+### Validate a password against project policy
+
+When the project has a password policy configured in the Firebase Console (Authentication → Settings → Password policy), call `validatePassword` on the client before sign-up:
+
+```js
+import { getAuth, validatePassword } from '@react-native-firebase/auth';
+
+async function checkPasswordMeetsPolicy(password) {
+  const status = await validatePassword(getAuth(), password);
+  if (!status.isValid) {
+    console.log('Password does not meet project policy', status);
+  }
+  return status;
+}
+
+await checkPasswordMeetsPolicy('SuperSecretPassword!');
+```
+
+## Custom auth tokens
+
+If your backend mints Firebase custom tokens (Admin SDK), exchange them with `signInWithCustomToken`:
+
+```js
+import { getAuth, signInWithCustomToken } from '@react-native-firebase/auth';
+
+async function signInWithBackendCustomToken(customToken) {
+  return signInWithCustomToken(getAuth(), customToken);
+}
+
+await signInWithBackendCustomToken('CUSTOM_TOKEN_FROM_YOUR_SERVER');
+```
+
+## Manage users
+
+### Current user and profile
+
+Prefer an auth state observer for a stable current user. You can also read `getAuth().currentUser` (it may be `null` while Auth is still initializing).
+
+```js
+import { getAuth } from '@react-native-firebase/auth';
+
+function logCurrentUserProfile() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    console.log('No user is signed in');
+    return;
+  }
+
+  console.log({
+    displayName: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
+    emailVerified: user.emailVerified,
+    uid: user.uid,
+  });
+
+  user.providerData.forEach(profile => {
+    console.log(profile.providerId, profile.uid, profile.email);
+  });
+}
+
+logCurrentUserProfile();
+```
+
+### Update profile
+
+`updateProfile` accepts an `UpdateProfile` options object (`displayName` / `photoURL`). React Native Firebase exports that alias; firebase-js-sdk declares the shape inline on `updateProfile`.
+
+```js
+import { getAuth, updateProfile } from '@react-native-firebase/auth';
+
+async function updateSignedInUserProfile() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  /** @type {import('@react-native-firebase/auth').UpdateProfile} */
+  const profile = {
+    displayName: 'Jane Q. User',
+    photoURL: 'https://example.com/jane-q-user/profile.jpg',
+  };
+
+  await updateProfile(user, profile);
+}
+
+await updateSignedInUserProfile();
+```
+
+### Update email and send verification
+
+Some security-sensitive updates require a recent sign-in. See [Re-authenticate](/auth/usage#re-authenticate).
+
+```js
+import { getAuth, updateEmail, sendEmailVerification } from '@react-native-firebase/auth';
+
+async function changeEmailAndSendVerification(newEmail) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  await updateEmail(user, newEmail);
+  await sendEmailVerification(user);
+}
+
+await changeEmailAndSendVerification('user@example.com');
+```
+
+### Update password and send password reset
+
+```js
+import { getAuth, updatePassword, sendPasswordResetEmail } from '@react-native-firebase/auth';
+
+async function changePassword(newPassword) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  await updatePassword(user, newPassword);
+}
+
+async function sendResetEmail(email) {
+  await sendPasswordResetEmail(getAuth(), email);
+}
+
+await changePassword('AnotherSecurePassword!');
+await sendResetEmail('jane.doe@example.com');
+```
+
+### Reload, delete, and remove a provider
+
+```js
+import { getAuth, reload, deleteUser, unlink } from '@react-native-firebase/auth';
+
+async function reloadCurrentUser() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+  await reload(user);
+}
+
+async function deleteCurrentUser() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+  await deleteUser(user);
+}
+
+async function unlinkProvider(providerId) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+  return unlink(user, providerId);
+}
+
+await reloadCurrentUser();
+await unlinkProvider('google.com');
+await deleteCurrentUser();
+```
+
+### Re-authenticate
+
+```js
+import {
+  EmailAuthProvider,
+  getAuth,
+  reauthenticateWithCredential,
+} from '@react-native-firebase/auth';
+
+async function reauthenticateWithEmailPassword(email, password) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const credential = EmailAuthProvider.credential(email, password);
+  return reauthenticateWithCredential(user, credential);
+}
+
+await reauthenticateWithEmailPassword('jane.doe@example.com', 'SuperSecretPassword!');
+```
+
+## Language code
+
+`setLanguageCode` sets `auth.languageCode` for localized email templates and related Auth UI strings. It is an RN Firebase modular helper; firebase-js-sdk apps typically assign `auth.languageCode` or call `useDeviceLanguage()` (the latter throws on React Native).
+
+```js
+import { getAuth, setLanguageCode } from '@react-native-firebase/auth';
+
+await setLanguageCode(getAuth(), 'it');
+```
+
+## iOS user access group
+
+`useUserAccessGroup` shares Auth credentials across apps in an iOS App Group. **iOS native only**; calling it on other platforms can throw.
+
+```js
+import { Platform } from 'react-native';
+import { getAuth, useUserAccessGroup } from '@react-native-firebase/auth';
+
+async function shareAuthAcrossIosApps(appGroup) {
+  if (Platform.OS !== 'ios') {
+    throw new Error('useUserAccessGroup is iOS only');
+  }
+  await useUserAccessGroup(getAuth(), appGroup);
+}
+
+await shareAuthAcrossIosApps('group.com.example.shared');
+```
+
+## Custom auth domain
+
+`getCustomAuthDomain` returns the native custom auth domain configured for the Firebase app on iOS/Android. On Web the call rejects with `auth/unsupported`.
+
+```js
+import { getAuth, getCustomAuthDomain } from '@react-native-firebase/auth';
+
+async function logCustomAuthDomain() {
+  const domain = await getCustomAuthDomain(getAuth());
+  console.log('Custom auth domain:', domain);
+}
+
+await logCustomAuthDomain();
+```
+
+## Additional user info
+
+After a credential-based sign-in, `getAdditionalUserInfo` returns profile metadata. On React Native the result is typed as `AdditionalUserInfoNative`: firebase-js-sdk `AdditionalUserInfo` core fields plus an index signature for extra native bridge keys.
+
+```js
+import {
+  getAuth,
+  getAdditionalUserInfo,
+  signInWithEmailAndPassword,
+} from '@react-native-firebase/auth';
+
+async function signInAndLogAdditionalInfo(email, password) {
+  const userCredential = await signInWithEmailAndPassword(getAuth(), email, password);
+  // Typed as AdditionalUserInfoNative on React Native (core fields + native bridge keys).
+  const info = getAdditionalUserInfo(userCredential);
+  console.log(info?.isNewUser, info?.providerId, info?.profile);
+  return info;
+}
+
+await signInAndLogAdditionalInfo('jane.doe@example.com', 'SuperSecretPassword!');
+```
+
+## Auth errors
+
+Native bridge failures use `NativeFirebaseAuthError`, which extends the shared React Native Firebase error shape with `userInfo.authCredential` and `userInfo.resolver` (for multi-factor). Prefer checking `error.code` strings from the [Auth error reference](https://firebase.google.com/docs/reference/js/auth.md#autherrorcodes).
+
+```js
+import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
+
+async function signInCatchingNativeAuthError(email, password) {
+  try {
+    await signInWithEmailAndPassword(getAuth(), email, password);
+  } catch (error) {
+    /** @type {import('@react-native-firebase/auth').NativeFirebaseAuthError} */
+    const authError = error;
+    console.log(authError.code, authError.userInfo?.authCredential);
+  }
+}
+
+await signInCatchingNativeAuthError('jane.doe@example.com', 'wrong-password');
+```
+
+## Email action codes
+
+Custom email action handlers (password reset, email verification, recover email) parse `mode` / `oobCode` from the link, then call the modular helpers. `parseActionCodeURL` extracts those fields from a full link string when you handle the URL in-app.
+
+```js
+import {
+  applyActionCode,
+  checkActionCode,
+  confirmPasswordReset,
+  getAuth,
+  parseActionCodeURL,
+  verifyPasswordResetCode,
+} from '@react-native-firebase/auth';
+
+async function handlePasswordResetFromLink(link, newPassword) {
+  const parsed = parseActionCodeURL(link);
+  if (!parsed?.code) {
+    throw new Error('Not an Auth action link');
+  }
+
+  const email = await verifyPasswordResetCode(getAuth(), parsed.code);
+  await confirmPasswordReset(getAuth(), parsed.code, newPassword);
+  return email;
+}
+
+async function handleVerifyOrRecoverEmail(oobCode) {
+  const info = await checkActionCode(getAuth(), oobCode);
+  await applyActionCode(getAuth(), oobCode);
+  return info;
+}
+
+await handlePasswordResetFromLink(
+  'https://example.com/usermgmt?mode=resetPassword&oobCode=ABC123',
+  'AnotherSecurePassword!',
+);
+await handleVerifyOrRecoverEmail('ABC123');
+```
+
 ## Authenticate with backend server
 
 The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/User.html#getIdToken) method. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication.
 
 ```js
-import { getAuth } from '@react-native-firebase/auth';
+import { getAuth, getIdToken, getIdTokenResult } from '@react-native-firebase/auth';
 
 async function fetchBackendWithIdToken() {
   const user = getAuth().currentUser;
@@ -199,7 +598,10 @@ async function fetchBackendWithIdToken() {
     throw new Error('No user is signed in');
   }
 
-  const idToken = await user.getIdToken();
+  const idToken = await getIdToken(user);
+  const tokenResult = await getIdTokenResult(user);
+  console.log('claims', tokenResult.claims);
+
   const response = await fetch('https://example.com/api/protected', {
     headers: {
       Authorization: `Bearer ${idToken}`,
@@ -207,6 +609,8 @@ async function fetchBackendWithIdToken() {
   });
   return response.json();
 }
+
+await fetchBackendWithIdToken();
 ```
 
 ## Signing out
@@ -233,6 +637,9 @@ method:
 - [Facebook Sign-In](/auth/social-auth#facebook).
 - [Twitter Sign-In](/auth/social-auth#twitter).
 - [Google Sign-In](/auth/social-auth#google).
+- [GitHub Sign-In](/auth/social-auth#github).
 - [Microsoft Sign-In](/auth/social-auth#microsoft).
 - [Phone Number Sign-In](/auth/phone-auth).
 - [Email Link Sign-In](/auth/email-link-auth) (passwordless App Links / Universal Links).
+- [OpenID Connect](/auth/oidc-auth).
+- [Multi-factor Auth](/auth/multi-factor-auth).

@@ -1,6 +1,6 @@
 ---
 title: Phone Authentication
-description: 'Phone number authentication: iOS/Android reCAPTCHA and Play Integrity setup, Expo config, signInWithPhoneNumber(), test phone numbers, and MFA-style account creation.'
+description: 'Phone number authentication: iOS/Android reCAPTCHA and Play Integrity setup, Expo config, signInWithPhoneNumber(), verifyPhoneNumber() with PhoneAuthListener / PhoneAuthState / PhoneAuthSnapshot / PhoneAuthError, test phone numbers, and MFA-style account creation.'
 next: /auth/email-link-auth
 previous: /auth/social-auth
 ---
@@ -102,6 +102,61 @@ function PhoneSignIn() {
 ```
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
+
+# Native phone verification listener
+
+`verifyPhoneNumber` is an RN Firebase-specific iOS/Android helper. It returns a `PhoneAuthListener` (promise-like, with `.on('state_changed', …)`). Snapshot payloads use `PhoneAuthSnapshot` (`state`, `verificationId`, `code`, `error`). State string values match `PhoneAuthState` (`CODE_SENT` / `AUTO_VERIFY_TIMEOUT` / `AUTO_VERIFIED` / `ERROR`). Error callbacks receive `PhoneAuthError`. Other platforms should use `signInWithPhoneNumber` / `PhoneAuthProvider` via the firebase-js-sdk bridge instead.
+
+```js
+import {
+  PhoneAuthProvider,
+  PhoneAuthState,
+  getAuth,
+  signInWithCredential,
+  verifyPhoneNumber,
+} from '@react-native-firebase/auth';
+
+async function signInWithVerifyPhoneNumberListener(phoneNumber) {
+  const listener = verifyPhoneNumber(getAuth(), phoneNumber);
+
+  listener.on(
+    'state_changed',
+    snapshot => {
+      switch (snapshot.state) {
+        case PhoneAuthState.CODE_SENT:
+          console.log('SMS sent', snapshot.verificationId);
+          break;
+        case PhoneAuthState.AUTO_VERIFIED:
+          console.log('Instant verification', snapshot.code);
+          break;
+        case PhoneAuthState.AUTO_VERIFY_TIMEOUT:
+          console.log('Auto-retrieval timed out');
+          break;
+        case PhoneAuthState.ERROR:
+          console.log('Phone auth error state', snapshot.error);
+          break;
+        default:
+          break;
+      }
+    },
+    error => {
+      console.log('PhoneAuthError', error.code, error.message, error.verificationId);
+    },
+  );
+
+  const snapshot = await listener;
+  if (!snapshot.verificationId) {
+    throw new Error('No verificationId from verifyPhoneNumber');
+  }
+
+  // Prompt the user for the SMS code when auto-verification did not complete.
+  const code = snapshot.code ?? '123456';
+  const credential = PhoneAuthProvider.credential(snapshot.verificationId, code);
+  return signInWithCredential(getAuth(), credential);
+}
+
+await signInWithVerifyPhoneNumberListener('+1 650-555-3434');
+```
 
 # Testing
 
