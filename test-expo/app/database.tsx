@@ -107,13 +107,20 @@ export default function DatabaseScreen() {
     const unsubscribe = onValue(todosRef, (snapshot: DataSnapshot) => {
       const next: TodoItem[] = [];
       snapshot.forEach((childSnap: DataSnapshot) => {
-        const value = childSnap.val() as { title?: string; done?: boolean; priority?: unknown } | null;
+        const value = childSnap.val() as {
+          title?: string;
+          done?: boolean;
+          priority?: unknown;
+        } | null;
         next.push({
           key: childSnap.key ?? '',
           title: value?.title ?? '(untitled)',
           done: Boolean(value?.done),
           priority: (value?.priority as string | number | null | undefined) ?? null,
-          updatedAt: value && 'updatedAt' in value ? (value as { updatedAt?: unknown }).updatedAt : undefined,
+          updatedAt:
+            value && 'updatedAt' in value
+              ? (value as { updatedAt?: unknown }).updatedAt
+              : undefined,
         });
         return undefined;
       });
@@ -143,7 +150,11 @@ export default function DatabaseScreen() {
     try {
       ensureDatabaseEmulator();
       const value = await action();
-      showResult(typeof value === 'string' ? value : `${label}: ok${value === undefined ? '' : ` → ${JSON.stringify(value)}`}`);
+      showResult(
+        typeof value === 'string'
+          ? value
+          : `${label}: ok${value === undefined ? '' : ` → ${JSON.stringify(value)}`}`,
+      );
     } catch (e) {
       showError(e);
     }
@@ -163,8 +174,8 @@ export default function DatabaseScreen() {
   return (
     <ScreenChrome title="database" result={result} error={error}>
       <Text style={styles.hint}>
-        Connects to the Realtime Database emulator at {getDatabaseEmulatorHost()}:{DATABASE_EMULATOR_PORT}{' '}
-        (same host mapping as the e2e helpers; CI default port 9000).
+        Connects to the Realtime Database emulator at {getDatabaseEmulatorHost()}:
+        {DATABASE_EMULATOR_PORT} (same host mapping as the e2e helpers; CI default port 9000).
       </Text>
 
       <TextField
@@ -204,10 +215,7 @@ export default function DatabaseScreen() {
       />
       <AppButton title="goOffline" onPress={() => run('goOffline', () => goOffline(db))} />
       <AppButton title="goOnline" onPress={() => run('goOnline', () => goOnline(db))} />
-      <AppButton
-        title="ref"
-        onPress={() => run('ref', () => ref(db, TODOS_PATH).toString())}
-      />
+      <AppButton title="ref" onPress={() => run('ref', () => ref(db, TODOS_PATH).toString())} />
       <AppButton
         title="refFromURL"
         onPress={() =>
@@ -248,7 +256,9 @@ export default function DatabaseScreen() {
       </View>
       <AppButton
         title="setPersistenceCacheSizeBytes (2MB)"
-        onPress={() => run('setPersistenceCacheSizeBytes', () => setPersistenceCacheSizeBytes(db, 2_000_000))}
+        onPress={() =>
+          run('setPersistenceCacheSizeBytes', () => setPersistenceCacheSizeBytes(db, 2_000_000))
+        }
       />
       <View style={styles.row}>
         <Text style={styles.rowLabel}>keepSynced</Text>
@@ -329,7 +339,9 @@ export default function DatabaseScreen() {
       />
       <AppButton
         title="serverTimestamp (via update)"
-        onPress={() => run('serverTimestamp', () => update(selectedTodoRef(), { stamped: serverTimestamp() }))}
+        onPress={() =>
+          run('serverTimestamp', () => update(selectedTodoRef(), { stamped: serverTimestamp() }))
+        }
       />
       <AppButton
         title="increment (via update)"
@@ -339,12 +351,15 @@ export default function DatabaseScreen() {
         title="runTransaction (toggle done)"
         onPress={() =>
           run('runTransaction', async () => {
-            const resultTx = await runTransaction(selectedTodoRef(), (current: Record<string, unknown> | null) => {
-              if (!current || typeof current !== 'object') {
-                return { title: title.trim() || 'Untitled', done: true };
-              }
-              return { ...current, done: !current.done };
-            });
+            const resultTx = await runTransaction(
+              selectedTodoRef(),
+              (current: Record<string, unknown> | null) => {
+                if (!current || typeof current !== 'object') {
+                  return { title: title.trim() || 'Untitled', done: true };
+                }
+                return { ...current, done: !current.done };
+              },
+            );
             return resultTx.snapshot.val();
           })
         }
@@ -466,8 +481,8 @@ export default function DatabaseScreen() {
         }
       />
       <Text style={styles.warning}>
-        Warning: `off() is not implemented - use unsubscriber callback returned when subscribing`. Pressing
-        the button calls `off()` so you can see the thrown error.
+        Warning: `off() is not implemented - use unsubscriber callback returned when subscribing`.
+        Pressing the button calls `off()` so you can see the thrown error.
       </Text>
 
       <Text style={styles.section}>Queries</Text>
@@ -549,7 +564,9 @@ export default function DatabaseScreen() {
         title="startAfter"
         onPress={() =>
           run('startAfter', async () => {
-            const snapshot = await get(query(todosRef, orderByKey(), startAfter(selectedKey ?? '')));
+            const snapshot = await get(
+              query(todosRef, orderByKey(), startAfter(selectedKey ?? '')),
+            );
             return snapshot.val();
           })
         }
@@ -558,7 +575,9 @@ export default function DatabaseScreen() {
         title="endAt"
         onPress={() =>
           run('endAt', async () => {
-            const snapshot = await get(query(todosRef, orderByKey(), endAt(selectedKey ?? '\uffff')));
+            const snapshot = await get(
+              query(todosRef, orderByKey(), endAt(selectedKey ?? '\uffff')),
+            );
             return snapshot.val();
           })
         }
