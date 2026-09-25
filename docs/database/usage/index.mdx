@@ -1,6 +1,6 @@
 ---
 title: Realtime Database
-description: 'Realtime Database: getDatabase(), connectDatabaseEmulator(), ref()/refFromURL()/child(), reads (get, onValue, child listeners), queries, writes (set, update, push, remove, priorities), runTransaction(), increment()/serverTimestamp(), RN helpers (SDK_VERSION, persistence, logging, getServerTime, keepSynced), and secondary databases.'
+description: 'Realtime Database: getDatabase(), connectDatabaseEmulator(), ref()/refFromURL()/child(), reads (get, onValue with onlyOnce, child listeners), queries and sort-order rules, writes (set, update fan-out, push, remove, priorities), runTransaction(), increment()/serverTimestamp(), RN helpers (SDK_VERSION, persistence, logging, getServerTime, keepSynced), and secondary databases.'
 next: /database/offline-support
 previous: /crashlytics/crash-reports
 ---
@@ -135,6 +135,23 @@ const db = getDatabase();
 get(ref(db, '/users/123')).then(snapshot => {
   console.log('User data: ', snapshot.val());
 });
+```
+
+### Read once with `onValue`
+
+Prefer `get()` when you need a server round-trip. When you want a one-shot observer (for example to take a value from the local cache without keeping a live subscription), pass `{ onlyOnce: true }` as the last argument to `onValue`. The listener runs once, then detaches:
+
+```js
+import { getDatabase, ref, onValue } from '@react-native-firebase/database';
+
+const db = getDatabase();
+onValue(
+  ref(db, '/users/123'),
+  snapshot => {
+    console.log('User data:', snapshot.val());
+  },
+  { onlyOnce: true },
+);
 ```
 
 ### Realtime changes
@@ -296,6 +313,33 @@ async function readScoresOrderedByValue() {
 
 Please note that the ordering will not be respected if you do not use the `forEach` method provided on the `DataSnapshot`.
 
+#### How ordered results are sorted
+
+`orderByChild`, `orderByKey`, and `orderByValue` each apply fixed type-precedence rules. Walk ordered children with `snapshot.forEach` so iteration follows that order (plain `Object` key order does not).
+
+For `orderByChild` (and for `orderByValue`, using each child's own value instead of a named child), children sort in this sequence:
+
+1. Missing / `null` for the ordered field first.
+2. Then `false`, then `true` (ties broken by key string order).
+3. Then numbers ascending (ties by key).
+4. Then strings in ascending string order (ties by key).
+5. Then objects, sorted by key string order ascending.
+
+`orderByKey` is different: keys that parse as 32-bit integers come first (numeric ascending), then remaining string keys in ascending string order. So under `orderByKey`, sibling keys `"10"`, `"2"`, and `"a"` iterate as `2`, then `10`, then `a`:
+
+```js
+import { getDatabase, ref, query, orderByKey, get } from '@react-native-firebase/database';
+
+async function readChildrenOrderedByKey() {
+  const db = getDatabase();
+  const snapshot = await get(query(ref(db, 'items'), orderByKey()));
+  snapshot.forEach(child => {
+    console.log(child.key);
+    return undefined;
+  });
+}
+```
+
 #### Limiting
 
 You can limit the number of results returned from a query by using `limitToFirst` or `limitToLast` query constraints. For example, to limit to the
@@ -418,6 +462,37 @@ const db = getDatabase();
 update(ref(db, '/users/123'), {
   age: 32,
 }).then(() => console.log('Data updated.'));
+```
+
+#### Multi-path updates (fan-out)
+
+When the same record is stored under more than one path (for example a global posts list and a per-user posts list), write both locations in one `update` call. Keys in the updates map are paths relative to the reference you pass to `update`. Generate a shared key with `push(...).key`, then write the same payload to each path. The write is atomic: every path succeeds or none do.
+
+```js
+import { getDatabase, ref, child, push, update } from '@react-native-firebase/database';
+
+function writeNewPost(uid, username, picture, title, body) {
+  const db = getDatabase();
+  const postData = {
+    author: username,
+    uid: uid,
+    body: body,
+    title: title,
+    starCount: 0,
+    authorPic: picture,
+  };
+
+  const newPostKey = push(child(ref(db), 'posts')).key;
+  const updates = {};
+  updates[`/posts/${newPostKey}`] = postData;
+  updates[`/user-posts/${uid}/${newPostKey}`] = postData;
+
+  return update(ref(db), updates);
+}
+
+writeNewPost('user-1', 'Ada', 'https://example.com/ada.png', 'Hello', 'First post').then(() =>
+  console.log('Post written to posts and user-posts.'),
+);
 ```
 
 ### Pushing data

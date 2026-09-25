@@ -129,3 +129,5 @@ import { getDatabase, getServerTime } from '@react-native-firebase/database';
 const serverNow = getServerTime(getDatabase());
 console.log('Estimated server time:', serverNow.toISOString());
 ```
+
+To read the raw millisecond offset yourself with `onValue` on `/.info/serverTimeOffset`, see [Presence Detection](/database/presence-detection#server-time-offset).

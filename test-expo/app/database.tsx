@@ -353,6 +353,17 @@ export default function DatabaseScreen() {
         title="onDisconnect().remove()"
         onPress={() => run('onDisconnect', () => onDisconnect(selectedTodoRef()).remove())}
       />
+      <AppButton
+        title="onDisconnect().cancel()"
+        onPress={() =>
+          run('onDisconnect.cancel', async () => {
+            const disconnect = onDisconnect(selectedTodoRef());
+            await disconnect.set({ done: true });
+            await disconnect.cancel();
+            return 'cancelled';
+          })
+        }
+      />
 
       <Text style={styles.section}>Reads / listeners</Text>
       <AppButton
@@ -377,6 +388,22 @@ export default function DatabaseScreen() {
             });
             trackUnsubscribe(stop);
             return 'subscribed (call returned unsubscribe)';
+          })
+        }
+      />
+      <AppButton
+        title="onValue(.info/serverTimeOffset)"
+        onPress={() =>
+          run('serverTimeOffset', () => {
+            const offsetRef = ref(db, '.info/serverTimeOffset');
+            const stop = onValue(offsetRef, (snap: DataSnapshot) => {
+              const offset = snap.val() as number;
+              showResult(
+                `serverTimeOffset: ${offset}; estimated=${new Date(Date.now() + offset).toISOString()}`,
+              );
+            });
+            trackUnsubscribe(stop);
+            return 'subscribed to .info/serverTimeOffset';
           })
         }
       />
