@@ -13,6 +13,7 @@ buildscript {
 
     dependencies {
       classpath("com.android.tools.build:gradle:8.4.0")
+      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${project.findProperty('kotlinVersion') ?: '2.2.10'}")
     }
   }
 }
@@ -20,6 +21,8 @@ buildscript {
 plugins {
   id "io.invertase.gradle.build" version "1.5"
 }
+
+apply plugin: "org.jetbrains.kotlin.android"
 
 def appProject
 if (findProject(':@react-native-firebase_app')) {
@@ -99,6 +102,10 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-crashlytics"
   implementation "com.google.firebase:firebase-crashlytics-ndk"
+
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.14.1"
+  testImplementation "org.mockito:mockito-core:5.14.2"
 }
 
 ReactNative.shared.applyPackageVersion()
