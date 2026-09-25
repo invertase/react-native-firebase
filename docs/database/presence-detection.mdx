@@ -1,6 +1,6 @@
 ---
 title: Presence Detection
-description: 'Build a presence detection system with Realtime Database: writing an online value on connect and using onDisconnect().remove() for cleanup when a client disconnects.'
+description: 'Build a presence detection system with Realtime Database: .info/connected, onDisconnect(), serverTimestamp() last-online stamps, and writing an online value on connect.'
 next: /in-app-messaging/usage
 previous: /database/offline-support
 ---
@@ -102,3 +102,32 @@ function App() {
 ```
 
 The above code demonstrates a very simple but powerful way to track which users are currently online.
+
+# Connection state
+
+Listen to `/.info/connected` to know when this client is connected to the Realtime Database backend:
+
+```js
+import { getDatabase, ref, onValue } from '@react-native-firebase/database';
+
+const connectedRef = ref(getDatabase(), '.info/connected');
+const unsubscribe = onValue(connectedRef, snapshot => {
+  console.log(snapshot.val() === true ? 'connected' : 'not connected');
+});
+
+console.log('Connection listener attached:', typeof unsubscribe);
+```
+
+# Last online with server timestamps
+
+Combine `onDisconnect` with `serverTimestamp()` to record when a client was last seen:
+
+```js
+import { getDatabase, ref, onDisconnect, serverTimestamp } from '@react-native-firebase/database';
+
+async function trackLastOnline(userId) {
+  const lastOnlineRef = ref(getDatabase(), `/users/${userId}/lastOnline`);
+  await onDisconnect(lastOnlineRef).set(serverTimestamp());
+  console.log('onDisconnect lastOnline stamp configured.');
+}
+```

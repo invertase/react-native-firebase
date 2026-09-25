@@ -1,6 +1,6 @@
 ---
 title: Realtime Database
-description: 'Realtime Database: ref(), one-time reads with get(), realtime listeners (onValue, onChildAdded), queries (orderBy, limit), writes (set, update, push, remove), runTransaction(), security rules, and connecting to secondary databases.'
+description: 'Realtime Database: getDatabase(), connectDatabaseEmulator(), ref()/refFromURL()/child(), reads (get, onValue, child listeners), queries, writes (set, update, push, remove, priorities), runTransaction(), increment()/serverTimestamp(), RN helpers (SDK_VERSION, persistence, logging, getServerTime, keepSynced), and secondary databases.'
 next: /database/offline-support
 previous: /crashlytics/crash-reports
 ---
@@ -40,7 +40,7 @@ you can follow the manual installation steps for [iOS](/database/usage/installat
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `getServerTime`, `setPersistenceEnabled`, and `setPersistenceCacheSizeBytes` are RN-specific. `goOnline` / `goOffline` cross the async native bridge. `forceLongPolling` / `forceWebSockets` throw — transport is native-controlled.
+**Platform notes:** React Native Firebase also exports `SDK_VERSION`, `setPersistenceEnabled`, `setLoggingEnabled`, `setPersistenceCacheSizeBytes`, `getServerTime`, and `keepSynced`. Each is explained in the section that uses it (or on [Offline Support](/database/offline-support)).
 
 # What does it do
 
@@ -53,6 +53,28 @@ data sync and offline capabilities.
 To learn more, view the [Firebase Realtime Database documentation](https://firebase.google.com/docs/database?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=database).
 
 # Usage
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase package version string exported from `@react-native-firebase/database`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/database`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/database';
+
+console.log('Database package version:', SDK_VERSION);
+```
+
+## Emulator
+
+Use `connectDatabaseEmulator` before any Realtime Database reads or writes when talking to the Local Emulator Suite (for example the database emulator started by `yarn tests:emulator:start-ci` in this repository, default port `9000`). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use).
+
+```js
+import { Platform } from 'react-native';
+import { connectDatabaseEmulator, getDatabase } from '@react-native-firebase/database';
+
+const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+connectDatabaseEmulator(getDatabase(), host, 9000);
+```
 
 ## References
 
@@ -77,6 +99,22 @@ import { getDatabase, ref } from '@react-native-firebase/database';
 const db = getDatabase(undefined, 'https://<databaseName>.<region>.firebasedatabase.app/');
 const reference = ref(db, '/users/123');
 console.log('Secondary-region reference path:', reference.toString());
+```
+
+Create a child reference with `child`, or rebuild a reference from a full database URL with `refFromURL` (the URL must be on the same domain as the current database instance):
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { child, getDatabase, ref, refFromURL } from '@react-native-firebase/database';
+
+const db = getDatabase();
+const usersRef = ref(db, '/users');
+const userRef = child(usersRef, '123');
+console.log('Child path:', userRef.toString());
+
+const databaseURL = getApp().options.databaseURL;
+const fromUrl = refFromURL(db, `${databaseURL}/users/123`);
+console.log('refFromURL path:', fromUrl.toString());
 ```
 
 ## Reading data
@@ -168,6 +206,57 @@ function User({ userId }) {
 }
 ```
 
+The same pattern applies to `onChildChanged`, `onChildMoved`, and `onChildRemoved` when you only care about those list mutations:
+
+```js
+import {
+  getDatabase,
+  ref,
+  onChildChanged,
+  onChildMoved,
+  onChildRemoved,
+} from '@react-native-firebase/database';
+
+const db = getDatabase();
+const usersRef = ref(db, '/users');
+
+const stopChanged = onChildChanged(usersRef, snapshot => {
+  console.log('Child changed:', snapshot.key, snapshot.val());
+});
+const stopMoved = onChildMoved(usersRef, snapshot => {
+  console.log('Child moved:', snapshot.key);
+});
+const stopRemoved = onChildRemoved(usersRef, snapshot => {
+  console.log('Child removed:', snapshot.key, snapshot.val());
+});
+
+console.log('Child listeners attached:', typeof stopChanged, typeof stopMoved, typeof stopRemoved);
+```
+
+### Detach listeners
+
+Call the function returned from `onValue` / `onChild*` to unsubscribe. The modular `off()` helper is **not implemented** on React Native Firebase and always throws (`off() is not implemented - use unsubscriber callback returned when subscribing`).
+
+```js
+import { getDatabase, ref, onValue, off } from '@react-native-firebase/database';
+
+const db = getDatabase();
+const userRef = ref(db, '/users/123');
+const unsubscribe = onValue(userRef, snapshot => {
+  console.log('User data:', snapshot.val());
+});
+
+// Prefer the returned unsubscribe function:
+unsubscribe();
+
+try {
+  // WARNING: off() always throws on React Native Firebase.
+  off(userRef);
+} catch (error) {
+  console.log('Expected off() error:', error instanceof Error ? error.message : error);
+}
+```
+
 ### Querying
 
 Realtime Database provides support for basic querying of your data. When a reference node contains children, you can both
@@ -243,6 +332,41 @@ async function readUsersAgedTwentyOneOrOlder() {
 }
 ```
 
+You can also order by key or priority, and filter with `equalTo`, `startAfter`, `endAt`, or `endBefore`:
+
+```js
+import {
+  getDatabase,
+  ref,
+  query,
+  orderByChild,
+  orderByKey,
+  orderByPriority,
+  equalTo,
+  startAfter,
+  endAt,
+  endBefore,
+  get,
+} from '@react-native-firebase/database';
+
+async function readFilteredUsers() {
+  const db = getDatabase();
+  const usersRef = ref(db, 'users');
+
+  const byKey = await get(query(usersRef, orderByKey(), startAfter('user-100'), endAt('user-200')));
+  console.log('Users by key range:', byKey.val());
+
+  const before = await get(query(usersRef, orderByKey(), endBefore('user-050')));
+  console.log('Users before key:', before.val());
+
+  const byPriority = await get(query(usersRef, orderByPriority()));
+  console.log('Users by priority:', byPriority.val());
+
+  const admins = await get(query(usersRef, orderByChild('role'), equalTo('admin')));
+  console.log('Admin users:', admins.val());
+}
+```
+
 ## Writing data
 
 The [Firebase documentation](https://firebase.google.com/docs/database/web/structure-data) provides great examples on best
@@ -264,6 +388,23 @@ set(ref(db, '/users/123'), {
 ```
 
 If you set the value to `null`, Firebase will automatically class the node as removed, and delete it from the database.
+
+### Priorities
+
+Use `setPriority` or `setWithPriority` when ordering children with `orderByPriority`:
+
+```js
+import { getDatabase, ref, setPriority, setWithPriority } from '@react-native-firebase/database';
+
+async function writeWithPriority() {
+  const db = getDatabase();
+  const userRef = ref(db, '/users/123');
+
+  await setWithPriority(userRef, { name: 'Ada Lovelace', age: 31 }, 1);
+  await setPriority(userRef, 2);
+  console.log('Priority updated.');
+}
+```
 
 ### Updating data
 
@@ -303,6 +444,29 @@ set(newReference, {
 
 The keys generated are ordered to the current time, so the list of items returned from Firebase will be chronologically
 sorted by default.
+
+### Server values
+
+`serverTimestamp()` writes a server-generated timestamp sentinel. `increment(delta)` writes an atomic server-side increment sentinel (useful instead of a transaction when you only need to bump a counter):
+
+```js
+import {
+  getDatabase,
+  ref,
+  update,
+  serverTimestamp,
+  increment,
+} from '@react-native-firebase/database';
+
+async function stampAndIncrementLikes(postId) {
+  const db = getDatabase();
+  await update(ref(db, `/posts/${postId}`), {
+    lastUpdated: serverTimestamp(),
+    likeCount: increment(1),
+  });
+  console.log('Post stamped and likeCount incremented.');
+}
+```
 
 ## Removing data
 
@@ -366,6 +530,19 @@ onPostLike('567').then(transaction => {
 
 Once the transaction is successful, a promise is resolved with a value containing whether the operation committed on the remote
 database and the new [`DataSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/DataSnapshot.html) containing the new value.
+
+# Logging
+
+`setLoggingEnabled` toggles native Realtime Database debug logging for the given database instance. Prefer this over the web-style `enableLogging` helper: on React Native Firebase, `enableLogging()` always throws (`enableLogging() is not implemented`).
+
+```js
+import { getDatabase, setLoggingEnabled } from '@react-native-firebase/database';
+
+async function enableNativeDatabaseLogging() {
+  await setLoggingEnabled(getDatabase(), true);
+  console.log('Native database logging enabled.');
+}
+```
 
 # Securing data
 

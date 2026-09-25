@@ -1,6 +1,6 @@
 ---
 title: Offline Support
-description: 'Realtime Database offline persistence: setPersistenceEnabled(), the database_persistence_enabled firebase.json flag, goOffline()/goOnline(), and setPersistenceCacheSizeBytes().'
+description: 'Realtime Database offline persistence: setPersistenceEnabled(), the database_persistence_enabled firebase.json flag, goOffline()/goOnline(), setPersistenceCacheSizeBytes(), keepSynced(), and getServerTime().'
 next: /database/presence-detection
 previous: /database/usage
 ---
@@ -17,8 +17,8 @@ and automatically managed by the Firebase SDKs.
 # Enabling Persistence
 
 Persistence is disabled by default when using Realtime Database, however it
-[can be changed to be enabled by default in the firebase.json](/database/usage#enabling-persistence). You can also enable persistence programmatically, by calling `setPersistenceEnabled`
-as early on in your application code as possible:
+[can be changed to be enabled by default in the firebase.json](/database/usage#enabling-persistence). You can also enable persistence programmatically by calling `setPersistenceEnabled`
+as early on in your application code as possible. `setPersistenceEnabled` configures the native iOS/Android SDK persistence layer (there is no standalone modular firebase-js-sdk equivalent):
 
 ```js
 // index.js
@@ -97,10 +97,35 @@ goOnline(getDatabase());
 
 By default Firebase Database will use up to `10MB` of disk space to cache data. If the cache grows beyond this size,
 Firebase Database will start removing data that hasn't been recently used. If you find that your application caches too
-little or too much data, call `setPersistenceCacheSizeBytes` to update the default cache size:
+little or too much data, call `setPersistenceCacheSizeBytes` to update the default cache size. Valid range is 1 MB–100 MB; call it before other database references are used. Like `setPersistenceEnabled`, this is a React Native Firebase helper with no standalone modular firebase-js-sdk equivalent:
 
 ```js
 import { getDatabase, setPersistenceCacheSizeBytes } from '@react-native-firebase/database';
 
 setPersistenceCacheSizeBytes(getDatabase(), 2000000); // 2MB
+```
+
+# Keeping a location synced
+
+`keepSynced` tells the native SDK to keep a location (or query) synchronized even when there are no active listeners. The firebase-js-sdk modular package does not export a standalone `keepSynced()` helper.
+
+```js
+import { getDatabase, ref, keepSynced } from '@react-native-firebase/database';
+
+async function syncScores() {
+  const scoresRef = ref(getDatabase(), '/scores');
+  await keepSynced(scoresRef, true);
+  console.log('Scores location kept synced.');
+}
+```
+
+# Server time
+
+`getServerTime` returns a `Date` adjusted with the native `.info/serverTimeOffset` listener maintained by the database module. There is no equivalent modular helper in the firebase-js-sdk.
+
+```js
+import { getDatabase, getServerTime } from '@react-native-firebase/database';
+
+const serverNow = getServerTime(getDatabase());
+console.log('Estimated server time:', serverNow.toISOString());
 ```
