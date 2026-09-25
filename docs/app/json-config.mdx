@@ -1,6 +1,6 @@
 ---
 title: Firebase JSON Config
-description: Configure @react-native-firebase modules via firebase.json in the project root, including schema-driven editor IntelliSense.
+description: 'Configure @react-native-firebase modules via firebase.json in the project root, including schema-driven editor IntelliSense and runtime jsonGetAll().'
 next: /app/utils
 previous: /app/usage
 ---
@@ -28,5 +28,18 @@ Add the [Config Schema](https://github.com/invertase/react-native-firebase/blob/
 {
   "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json",
   "react-native": {}
+}
+```
+
+## Reading config at runtime
+
+After a native rebuild, call `jsonGetAll` to read the constants that were baked in from `firebase.json`. This is a React Native Firebase helper (no firebase-js-sdk modular equivalent):
+
+```js
+import { jsonGetAll } from '@react-native-firebase/app';
+
+async function logFirebaseJson() {
+  const constants = await jsonGetAll();
+  console.log('firebase.json constants:', constants);
 }
 ```

@@ -1,6 +1,6 @@
 ---
 title: Utils
-description: 'App module utilities: FilePath device directory constants, isRunningInTestLab() Test Lab detection, appVersion, and Android Play Services availability checks.'
+description: 'App module utilities via getUtils() and FilePath: device directory constants, isRunningInTestLab() Test Lab detection, appVersion, and Android Play Services availability checks.'
 next: /crashlytics/usage
 previous: /app/json-config
 ---
@@ -11,13 +11,13 @@ previous: /app/json-config
 - Test Lab example below also imports `@react-native-firebase/analytics`. Install that package only if you use Analytics: `npm install --save @react-native-firebase/analytics` or `yarn add @react-native-firebase/analytics`, then rebuild native apps.
 - Play Services helpers below are meaningful on Android. On iOS they resolve as available / no-ops.
 
-The App module exposes utility helpers for development and device environment checks. Import them from `@react-native-firebase/app`.
+The App module exposes utility helpers for development and device environment checks. Import `getUtils` and `FilePath` from `@react-native-firebase/app`. There is no firebase-js-sdk modular equivalent for these helpers.
 
 # File Paths
 
 When working with modules such as [Cloud Storage](/storage), you may need the device's
 directory paths. Rather than installing a separate module, the library provides static path
-constants.
+constants on `FilePath`.
 
 Import `FilePath` directly from the app package:
 
@@ -37,7 +37,7 @@ a wide variety of devices and device configurations, and see the results (includ
 and screenshots) in the Firebase console.
 
 It is useful to change the app's configuration when it is running in Test Lab, for example disabling Analytics
-data collection, via `isRunningInTestLab`.
+data collection, via `getUtils().isRunningInTestLab`.
 
 > Be aware, `isRunningInTestLab` is an Android-only property. On iOS it is always `false`.
 

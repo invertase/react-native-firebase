@@ -1,6 +1,6 @@
 ---
 title: Core/App
-description: 'Core App module: initializing and managing secondary Firebase app instances, plus its platform support and New Architecture requirements.'
+description: 'Core App module: default and secondary Firebase apps, logging, Async Storage wiring, native meta/preferences helpers, platform support, and New Architecture requirements.'
 next: /app/json-config
 previous: /storage/usage
 ---
@@ -9,13 +9,18 @@ previous: /storage/usage
 
 - `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
 - Secondary-app examples below also import `@react-native-firebase/auth` to show passing a secondary app into another module. Install that package only if you use Auth: `npm install --save @react-native-firebase/auth` or `yarn add @react-native-firebase/auth`, then rebuild native apps.
+- The Async Storage example uses `@react-native-async-storage/async-storage` (or any object with `getItem` / `setItem` / `removeItem`). Install it only if you call `setReactNativeAsyncStorage`: `npm install --save @react-native-async-storage/async-storage` or `yarn add @react-native-async-storage/async-storage`.
 
 Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/app.tsx
 
 The App module ships with `@react-native-firebase/app` and provides:
 
 - Creating [Secondary Firebase App Instances](/app/usage#secondary-apps).
+- [Logging](/app/usage#logging) via `setLogLevel` and `onLog`.
+- Wiring [Async Storage](/app/usage#async-storage) for Other/Hermes persistence paths.
+- Reading [native meta and preferences](/app/usage#native-meta-and-preferences).
 - Exposing [Utilities](/app/utils) to aid development.
+- Configuring modules via [`firebase.json`](/app/json-config).
 
 # Platform support and New Architecture
 
@@ -25,14 +30,52 @@ The App module ships with `@react-native-firebase/app` and provides:
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `initializeApp` is async on React Native (native bridge). `registerVersion` is **web only** and throws on native platforms.
+**Platform notes:** `initializeApp` returns a `Promise` on React Native (native bridge). `registerVersion` is **web only** and throws on native platforms. Device file paths and Play Services helpers live on [Utils](/app/utils) (`getUtils`, `FilePath`).
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase app package version string:
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/app';
+
+function logAppPackageVersion() {
+  console.log('App package version:', SDK_VERSION);
+}
+```
+
+# Default app
+
+On Android and iOS the default Firebase app is created from native config during launch. Call `getApp()` with no arguments to use it. `getApp(name)` throws if that named app has not been initialized:
+
+```js
+import { getApp } from '@react-native-firebase/app';
+
+function logDefaultApp() {
+  const app = getApp();
+  console.log('App name:', app.name);
+  console.log('Project ID:', app.options.projectId);
+  console.log('Data collection enabled:', app.automaticDataCollectionEnabled);
+}
+```
+
+`FirebaseApp.name` and `FirebaseApp.options` are read-only. `automaticDataCollectionEnabled` is settable (GDPR opt-in/out for startup data collection when module-specific overrides are absent):
+
+```js
+import { getApp } from '@react-native-firebase/app';
+
+function enableAutomaticDataCollection() {
+  const app = getApp();
+  app.automaticDataCollectionEnabled = true;
+}
+```
 
 # Secondary Apps
 
-Unlike the Firebase Web SDK, you do not need to manually call [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
+You do not need to call [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
 with your default project credentials on Android and iOS. The native Android and iOS SDKs connect to your Firebase project using
 the credentials provided during the [Getting Started](/) installation steps. The app module does provide support
-for manually initializing secondary Firebase app instances.
+for manually initializing secondary Firebase app instances (see also [Configure multiple projects](https://firebase.google.com/docs/projects/multiprojects)).
 
 The native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
@@ -183,5 +226,118 @@ import { deleteApp, getApp } from '@react-native-firebase/app';
 async function deleteSecondaryApp() {
   const secondaryApp = getApp('SECONDARY_APP');
   await deleteApp(secondaryApp);
+}
+```
+
+# Logging
+
+Use `setLogLevel` to control which Firebase SDK log messages are emitted. Accepted levels: `debug`, `verbose`, `info`, `warn`, `error`, `silent`. All levels at or above the current setting are captured (for example, `info` includes `warn` and `error`, but not `debug`):
+
+```js
+import { setLogLevel } from '@react-native-firebase/app';
+
+function enableDebugLogs() {
+  setLogLevel('debug');
+}
+```
+
+Use `onLog` to install a custom log handler. The callback receives a `LogCallbackParams` object (`level`, `message`, `args`, `type`). Optional `LogOptions` can constrain which levels call your handler. Pass `null` to clear the handler:
+
+```js
+import { onLog } from '@react-native-firebase/app';
+
+function installLogHandler() {
+  onLog(
+    ({ level, message, args, type }) => {
+      console.log(`[${type}] ${level}: ${message}`, ...args);
+    },
+    { level: 'warn' },
+  );
+}
+
+function clearLogHandler() {
+  onLog(null);
+}
+```
+
+`LogCallback`, `LogCallbackParams`, and `LogOptions` are TypeScript types exported from `@react-native-firebase/app` for typing `onLog` handlers.
+
+# Async Storage
+
+`setReactNativeAsyncStorage` wires an Async Storage implementation into the firebase-js-sdk Other/Hermes persistence path (Auth sessions, Analytics device IDs, and similar). Call it during bootstrap before you rely on that persistence. On Android and iOS native SDKs handle their own storage; this hook matters for Other platforms and shared JS persistence paths.
+
+```js
+import { setReactNativeAsyncStorage } from '@react-native-firebase/app';
+
+function configureAsyncStorage() {
+  // Replace with: import AsyncStorage from '@react-native-async-storage/async-storage'
+  // then pass AsyncStorage. The object must implement getItem / setItem / removeItem.
+  const asyncStorage = {
+    getItem: async _key => null,
+    setItem: async (_key, _value) => {},
+    removeItem: async _key => {},
+  };
+
+  setReactNativeAsyncStorage(asyncStorage);
+}
+```
+
+If you do not call `setReactNativeAsyncStorage`, an in-memory implementation is used and persisted JS state is lost on restart.
+
+# Native meta and preferences
+
+These helpers talk to React Native Firebase native stores (Info.plist / AndroidManifest meta, `firebase.json` constants, and shared preferences). They have no firebase-js-sdk modular equivalents.
+
+Read native meta (plist / manifest) entries with `metaGetAll`:
+
+```js
+import { metaGetAll } from '@react-native-firebase/app';
+
+async function logNativeMeta() {
+  const meta = await metaGetAll();
+  console.log('Native meta:', meta);
+}
+```
+
+Read the baked-in `firebase.json` constants with `jsonGetAll` (see also [Firebase JSON Config](/app/json-config)):
+
+```js
+import { jsonGetAll } from '@react-native-firebase/app';
+
+async function logFirebaseJsonConstants() {
+  const json = await jsonGetAll();
+  console.log('firebase.json constants:', json);
+}
+```
+
+Read, write, and clear React Native Firebase native preferences:
+
+```js
+import {
+  preferencesClearAll,
+  preferencesGetAll,
+  preferencesSetBool,
+  preferencesSetString,
+} from '@react-native-firebase/app';
+
+async function nativePreferencesExample() {
+  await preferencesSetBool('expo_demo_flag', true);
+  await preferencesSetString('expo_demo_label', 'invertase');
+  const all = await preferencesGetAll();
+  console.log('Preferences:', all);
+  await preferencesClearAll();
+}
+```
+
+# `registerVersion` (web only)
+
+`registerVersion` exists for API parity with the web SDK. On React Native Firebase it always throws; native SDK version registration is handled by the Firebase iOS and Android SDKs.
+
+```js
+import { registerVersion } from '@react-native-firebase/app';
+
+function tryRegisterVersion() {
+  // This call throws on React Native: "registerVersion is only supported on Web".
+  registerVersion('my-library', '1.0.0');
 }
 ```
