@@ -47,10 +47,12 @@ Pod::Spec.new do |s|
   # this declaration -- not Clang autolinking -- to populate OTHER_LDFLAGS), but with
   # use_frameworks! each pod is a standalone dynamic framework that must resolve its
   # own symbols at its own link step, so the missing declaration now surfaces as
-  # "Undefined symbols ... _OBJC_CLASS_$_PHAsset". iOS/macOS only -- PhotoKit doesn't
-  # exist on tvOS.
+  # "Undefined symbols ... _OBJC_CLASS_$_PHAsset". PhotoKit is available on
+  # tvOS 10+, and this .mm file emits no Clang autolink record, so tvOS needs
+  # the same explicit link.
   s.ios.frameworks = 'Photos'
   s.osx.frameworks = 'Photos'
+  s.tvos.frameworks = 'Photos'
 
   # React Native dependencies
   if defined?(install_modules_dependencies()) != nil
