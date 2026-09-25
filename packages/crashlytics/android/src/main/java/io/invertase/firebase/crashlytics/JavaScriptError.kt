@@ -1,4 +1,4 @@
-package io.invertase.firebase.crashlytics;
+package io.invertase.firebase.crashlytics
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -18,11 +18,9 @@ package io.invertase.firebase.crashlytics;
  */
 
 /**
- * This class is purely cosmetic - to indicate on the Crashlytics console that it's an
- * UnhandledPromiseRejection JS error rather than the generic `java.lang.Exception`.
+ * This class is purely cosmetic - to indicate on the Crashlytics console that it's a JavaScript
+ * error rather than the generic `java.lang.Exception`.
  */
-class UnhandledPromiseRejection extends Exception {
-  UnhandledPromiseRejection(String message) {
-    super(message);
-  }
-}
+internal class JavaScriptError(
+  message: String,
+) : Exception(message)
