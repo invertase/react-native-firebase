@@ -37,6 +37,7 @@ Single source for **which shell commands agents may run** in this repo. E2e `yar
 | JS lint (implementation / review gate)                          | `yarn lint:js`, `yarn lint:js --fix` (`eslint packages/* test-expo`; already includes `test-expo/`)                                                                                                                                                                                        | package-scoped `eslint`, `npx eslint`; a second `test-expo` lint entrypoint                                                                                   |
 | Android Java format / lint                                      | `yarn lint:android`                                                                                                                                                                                                                                                                        | `yarn google-java-format`, bare `google-java-format`, `google-java-format -i`, `npx google-java-format`, any invented format script                           |
 | Docs lint                                                       | `yarn lint:markdown`, `yarn lint:spellcheck` — when: [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting) (`docs/**` only; OKF-only skips)                                                                                                           | ad-hoc prettier/eslint on single files                                                                                                                        |
+| iOS native clang-format                                         | `yarn lint:ios:check`, `yarn lint:ios:fix` — when: [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting). Arm64 host: [gotcha](#ios-clang-format-npm-darwin-x64-only)                                                                                 | inventing format scripts; `npx clang-format` as a second entrypoint; treating `EBADARCH` as a product lint failure                                            |
 | iOS Ruby lint (RuboCop)                                         | `yarn lint:ruby` (also runs inside `yarn tests:ios:ruby`)                                                                                                                                                                                                                                  | ad-hoc `rubocop`, `bundle exec rubocop` without the Gemfile/config                                                                                            |
 | Android JVM unit tests                                          | `yarn tests:android:unit`                                                                                                                                                                                                                                                                  | ad-hoc `./gradlew …` outside this yarn script; bare Robolectric/JUnit IDE-only as the agent gate                                                              |
 | iOS XCTest unit tests (in-package)                              | `yarn tests:ios:unit`                                                                                                                                                                                                                                                                      | ad-hoc `xcodebuild test`; CocoaPods `test_spec`; `tests/ios/testingTests` host UI tests                                                                       |
@@ -168,6 +169,24 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
 - **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on `packages/*/android/src` and fails if the tree would change.
 
+### iOS clang-format (npm is darwin_x64 only)
+
+<a id="ios-clang-format-npm-darwin-x64-only"></a>
+
+- Root `clang-format` (npm) ships a **darwin_x64** binary only. On **arm64** macOS, `yarn lint:ios:check` / `yarn lint:ios:fix` exit **`EBADARCH`** before any file is checked.
+- That is a **host toolchain** miss, not a product format failure. Do not treat it as a lint regression in the diff.
+- **Workaround (arm64 only):** Homebrew arm64 `clang-format` with the same Google style flags on **touched** files, e.g. `clang-format --style=Google -n -Werror <paths>` (check) or `-i` (fix). Do not invent a second yarn format script or change style away from Google.
+- **Canonical when the npm binary runs** (x64 / CI): `yarn lint:ios:check` / `yarn lint:ios:fix` — [validation checklist § lint and formatting](validation-checklist.md#lint-and-formatting).
+
+### Detox `CC=clang` / `LD=clang` breaks iOS SPM Swift link (Xcode 26)
+
+<a id="detox-cc-clang-spm-swift-link-xcode-26"></a>
+
+- `tests/.detoxrc.js` `ios.debug` / `ios.release` build lines pass `CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++` into `xcodebuild`.
+- On **Xcode 26**, `yarn tests:ios:build` then fails Swift SPM **library-emit** with `unknown -sdk` / `-Xclang-linker` (host `clang` is not Apple's driver for that path).
+- **Distinct** from the Expo documented-path closer: `.github/workflows/scripts/test-expo-ios-link.sh` prefers a simulator **destination** over bare `-sdk iphonesimulator` for arch selection. That script does **not** set `CC`/`LD`, and this Detox failure is **not** that gotcha.
+- Do **not** invent an alternate Detox/`xcodebuild` invocation, swap in `yarn test-expo:ios:link`, or disable SPM to “prove” the build. Canonical remain `yarn tests:ios:build` after [pod install + fmt gate](#install-patch-fmt-gate-blocking). Product/config fix belongs in Detox build env, not ad-hoc agent commands.
+
 ### Android build / unit / Jacoco
 
 - **Do not** invent `cd tests && yarn install`, then bare `./gradlew` from an arbitrary cwd.
@@ -245,7 +264,8 @@ Expo example + documented-path iOS link (not Detox, build-only): yarn test-expo:
 RN CLI prebuilt RNCore iOS build (not Detox): yarn test-rn-bare:ios:build ONLY — never ad-hoc pod / xcodebuild / cd test-rn-bare; never tests/ e2e; never yarn test-expo:ios:link as that closer. Ad-hoc pod / xcodebuild stay never-use.
 Never react-native init / npx @react-native-community/cli init — @react-native-community/template is not installed by root yarn; one-shot pin + copy ios/ + JS, then remove pin — #react-native-community-template-checked-in-rn-cli-ios.
 Never: yarn workspace prepare, yarn jet, npx jet, cd packages/* && yarn prepare/build for diagnostics.
-Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY.
+Never invent format/install: yarn google-java-format, bare/npx google-java-format, npm install, yarn install in tests/ alone — use root yarn first; Java format = yarn lint:android ONLY. iOS clang-format: yarn lint:ios:check / :fix when npm binary runs; arm64 EBADARCH → Homebrew arm64 clang-format Google style on touched files only — #ios-clang-format-npm-darwin-x64-only.
+Detox iOS :build Xcode 26 Swift SPM library-emit unknown -sdk / -Xclang-linker: tests/.detoxrc.js CC=clang LD=clang (not the test-expo-ios-link.sh destination gotcha) — #detox-cc-clang-spm-swift-link-xcode-26.
 Never invent Android Gradle: ad-hoc ./gradlew outside yarn tests:android:unit / :build / :post-e2e-coverage / :test:jacoco-report; bare detox/jet/metro.
 Prepare/install: yarn or yarn lerna:prepare must exit 0 before ANY other command — never parallelize with e2e/Metro/build.
 Before native :build: root yarn exit 0 + verify tests/node_modules/react-native/third-party-podspecs/fmt.podspec (and tests-macos copy when building macOS) ≥ 12.1.0 — okf-bundle/testing/agent-command-policy.md#install-patch-fmt-gate-blocking. Before iOS build on a clean checkout: root yarn, then yarn tests:ios:pod:install exit 0. If fmt < 12.1.0: STOP and re-run yarn; never invent Podfile/FMT_USE_CONSTEVAL/c++17 fmt hacks.
@@ -267,6 +287,8 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 | Expo example + documented-path iOS **link** (not Detox, build-only) | This file — registry rows `yarn test-expo:ios:link` and `yarn tsc:compile:test-expo`; JS lint is `yarn lint:js`; [autolink exclude gotcha](#expo-router-autolink-exclude-expo-ui); app index [packages/app](../packages/app/index.md); native `RNFB*` discovery [iOS SPM § Expo precompiled linkage repair](../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair) |
 | RN CLI prebuilt RNCore iOS **build** (not Detox) | This file — registry row `yarn test-rn-bare:ios:build`; app index [packages/app](../packages/app/index.md)                                         |
 | Install / patch / fmt / iOS Pods before `:build` | [§ install / patch / fmt gate](#install-patch-fmt-gate-blocking)                                                                                 |
+| iOS clang-format arm64 (`EBADARCH`)              | [§ iOS clang-format](#ios-clang-format-npm-darwin-x64-only)                                                                                       |
+| Detox `CC=clang` / Xcode 26 SPM Swift link       | [§ Detox CC=clang](#detox-cc-clang-spm-swift-link-xcode-26) (not `test-expo-ios-link.sh`)                                                         |
 | Test-app RN / CLI pins (mobile + Expo/RN CLI fixtures share the mobile line; macOS separate) | [test-app-dependency-pins.md](test-app-dependency-pins.md)                          |
 | Validation sequence                           | [validation-checklist.md](validation-checklist.md)                                                                                                  |
 | Android JVM unit ADR                          | [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1)                                                                              |
