@@ -318,7 +318,7 @@ export function setWithPriority(
 }
 
 export function get(queryRef: Query): Promise<DataSnapshot> {
-  return (queryRef as QueryWithSubscriptionMethodsInternal).once('value');
+  return (queryRef as QueryWithSubscriptionMethodsInternal)._get();
 }
 
 export function off(

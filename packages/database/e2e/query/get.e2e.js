@@ -50,6 +50,58 @@ describe('get()', function () {
     );
   });
 
+  it('returns only the child when a parent location is being listened to', async function () {
+    // firebase/firebase-ios-sdk#12168: getData under a covering listener returns the parent node.
+    const { getDatabase, ref, child, get, onValue } = databaseModular;
+
+    const parentRef = ref(getDatabase(), `${TEST_PATH}/types`);
+    let unsubscribe;
+    await new Promise(resolve => {
+      unsubscribe = onValue(parentRef, resolve);
+    });
+
+    try {
+      const snapshot = await get(child(parentRef, 'string'));
+      snapshot.val().should.eql(CONTENT.TYPES.string);
+    } finally {
+      unsubscribe();
+    }
+  });
+
+  it('returns the same children as once() for a query', async function () {
+    const { getDatabase, ref, get, query, orderByKey, limitToFirst } = databaseModular;
+
+    const queryRef = query(ref(getDatabase(), `${TEST_PATH}/types`), orderByKey(), limitToFirst(2));
+    const snapshot = await get(queryRef);
+
+    Object.keys(snapshot.val()).should.eql(Object.keys(CONTENT.TYPES).sort().slice(0, 2));
+  });
+
+  it('waits for the connection while offline, like once()', async function () {
+    this.timeout(20000);
+    const { getDatabase, ref, child, get, goOffline, goOnline } = databaseModular;
+
+    const db = getDatabase();
+    goOffline(db);
+    try {
+      const pending = get(child(ref(db, `${TEST_PATH}/types`), 'number'));
+      // Longer than the native get's connect timeout (3s on iOS and Android).
+      await Utils.sleep(5000);
+      goOnline(db);
+      const snapshot = await pending;
+      snapshot.val().should.eql(CONTENT.TYPES.number);
+    } finally {
+      goOnline(db);
+    }
+  });
+
+  it('reads client-local .info paths without the server', async function () {
+    const { getDatabase, ref, get } = databaseModular;
+
+    const snapshot = await get(ref(getDatabase(), '.info/serverTimeOffset'));
+    snapshot.val().should.be.a.Number();
+  });
+
   it('errors if permission denied', async function () {
     const { getDatabase, ref, get } = databaseModular;
 
