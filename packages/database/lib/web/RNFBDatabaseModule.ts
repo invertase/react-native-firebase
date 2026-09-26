@@ -225,6 +225,19 @@ const databaseFallbackModule: Record<string, unknown> = {
     });
   },
 
+  get(
+    appName: string,
+    dbURL: string,
+    path: string,
+    modifiers: DatabaseQueryModifier[],
+  ): Promise<unknown> {
+    return guard(async () => {
+      const db = getCachedDatabaseInstance(appName, dbURL);
+      const queryRef = getQueryInstance(ref(db, path), modifiers);
+      return snapshotToObject(await get(queryRef));
+    });
+  },
+
   once(
     appName: string,
     dbURL: string,

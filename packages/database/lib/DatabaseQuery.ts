@@ -18,6 +18,7 @@
 import {
   isBoolean,
   isFunction,
+  isIOS,
   isNull,
   isNumber,
   isObject,
@@ -44,6 +45,9 @@ const eventTypes = [
   'child_moved',
   'child_removed',
 ] as const;
+
+/** `.info/*` is client-local metadata that only the listener path serves. */
+const INFO_PATH = /^\/?\.info(\/|$)/;
 
 type DatabaseReferenceConstructor = new (
   database: DatabaseInternal,
@@ -314,6 +318,41 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     listeners += 1;
 
     return callback as (a: DataSnapshot | null, b?: string | null) => void;
+  }
+
+  /**
+   * One-shot read backing modular `get()`: on Android and web, the SDKs' single request/response
+   * read (`Query.get()`, web `get()`) instead of the listen -> data -> unlisten exchange
+   * `once('value')` performs. On iOS the native `get` is still the single-event observer; see
+   * `RNFBDatabaseQueryHelper get:`.
+   *
+   * Callers keep `once('value')` semantics, with one exception noted below:
+   * - A permission denial passes straight through: Android maps the reply to the code and message
+   *   `once` gives, and iOS failures already are `once`'s. Any other Android or web failure retries
+   *   as `once('value')`, which reports the SDK's own error code.
+   * - Queries (any orderBy / limit / range modifier) use `once('value')`: `get()` parity for
+   *   unindexed queries is unverified.
+   * - `.info/*` paths use `once('value')`: the one-shot reads go to the server tree, not the
+   *   client-local `.info` tree.
+   *
+   * The exception: the one-shot read resolves with the server's reply as it was when the read was
+   * sent, where `once('value')` layered this client's pending writes over it. A local write made to
+   * an overlapping path while a `get()` is in flight is therefore not in its result, as with the
+   * web SDK's `get()`.
+   */
+  _get(): Promise<DataSnapshot> {
+    const modifiers = this._modifiers._copy().toArray();
+    if (modifiers.length > 0 || INFO_PATH.test(this.path)) {
+      return this.once('value');
+    }
+
+    return this._database.native.get(this.path, modifiers).then(
+      result => new DatabaseDataSnapshot(this.ref, result),
+      error =>
+        isIOS || (error as { code?: string })?.code === 'database/permission-denied'
+          ? Promise.reject(error)
+          : this.once('value'),
+    );
   }
 
   once(

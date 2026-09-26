@@ -76,6 +76,20 @@ RCT_EXPORT_MODULE(NativeRNFBTurboDatabaseQuery);
                          reject:reject];
 }
 
+- (void)get:(NSString *)app
+        dbURL:(NSString *)dbURL
+         path:(NSString *)path
+    modifiers:(NSArray *)modifiers
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject {
+  [RNFBDatabaseQueryHelper get:app
+                         dbURL:dbURL
+                          path:path
+                     modifiers:modifiers
+                       resolve:resolve
+                        reject:reject];
+}
+
 - (void)on:(NSString *)app dbURL:(NSString *)dbURL props:(NSDictionary *)props {
   [RNFBDatabaseQueryHelper on:app dbURL:dbURL props:props];
 }
