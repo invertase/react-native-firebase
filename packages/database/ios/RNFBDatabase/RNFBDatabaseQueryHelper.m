@@ -191,6 +191,26 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
   [self addOnceEventListener:databaseQuery eventType:eventType resolve:resolve reject:reject];
 }
 
++ (void)get:(NSString *)app
+        dbURL:(NSString *)dbURL
+         path:(NSString *)path
+    modifiers:(NSArray *)modifiers
+      resolve:(RCTPromiseResolveBlock)resolve
+       reject:(RCTPromiseRejectBlock)reject {
+  // A single-event observer, not getDataWithCompletionBlock:. FirebaseDatabase's getData
+  // returns a covering ancestor's whole node for a child path (firebase/firebase-ios-sdk#12168),
+  // never completes a get in flight when the socket drops (firebase/firebase-ios-sdk#16717)
+  // and crashes on an error reply without a reason (firebase/firebase-ios-sdk#16718).
+  // Switch this to getData once the SDK RNFB depends on fixes all three.
+  [self once:app
+          dbURL:dbURL
+           path:path
+      modifiers:modifiers
+      eventType:@"value"
+        resolve:resolve
+         reject:reject];
+}
+
 + (void)on:(NSString *)app dbURL:(NSString *)dbURL props:(NSDictionary *)props {
   NSString *key = [props valueForKey:@"key"];
   NSString *path = [props valueForKey:@"path"];

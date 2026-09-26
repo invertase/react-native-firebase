@@ -10,6 +10,7 @@ export interface Spec extends TurboModule {
     modifiers: ReadonlyArray<Object>,
     eventType: string,
   ): Promise<Object>;
+  get(app: string, dbURL: string, path: string, modifiers: ReadonlyArray<Object>): Promise<Object>;
   on(app: string, dbURL: string, props: Object): void;
   off(queryKey: string, eventRegistrationKey: string): void;
   keepSynced(
