@@ -1,9 +1,17 @@
 ---
 title: Analytics
-description: 'Analytics module: logEvent() for custom/predefined events, app instance IDs, disabling auto-init and screen tracking, IDFA/ATT opt-out, on-device conversion measurement, and DebugView setup.'
+description: 'Analytics: getAnalytics/logEvent, predefined log* helpers and EventParameters types, setUserId/setUserProperties, setDefaultEventParameters, consent and collection toggles, app/session IDs, screen tracking, IDFA opt-out, on-device conversion measurement, and DebugView setup.'
 next: /analytics/screen-tracking
 previous: /ai/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install Analytics: `npm install --save @react-native-firebase/analytics` or `yarn add @react-native-firebase/analytics`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Enable Google Analytics for your Firebase project in the [Firebase Console](https://console.firebase.google.com/). Analytics supports only the default Firebase app.
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/analytics.tsx
 
 # Installation
 
@@ -26,12 +34,13 @@ you can follow the manual installation steps for [iOS](/analytics/usage/installa
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurement*`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms. Analytics supports only the default Firebase app.
+**Platform notes:** On-device conversion measurement helpers (`initiateOnDeviceConversionMeasurementWithEmailAddress`, `initiateOnDeviceConversionMeasurementWithHashedEmailAddress`, `initiateOnDeviceConversionMeasurementWithPhoneNumber`, `initiateOnDeviceConversionMeasurementWithHashedPhoneNumber`) are **iOS only**; on Android and web the JS layer resolves without calling native (no-op). `logTransaction` (verified iOS in-app purchase events) is **iOS only** and **rejects** on other platforms. `getGoogleAnalyticsClientId` is **web-only** and throws on iOS/Android. `settings` is a web Google Analytics tagging helper and is currently a no-op on React Native. Analytics supports only the default Firebase app. React Native Firebase also exports `SDK_VERSION`, predefined `log*` convenience methods with matching `*EventParameters` / `*Parameters` types (including `ScreenViewParameters`), `setUserProperty`, `getAppInstanceId`, `getSessionId`, `setSessionTimeoutDuration`, `resetAnalyticsData`, and the legacy namespaced `Statics` type. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -46,7 +55,58 @@ Analytics automatically logs some [events](https://support.google.com/analytics/
 
 # Usage
 
-Analytics offers a wealth of [Predefined Events](/analytics/usage#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](/analytics/usage#custom-events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
+Analytics offers a wealth of [Predefined Events](/analytics/usage#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](/analytics/usage#custom-events). If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Analytics package version string exported from `@react-native-firebase/analytics`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/analytics`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/analytics';
+
+console.log('Analytics package version:', SDK_VERSION);
+```
+
+The legacy namespaced `Statics` type describes the old `firebase.analytics` statics shape that exposed `SDK_VERSION`. Prefer importing `SDK_VERSION` from the modular entry point.
+
+## Get an Analytics instance
+
+`getAnalytics` returns the Analytics instance for the default Firebase app. `initializeAnalytics(app, options)` is provided for firebase-js-sdk API parity; on React Native Firebase it returns the same instance as `getAnalytics(app)` and ignores web-only `AnalyticsSettings`. `isSupported()` always resolves `true` on React Native (on web the firebase-js-sdk checks browser cookies/IndexedDB).
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getAnalytics, initializeAnalytics, isSupported } from '@react-native-firebase/analytics';
+
+async function prepareAnalytics() {
+  const supported = await isSupported();
+  console.log('Analytics supported:', supported);
+
+  const analytics = getAnalytics();
+  const sameInstance = initializeAnalytics(getApp());
+  console.log('Default app name:', analytics.app.name);
+  console.log('Same instance as getAnalytics:', sameInstance === analytics);
+}
+```
+
+`settings` configures custom Google Analytics tagging function and data-layer names for web apps that load the Google tag script independently of Firebase. On React Native Firebase it is currently a no-op and must be called before `getAnalytics` to match the web ordering requirement:
+
+```js
+import { settings } from '@react-native-firebase/analytics';
+
+settings({ gtagName: 'ga', dataLayerName: 'dataLayer' });
+```
+
+`getGoogleAnalyticsClientId` is web-only. On iOS and Android it throws.
+
+```js
+import { getAnalytics, getGoogleAnalyticsClientId } from '@react-native-firebase/analytics';
+
+async function readWebClientId() {
+  // WARNING: getGoogleAnalyticsClientId throws on iOS and Android (web-only).
+  const clientId = await getGoogleAnalyticsClientId(getAnalytics());
+  console.log('Google Analytics client id:', clientId);
+}
+```
 
 ## Event Parameters
 
@@ -64,7 +124,7 @@ Different event types require different parameters (some require no parameters, 
 Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
 
 ```jsx
-import react, { useEffect } from 'react';
+import React from 'react';
 import { View, Button } from 'react-native';
 import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 
@@ -94,10 +154,48 @@ different types of apps, including retail and e-commerce, travel, and gaming app
 when to use them, browse the [Events and properties](https://support.google.com/analytics/answer/9322688?hl=en&ref_topic=9267641)
 articles in the Firebase Help Center.
 
+React Native Firebase exports typed convenience helpers (the firebase-js-sdk modular API uses `logEvent` overloads instead). Each helper accepts a matching parameters interface re-exported for typed `logEvent` overloads and convenience methods:
+
+- `logAddPaymentInfo` / `AddPaymentInfoEventParameters`
+- `logAddShippingInfo` / `AddShippingInfoParameters` (also `AddShippingInfoEventParameters` for the parallel event-parameter naming)
+- `logAddToCart` / `AddToCartEventParameters`
+- `logAddToWishlist` / `AddToWishlistEventParameters`
+- `logAppOpen` (no parameters)
+- `logBeginCheckout` / `BeginCheckoutEventParameters`
+- `logCampaignDetails` / `CampaignDetailsEventParameters`
+- `logEarnVirtualCurrency` / `EarnVirtualCurrencyEventParameters`
+- `logGenerateLead` / `GenerateLeadEventParameters`
+- `logJoinGroup` / `JoinGroupEventParameters`
+- `logLevelEnd` / `LevelEndEventParameters`
+- `logLevelStart` / `LevelStartEventParameters`
+- `logLevelUp` / `LevelUpEventParameters`
+- `logLogin` / `LoginEventParameters`
+- `logPostScore` / `PostScoreEventParameters`
+- `logSelectContent` / `SelectContentEventParameters`
+- `logPurchase` / `PurchaseEventParameters`
+- `logRefund` / `RefundEventParameters`
+- `logRemoveFromCart` / `RemoveFromCartEventParameters`
+- `logSearch` / `SearchEventParameters`
+- `logSelectItem` / `SelectItemEventParameters`
+- `logSetCheckoutOption` / `SetCheckoutOptionEventParameters`
+- `logSelectPromotion` / `SelectPromotionEventParameters`
+- `logShare` / `ShareEventParameters`
+- `logSignUp` / `SignUpEventParameters`
+- `logSpendVirtualCurrency` / `SpendVirtualCurrencyEventParameters`
+- `logTutorialBegin` / `logTutorialComplete` (no parameters)
+- `logUnlockAchievement` / `UnlockAchievementEventParameters`
+- `logViewCart` / `ViewCartEventParameters`
+- `logViewItem` / `ViewItemEventParameters`
+- `logViewItemList` / `ViewItemListEventParameters`
+- `logViewPromotion` / `ViewPromotionEventParameters`
+- `logViewSearchResults` / `ViewSearchResultsParameters`
+- `logScreenView` / `ScreenViewParameters` (see [Screen Tracking](/analytics/screen-tracking))
+- `logTransaction` (iOS only; takes a transaction id string and **rejects** on Android/web)
+
 Below is a sample of how to use one of the predefined methods the Analytics module provides for you:
 
 ```jsx
-import react, { useEffect } from 'react';
+import React from 'react';
 import { View, Button } from 'react-native';
 import { getAnalytics, logSelectContent } from '@react-native-firebase/analytics';
 
@@ -106,8 +204,6 @@ function App() {
     <View>
       <Button
         title="Press me"
-        // Logs in the firebase analytics console as "select_content" event
-        // only accepts the two object properties which accept strings.
         onPress={async () =>
           await logSelectContent(getAnalytics(), {
             content_type: 'clothing',
@@ -120,6 +216,39 @@ function App() {
 }
 ```
 
+Purchase events use `logPurchase` with `PurchaseEventParameters`:
+
+```js
+import { getAnalytics, logPurchase } from '@react-native-firebase/analytics';
+
+async function logShirtPurchase() {
+  await logPurchase(getAnalytics(), {
+    value: 19.99,
+    currency: 'USD',
+    items: [
+      {
+        item_id: 'sku-grey-tee',
+        item_name: 'mens grey t-shirt',
+        item_category: 'clothing',
+        quantity: 1,
+        price: 19.99,
+      },
+    ],
+  });
+}
+```
+
+`logTransaction` logs a verified iOS in-app purchase transaction id. It **rejects** on non-iOS platforms:
+
+```js
+import { getAnalytics, logTransaction } from '@react-native-firebase/analytics';
+
+async function logIosPurchase(transactionId) {
+  // WARNING: logTransaction rejects on Android and web (iOS only).
+  await logTransaction(getAnalytics(), transactionId);
+}
+```
+
 For a full reference to predefined events and expected parameters, please check out the [reference API](https://invertase.github.io/react-native-firebase/_react-native-firebase/analytics.html).
 
 ## Reserved Events
@@ -128,18 +257,69 @@ The Analytics package works out of the box, however a number of events are autom
 These event names are called as 'Reserved Events'. Attempting to send any custom event using the `logEvent` method
 with any of the following event names will throw an error.
 
-| Reserved Events Names            |                                |                                 |
-| -------------------------------- | ------------------------------ | ------------------------------- |
-| `ad_activeview`                  | `ad_click`                     | `ad_exposure`                   |
-| `ad_impression`                  | `ad_query`                     | `ad_reward`                     |
-| `adunit_exposure`                | `app_background`               | `app_clear_data`                |
-| `app_remove`                     | `app_store_refund`             | `app_store_subscription_cancel` |
-| `app_store_subscription_convert` | `app_store_subscription_renew` | `app_update`                    |
-| `app_upgrade`                    | `error`                        | `first_open`                    |
-| `first_visit`                    | `in_app_purchase`              | `notification_dismiss`          |
-| `notification_foreground`        | `notification_open`            | `notification_receive`          |
-| `os_update`                      | `session_start`                | `session_start_with_rollout`    |
-| `user_engagement`                |                                |                                 |
+{/* prettier-ignore */}
+| Reserved Events Names | | |
+| --- | --- | --- |
+| `ad_activeview` | `ad_click` | `ad_exposure` |
+| `ad_query` | `ad_reward` | `adunit_exposure` |
+| `app_background` | `app_clear_data` | `app_remove` |
+| `app_store_refund` | `app_store_subscription_cancel` | `app_store_subscription_convert` |
+| `app_store_subscription_renew` | `app_update` | `app_upgrade` |
+| `dynamic_link_app_open` | `dynamic_link_app_update` | `dynamic_link_first_open` |
+| `error` | `first_open` | `first_visit` |
+| `in_app_purchase` | `notification_dismiss` | `notification_foreground` |
+| `notification_open` | `notification_receive` | `os_update` |
+| `session_start` | `session_start_with_rollout` | `user_engagement` |
+
+## User ID
+
+Use `setUserId` to attach a stable app-scoped user id to subsequent events (for example when joining Analytics data in BigQuery across devices). Pass `null` to clear it. Do not use personally identifiable information as the id.
+
+```js
+import { getAnalytics, setUserId } from '@react-native-firebase/analytics';
+
+async function identifyUser(userId) {
+  await setUserId(getAnalytics(), userId);
+}
+
+async function clearUserId() {
+  await setUserId(getAnalytics(), null);
+}
+```
+
+## User properties
+
+Set attributes that describe segments of your user base with `setUserProperty` (single key) or `setUserProperties` (object map). Register custom definitions in the Firebase console so the properties appear in reports. Reserved Google names such as Age, Gender, and Interest cannot be used.
+
+```js
+import { getAnalytics, setUserProperty, setUserProperties } from '@react-native-firebase/analytics';
+
+async function setFavoriteFood(food) {
+  await setUserProperty(getAnalytics(), 'favorite_food', food);
+}
+
+async function setProfileProperties() {
+  await setUserProperties(getAnalytics(), {
+    favorite_food: 'apples',
+    preferred_shop: 'downtown',
+  });
+}
+```
+
+## Default event parameters
+
+`setDefaultEventParameters` attaches parameters to every future event logged from the SDK (including automatic ones). Event-level parameters override defaults with the same name. Pass `null` / omit keys according to the native SDK rules when clearing.
+
+```js
+import { getAnalytics, setDefaultEventParameters } from '@react-native-firebase/analytics';
+
+async function attachCampaignDefaults() {
+  await setDefaultEventParameters(getAnalytics(), {
+    campaign: 'spring_launch',
+    source: 'docs_example',
+  });
+}
+```
 
 ## App instance id
 
@@ -147,10 +327,13 @@ Below is an example showing how to retrieve the app instance id of the applicati
 if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on
 iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
 
-```jsx
+```js
 import { getAnalytics, getAppInstanceId } from '@react-native-firebase/analytics';
-// ...
-const appInstanceId = await getAppInstanceId(getAnalytics());
+
+async function readAppInstanceId() {
+  const appInstanceId = await getAppInstanceId(getAnalytics());
+  console.log('App instance id:', appInstanceId);
+}
 ```
 
 ### Web / Other platform instance id
@@ -159,7 +342,46 @@ Ensure you have installed an Async Storage provider for Firebase to preserve the
 
 The main documentation for "other platform" support contains [an example.](/platforms#async-storage)
 
-# Disable Ad Id usage on iOS
+## Session id and timeout
+
+`getSessionId` returns the current Analytics session id, or `null` when unavailable (for example when analytics storage consent is denied).
+
+```js
+import { getAnalytics, getSessionId } from '@react-native-firebase/analytics';
+
+async function readSessionId() {
+  const sessionId = await getSessionId(getAnalytics());
+  console.log('Session id:', sessionId);
+}
+```
+
+`setSessionTimeoutDuration` sets how long the app can stay in the background before a new session starts (milliseconds). The default is `1800000` (30 minutes).
+
+```js
+import { getAnalytics, setSessionTimeoutDuration } from '@react-native-firebase/analytics';
+
+async function useCustomSessionTimeout() {
+  await setSessionTimeoutDuration(getAnalytics(), 1_800_000);
+}
+```
+
+## Reset analytics data
+
+`resetAnalyticsData` clears Analytics data for this app on this device and resets the app instance id.
+
+```js
+import { getAnalytics, resetAnalyticsData } from '@react-native-firebase/analytics';
+
+async function wipeLocalAnalytics() {
+  await resetAnalyticsData(getAnalytics());
+}
+```
+
+## Screen tracking
+
+React Native apps usually need manual `screen_view` logging. Use `logScreenView` with `ScreenViewParameters` (`screen_name`, `screen_class`). See the dedicated [Screen Tracking](/analytics/screen-tracking) page for React Navigation and React Native Navigation wiring.
+
+## Disable Ad Id usage on iOS
 
 Apple has a strict ban on the usage of Ad Ids ("IDFA") in Kids Category apps. They will not accept any app
 in the Kids category if the app accesses the IDFA iOS symbols.
@@ -204,6 +426,35 @@ If you use Expo, including EAS Build, add the Analytics config plugin to your `a
 
 This adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to the generated iOS `Podfile` during prebuild.
 
+After the native dependency is linked, call the measurement helpers with an email, phone number, or SHA-256 hex hash. On Android and web these promises resolve without calling native (no-op). Hashed helpers expect a 64-character hex digest of the normalized credential.
+
+```js
+import {
+  getAnalytics,
+  initiateOnDeviceConversionMeasurementWithEmailAddress,
+  initiateOnDeviceConversionMeasurementWithHashedEmailAddress,
+  initiateOnDeviceConversionMeasurementWithPhoneNumber,
+  initiateOnDeviceConversionMeasurementWithHashedPhoneNumber,
+} from '@react-native-firebase/analytics';
+
+async function startOnDeviceConversion() {
+  const analytics = getAnalytics();
+
+  await initiateOnDeviceConversionMeasurementWithEmailAddress(analytics, 'user@example.com');
+  await initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, '+15555550100');
+
+  // Example 64-character SHA-256 hex digests (replace with real hashes of normalized values).
+  await initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+    analytics,
+    '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+  );
+  await initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+    analytics,
+    '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
+  );
+}
+```
+
 # Device Identification
 
 If you would like to enable Firebase Analytics to generate automatic audience metrics for iOS (as it does by default in Android), you must link additional iOS libraries, [as documented by the Google Firebase team](https://support.google.com/firebase/answer/6318039). Specifically you need to link in `AdSupport.framework`.
@@ -225,7 +476,6 @@ data flows, for example when dealing with GDPR compliance. This is possible by s
 on the `firebase.json` file at the root of your project directory.
 
 ```json
-// <project-root>/firebase.json
 {
   "react-native": {
     "analytics_auto_collection_enabled": false
@@ -237,21 +487,25 @@ To re-enable analytics (e.g. once you have the users consent), call the `setAnal
 
 ```js
 import { getAnalytics, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
-// ...
-await setAnalyticsCollectionEnabled(getAnalytics(), true);
+
+async function enableCollectionAfterConsent() {
+  await setAnalyticsCollectionEnabled(getAnalytics(), true);
+}
 ```
 
 To update user's consent (e.g. once you have the users consent), call the `setConsent` method:
 
 ```js
 import { getAnalytics, setConsent } from '@react-native-firebase/analytics';
-// ...
-await setConsent(getAnalytics(), {
-  analytics_storage: true,
-  ad_storage: true,
-  ad_user_data: true,
-  ad_personalization: true,
-});
+
+async function grantAnalyticsConsent() {
+  await setConsent(getAnalytics(), {
+    analytics_storage: true,
+    ad_storage: true,
+    ad_user_data: true,
+    ad_personalization: true,
+  });
+}
 ```
 
 ## Disable screenview tracking
@@ -260,7 +514,6 @@ Analytics automatically tracks some information about screens in your applicatio
 Automatic screenview reporting can be turned off/on through `google_analytics_automatic_screen_reporting_enabled` property of `firebase.json` file.
 
 ```json
-// <project-root>/firebase.json
 {
   "react-native": {
     "google_analytics_automatic_screen_reporting_enabled": false
@@ -305,10 +558,9 @@ import { AppRegistry } from 'react-native';
 import App from './App';
 import { name as appName } from './app.json';
 
-//    \/  Add these lines below
-// Enable debug mode for react-native-firebase:
-if (__DEV__) globalThis.RNFBDebug = true;
-//    /\  Add these lines above
+if (__DEV__) {
+  globalThis.RNFBDebug = true;
+}
 
 AppRegistry.registerComponent(appName, () => App);
 ```
