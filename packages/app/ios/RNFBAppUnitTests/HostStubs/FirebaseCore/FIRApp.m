@@ -17,9 +17,7 @@
 
 @end
 
-@implementation FIRApp {
-  BOOL _dataCollectionDefaultEnabled;
-}
+@implementation FIRApp
 
 static FIRApp *_Nullable RNFBStubDefaultApp;
 static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
@@ -39,14 +37,6 @@ static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
     _dataCollectionDefaultEnabled = NO;
   }
   return self;
-}
-
-- (void)setDataCollectionDefaultEnabled:(BOOL)enabled {
-  _dataCollectionDefaultEnabled = enabled;
-}
-
-- (BOOL)isDataCollectionDefaultEnabled {
-  return _dataCollectionDefaultEnabled;
 }
 
 + (FIRApp *)defaultApp {

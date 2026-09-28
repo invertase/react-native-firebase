@@ -15,15 +15,16 @@ typedef NS_ENUM(NSInteger, FIRLoggerLevel) {
   FIRLoggerLevelDebug = 7,
 };
 
+NS_SWIFT_NAME(FirebaseOptions)
 @interface FIROptions : NSObject
 - (nonnull instancetype)initWithGoogleAppID:(nullable NSString *)googleAppID
                                 GCMSenderID:(nullable NSString *)GCMSenderID;
-@property(nonatomic, copy, nullable) NSString *APIKey;
+@property(nonatomic, copy, nullable) NSString *APIKey NS_SWIFT_NAME(apiKey);
 @property(nonatomic, copy, nullable) NSString *googleAppID;
 @property(nonatomic, copy, nullable) NSString *projectID;
 @property(nonatomic, copy, nullable) NSString *databaseURL;
 @property(nonatomic, copy, nullable) NSString *storageBucket;
-@property(nonatomic, copy, nullable) NSString *GCMSenderID;
+@property(nonatomic, copy, nullable) NSString *GCMSenderID NS_SWIFT_NAME(gcmSenderID);
 @property(nonatomic, copy, nullable) NSString *clientID;
 @property(nonatomic, copy, nullable) NSString *bundleID;
 @property(nonatomic, copy, nullable) NSString *appGroupID;
@@ -40,8 +41,8 @@ NS_SWIFT_NAME(FirebaseApp)
 @property(nonatomic, strong, readonly, nonnull) FIROptions *options;
 - (nonnull instancetype)initWithName:(nonnull NSString *)name
                              options:(nullable FIROptions *)options;
-- (void)setDataCollectionDefaultEnabled:(BOOL)enabled;
-- (BOOL)isDataCollectionDefaultEnabled;
+@property(nonatomic, readwrite, getter=isDataCollectionDefaultEnabled)
+    BOOL dataCollectionDefaultEnabled;
 
 + (nullable FIRApp *)defaultApp NS_SWIFT_NAME(app());
 + (nullable FIRApp *)appNamed:(nonnull NSString *)name NS_SWIFT_NAME(app(name:));
