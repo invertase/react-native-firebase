@@ -10,7 +10,7 @@ previous: /firestore/usage
 - `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
 - `@react-native-firebase/firestore` installed: `npm install --save @react-native-firebase/firestore` or `yarn add @react-native-firebase/firestore`, then rebuild native apps (`cd ios && pod install` on iOS).
 - [Firebase CLI](https://firebase.google.com/docs/cli) available so you can run `firebase emulators:start`.
-- Call `connectFirestoreEmulator` before any Firestore reads or writes in that process (typically at app startup, gated behind `__DEV__`).
+- Call `connectFirestoreEmulator` before any Firestore reads, writes, or `onSnapshot` listeners in that process (typically at app startup, gated behind `__DEV__`).
 
 You can test your app and its Firestore implementation with an emulator which is built to mimic the behavior of Cloud Firestore. This means you can connect your app directly to the emulator to perform integration testing or QA without touching production data.
 
@@ -32,16 +32,18 @@ You should see a `firestore-debug.log` file in the directory you ran the command
 
 # Connect to emulator from your app
 
-Configure the host and port as early as possible in the startup of your application, before any read or write operations:
+Configure the host and port as early as possible in the startup of your application, before any read, write, or `onSnapshot` listener:
 
 ```jsx
+import { Platform } from 'react-native';
 import '@react-native-firebase/app';
 import { connectFirestoreEmulator, getFirestore } from '@react-native-firebase/firestore';
 
-// Set the host and the port property to connect to the emulator.
-// Set these before any read/write operations occur so production Cloud Firestore data is not affected.
+// Set the host and the port before any read, write, or onSnapshot listener so production data is not affected.
+// Optional mockUserToken accepts EmulatorMockTokenOptions (FirebaseIdToken / FirebaseSignInProvider fields).
 if (__DEV__) {
-  connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
+  const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+  connectFirestoreEmulator(getFirestore(), host, 8080);
 }
 
 const db = getFirestore();

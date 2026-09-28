@@ -1,6 +1,6 @@
 ---
 title: Cloud Firestore
-description: 'Cloud Firestore: getDocs/getDoc reads, onSnapshot() realtime listeners, queries (where, and, or, limit, orderBy, startAt/endAt), addDoc/setDoc/updateDoc/deleteDoc writes, GeoPoint/Bytes/serverTimestamp field values, runTransaction(), writeBatch(), offline support, and data bundles.'
+description: 'Cloud Firestore: getFirestore/initializeFirestore, emulator, getDoc/getDocs (cache/server), onSnapshot, queries (where/and/or/Filter, collectionGroup, documentId, limitToLast, cursors), writes (setDoc merge, increment, vector), transactions/batches, aggregates, offline (enableNetwork, clearPersistence), cache indexes, bundles, and RN helpers (SDK_VERSION).'
 next: /firestore/emulator
 previous: /auth/multi-factor-auth
 ---
@@ -43,7 +43,7 @@ If you have started to receive a `app:mergeDexDebug` error after adding Cloud Fi
 | **Platforms** | Android, iOS (native Firebase SDK); macOS via firebase-js-sdk web interop |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** IndexedDB persistence and `memoryLocalCache` / `persistentLocalCache` are **web only**. Native persistence is controlled by the iOS/Android Firestore SDK. `initializeFirestore` is async on React Native.
+**Platform notes:** IndexedDB persistence and `memoryLocalCache` / `persistentLocalCache` are **web only**. Native persistence is controlled by the iOS/Android Firestore SDK through `initializeFirestore` settings (for example `persistence` and `cacheSizeBytes`). React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `clearPersistence`, and `Filter`, plus type aliases `FirebaseApp`, `FirebaseSignInProvider`, `FirebaseIdToken`, and `LiteTransaction`. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -54,6 +54,52 @@ latency or Internet connectivity.
 <YouTube id="QcsAb2RR52c" />
 
 # Usage
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Firestore package version string exported from `@react-native-firebase/firestore`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/firestore`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/firestore';
+
+console.log('Firestore package version:', SDK_VERSION);
+```
+
+## Emulator
+
+Use `connectFirestoreEmulator` before any Firestore reads, writes, or listeners when talking to the Local Emulator Suite (for example the Firestore emulator started by `yarn tests:emulator:start-ci` in this repository, default port `8080`). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use). See also [Cloud Firestore Emulator](/firestore/emulator).
+
+`FirebaseApp` is the React Native Firebase app type re-exported for `getFirestore(app)` / `initializeFirestore(app, settings)`. The optional `mockUserToken` argument on `connectFirestoreEmulator` accepts a string or an `EmulatorMockTokenOptions` object. That options shape is built from the RN helper types `FirebaseIdToken` and `FirebaseSignInProvider` (sign-in provider strings such as `'anonymous'` or `'google.com'`), which firebase-js-sdk does not export from the public Firestore API.
+
+```js
+import { Platform } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { connectFirestoreEmulator, getFirestore } from '@react-native-firebase/firestore';
+
+const app = getApp();
+const db = getFirestore(app);
+const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+connectFirestoreEmulator(db, host, 8080, {
+  mockUserToken: {
+    sub: 'emulator-user',
+    email: 'user@example.com',
+    email_verified: true,
+    firebase: {
+      sign_in_provider: 'custom',
+    },
+  },
+});
+```
+
+## Logging
+
+`setLogLevel` controls Firestore SDK log verbosity. On React Native the supported levels are `debug`, `error`, and `silent` (the native logging bridge does not expose web's `verbose` / `info` / `warn`).
+
+```js
+import { setLogLevel } from '@react-native-firebase/firestore';
+
+setLogLevel('debug');
+```
 
 ## Collections & Documents
 
@@ -69,6 +115,17 @@ const usersCollection = collection(db, 'Users');
 console.log('Users collection path:', usersCollection.path);
 ```
 
+Pass a `FirebaseApp` (or a database id string) when you need a non-default app or a named database:
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { collection, getFirestore } from '@react-native-firebase/firestore';
+
+const secondary = getFirestore(getApp(), 'ecommerce');
+const products = collection(secondary, 'Products');
+console.log('Named database collection path:', products.path);
+```
+
 The `collection` function returns a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html) class, which provides
 properties and methods to query and fetch the data from Cloud Firestore. We can also directly reference a single document
 on the collection by calling the `doc` function:
@@ -80,14 +137,33 @@ const db = getFirestore();
 
 // Get user document with an ID of ABC
 const userDocument = doc(collection(db, 'Users'), 'ABC');
-console.log('User document path:', userDocument.path);
+// Or pass path segments directly: doc(db, 'Users', 'ABC')
+const sameUser = doc(db, 'Users', 'ABC');
+console.log('User document path:', userDocument.path, sameUser.path);
 ```
 
 The `doc` function returns a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
 
+Use `collectionGroup` to query every collection with the same id (for example every `messages` subcollection under every parent document):
+
+```js
+import {
+  collectionGroup,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const snapshot = await getDocs(query(collectionGroup(db, 'messages'), where('urgent', '==', true)));
+console.log('Urgent messages across collection group:', snapshot.size);
+```
+
 A document can contain different types of data, including scalar values (strings, booleans, numbers), arrays (lists) and
 objects (maps) along with specific Cloud Firestore data such as [Timestamps](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Timestamp.html),
-[GeoPoints](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html), [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string) and more.
+[GeoPoints](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html), [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string),
+vector fields via [`vector()`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/vector.html), and more.
 
 ## Read Data
 
@@ -106,6 +182,40 @@ const db = getFirestore();
 const users = await getDocs(collection(db, 'Users'));
 const user = await getDoc(doc(collection(db, 'Users'), 'ABC'));
 console.log('Users size:', users.size, 'User exists:', user.exists());
+```
+
+#### Source options (cache vs server)
+
+By default `getDoc` / `getDocs` try the server and fall back to the local cache when offline. Force a source with the dedicated helpers:
+
+```js
+import {
+  collection,
+  doc,
+  getDocFromCache,
+  getDocFromServer,
+  getDocsFromCache,
+  getDocsFromServer,
+  getFirestore,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const userRef = doc(db, 'Users', 'ABC');
+
+const fromServer = await getDocFromServer(userRef);
+const fromCache = await getDocFromCache(userRef);
+const usersFromServer = await getDocsFromServer(collection(db, 'Users'));
+const usersFromCache = await getDocsFromCache(collection(db, 'Users'));
+console.log(
+  'Server exists:',
+  fromServer.exists(),
+  'Cache exists:',
+  fromCache.exists(),
+  'Server size:',
+  usersFromServer.size,
+  'Cache size:',
+  usersFromCache.size,
+);
 ```
 
 ### Realtime changes
@@ -153,6 +263,48 @@ function User({ userId }) {
 ```
 
 Realtime changes via `onSnapshot` can be applied to both collections and documents.
+
+#### Metadata changes and document diffs
+
+Pass `{ includeMetadataChanges: true }` when you need events for cache-vs-server metadata flips. Use `docChanges()` to see which documents were added, modified, or removed since the previous snapshot:
+
+```js
+import {
+  collection,
+  getFirestore,
+  onSnapshot,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const unsubscribe = onSnapshot(
+  query(collection(db, 'Users'), where('active', '==', true)),
+  { includeMetadataChanges: true },
+  snapshot => {
+    snapshot.docChanges().forEach(change => {
+      console.log(change.type, change.doc.id, 'fromCache:', snapshot.metadata.fromCache);
+    });
+  },
+);
+
+unsubscribe();
+```
+
+#### Snapshots in sync
+
+`onSnapshotsInSync` fires when all currently active listeners have caught up with the server (useful after a burst of local writes):
+
+```js
+import { getFirestore, onSnapshotsInSync } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const unsubscribe = onSnapshotsInSync(db, () => {
+  console.log('All listeners are in sync with the server');
+});
+
+unsubscribe();
+```
 
 ### Snapshots
 
@@ -344,6 +496,39 @@ const snapshot = await getDocs(
 console.log('Matched users with or():', snapshot.size);
 ```
 
+`Filter` is an RN-only helper for building field and composite filters (`Filter(...)`, `Filter.and(...)`, `Filter.or(...)`). Prefer modular `where` / `and` / `or` for new code; `Filter` remains when you want the Filter-instance style used by `CollectionReference.where(Filter.and(...))`:
+
+```js
+import { Filter, collection, getDocs, getFirestore } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const adultActive = Filter.and(Filter('age', '>=', 18), Filter('active', '==', true));
+const snapshot = await getDocs(collection(db, 'Users').where(adultActive));
+console.log('Filter helper matches:', snapshot.size);
+```
+
+Other common `where` operators include `!=`, `array-contains`, `array-contains-any`, `not-in`, and filtering by document id with `documentId()`:
+
+```js
+import {
+  collection,
+  documentId,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const byId = await getDocs(
+  query(collection(db, 'Users'), where(documentId(), 'in', ['ABC', 'DEF'])),
+);
+const withToken = await getDocs(
+  query(collection(db, 'Users'), where('fcmTokens', 'array-contains', 'ABCDE123456')),
+);
+console.log('By id:', byId.size, 'With token:', withToken.size);
+```
+
 For an understanding of what queries are possible, please consult the query limitation documentation on the official
 [Firebase Firestore documentation](https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries).
 
@@ -371,6 +556,25 @@ getDocs(query(collection(db, 'Users'), where('age', '>=', 18), limit(20))).then(
 ```
 
 The above example both filters the users by age and limits the documents returned to 20.
+
+`limitToLast` returns the last N results of an ordered query (you must also provide `orderBy`):
+
+```js
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  limitToLast,
+  orderBy,
+  query,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const snapshot = await getDocs(
+  query(collection(db, 'Users'), orderBy('age', 'asc'), limitToLast(5)),
+);
+console.log('Oldest five by age ascending window:', snapshot.size);
+```
 
 #### Ordering
 
@@ -454,6 +658,57 @@ getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(userDocum
 The above query orders the users by age in descending order, however only returns documents whose order starts at the user
 with an ID of `DEF`.
 
+`startAfter` / `endBefore` exclude the boundary document or value:
+
+```js
+import {
+  collection,
+  endBefore,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  startAfter,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const snapshot = await getDocs(
+  query(collection(db, 'Users'), orderBy('age', 'asc'), startAfter(18), endBefore(65)),
+);
+console.log('Ages after 18 and before 65:', snapshot.size);
+```
+
+#### Query equality helpers
+
+`refEqual`, `queryEqual`, and `snapshotEqual` compare references, queries, and snapshots for equality:
+
+```js
+import {
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  query,
+  queryEqual,
+  refEqual,
+  snapshotEqual,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const a = doc(db, 'Users', 'ABC');
+const b = doc(collection(db, 'Users'), 'ABC');
+console.log('Same ref:', refEqual(a, b));
+
+const q1 = query(collection(db, 'Users'), where('age', '>=', 18));
+const q2 = query(collection(db, 'Users'), where('age', '>=', 18));
+console.log('Same query:', queryEqual(q1, q2));
+
+const snap1 = await getDoc(a);
+const snap2 = await getDoc(b);
+console.log('Same snapshot data:', snapshotEqual(snap1, snap2));
+```
+
 #### Query Limitations
 
 Cloud Firestore does not support the following types of queries:
@@ -498,6 +753,16 @@ setDoc(doc(collection(db, 'Users'), 'ABC'), {
 }).then(() => {
   console.log('User added!');
 });
+```
+
+Pass `{ merge: true }` (or `{ mergeFields: [...] }`) when you want `setDoc` to merge into an existing document instead of overwriting it:
+
+```js
+import { doc, getFirestore, setDoc } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await setDoc(doc(db, 'Users', 'ABC'), { age: 31 }, { merge: true });
+console.log('User merged!');
 ```
 
 ### Updating documents
@@ -612,6 +877,44 @@ updateDoc(doc(db, 'users', 'ABC'), {
 });
 ```
 
+`increment` atomically bumps a numeric field on the server (often simpler than a transaction when you only need a counter):
+
+```js
+import { doc, getFirestore, increment, updateDoc } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await updateDoc(doc(db, 'posts', 'ABC'), {
+  likes: increment(1),
+});
+console.log('likes incremented');
+```
+
+Use the `Timestamp` class when you need a client-side timestamp value (as opposed to `serverTimestamp()`):
+
+```js
+import { Timestamp, doc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await updateDoc(doc(db, 'users', 'ABC'), {
+  lastSeen: Timestamp.now(),
+  born: Timestamp.fromDate(new Date('1815-12-10')),
+});
+console.log('Timestamps written');
+```
+
+Store a vector embedding with `vector()` (nearest-neighbor queries use the [Pipelines](/firestore/pipelines) `findNearest` stage on React Native Firebase):
+
+```js
+import { doc, getFirestore, setDoc, vector } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await setDoc(doc(db, 'items', 'item1'), {
+  name: 'example',
+  embedding: vector([0.1, 0.2, 0.3]),
+});
+console.log('Vector embedding written');
+```
+
 ## Removing data
 
 You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/deleteDoc.html):
@@ -675,7 +978,7 @@ causing the actual number to not be consistent.
 Transactions remove this issue by atomically updating the value on the server. If the value changes whilst the transaction
 is executing, it will retry. This always ensures the value on the server is used rather than the client value.
 
-To execute a transaction, call `runTransaction`:
+To execute a transaction, call `runTransaction`. The callback receives a `Transaction` instance. In the React Native Firebase type hierarchy that class extends `LiteTransaction` (exported for the type hierarchy; firebase-js-sdk does not export `LiteTransaction` from the public Firestore API):
 
 ```js
 import { doc, getFirestore, runTransaction } from '@react-native-firebase/firestore';
@@ -748,22 +1051,111 @@ Firestore provides out of the box support for offline capabilities. When reading
 database which synchronizes automatically with the server. Firestore functionality continues when users are offline, and
 automatically handles data migration to the server when they regain connectivity.
 
-This functionality is enabled by default, however it can be disabled if you need it to be disabled (e.g. on apps containing
-sensitive information). `initializeFirestore` must be called before any Firestore interaction is performed, otherwise it will only take effect on the next app launch:
+This functionality is enabled by default on native platforms, however it can be disabled if you need it to be disabled (e.g. on apps containing
+sensitive information). Call `initializeFirestore` before other Firestore use for that app/database so settings apply. Use `CACHE_SIZE_UNLIMITED` when you do not want the SDK to evict cached documents by size:
 
 ```js
 import { getApp } from '@react-native-firebase/app';
-import { initializeFirestore } from '@react-native-firebase/firestore';
+import { CACHE_SIZE_UNLIMITED, initializeFirestore } from '@react-native-firebase/firestore';
 
-async function bootstrap() {
-  await initializeFirestore(getApp(), {
-    persistence: false, // disable offline persistence
-  });
-}
-
-bootstrap().then(() => {
-  console.log('Firestore initialized without persistence');
+const db = initializeFirestore(getApp(), {
+  persistence: false, // disable offline persistence
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
 });
+console.log('Firestore initialized:', Boolean(db));
+```
+
+### Disable and enable network
+
+`disableNetwork` forces listeners and gets to use the local cache only; queued writes flush after `enableNetwork`. `waitForPendingWrites` resolves when locally pending writes have been acknowledged by the backend:
+
+```js
+import {
+  disableNetwork,
+  enableNetwork,
+  getFirestore,
+  waitForPendingWrites,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await disableNetwork(db);
+console.log('Network disabled');
+await enableNetwork(db);
+await waitForPendingWrites(db);
+console.log('Network enabled and pending writes flushed');
+```
+
+### Clear persistence and terminate
+
+`clearPersistence` is the React Native Firebase-specific helper that clears the persistent cache for the Firestore instance (firebase-js-sdk exposes this as `clearIndexedDbPersistence` only). React Native Firebase also exports `clearIndexedDbPersistence` as an alias of `clearPersistence` for naming parity with the web SDK; IndexedDB is a web concept and React Native does not use it. Call either only after the instance is terminated or unused; active listeners can cause the call to fail.
+
+```js
+import {
+  clearIndexedDbPersistence,
+  clearPersistence,
+  getFirestore,
+  terminate,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await terminate(db);
+await clearPersistence(db);
+// Equivalent alias:
+// await clearIndexedDbPersistence(db);
+console.log('Instance terminated and persistence cleared');
+```
+
+### Persistent cache indexes
+
+With persistence enabled, `getPersistentCacheIndexManager` returns a manager for automatic local query indexes. These helpers return Promises on React Native Firebase (native IO) even though the web SDK returns `void`:
+
+```js
+import {
+  deleteAllPersistentCacheIndexes,
+  disablePersistentCacheIndexAutoCreation,
+  enablePersistentCacheIndexAutoCreation,
+  getFirestore,
+  getPersistentCacheIndexManager,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const indexManager = getPersistentCacheIndexManager(db);
+if (indexManager) {
+  await enablePersistentCacheIndexAutoCreation(indexManager);
+  await disablePersistentCacheIndexAutoCreation(indexManager);
+  await deleteAllPersistentCacheIndexes(indexManager);
+  console.log('Persistent cache index manager exercised');
+}
+```
+
+## Aggregation queries
+
+`getCountFromServer` and `getAggregateFromServer` run server-side aggregations without downloading matching documents. Build aggregate fields with `count`, `sum`, and `average`:
+
+```js
+import {
+  average,
+  collection,
+  count,
+  getAggregateFromServer,
+  getCountFromServer,
+  getFirestore,
+  query,
+  sum,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const users = query(collection(db, 'Users'), where('active', '==', true));
+const countSnap = await getCountFromServer(users);
+console.log('Active user count:', countSnap.data().count);
+
+const aggregateSnap = await getAggregateFromServer(users, {
+  users: count(),
+  totalAge: sum('age'),
+  avgAge: average('age'),
+});
+console.log('Aggregates:', aggregateSnap.data());
 ```
 
 ## Data bundles
