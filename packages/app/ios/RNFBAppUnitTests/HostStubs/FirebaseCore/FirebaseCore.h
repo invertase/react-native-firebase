@@ -29,6 +29,12 @@ typedef NS_ENUM(NSInteger, FIRLoggerLevel) {
 @property(nonatomic, copy, nullable) NSString *appGroupID;
 @end
 
+/**
+ * Mirrors FirebaseCore `FIRApp` Swift names
+ * (`FirebaseCore/Sources/Public/FirebaseCore/FIRApp.h`: `NS_SWIFT_NAME(FirebaseApp)`,
+ * `defaultApp` → `app()`, `appNamed:` → `app(name:)`).
+ */
+NS_SWIFT_NAME(FirebaseApp)
 @interface FIRApp : NSObject
 @property(nonatomic, copy, readonly, nonnull) NSString *name;
 @property(nonatomic, strong, readonly, nonnull) FIROptions *options;
@@ -37,8 +43,8 @@ typedef NS_ENUM(NSInteger, FIRLoggerLevel) {
 - (void)setDataCollectionDefaultEnabled:(BOOL)enabled;
 - (BOOL)isDataCollectionDefaultEnabled;
 
-+ (nullable FIRApp *)defaultApp;
-+ (nullable FIRApp *)appNamed:(nonnull NSString *)name;
++ (nullable FIRApp *)defaultApp NS_SWIFT_NAME(app());
++ (nullable FIRApp *)appNamed:(nonnull NSString *)name NS_SWIFT_NAME(app(name:));
 
 + (void)setDefaultAppForTesting:(nullable FIRApp *)app;
 + (void)registerAppForTesting:(nonnull FIRApp *)app;
