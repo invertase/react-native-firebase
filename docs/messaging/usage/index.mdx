@@ -1,6 +1,6 @@
 ---
 title: Cloud Messaging
-description: 'Cloud Messaging: iOS/Android permission requests, receiving messages in foreground/background/quit states via onMessage() and setBackgroundMessageHandler(), data-only message priority, iOS headless-mode considerations, and topic subscribe/unsubscribe.'
+description: 'Cloud Messaging: getMessaging/isSupported, FCM tokens (getToken/deleteToken/onTokenRefresh), permissions, foreground/background handlers, topics, APNs helpers, auto-init, delivery-metrics export, and RN payload types (RemoteMessage, Notification, MessagePriority).'
 next: /messaging/usage/ios-setup
 previous: /functions/writing-deploying-functions
 ---
@@ -102,7 +102,7 @@ await setNotificationDelegationEnabled(messaging, true);
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `getAPNSToken` / `setAPNSToken` are **iOS only**. `sendMessage` is **Android only**. `getIsHeadless` is exported on both platforms: it is meaningful on iOS; on Android it always resolves `false`. FCM foreground/background listeners use the legacy native event proxy (same runtime behavior as pre-v26). See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
+**Platform notes:** `getAPNSToken` / `setAPNSToken` are **iOS only**. `sendMessage` is **Android only**. `getIsHeadless` is exported on both platforms: it is meaningful on iOS; on Android it always resolves `false`. `isNotificationDelegationEnabled` / `setNotificationDelegationEnabled` are Android-only (delegation always reports disabled on iOS). FCM foreground/background listeners use the legacy native event proxy (same runtime behavior as pre-v26). React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, token/permission/APNs helpers, topic subscribe APIs, background handlers, and payload types (`RemoteMessage`, `Notification`, `MessagePriority`, and related). Each is explained in the section that uses it. See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
 
 # What does it do
 
@@ -115,6 +115,60 @@ a simple JavaScript API to interact with FCM.
 The module also provides basic support for displaying local notifications, to learn more view the [Notifications](/messaging/notifications) documentation.
 
 # Usage
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Messaging package version string exported from `@react-native-firebase/messaging`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/messaging`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/messaging';
+
+console.log('Messaging package version:', SDK_VERSION);
+```
+
+## Check support
+
+`isSupported` reports whether Cloud Messaging can run on this device. On React Native it always resolves `true` on iOS. On Android it resolves based on Google Play services availability (via the App utils native module). The firebase-js-sdk `isSupported()` takes no messaging instance and checks browser Push API support instead; React Native Firebase takes the `Messaging` instance for API shape consistency with other modular calls.
+
+```js
+import { getMessaging, isSupported } from '@react-native-firebase/messaging';
+
+const supported = await isSupported(getMessaging());
+console.log('Messaging supported:', supported);
+```
+
+## FCM registration tokens
+
+Use `getToken` to read the FCM registration token for this app instance, and `onTokenRefresh` when the token rotates. Store the token on your backend if you send to individual devices (see [Server Integration](/messaging/server-integration)).
+
+`@react-native-firebase/messaging` still exports `GetTokenOptions`, but the web fields `vapidKey` and `serviceWorkerRegistration` are not meaningful on native. Use `NativeTokenOptions` (`appName` on Android, `senderId` on iOS) with `getToken` / `deleteToken`. Do not pass VAPID or service-worker options.
+
+```js
+import {
+  getMessaging,
+  getToken,
+  deleteToken,
+  onTokenRefresh,
+} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+const token = await getToken(messaging);
+console.log('FCM token:', token);
+
+// Optional NativeTokenOptions (RN-only fields):
+// await getToken(messaging, { senderId: 'YOUR_SENDER_ID' }); // iOS
+// await getToken(messaging, { appName: '[DEFAULT]' }); // Android
+
+const unsubscribe = onTokenRefresh(messaging, newToken => {
+  console.log('FCM token refreshed:', newToken);
+});
+
+unsubscribe();
+
+// Invalidate the current token (for example on logout). It cannot be reused.
+await deleteToken(messaging);
+```
 
 ## iOS - Requesting permissions
 
@@ -272,6 +326,20 @@ API reference.
 If the `RemoteMessage` payload contains a `notification` property when sent to the `onMessage` handler, the device
 will not show any notification to the user. Instead, you could trigger a [local notification](/messaging/notifications#notifee---advanced-notifications)
 or update the in-app UI to signal a new notification.
+
+### Deleted messages
+
+`onDeletedMessages` fires when the FCM server deletes pending messages for this app instance (for example after too many pending messages accumulated while the device was offline). There is no firebase-js-sdk modular equivalent.
+
+```js
+import { getMessaging, onDeletedMessages } from '@react-native-firebase/messaging';
+
+const unsubscribe = onDeletedMessages(getMessaging(), () => {
+  console.log('FCM deleted pending messages for this app instance');
+});
+
+unsubscribe();
+```
 
 ### Background & Quit state messages
 
@@ -487,6 +555,50 @@ await unsubscribeFromTopic(messaging, 'weather');
 console.log('Unsubscribed from the topic!');
 ```
 
+## Message and notification payload shapes
+
+Incoming handlers receive a [`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html). That type is React Native Firebase-specific (firebase-js-sdk uses `MessagePayload` / `NotificationPayload` instead).
+
+- `Notification` describes the optional `remoteMessage.notification` object (title, body, image, plus `android` / `ios` platform fields).
+- `MessagePriority` is the Android-only enum type on `remoteMessage.priority` / `originalPriority` (`PRIORITY_UNKNOWN` = 0, `PRIORITY_HIGH` = 1, `PRIORITY_NORMAL` = 2).
+- `NotificationAndroidPriority` and `NotificationAndroidVisibility` are re-exported constant objects for Android notification `priority` / `visibility` fields on `Notification.android` (and for comparing values you read back).
+- `NotificationIOSCriticalSound` is the object shape used when `notification.ios.sound` is a critical-alert sound (`name`, optional `critical`, optional `volume`) rather than a plain string.
+
+```js
+import {
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
+} from '@react-native-firebase/messaging';
+
+console.log('Android notification priority max:', NotificationAndroidPriority.PRIORITY_MAX);
+console.log('Android visibility public:', NotificationAndroidVisibility.VISIBILITY_PUBLIC);
+
+/** @type {import('@react-native-firebase/messaging').NotificationIOSCriticalSound} */
+const criticalSound = {
+  name: 'default',
+  critical: true,
+  volume: 1.0,
+};
+
+/** @type {import('@react-native-firebase/messaging').Notification} */
+const preview = {
+  title: 'Hello',
+  body: 'World',
+  android: {
+    priority: NotificationAndroidPriority.PRIORITY_HIGH,
+    visibility: NotificationAndroidVisibility.VISIBILITY_PRIVATE,
+  },
+  ios: {
+    sound: criticalSound,
+  },
+};
+
+/** @type {import('@react-native-firebase/messaging').MessagePriority} */
+const highPriority = 1; // MessagePriority.PRIORITY_HIGH
+
+console.log('Notification preview title:', preview.title, 'priority sample:', highPriority);
+```
+
 # firebase.json
 
 Messaging can be further configured to provide more control over how FCM is handled internally within your application.
@@ -508,13 +620,33 @@ Once auto-registration is disabled you must manually call `registerDeviceForRemo
 early as possible in your application startup:
 
 ```js
-import { getMessaging, registerDeviceForRemoteMessages } from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  registerDeviceForRemoteMessages,
+  isDeviceRegisteredForRemoteMessages,
+} from '@react-native-firebase/messaging';
 
 async function registerAppWithFCM() {
-  await registerDeviceForRemoteMessages(getMessaging());
+  const messaging = getMessaging();
+  await registerDeviceForRemoteMessages(messaging);
+  console.log('Registered:', isDeviceRegisteredForRemoteMessages(messaging));
 }
 
 await registerAppWithFCM();
+```
+
+`isDeviceRegisteredForRemoteMessages` returns whether this app instance has completed `registerDeviceForRemoteMessages`. Call `unregisterDeviceForRemoteMessages` when you need to stop receiving remote notifications through APNs/FCM device registration (for example before a controlled re-register):
+
+```js
+import {
+  getMessaging,
+  unregisterDeviceForRemoteMessages,
+  isDeviceRegisteredForRemoteMessages,
+} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+await unregisterDeviceForRemoteMessages(messaging);
+console.log('Still registered:', isDeviceRegisteredForRemoteMessages(messaging));
 ```
 
 > **ARM64 iOS Simulator:** React Native Firebase intentionally does **not** call UIKit
@@ -528,6 +660,27 @@ await registerAppWithFCM();
 > before a prior attempt settles, the earlier promise rejects with
 > `messaging/registration-superseded`. See
 > [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+
+## APNs device tokens (iOS)
+
+`getAPNSToken` and `setAPNSToken` are **iOS only**. Use `getAPNSToken` when another push provider (or your own server) needs the raw APNs device token rather than the FCM registration token. Use `setAPNSToken` when your `AppDelegate` (or another library) receives the APNs token and you need to hand it to Firebase Messaging yourself (`type` is `'prod'`, `'sandbox'`, or `'unknown'`).
+
+```js
+import { Platform } from 'react-native';
+import { getMessaging, getAPNSToken } from '@react-native-firebase/messaging';
+
+async function syncApnsToken() {
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+
+  const messaging = getMessaging();
+  const token = await getAPNSToken(messaging);
+  console.log('APNs token:', token);
+}
+
+await syncApnsToken();
+```
 
 ## Foreground Presentation Options (iOS)
 
@@ -559,12 +712,34 @@ If you prefer to prevent Instance ID auto-generation, disable auto initializatio
 }
 ```
 
-To re-enable initialization (for example once permission is granted) call `setAutoInitEnabled(messaging, true)`:
+To re-enable initialization (for example once permission is granted) call `setAutoInitEnabled(messaging, true)`. Read the current flag with `isAutoInitEnabled`:
 
 ```js
-import { getMessaging, setAutoInitEnabled } from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  isAutoInitEnabled,
+  setAutoInitEnabled,
+} from '@react-native-firebase/messaging';
 
-await setAutoInitEnabled(getMessaging(), true);
+const messaging = getMessaging();
+console.log('Auto-init enabled:', isAutoInitEnabled(messaging));
+await setAutoInitEnabled(messaging, true);
+```
+
+## Delivery metrics export (BigQuery)
+
+After you link FCM to BigQuery in the Firebase console ([Understand message delivery](https://firebase.google.com/docs/cloud-messaging/understand-delivery#bigquery-data-export)), you can enable per-app-instance delivery-metrics export from the client. `isDeliveryMetricsExportToBigQueryEnabled` reads the current flag. `experimentalSetDeliveryMetricsExportedToBigQueryEnabled` sets it (name matches the firebase-js-sdk experimental helper; React Native Firebase exposes it on the modular entry even though the current web modular public surface focuses on other registration APIs).
+
+```js
+import {
+  getMessaging,
+  isDeliveryMetricsExportToBigQueryEnabled,
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+console.log('Export enabled:', isDeliveryMetricsExportToBigQueryEnabled(messaging));
+await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, true);
 ```
 
 ## Background handler timeout (Android)

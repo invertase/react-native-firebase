@@ -54,7 +54,8 @@ onMessageSent(messaging, messageId => {
 });
 
 onSendError(messaging, error => {
-  console.log('Received an Error', error);
+  // `error` is a SendErrorEvent: { messageId, error } (RN-only; no firebase-js-sdk modular equivalent).
+  console.log('Received an Error', error.messageId, error.error);
 });
 
 // Android only. On iOS this throws Error in JavaScript (not a native reject).
@@ -64,6 +65,8 @@ sendMessage(messaging, {
   },
 });
 ```
+
+`SendErrorEvent` is the React Native Firebase type for the `onSendError` callback payload (`messageId` plus a native Firebase `error`).
 
 Although correct for the client API surface, none of the listeners will acknowledge a `message` or `error` without a server that bridges FCM and your devices.
 
