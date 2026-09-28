@@ -1,9 +1,18 @@
 ---
 title: Performance Monitoring
-description: 'Performance Monitoring: trace()/startScreenTrace() for custom and screen traces, httpMetric() for HTTP request latency, and the perf_auto_collection_enabled firebase.json flag with setPerformanceCollectionEnabled().'
+description: 'Performance Monitoring: getPerformance/initializePerformance, trace() custom traces, httpMetric() HTTP metrics, newScreenTrace/startScreenTrace, collection toggles, SDK_VERSION, and the perf_auto_collection_enabled firebase.json flag.'
 next: /perf/axios-integration
 previous: /remote-config/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install Performance Monitoring: `npm install --save @react-native-firebase/perf` or `yarn add @react-native-firebase/perf`, then rebuild native apps (`cd ios && pod install` on iOS).
+- On React Native CLI Android builds, apply the Google Performance Monitoring Gradle plugin (see [Add the Performance Monitoring Plugin](/perf/usage#add-the-performance-monitoring-plugin)). The Expo config plugin covers those steps.
+- Enable Performance Monitoring for your Firebase project in the [Firebase Console](https://console.firebase.google.com/). Performance Monitoring supports only the default Firebase app.
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/perf.tsx
 
 # Installation
 
@@ -50,12 +59,15 @@ apply plugin: 'com.google.firebase.firebase-perf'
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `initializePerformance` returns synchronously on RN. Trace, HTTP metric, and screen trace `start`/`stop` are synchronous through TurboModules, matching firebase-js-sdk.
+**Platform notes:** `initializePerformance` returns synchronously on React Native Firebase. Trace, HTTP metric, and screen trace `start`/`stop` are synchronous through TurboModules, matching firebase-js-sdk web `PerformanceTrace` start/stop. Performance Monitoring supports only the default Firebase app. React Native Firebase exports `SDK_VERSION`, `getPerformance`, `initializePerformance`, `trace`, `httpMetric`, `newScreenTrace`, `startScreenTrace`, the `HttpMethod` string union, and the `FirebasePerformance`, `PerformanceTrace`, `HttpMetric`, and `ScreenTrace` types. Each is explained in the section that uses it.
+
+This page does not cover browser User Timing (`performance.mark` / `measure`): that API is web-only and is not bridged here. Automatic First Input Delay and other Core Web Vitals collection is likewise only available in the firebase-js-sdk for browsers. Firebase console dashboard guides (metrics boards, filters, troubleshooting UI) live in the [Firebase Performance Monitoring documentation](https://firebase.google.com/docs/perf-mon/console?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=perf); this page covers the React Native API only.
 
 # What does it do
 
@@ -69,16 +81,71 @@ performance of your app can be improved so that you can use that information to 
 
 Performance Monitoring package automatically traces events and metrics which are sent to Firebase. For more information
 on the automatic traces, please see the Firebase Performance Monitoring [documentation](https://firebase.google.com/docs/perf-mon/auto_duration-traces-metrics_ios-android).
-The package also allows you to performance monitor custom aspects to your application like network requests & task specific
+The package also allows you to performance monitor custom aspects to your application like network requests and task specific
 app code. All performance metrics are available on your Firebase [console](https://console.firebase.google.com/u/0/) performance tab.
+
+To learn more, view the [Firebase Performance Monitoring documentation](https://firebase.google.com/docs/perf-mon?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=perf).
 
 # Usage
 
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Performance Monitoring package version string exported from `@react-native-firebase/perf`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/performance`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/perf';
+
+console.log('Performance package version:', SDK_VERSION);
+```
+
+## Get a Performance instance
+
+`getPerformance` returns the `FirebasePerformance` module instance for the default Firebase app. Passing `getApp()` still resolves that same default-app instance. Performance Monitoring does not support secondary Firebase apps.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getPerformance } from '@react-native-firebase/perf';
+
+function readPerformanceInstance() {
+  const perf = getPerformance();
+  const sameDefaultApp = getPerformance(getApp());
+  console.log('Default app name:', perf.app.name);
+  console.log('Collection enabled:', perf.isPerformanceCollectionEnabled);
+  console.log('dataCollectionEnabled:', perf.dataCollectionEnabled);
+  console.log('instrumentationEnabled:', perf.instrumentationEnabled);
+  console.log('Same instance for default app:', sameDefaultApp === perf);
+}
+```
+
+`FirebasePerformance` is the TypeScript type of that instance. On React Native it also exposes `isPerformanceCollectionEnabled` (native collection state) alongside the web-aligned `dataCollectionEnabled` and `instrumentationEnabled` properties.
+
+## Initialize with settings
+
+`initializePerformance(app, settings?)` returns a `FirebasePerformance` instance and optionally applies `PerformanceSettings` (`dataCollectionEnabled`, `instrumentationEnabled`). On React Native Firebase it returns **synchronously** (same instance as `getPerformance(app)`), then assigns any provided settings.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { initializePerformance } from '@react-native-firebase/perf';
+
+function preparePerformance() {
+  const perf = initializePerformance(getApp(), {
+    dataCollectionEnabled: true,
+    instrumentationEnabled: true,
+  });
+  console.log('Collection enabled:', perf.isPerformanceCollectionEnabled);
+  return perf;
+}
+```
+
+Setting `instrumentationEnabled` from JavaScript takes effect on **iOS** (applied for the next app run). On Android, automatic instrumentation is controlled at Gradle build time by the Performance Monitoring plugin, and assigning `instrumentationEnabled` in JS is a no-op.
+
 ## Custom tracing
 
-Below is how you would measure the amount of time it would take to complete a specific task in your app code.
+`trace(performance, name)` returns a `PerformanceTrace` for measuring how long a specific task takes. Call `start` before the work and `stop` after. You can attach custom attributes and custom metrics while the trace is active.
 
-```jsx
+`PerformanceTrace` on React Native Firebase uses synchronous `start`/`stop` (TurboModule calls), matching firebase-js-sdk web. React Native also exposes `getMetrics` and `removeMetric` for native-backed custom metrics. The web SDK additionally exposes `record()` for recording a trace from already-known timestamps; React Native Firebase does not.
+
+```js
 import { getPerformance, trace } from '@react-native-firebase/perf';
 
 function customTrace() {
@@ -88,46 +155,68 @@ function customTrace() {
   t.start();
   t.putAttribute('user', 'abcd');
   t.putMetric('credits', 30);
+  t.incrementMetric('items', 1);
+  console.log('credits metric:', t.getMetric('credits'));
+  console.log('all metrics:', t.getMetrics());
+  console.log('user attribute:', t.getAttribute('user'));
+  t.removeMetric('items');
   t.stop();
 }
 ```
 
 ## Custom screen traces
 
-Record a custom screen rendering trace (slow frames / frozen frames)
+`ScreenTrace` records slow and frozen frame counts for a named screen. `newScreenTrace(performance, screenName)` constructs a JavaScript `ScreenTrace` without starting it; that constructor does not throw for platform support. `startScreenTrace(performance, screenName)` constructs one and starts it immediately. Neither helper exists on the firebase-js-sdk modular Performance API.
 
-```jsx
-import { getPerformance, startScreenTrace } from '@react-native-firebase/perf';
+Throw timing matches `start`, not JS construction:
 
-function screenTrace() {
-  try {
-    const screenTrace = startScreenTrace(getPerformance(), 'FooScreen');
-    screenTrace.stop();
-  } catch (e) {
-    // rejects if iOS or (Android == 8 || Android == 8.1)
-    // or if hardware acceleration is off
-  }
+- On **iOS**, `ScreenTrace.start()` (and therefore `startScreenTrace`) throws (`Custom screentraces are currently not supported on iOS.`).
+- On **Android**, the throw (if any) happens when native `startScreenTrace` builds the Java `ScreenTrace`: API 26 or 27, or when hardware acceleration is off. Catching only around `newScreenTrace()` misses that throw.
+- Also on **Android**, if there is no current Activity when start runs, native start returns without constructing a trace (silent no-op). Unsupported devices are not guaranteed to throw in every start path.
+
+```js
+import { getPerformance, newScreenTrace, startScreenTrace } from '@react-native-firebase/perf';
+
+function screenTraceWithNew() {
+  // WARNING: ScreenTrace.start throws on iOS. On Android, unsupported devices
+  // (API 26/27 or hardware acceleration off) throw during native start; a null
+  // current Activity is a silent no-op. newScreenTrace itself does not throw.
+  const screenTrace = newScreenTrace(getPerformance(), 'FooScreen');
+  screenTrace.start();
+  screenTrace.stop();
+}
+
+function screenTraceStarted() {
+  // WARNING: startScreenTrace throws on iOS. On Android, unsupported devices
+  // (API 26/27 or hardware acceleration off) throw during native start; a null
+  // current Activity is a silent no-op.
+  const screenTrace = startScreenTrace(getPerformance(), 'FooScreen');
+  screenTrace.stop();
 }
 ```
 
 ## HTTP Request Tracing
 
-Below illustrates you would measure the latency of a HTTP request.
+`httpMetric(performance, url, httpMethod)` constructs an `HttpMetric` for measuring HTTP request latency. `HttpMethod` is the string union of allowed verbs (`GET`, `HEAD`, `PUT`, `POST`, `PATCH`, `TRACE`, `DELETE`, `CONNECT`, `OPTIONS`). The firebase-js-sdk modular Performance API does not expose HTTP metrics on its public modular surface; React Native Firebase does via native instrumentation.
 
-```jsx
+Call `start` before the request. Before `stop`, set at least `setHttpResponseCode`. Without a response code the metric is still stopped locally, but the package logs a warning and the metric will not be visible in the Firebase console.
+
+```js
 import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 
 async function getRequest(url) {
   const metric = httpMetric(getPerformance(), url, 'GET');
 
   metric.putAttribute('user', 'abcd');
+  metric.setRequestPayloadSize(0);
 
   metric.start();
 
   const response = await fetch(url);
+  const contentLengthHeader = response.headers.get('Content-Length');
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
-  metric.setResponsePayloadSize(response.headers.get('Content-Length'));
+  metric.setResponsePayloadSize(contentLengthHeader ? Number(contentLengthHeader) : null);
 
   metric.stop();
 
@@ -137,6 +226,33 @@ async function getRequest(url) {
 getRequest('https://api.com').then(json => {
   console.log(json);
 });
+```
+
+For Axios and KY interceptors that wrap `httpMetric`, see [Axios integration](/perf/axios-integration) and [KY integration](/perf/ky-integration).
+
+## Collection toggles
+
+`dataCollectionEnabled` controls logging of custom traces. `instrumentationEnabled` controls automatic (out-of-the-box) monitoring. `isPerformanceCollectionEnabled` mirrors the native collection flag used by the package.
+
+Prefer assigning the properties on the modular instance:
+
+```js
+import { getPerformance } from '@react-native-firebase/perf';
+
+function enableCollection() {
+  const perf = getPerformance();
+  perf.dataCollectionEnabled = true;
+  // instrumentationEnabled assignment applies on iOS only; Android automatic
+  // instrumentation is controlled by the Gradle Performance Monitoring plugin.
+  perf.instrumentationEnabled = true;
+  console.log('Collection enabled:', perf.isPerformanceCollectionEnabled);
+}
+
+function disableCollection() {
+  const perf = getPerformance();
+  perf.dataCollectionEnabled = false;
+  perf.instrumentationEnabled = false;
+}
 ```
 
 # firebase.json
@@ -155,10 +271,4 @@ set the `perf_auto_collection_enabled` flag to `false`:
 }
 ```
 
-To re-enable collection (e.g. once you have the users consent), call the `setPerformanceCollectionEnabled` method:
-
-```js
-import { getPerformance } from '@react-native-firebase/perf';
-// ...
-getPerformance().dataCollectionEnabled = true;
-```
+To re-enable collection at runtime after the user consents, assign `dataCollectionEnabled` (and on iOS, `instrumentationEnabled` if you also want automatic monitoring) as shown in [Collection toggles](/perf/usage#collection-toggles).

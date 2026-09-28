@@ -3,6 +3,11 @@ title: Android Setup
 description: 'Manual Android linking for @react-native-firebase/perf: settings.gradle module include, build.gradle dependency, and registering ReactNativeFirebasePerfPackage in MainApplication.java.'
 ---
 
+## Prerequisites
+
+- React Native project without autolinking (or integrating into an existing native Android app). Prefer autolinking when available; see [Performance Monitoring usage](/perf/usage) for the standard install path.
+- `@react-native-firebase/app` and `@react-native-firebase/perf` already added as npm dependencies.
+
 # Android Manual Installation
 
 The following steps are only required if your environment does not have access to React Native
@@ -19,7 +24,7 @@ project(':@react-native-firebase_perf').projectDir = new File(rootProject.projec
 
 ## 2. Update Gradle Dependencies
 
-Add the React Native Functions module dependency to your `/android/app/build.gradle` file:
+Add the React Native Performance Monitoring module dependency to your `/android/app/build.gradle` file:
 
 ```groovy
 dependencies {

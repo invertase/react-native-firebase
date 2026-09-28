@@ -1,15 +1,24 @@
 ---
 title: Performance Monitoring with KY
-description: Wire the ky HTTP client's beforeRequest/afterResponse hooks to Firebase Performance Monitoring's httpMetric() for automatic request latency tracking.
+description: Wire the KY HTTP client's beforeRequest/afterResponse hooks to Firebase Performance Monitoring's httpMetric() for automatic request latency tracking.
 previous: /perf/axios-integration
 next: /phone-number-verification/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/perf` installed per [Performance Monitoring usage](/perf/usage) (native config, rebuild, and Android Performance Monitoring Gradle plugin or Expo config plugin).
+- [KY](https://github.com/sindresorhus/ky) installed in your app (`npm install ky` or `yarn add ky`).
 
 # KY
 
 The [KY library](https://github.com/sindresorhus/ky) is a tiny wrapper over fetch providing a simpler API and some useful shortcuts.
 KY provides functionality allowing all requests & responses to be intercepted, exposing
 metadata which can be passed onto the Performance Monitoring library.
+
+`httpMetric` constructs an `HttpMetric` for the request URL and HTTP method. `HttpMethod` is the string union of allowed verbs. See [HTTP Request Tracing](/perf/usage#http-request-tracing) for the full metric helpers.
+
+Pass your KY default export to `instrumentKy` to get an instrumented client (for example `import ky from 'ky'` then `const api = instrumentKy(ky)`).
 
 ## Before Request Hook
 
@@ -18,33 +27,24 @@ We can use this `beforeRequest` hook to create our HTTP metric.
 
 ```js
 import { getPerformance, httpMetric } from '@react-native-firebase/perf';
-import ky from 'ky';
 
-const getContentLength = headers => {
-  const length = getHeader('Content-Length', headers);
-  return length ? Number(length) : null;
-};
+export default function instrumentKy(ky) {
+  return ky.create({
+    hooks: {
+      beforeRequest: [
+        async (request, options) => {
+          const { url, method } = request;
+          options.metric = httpMetric(getPerformance(), url, method);
 
-const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
+          options.metric.putAttribute('client', 'ky');
+          options.metric.setRequestPayloadSize(0);
 
-const api = ky.create({
-  hooks: {
-    beforeRequest: [
-      async (request, options) => {
-        const { url, method } = request;
-        options.metric = httpMetric(getPerformance(), url, method);
-
-        // add any extra metric attributes, if required
-        // options.metric.putAttribute('userId', '12345678');
-        // options.metric.setRequestPayloadSize(1234)
-
-        options.metric.start();
-      },
-    ],
-  },
-});
-
-export default api;
+          options.metric.start();
+        },
+      ],
+    },
+  });
+}
 ```
 
 This callback attaches the HTTP metric returned onto the request metadata, which can later be used on an
@@ -55,31 +55,38 @@ incoming response.
 Similar to the before request hook, we can also hook into all responses from HTTP calls.
 
 ```js
-import ky from 'ky';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
+
+const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
 
 const getContentLength = headers => {
   const length = getHeader('Content-Length', headers);
   return length ? Number(length) : null;
 };
 
-const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
-
-const api = ky.create({
-  hooks: {
-    afterResponse: [
-      async (request, options, response) => {
-        const { status, headers } = response;
-        const { metric } = options;
-        metric.setHttpResponseCode(status);
-        metric.setResponseContentType(getHeader('Content-Type', headers));
-        metric.setResponsePayloadSize(getContentLength(headers));
-        metric.stop();
-      },
-    ],
-  },
-});
-
-export default api;
+export default function instrumentKy(ky) {
+  return ky.create({
+    hooks: {
+      beforeRequest: [
+        async (request, options) => {
+          const { url, method } = request;
+          options.metric = httpMetric(getPerformance(), url, method);
+          options.metric.start();
+        },
+      ],
+      afterResponse: [
+        async (request, options, response) => {
+          const { status, headers } = response;
+          const { metric } = options;
+          metric.setHttpResponseCode(status);
+          metric.setResponseContentType(getHeader('Content-Type', headers));
+          metric.setResponsePayloadSize(getContentLength(headers));
+          metric.stop();
+        },
+      ],
+    },
+  });
+}
 ```
 
 All outbound requests sent from KY will appear in your Firebase console, detailing information such as
@@ -91,44 +98,41 @@ A working example is provided below. Please adjust and extend according to your 
 
 ```js
 import { getPerformance, httpMetric } from '@react-native-firebase/perf';
-import ky from 'ky';
+
+const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
 
 const getContentLength = headers => {
   const length = getHeader('Content-Length', headers);
   return length ? Number(length) : null;
 };
 
-const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
+export default function instrumentKy(ky) {
+  return ky.create({
+    fetch: fetch,
+    hooks: {
+      beforeRequest: [
+        async (request, options) => {
+          const { url, method } = request;
+          options.metric = httpMetric(getPerformance(), url, method);
 
-const api = ky.create({
-  // prevent circular dependency warning
-  fetch: fetch,
-  hooks: {
-    beforeRequest: [
-      async (request, options) => {
-        const { url, method } = request;
-        options.metric = httpMetric(getPerformance(), url, method);
+          options.metric.putAttribute('client', 'ky');
+          options.metric.setRequestPayloadSize(0);
 
-        // add any extra metric attributes, if required
-        // options.metric.putAttribute('userId', '12345678');
-        // options.metric.setRequestPayloadSize(1234)
+          options.metric.start();
+        },
+      ],
 
-        options.metric.start();
-      },
-    ],
-
-    afterResponse: [
-      async (request, options, response) => {
-        const { status, headers } = response;
-        const { metric } = options;
-        metric.setHttpResponseCode(status);
-        metric.setResponseContentType(getHeader('Content-Type', headers));
-        metric.setResponsePayloadSize(getContentLength(headers));
-        metric.stop();
-      },
-    ],
-  },
-});
-
-export default api;
+      afterResponse: [
+        async (request, options, response) => {
+          const { status, headers } = response;
+          const { metric } = options;
+          metric.setHttpResponseCode(status);
+          metric.setResponseContentType(getHeader('Content-Type', headers));
+          metric.setResponsePayloadSize(getContentLength(headers));
+          metric.stop();
+        },
+      ],
+    },
+  });
+}
 ```
