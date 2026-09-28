@@ -1,9 +1,17 @@
 ---
 title: Cloud Functions
-description: 'Cloud Functions: calling deployed functions with httpsCallable(), connecting to the local emulator via connectFunctionsEmulator(), and targeting region-specific deployments.'
+description: 'Cloud Functions: getFunctions, connectFunctionsEmulator, httpsCallable, httpsCallableFromUrl, callable.stream(), HttpsError / FunctionsError, HttpsErrorCode, timeout options, and region targeting.'
 next: /functions/writing-deploying-functions
 previous: /firestore/pipelines/sdk-compatibility
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install Functions: `npm install --save @react-native-firebase/functions` or `yarn add @react-native-firebase/functions`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Deploy HTTPS callable functions to your Firebase project, or run the Functions emulator (for example via `yarn tests:emulator:start-ci` in this repository, default port `5001`). See [Writing & Deploying Functions](/functions/writing-deploying-functions).
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/functions.tsx
 
 # Installation
 
@@ -26,10 +34,13 @@ you can follow the manual installation steps for [iOS](/functions/usage/installa
 
 # Platform support and New Architecture
 
-|                      |                                                                                                                                                                                                                                  |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                                                                                                                                                               |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** — since v24 for Functions, and for all native modules from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement) and [Migrating to v24 — Cloud Functions](/migrating-to-v24#cloud-functions). |
+
+**Platform notes:** React Native Firebase exports `SDK_VERSION`, the runtime error class `HttpsError` (also aliased as `FunctionsError`), the `HttpsErrorCode` object, and the `HttpsErrorCodeValue` type for callable error codes without a `functions/` prefix (including RN-specific codes). Deprecated namespaced helpers `FunctionsStatics` and a re-exported `FirebaseApp` type remain for backwards compatibility. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -53,74 +64,225 @@ about security or implementing a HTTP request library.
 Functions deployed to Firebase have unique names, allowing you to easily identify which endpoint you wish to send a request to.
 To learn more about deploying Functions to Firebase, view the [Writing & Deploying Functions](/functions/writing-deploying-functions) documentation.
 
-## Using an emulator
+## Package version
 
-Whilst developing your application with Cloud Functions, it is possible to run the functions inside of a local emulator.
-
-To call the emulated functions in the **default** region, call the `useEmulator` method exposed by the library:
+`SDK_VERSION` is the React Native Firebase Functions package version string exported from `@react-native-firebase/functions`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/functions`.
 
 ```js
-import { connectFunctionsEmulator, getFunctions } from '@react-native-firebase/functions';
+import { SDK_VERSION } from '@react-native-firebase/functions';
 
-if (__DEV__) {
-  connectFunctionsEmulator(getFunctions(), 'localhost', 5001);
-}
+console.log('Functions package version:', SDK_VERSION);
 ```
 
-If your functions are deployed on a different region, then please see [Region-specific Functions](/functions/usage#region-specific-functions)
+## Emulator
+
+Use `connectFunctionsEmulator` before any callable or stream calls when talking to the Local Emulator Suite (for example the Functions emulator started by `yarn tests:emulator:start-ci` in this repository, default port `5001`). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use).
+
+```js
+import { Platform } from 'react-native';
+import { connectFunctionsEmulator, getFunctions } from '@react-native-firebase/functions';
+
+const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+connectFunctionsEmulator(getFunctions(), host, 5001);
+```
+
+If your functions are deployed on a different region, pass that region to `getFunctions` before connecting (see [Region-specific Functions](/functions/usage#region-specific-functions)).
+
+### Deprecated `useFunctionsEmulator`
+
+Prefer `connectFunctionsEmulator`. The instance method `useFunctionsEmulator(origin)` is deprecated and expects a full origin string such as `http://127.0.0.1:5001`. Invalid origins throw.
+
+```js
+import { getFunctions } from '@react-native-firebase/functions';
+
+const functions = getFunctions();
+// WARNING: deprecated; prefer connectFunctionsEmulator(functions, host, port). Invalid origins throw.
+functions.useFunctionsEmulator('http://127.0.0.1:5001');
+```
+
+## Get a Functions instance
+
+`getFunctions` returns a `Functions` instance for the default app and default region (`us-central1`). Pass a Firebase App and/or a region (or custom domain) when you need a non-default target:
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions } from '@react-native-firebase/functions';
+
+const functions = getFunctions();
+const europe = getFunctions(getApp(), 'europe-west1');
+console.log('Default region instance app:', functions.app.name);
+console.log('Europe instance app:', europe.app.name);
+```
+
+`FirebaseApp` is also re-exported from `@react-native-firebase/functions` for older namespaced type imports. That re-export is deprecated; prefer importing `FirebaseApp` from `@react-native-firebase/app`.
 
 ## Calling an endpoint
 
-Assuming we have a deployed a callable endpoint named `listProducts`, to call the endpoint the library exposes a
-`httpsCallable` method. For example:
+Assuming a deployed HTTPS callable named `listProducts`, call it with `httpsCallable`. The returned function takes an optional payload and resolves with `{ data }`:
 
 ```js
-// Deployed HTTPS callable
-exports.listProducts = functions.https.onCall(() => {
-  return [
-    /* ... */
-    // Return some data
-  ];
-});
-```
-
-Within the React Native application, the list of products returned can be directly accessed:
-
-```jsx
 import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 
-function App() {
+async function loadProducts() {
+  const listProducts = httpsCallable(getFunctions(), 'listProducts');
+  const response = await listProducts({ page: 1, limit: 15 });
+  console.log('Products:', response.data);
+}
+```
+
+Within a React Native component:
+
+```jsx
+import React, { useEffect, useState } from 'react';
+import { Text } from 'react-native';
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
+
+function ProductList() {
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState([]);
+  const [productsJson, setProductsJson] = useState('');
 
   useEffect(() => {
-    httpsCallable(getFunctions(), 'listProducts')().then(response => {
-      setProducts(response.data);
-      setLoading(false);
-    });
+    let cancelled = false;
+    httpsCallable(getFunctions(), 'listProducts')()
+      .then(response => {
+        if (!cancelled) {
+          setProductsJson(JSON.stringify(response.data));
+          setLoading(false);
+        }
+      })
+      .catch(error => {
+        if (!cancelled) {
+          console.log('Callable failed:', error);
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (loading) {
-    return null;
+    return <Text>Loading…</Text>;
   }
 
-  // ...
+  return <Text>{productsJson}</Text>;
+}
+```
+
+Optional `HttpsCallableOptions` let you set a millisecond `timeout` and `limitedUseAppCheckTokens` (required when the callable enforces App Check replay protection):
+
+```js
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
+
+const listProducts = httpsCallable(getFunctions(), 'listProducts', {
+  timeout: 10_000,
+  limitedUseAppCheckTokens: true,
+});
+
+async function loadWithOptions() {
+  const response = await listProducts({ page: 1, limit: 15 });
+  console.log('Products:', response.data);
+}
+```
+
+## Call by URL
+
+Use `httpsCallableFromUrl` when you have the full callable URL (for example a Cloud Run URL, or the emulator URL `http://HOST:PORT/PROJECT/REGION/NAME`). The firebase-js-sdk export is named `httpsCallableFromURL`; React Native Firebase uses `httpsCallableFromUrl`.
+
+```js
+import { Platform } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import { getFunctions, httpsCallableFromUrl } from '@react-native-firebase/functions';
+
+async function callByUrl() {
+  const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+  const projectId = getApp().options.projectId;
+  const url = `http://${host}:5001/${projectId}/us-central1/listProducts`;
+  const listProducts = httpsCallableFromUrl(getFunctions(), url);
+  const response = await listProducts({ page: 1, limit: 15 });
+  console.log('Products from URL:', response.data);
+}
+```
+
+## Streaming results
+
+Callable references expose `.stream()`. It returns `{ stream, data }`: iterate `stream` for chunks as the backend calls `sendChunk`, then await `data` for the final payload.
+
+```js
+import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
+
+async function listenToForecast() {
+  const getForecast = httpsCallable(getFunctions(), 'getForecast');
+  const { stream, data } = await getForecast.stream({
+    locations: [{ latitude: 37.77, longitude: -122.41 }],
+  });
+
+  for await (const chunk of stream) {
+    console.log('Forecast chunk:', chunk);
+  }
+
+  const allForecasts = await data;
+  console.log('Final forecast payload:', allForecasts);
+}
+```
+
+## Handle errors
+
+When a callable throws an HTTPS error on the server, the client rejects with an `HttpsError` instance (`code`, `message`, and optional `details`). React Native Firebase exports that class as `HttpsError` and aliases it as `FunctionsError` (same constructor). Under consumer TypeScript types, `FunctionsError` is not a valid `instanceof` right-hand side; use `error instanceof HttpsError`, and assert the alias with `FunctionsError === HttpsError`.
+
+`HttpsErrorCode` is a React Native Firebase object of callable error code strings (uppercase keys and lowercase hyphenated keys). The firebase-js-sdk does not export this helper from the modular `@firebase/functions` entry point. Runtime `code` values on `HttpsError` are strings without a `functions/` prefix, typed as `HttpsErrorCodeValue` (core codes plus RN-specific `unsupported-type` and `failed-to-parse-wrapped-number`).
+
+Deprecated namespaced type `FunctionsStatics` describes the old `firebase.functions` statics shape that exposed `HttpsErrorCode`; prefer importing `HttpsErrorCode` from the modular entry point.
+
+```js
+import {
+  FunctionsError,
+  HttpsError,
+  HttpsErrorCode,
+  getFunctions,
+  httpsCallable,
+} from '@react-native-firebase/functions';
+
+async function callWithErrorHandling() {
+  console.log('FunctionsError is HttpsError:', FunctionsError === HttpsError);
+  console.log('cancelled code:', HttpsErrorCode.CANCELLED);
+
+  const addMessage = httpsCallable(getFunctions(), 'addMessage');
+  try {
+    const result = await addMessage({ text: 'hello' });
+    console.log('Message:', result.data);
+  } catch (error) {
+    if (error instanceof HttpsError) {
+      console.log('code:', error.code);
+      console.log('message:', error.message);
+      console.log('details:', error.details);
+      return;
+    }
+    console.log('Non-HttpsError:', error);
+  }
 }
 ```
 
 ## Region-specific Functions
 
-If you need to deploy Functions in a region other than the default one, modified statements need to be used.
+If you deploy callables in a region other than `us-central1`, pass that region to `getFunctions` for both emulator connection and callable creation:
 
-```javascript
+```js
+import { Platform } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
 import {
   connectFunctionsEmulator,
   getFunctions,
   httpsCallable,
 } from '@react-native-firebase/functions';
-import { getApp } from '@react-native-firebase/app';
 
-connectFunctionsEmulator(getFunctions(getApp(), 'region_name'), 'localhost', 5001);
+const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+const europe = getFunctions(getApp(), 'europe-west1');
+connectFunctionsEmulator(europe, host, 5001);
 
-httpsCallable(getFunctions(getApp(), 'region_name'), 'listProducts')({ abc: 123 }).then();
+async function callEuropeCallable() {
+  const listProducts = httpsCallable(europe, 'listProducts');
+  const response = await listProducts({ page: 1, limit: 15 });
+  console.log('Europe products:', response.data);
+}
 ```

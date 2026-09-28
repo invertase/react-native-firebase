@@ -72,11 +72,12 @@ functions. These exports are used to build the API endpoint name which will be a
 For this tutorial, we are creating a product listing API. Go ahead and create a new HTTPS callable named function called `listProducts`:
 
 ```js
+// codeblock-ignore: Node Cloud Functions server sample (firebase-functions), not consumer package types
 // functions/index.js
 const functions = require('firebase-functions');
 
 exports.listProducts = functions.https.onCall((data, context) => {
-  // ...
+  return [];
 });
 ```
 
@@ -87,6 +88,7 @@ to keep consistent results for each request. The data should be generated before
 new data set being generated on each request:
 
 ```js
+// codeblock-ignore: Node Cloud Functions server sample (firebase-functions), not consumer package types
 // functions/index.js
 const functions = require('firebase-functions');
 const { faker } = require('@faker-js/faker');
@@ -139,6 +141,7 @@ authentication, which integrates with the [Authentication](/auth) module. To sec
 property exists on the function execution context:
 
 ```js
+// codeblock-ignore: Node Cloud Functions server sample (firebase-functions), not consumer package types
 exports.listProducts = functions.https.onCall((data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'Endpoint requires authentication!');
@@ -160,6 +163,7 @@ of 1000 products, we can paginate the data by passing in arguments when calling 
 These arguments can be accessed via the `data` property when the function is executed, let's update our function code to support pagination arguments:
 
 ```js
+// codeblock-ignore: Node Cloud Functions server sample (firebase-functions), not consumer package types
 exports.listProducts = functions.https.onCall((data, context) => {
   const { page = 1, limit = 10 } = data;
 
