@@ -32,7 +32,7 @@ _MAX_LOOKUPS=2;
 _SEARCH_RESULT=''
 _RN_ROOT_EXISTS=''
 _CURRENT_LOOKUPS=1
-_JSON_ROOT="'react-native'"
+_JSON_ROOT='react-native'
 _JSON_FILE_NAME='firebase.json'
 _JSON_OUTPUT_BASE64='e30=' # { }
 _CURRENT_SEARCH_DIR=${PROJECT_DIR}
@@ -52,7 +52,7 @@ function setPlistValue {
 
 function getFirebaseJsonKeyValue () {
   if [[ ${_RN_ROOT_EXISTS} ]]; then
-    ruby -Ku -e "require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']"
+    ruby -rjson -e 'output=JSON.parse(File.read(ARGV.fetch(0))); puts output[ARGV.fetch(1)][ARGV.fetch(2)]' "$_SEARCH_RESULT" "$_JSON_ROOT" "$1"
   else
     echo ""
   fi;
@@ -87,15 +87,14 @@ while true; do
 done
 
 if [[ ${_SEARCH_RESULT} ]]; then
-  _JSON_OUTPUT_RAW=$(cat "${_SEARCH_RESULT}")
-  if ! _RN_ROOT_EXISTS=$(ruby -Ku -e "require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]"); then
+  if ! _RN_ROOT_EXISTS=$(ruby -rjson -e 'output=JSON.parse(File.read(ARGV.fetch(0))); puts output[ARGV.fetch(1)]' "$_SEARCH_RESULT" "$_JSON_ROOT"); then
     echo "error: Failed to parse firebase.json, check for syntax errors."
     exit 1
   fi
 
   if [[ ${_RN_ROOT_EXISTS} ]]; then
     if ! python3 --version >/dev/null 2>&1; then echo "error: python3 not found, firebase.json file processing error." && exit 1; fi
-    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('"'${_SEARCH_RESULT}'"', '"'rb'"').read())['${_JSON_ROOT}']), '"'utf-8'"')).decode())' || echo "e30=")
+    _JSON_OUTPUT_BASE64=$(python3 -c 'import base64,json,sys; print(base64.b64encode(json.dumps(json.load(open(sys.argv[1], "rb"))["react-native"]).encode()).decode())' "$_SEARCH_RESULT" || echo "e30=")
   fi
 
   _PLIST_ENTRY_KEYS+=("firebase_json_raw")
@@ -103,7 +102,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   _PLIST_ENTRY_VALUES+=("$_JSON_OUTPUT_BASE64")
 
   # config.app_data_collection_default_enabled
-  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "app_data_collection_default_enabled")
+  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue "app_data_collection_default_enabled")
   if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then
     _PLIST_ENTRY_KEYS+=("FirebaseDataCollectionDefaultEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -111,7 +110,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_auto_collection_enabled
-  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_auto_collection_enabled")
+  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "analytics_auto_collection_enabled")
   if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then
     _PLIST_ENTRY_KEYS+=("FIREBASE_ANALYTICS_COLLECTION_ENABLED")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -119,7 +118,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_collection_deactivated
-  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_collection_deactivated")
+  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue "analytics_collection_deactivated")
   if [[ $_ANALYTICS_DEACTIVATED ]]; then
     _PLIST_ENTRY_KEYS+=("FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -127,7 +126,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_idfv_collection_enabled
-  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_idfv_collection_enabled")
+  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue "analytics_idfv_collection_enabled")
   if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then
     _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -135,7 +134,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_default_allow_analytics_storage
-  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_analytics_storage")
+  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue "analytics_default_allow_analytics_storage")
   if [[ $_ANALYTICS_STORAGE ]]; then
     _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -143,7 +142,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_default_allow_ad_storage
-  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_ad_storage")
+  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue "analytics_default_allow_ad_storage")
   if [[ $_ANALYTICS_AD_STORAGE ]]; then
     _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -151,7 +150,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_default_allow_ad_user_data
-  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_ad_user_data")
+  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue "analytics_default_allow_ad_user_data")
   if [[ $_ANALYTICS_AD_USER_DATA ]]; then
     _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -159,7 +158,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_default_allow_ad_personalization_signals
-  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_ad_personalization_signals")
+  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue "analytics_default_allow_ad_personalization_signals")
   if [[ $_ANALYTICS_PERSONALIZATION ]]; then
     _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -167,7 +166,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.analytics_registration_with_ad_network_enabled
-  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "google_analytics_registration_with_ad_network_enabled")
+  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue "google_analytics_registration_with_ad_network_enabled")
   if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then
     _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -175,7 +174,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.google_analytics_automatic_screen_reporting_enabled
-  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "google_analytics_automatic_screen_reporting_enabled")
+  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue "google_analytics_automatic_screen_reporting_enabled")
   if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then
     _PLIST_ENTRY_KEYS+=("FirebaseAutomaticScreenReportingEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -183,7 +182,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.perf_auto_collection_enabled
-  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "perf_auto_collection_enabled")
+  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "perf_auto_collection_enabled")
   if [[ $_PERF_AUTO_COLLECTION ]]; then
     _PLIST_ENTRY_KEYS+=("firebase_performance_collection_enabled")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -191,7 +190,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.perf_collection_deactivated
-  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "perf_collection_deactivated")
+  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue "perf_collection_deactivated")
   if [[ $_PERF_DEACTIVATED ]]; then
     _PLIST_ENTRY_KEYS+=("firebase_performance_collection_deactivated")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -199,7 +198,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.messaging_auto_init_enabled
-  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "messaging_auto_init_enabled")
+  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue "messaging_auto_init_enabled")
   if [[ $_MESSAGING_AUTO_INIT ]]; then
     _PLIST_ENTRY_KEYS+=("FirebaseMessagingAutoInitEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -207,7 +206,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.in_app_messaging_auto_colllection_enabled
-  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "in_app_messaging_auto_collection_enabled")
+  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue "in_app_messaging_auto_collection_enabled")
   if [[ $_FIAM_AUTO_INIT ]]; then
     _PLIST_ENTRY_KEYS+=("FirebaseInAppMessagingAutomaticDataCollectionEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -215,7 +214,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.app_check_token_auto_refresh
-  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "app_check_token_auto_refresh")
+  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue "app_check_token_auto_refresh")
   if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then
     _PLIST_ENTRY_KEYS+=("FirebaseAppCheckTokenAutoRefreshEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
@@ -223,7 +222,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   fi
 
   # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful
-  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "crashlytics_disable_auto_disabler")
+  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue "crashlytics_disable_auto_disabler")
   if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == "true" ]]; then
     echo "Disabled Crashlytics auto disabler." # do nothing
   else

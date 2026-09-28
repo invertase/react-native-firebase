@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-08-06T16:00:00Z
+timestamp: 2026-09-11T00:00:00Z
 ---
 
 # iOS SPM native integration decisions
@@ -215,6 +215,63 @@ Do **not** reintroduce comments or docs that claim firebase-ios-sdk products
 use `.library(type: .dynamic)`. That claim is false and misled debugging of
 the multi-pod sharing failure.
 
+## Exact SPM Firebase iOS SDK version
+
+CocoaPods already pins Firebase pods with an exact `version`
+(`spec.dependency pod, version` from `sdkVersions.ios.firebase`). SPM used
+`{ kind: 'upToNextMajorVersion', minimumVersion: version }` in both
+`firebase_dependency` (RN `spm_dependency` → Pods project) and
+`rnfirebase_add_spm_core_to_app_target` (user-project `package_references`).
+Xcode could therefore resolve a newer 12.x than the RNFB pin.
+
+SPM package requirement is `{ kind: 'exactVersion', version: version }` —
+the hash RN's `spm_dependency` and xcodeproj accept for an exact pin, equal
+to `sdkVersions.ios.firebase`. Do not change the CocoaPods Firebase pod
+version path.
+
+Reusing an existing user-project `package_references` entry, including the
+already-linked FirebaseCore healing path, must rewrite a leftover
+`upToNextMajorVersion` to that exact requirement. Leaving the old kind in
+place lets SPM keep floating after upgrade.
+
+## ObjC flag on RNFB pod targets
+
+`rnfirebase_apply_spm_build_settings` adds `-ObjC` to user-project native
+targets so Release dead-code stripping cannot drop FIRLibrary/FIRComponent
+registration. That is not enough when Analytics/Measurement is statically
+absorbed into `RNFBAnalytics` (automatic SPM libraries + dynamic pods):
+Measurement ObjC categories live in the pod's static link, not the app
+target. The same helper therefore adds `-ObjC` to every RNFB pod target
+(`OTHER_LDFLAGS`) as well. Non-RNFB Pods targets are unchanged. Do not add
+CocoaPods-only `IdentitySupport` on the SPM path.
+
+Consumer-facing version pin and `-ObjC` notes:
+[`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
+
+### GoogleUtilities: explicit `spm_dependency` lets pods share one product
+
+The FirebaseCore limitation above is about *automatic* SPM products declared
+only transitively. A related but narrower case: some `GoogleUtilities`
+products (`GULNetwork`, `GULReachability`, `GULMethodSwizzler`) were only
+reachable transitively through `FirebaseAnalytics`/`FirebaseMessaging` on
+`RNFBAnalytics.podspec`/`RNFBMessaging.podspec`, and Xcode's SPM integration
+did not reliably promote them to a shared `PackageProduct.framework` in that
+graph — each pod compiled a private copy instead, colliding at runtime once
+both were loaded (GitHub
+[#9322](https://github.com/invertase/react-native-firebase/issues/9322)).
+
+Declaring the same GoogleUtilities products as an explicit top-level
+`spm_dependency` directly on each consuming podspec (same pattern as the
+existing `GULAppDelegateSwizzler` declaration) is enough for Xcode to build
+one shared dynamic framework per product and link every consumer against it,
+instead of duplicating it per pod. This is scoped to `GoogleUtilities`
+products specifically; it does **not** change or fix the `FirebaseCore`/
+`FIRApp` sharing limitation described above, which stays unsupported under
+SPM regardless of how explicitly any product is declared. Add this
+declaration only to podspecs actually shown to privately duplicate a watched
+class by `yarn test-expo:ios:link`'s `#9322` diagnosis, not pre-emptively to
+every RNFB podspec.
+
 ## App target FirebaseCore link: package dependency alone is not enough
 
 `rnfirebase_add_spm_core_to_app_target` exists for the case in the table above
@@ -242,8 +299,9 @@ GitHub [#9158](https://github.com/invertase/react-native-firebase/issues/9158)
 
 Maintainer check of the **Expo documented path** (SPM + dynamic frameworks +
 prebuild-generated AppDelegate `FIRApp` call) is **`yarn test-expo:ios:link`**
-only — [agent command policy](testing/agent-command-policy.md). That is a
-workspace **link** fixture (`test-expo/`), not Detox e2e (`yarn tests:ios:*`).
+only — [agent command policy](testing/agent-command-policy.md). `test-expo/` is
+also the user-facing Expo example; the closer is still a workspace **link**
+gate (build-only, does not launch), not Detox e2e (`yarn tests:ios:*`).
 Do not restate `expo prebuild` / `xcodebuild` here. Package index:
 [App package](packages/app/index.md).
 
@@ -466,10 +524,18 @@ Expo paths do not warn.
 
 The documented Podfile configuration does not change: SPM on,
 `use_frameworks! :linkage => :dynamic`, prebuilt RNCore on. The canonical regression
-fixture is **`yarn test-expo:ios:link`** ([agent command policy](testing/agent-command-policy.md)).
-Link success confirms both RNFB framework products are in dynamic form and
-duplicate Firebase symbols are absent, while still validating the app target's
-own FirebaseCore dependency (the original purpose of that fixture). See
+closer is **`yarn test-expo:ios:link`** ([agent command policy](testing/agent-command-policy.md)).
+That command is **build-only** (`xcodebuild build`; it does not launch the app).
+Link success confirms every discovered `RNFB*` CocoaPods product is a framework
+and duplicate Firebase symbols are absent, while still validating the app target's
+own FirebaseCore dependency. Discovery is dynamic against the generated Pods
+project. Packages with no iOS native target (pure-JS `packages/ai`, Android-only
+`packages/phone-number-verification`) do not produce an `RNFB*` product and are
+not in that graph. Named App+Messaging GitHub
+[#9158](https://github.com/invertase/react-native-firebase/issues/9158) /
+[#9202](https://github.com/invertase/react-native-firebase/issues/9202)
+signatures remain nested inside that generic gate. Do not hard-code an inventory
+name list here. See
 [Maintainer check of the Expo documented path](#app-target-firebasecore-link-package-dependency-alone-is-not-enough).
 The [#9202](https://github.com/invertase/react-native-firebase/issues/9202)
 regression signature is duplicate `_FIRFirebaseVersion` symbols from
@@ -501,6 +567,15 @@ invariants:
   consumer's checked-in `.pbxproj` instead of treating a declared-but-unlinked
   dependency as already done; and `rnfirebase_remove_spm_core_from_app_target`
   removes both artifacts symmetrically;
+- SPM firebase-ios-sdk package requirement is `{ kind: 'exactVersion',
+  version: version }` equal to `sdkVersions.ios.firebase` in both
+  `firebase_dependency` and app-target `package_references`; reusing an
+  existing package reference still rewrites leftover `upToNextMajorVersion`.
+  CocoaPods Firebase pod versions stay exact `spec.dependency` pins;
+- `rnfirebase_apply_spm_build_settings` still adds `-ObjC` to user-project
+  native targets **and** every RNFB pod target (so `RNFBAnalytics` keeps
+  Measurement categories); do not add CocoaPods-only `IdentitySupport` on
+  the SPM path;
 - `embed_frameworks_from`'s Archive `UninstalledProducts` path still skips
   frameworks whose internal binary is missing or not `dynamically linked`
   (`file -b`), so static CocoaPods products are never copied into the app
@@ -517,8 +592,8 @@ invariants:
   job verifies that every `@rpath` framework dependency is embedded;
 - when Expo precompiled modules are active, `rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!`
   still restores RNFB targets from static back to dynamic if Expo's pre-install
-  hook downgraded them, and the `test-expo:ios:link` fixture still passes with no
-  duplicate Firebase symbols.
+  hook downgraded them, and `yarn test-expo:ios:link` still passes with every
+  discovered `RNFB*` product a framework and no duplicate Firebase symbols.
 
 The bullets above are the SPM-specific review checklist. General build, lint,
 and evidence requirements are owned by the

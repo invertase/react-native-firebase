@@ -67,6 +67,49 @@ Pod::Spec.new do |s|
     firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
   end
 
+  # SPM: fix for #9322 -- GULNetwork/GULReachability/GULMethodSwizzler ended
+  # up compiled privately into both RNFBAnalytics.framework and
+  # RNFBMessaging.framework instead of one shared dynamic framework,
+  # producing duplicate ObjC class definitions (GULNetwork,
+  # GULMutableDictionary, GULNetworkURLSession, GULReachabilityChecker,
+  # GULSessionDeallocTracker, GULSwizzler) at runtime once both frameworks
+  # are loaded together.
+  #
+  # Confirmed: the raw FirebaseAnalytics/GoogleAppMeasurement .xcframework
+  # binaries do NOT bake in their own copies of these classes (checked via
+  # `nm`); they only reference them as undefined externals, same as any
+  # source-based product.
+  #
+  # Not fully confirmed: *why* Xcode's SPM integration fails to promote this
+  # specific cluster to a shared PackageProduct.framework once RNFBAnalytics
+  # is in the graph, when an equivalent pure-source pairing (RNFBMessaging +
+  # RNFBAuth, sharing the GULAppDelegateSwizzler cluster instead) promotes
+  # cleanly with no private copies at all. It isn't simply "declared
+  # transitively vs explicitly" either: firebase-ios-sdk's own Package.swift
+  # already lists GULNetwork/GULMethodSwizzler as explicit top-level
+  # products on FirebaseAnalyticsWrapper, in the same dependency array as
+  # GULAppDelegateSwizzler, and only the latter shared correctly. Whether
+  # Analytics's target also carrying a binaryTarget dependency is what
+  # changes Xcode's per-target sharing heuristic here is a live, untested
+  # hypothesis, not something this fix confirms or rules out.
+  #
+  # What IS confirmed: declaring these same products as an explicit
+  # top-level SPM dependency directly on *this* podspec (and on
+  # RNFBMessaging.podspec) makes Xcode build one shared dynamic framework
+  # per product and link both RNFBAnalytics and RNFBMessaging against it,
+  # instead of each compiling its own copy. Verified with a passing run
+  # (fix applied) and a failing negative control (fix reverted).
+  if defined?(spm_dependency) && !rnfirebase_spm_disabled?
+    # 8.1.3 floor matches the GoogleUtilities version firebase-ios-sdk 12.x
+    # resolves transitively; bump this alongside firebase_sdk_version if
+    # firebase-ios-sdk ever moves to GoogleUtilities 9.x.
+    spm_dependency(s,
+      url: 'https://github.com/google/GoogleUtilities.git',
+      requirement: { kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' },
+      products: ['GULNetwork', 'GULReachability', 'GULMethodSwizzler']
+    )
+  end
+
   unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
     # CocoaPods-only: conditional IdentitySupport subspec
     if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)

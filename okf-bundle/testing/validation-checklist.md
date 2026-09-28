@@ -3,7 +3,7 @@ type: Reference
 title: Validation checklist
 description: Canonical command sequence for validating RNFB TS/JS changes, e2e, and handoff.
 tags: [testing, validation, jest, compare-types, lint, coverage]
-timestamp: 2026-06-24T00:00:00Z
+timestamp: 2026-09-10T00:00:00Z
 ---
 
 # Validation checklist
@@ -37,6 +37,7 @@ yarn                                  # install + postinstallDev (lerna:prepare 
 yarn lerna:prepare                    # after packages/*/lib/** edits — transpiles lib → dist/module via each package prepare target
 yarn tsc:compile
 yarn tsc:compile:consumer
+yarn tsc:compile:test-expo         # when test-expo/** TS in the diff — [agent command policy](agent-command-policy.md); never `cd test-expo && tsc`
 yarn attw:check                    # scoped attw + Expo plugin smoke; pack ignore — [Types-AD](architecture-decisions.md)
 ```
 
@@ -142,7 +143,7 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 
 | Tree in diff | Script | Notes |
 | ------------ | ------ | ----- |
-| `packages/**` JS/TS | `yarn lint:js` | ESLint `packages/*`. Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. A flood under `packages/app/__tests__/vendor/` is local Bundler vendor, not product lint. Do not treat it as the lint gate. [Agent command policy § JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor). |
+| `packages/**` or `test-expo/**` JS/TS | `yarn lint:js` | ESLint `packages/*` and `test-expo/` (one script; do not invent a `test-expo` lint entrypoint). Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. A flood under `packages/app/__tests__/vendor/` is local Bundler vendor, not product lint. Do not treat it as the lint gate. [Agent command policy § JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor). |
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
 | iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
@@ -159,9 +160,9 @@ A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn 
 
 Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), markdown/spellcheck (`docs/**` only).
 
-## Expo documented-path iOS link (not e2e)
+## Expo example and documented-path iOS link (not e2e)
 
-Workspace fixture `test-expo/`: **`yarn test-expo:ios:link`** only — [agent command policy](agent-command-policy.md). Not Detox; do not add `yarn tests:ios:*` or ad-hoc `expo prebuild` / `xcodebuild` as that closer. App package: [packages/app](../packages/app/index.md).
+`test-expo/` is a user-facing Expo example **and** the documented-path iOS link closer. Closer: **`yarn test-expo:ios:link`** only (build-only; does not launch) — [agent command policy](agent-command-policy.md). Typecheck: **`yarn tsc:compile:test-expo`**. JS lint: **`yarn lint:js`** (already includes `test-expo/`; do not invent a second lint entrypoint). Not Detox; do not add `yarn tests:ios:*` or ad-hoc `expo prebuild` / `xcodebuild` / `cd test-expo && …` as those gates. App package: [packages/app](../packages/app/index.md).
 
 ## RN CLI prebuilt RNCore iOS compile (not e2e)
 
@@ -215,6 +216,7 @@ Exit codes must be the **real** ones: the agent shell is zsh, where `${PIPESTATU
 
 - [ ] `yarn lerna:prepare` (after any `packages/*/lib/**` edits)
 - [ ] `yarn tsc:compile`, `yarn tsc:compile:consumer`
+- [ ] `yarn tsc:compile:test-expo` when `test-expo/**` TS is in the diff ([agent command policy](agent-command-policy.md))
 - [ ] `yarn attw:check` when `package.json` `exports`, `plugin/build`, or published types changed ([Types-AD](architecture-decisions.md))
 - [ ] `yarn reference:api`
 - [ ] Redirect audit when TypeDoc config changed ([documentation site maintenance § redirect audit](../documentation-site-maintenance.md#redirect-audit-required-when-typedoc-config-changes))

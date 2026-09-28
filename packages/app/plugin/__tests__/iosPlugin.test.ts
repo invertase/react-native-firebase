@@ -93,6 +93,17 @@ describe('Config Plugin iOS Tests', function () {
     expect(result).toMatchSnapshot();
   });
 
+  it('works with Swift AppDelegate (SDK 58+ scene-based)', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+      {
+        encoding: 'utf8',
+      },
+    );
+    const result = modifySwiftAppDelegate(appDelegate);
+    expect(result).toMatchSnapshot();
+  });
+
   it('does not add the firebase import multiple times', async function () {
     const singleImport = '#import "AppDelegate.h"\n#import <Firebase/Firebase.h>';
     const doubleImport = singleImport + '\n#import <Firebase/Firebase.h>';

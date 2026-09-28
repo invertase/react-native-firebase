@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "448618578101",
+    "firebase_url": "https://react-native-firebase-testing.firebaseio.com",
+    "project_id": "react-native-firebase-testing",
+    "storage_bucket": "react-native-firebase-testing.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448618578101:android:cc6c1dc7a65cc83c",
+        "android_client_info": {
+          "package_name": "com.invertase.testing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448618578101-pdjje2lkv3p941e03hkrhfa7459cr2v8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invertase.testing",
+            "certificate_hash": "992e468b990cc418f306d0131be61ecfad800ac1"
+          }
+        },
+        {
+          "client_id": "448618578101-sg12d2qin42cpr00f8b0gehs5s7inm0v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuu4tbv9CwwTudNOweMNstzZHIDBhgJxA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448618578101-sg12d2qin42cpr00f8b0gehs5s7inm0v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

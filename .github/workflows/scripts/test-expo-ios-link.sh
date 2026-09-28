@@ -19,6 +19,8 @@
 # Regression #9202 signature: duplicate `_FIRFirebaseVersion` from both
 # libRNFBApp.a(FirebaseCore.o) and libRNFBMessaging.a(FirebaseCore.o). The
 # green graph must produce RNFB frameworks and link them with `-framework`.
+# The dynamic-framework / static-archive check below discovers and covers
+# every generated `RNFB*` CocoaPods target, not just App and Messaging.
 set -euo pipefail
 
 cd "$(dirname "$0")/../../.."
@@ -173,7 +175,50 @@ pod_framework_file_ref_ok() {
   ' "$PODS_PBXPROJ"
 }
 
-for rnfb_target in RNFBApp RNFBMessaging; do
+# Discover every generated `RNFB<Name>` PBXNativeTarget from the Pods
+# project, scoped to the PBXNativeTarget section only (other sections, e.g.
+# PBXBuildFile / PBXFrameworksBuildPhase, reference names like
+# "RNFBApp.framework in Frameworks" that would false-match if unscoped).
+# POSIX/BSD-awk-safe: no gawk-only match()-with-capture-array, just
+# sub()/index() the way pod_target_product_type / pod_framework_file_ref_ok
+# already do above.
+discover_rnfb_targets() {
+  awk '
+    /\/\* Begin PBXNativeTarget section \*\// { in_section = 1; next }
+    /\/\* End PBXNativeTarget section \*\// { in_section = 0 }
+    in_section && /\/\* RNFB[A-Za-z0-9]+ \*\/ = \{/ {
+      line = $0
+      sub(/^.*\/\* /, "", line)
+      sub(/ \*\/ = \{.*$/, "", line)
+      print line
+    }
+  ' "$PODS_PBXPROJ" | sort -u
+}
+
+rnfb_targets=()
+while IFS= read -r rnfb_target_name; do
+  [[ -n "$rnfb_target_name" ]] && rnfb_targets+=("$rnfb_target_name")
+done < <(discover_rnfb_targets)
+
+if [[ "${#rnfb_targets[@]}" -eq 0 ]]; then
+  log "ERROR: discovered zero RNFB* targets in ${PODS_PBXPROJ} -- this almost certainly means the discovery pattern broke, not that there are no RNFB pods"
+  exit 1
+fi
+
+log "discovered RNFB targets: ${rnfb_targets[*]}"
+
+has_rnfb_app=0
+has_rnfb_messaging=0
+for rnfb_target_name in "${rnfb_targets[@]}"; do
+  [[ "$rnfb_target_name" == "RNFBApp" ]] && has_rnfb_app=1
+  [[ "$rnfb_target_name" == "RNFBMessaging" ]] && has_rnfb_messaging=1
+done
+if [[ "$has_rnfb_app" -ne 1 || "$has_rnfb_messaging" -ne 1 ]]; then
+  log "ERROR: discovery did not find both RNFBApp and RNFBMessaging (found: ${rnfb_targets[*]}) -- these two ship in every graph, so this is a discovery bug, not an empty RNFB graph"
+  exit 1
+fi
+
+for rnfb_target in "${rnfb_targets[@]}"; do
   product_type="$(pod_target_product_type "$rnfb_target")"
   if [[ "$product_type" != "com.apple.product-type.framework" ]]; then
     log "ERROR: ${rnfb_target} generated with wrong product type '${product_type:-missing}' (expected dynamic framework)"
@@ -186,7 +231,7 @@ for rnfb_target in RNFBApp RNFBMessaging; do
 done
 
 app_ldflags="$(grep '^OTHER_LDFLAGS = ' "$PODS_XCCONFIG" || true)"
-for rnfb_target in RNFBApp RNFBMessaging; do
+for rnfb_target in "${rnfb_targets[@]}"; do
   if grep -Fq -- "-l\"${rnfb_target}\"" <<<"$app_ldflags"; then
     log "ERROR: app link inputs still use static library -l\"${rnfb_target}\""
     exit 1
@@ -212,7 +257,6 @@ xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
   ONLY_ACTIVE_ARCH=YES
-  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++
   -workspace "$WORKSPACE"
   -scheme "$SCHEME"
   -configuration Release
@@ -252,10 +296,88 @@ if [[ "$xcodebuild_status" -ne 0 ]]; then
 fi
 
 if grep -q "duplicate symbol '_FIRFirebaseVersion'" "$XCODEBUILD_LOG" ||
-   grep -q 'libRNFBApp\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG" ||
-   grep -q 'libRNFBMessaging\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG"; then
+   grep -E -q 'libRNFB[A-Za-z0-9]+\.a.*FirebaseCore\.o' "$XCODEBUILD_LOG"; then
   log "ERROR: xcodebuild passed but the #9202 static-archive signature remains in its log"
   exit 1
 fi
 
 log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"
+
+# #9322: without an explicit top-level spm_dependency declaration on
+# RNFBAnalytics.podspec / RNFBMessaging.podspec (see the comments there for
+# the full writeup, including what's confirmed vs. still an open question),
+# GoogleUtilities classes (GULNetwork, GULReachabilityChecker, etc.) end up
+# compiled privately into both RNFBAnalytics.framework and
+# RNFBMessaging.framework instead of one shared dynamic framework, and
+# collide at runtime once both are loaded in-process.
+#
+# Requires @react-native-firebase/analytics alongside messaging in
+# test-expo/package.json to actually exercise both sides of the graph.
+log "--- #9322 GoogleUtilities dedupe diagnosis ---"
+BUILT_PRODUCTS_DIR="$(grep -oE '/[^ ]*/Build/Products/[A-Za-z0-9_.-]+' "$XCODEBUILD_LOG" | head -1 || true)"
+if [[ -z "$BUILT_PRODUCTS_DIR" || ! -d "$BUILT_PRODUCTS_DIR" ]]; then
+  log "ERROR: could not determine BUILT_PRODUCTS_DIR from xcodebuild log for #9322 check"
+  exit 1
+fi
+
+nine322_classes=(
+  GULNetwork
+  GULMutableDictionary
+  GULNetworkURLSession
+  GULNetworkURLSessionWeakHolder
+  GULSessionDeallocTracker
+  GULReachabilityChecker
+  GULSwizzler
+  GoogleUtilities_GoogleUtilities_Network_SWIFTPM_MODULE_BUNDLER_FINDER
+  GoogleUtilities_GoogleUtilities_Reachability_SWIFTPM_MODULE_BUNDLER_FINDER
+)
+
+nine322_work_dir="$(mktemp -d)"
+trap 'rm -rf "$nine322_work_dir"' EXIT
+
+while IFS= read -r fw_dir; do
+  fw_name="$(basename "$fw_dir" .framework)"
+  bin="$fw_dir/$fw_name"
+  [[ -f "$bin" ]] || continue
+  fw_syms="$(nm -gU "$bin" 2>/dev/null || true)"
+  [[ -z "$fw_syms" ]] && continue
+  for class_name in "${nine322_classes[@]}"; do
+    if grep -qE '_OBJC_CLASS_\$_'"${class_name}"'$' <<<"$fw_syms"; then
+      echo "$fw_name" >>"${nine322_work_dir}/${class_name}.txt"
+    fi
+  done
+done < <(find "$BUILT_PRODUCTS_DIR" -type d -name "*.framework" ! -path "*/*.app/*" 2>/dev/null)
+
+nine322_failed=0
+for class_name in "${nine322_classes[@]}"; do
+  owners_file="${nine322_work_dir}/${class_name}.txt"
+  if [[ ! -f "$owners_file" ]]; then
+    log "ERROR: #9322 -- ${class_name} not defined in any built framework"
+    nine322_failed=1
+    continue
+  fi
+  owner_count="$(wc -l <"$owners_file" | tr -d ' ')"
+  owners="$(tr '\n' ' ' <"$owners_file")"
+  if [[ "$owner_count" -ne 1 ]]; then
+    log "ERROR: #9322 -- expected exactly 1 framework defining ${class_name}, found ${owner_count}: ${owners}"
+    nine322_failed=1
+    continue
+  fi
+  case "$owners" in
+    RNFB*)
+      log "ERROR: #9322 -- ${class_name} is privately duplicated into ${owners} instead of a shared framework"
+      nine322_failed=1
+      ;;
+    *)
+      log "ok: ${class_name} shared in ${owners}"
+      ;;
+  esac
+done
+log "--- end #9322 GoogleUtilities dedupe diagnosis ---"
+
+if [[ "$nine322_failed" -ne 0 ]]; then
+  log "ERROR: #9322 GoogleUtilities duplicate-class regression detected"
+  exit 1
+fi
+
+log "PASS: no RNFB* framework privately duplicates a shared GoogleUtilities class (#9322)"

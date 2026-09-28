@@ -16,6 +16,7 @@
  */
 
 #import "RNFBFirestoreTransactionRegistry.h"
+#import "RNFBFirestoreTransactionAttempt.h"
 
 #if __has_include("RNFBHandleMap.h")
 #import "RNFBHandleMap.h"
@@ -38,17 +39,10 @@
 }
 
 - (void)rnfb_abortState:(id)state {
-  if (![state isKindOfClass:[NSMutableDictionary class]]) {
+  if (![state isKindOfClass:[RNFBFirestoreTransactionAttempt class]]) {
     return;
   }
-  NSMutableDictionary *transactionState = (NSMutableDictionary *)state;
-  @synchronized(transactionState) {
-    transactionState[@"aborted"] = @YES;
-    dispatch_semaphore_t semaphore = transactionState[@"semaphore"];
-    if (semaphore) {
-      dispatch_semaphore_signal(semaphore);
-    }
-  }
+  [(RNFBFirestoreTransactionAttempt *)state abort];
 }
 
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
