@@ -30,7 +30,10 @@ import io.invertase.firebase.common.RNFBHandleCollisionException;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -375,9 +378,32 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
     }
   }
 
-  // Set by keepSynced(true). Query.get() toggles keepSynced(spec) on its success path, which
-  // would cancel an app's own keepSynced on the same spec, so get() uses once() after any.
-  private static volatile boolean keepSyncedUsed = false;
+  // Locations the app keeps synced, by keepSyncedKey. On success, Query.get() turns keepSynced on
+  // and then off for the spec it read, which cancels the app's own keepSynced on that spec. get()
+  // only reads the plain spec natively, so that's the only one tracked. Static because the SDK
+  // keeps the registration across a JS reload.
+  private static final Set<String> keptSyncedLocations =
+      Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+  // reference.toString() is the full URL, so a null dbURL and the default URL give the same key.
+  private static String keepSyncedKey(String app, DatabaseReference reference) {
+    return app + "|" + reference;
+  }
+
+  // Whether the modifiers build the SDK's default QuerySpec. orderByPriority() on its own does,
+  // since the default params already order by priority.
+  private static boolean isPlainSpec(ReadableArray modifiers) {
+    if (modifiers.size() == 0) {
+      return true;
+    }
+    if (modifiers.size() != 1) {
+      return false;
+    }
+    ReadableMap modifier = modifiers.getMap(0);
+    return modifier != null
+        && "orderBy".equals(modifier.getString("type"))
+        && "orderByPriority".equals(modifier.getString("name"));
+  }
 
   private static final java.util.regex.Pattern PERMISSION_DENIED_REASON =
       java.util.regex.Pattern.compile(
@@ -392,7 +418,7 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
    *   <li>RTDB debug logging is on: a get in flight when the socket drops is resent on reconnect
    *       only because PersistentConnectionImpl.sendGet's early return sits inside {@code if
    *       (logger.logsDebug())};
-   *   <li>keepSynced was used (see keepSyncedUsed).
+   *   <li>the app keeps this location synced (see keptSyncedLocations).
    * </ul>
    */
   @Override
@@ -402,7 +428,7 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
 
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     if (modifiers.size() > 0
-        || keepSyncedUsed
+        || keptSyncedLocations.contains(keepSyncedKey(app, reference))
         || preferences.getBooleanValue(UniversalDatabaseStatics.DATABASE_PERSISTENCE_ENABLED, false)
         || preferences.getBooleanValue(UniversalDatabaseStatics.DATABASE_LOGGING_ENABLED, false)) {
       addOnceValueEventListener(databaseQuery, promise);
@@ -490,8 +516,13 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
       boolean enabled,
       Promise promise) {
     DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
-    if (enabled) {
-      keepSyncedUsed = true;
+    if (isPlainSpec(modifiers)) {
+      String location = keepSyncedKey(app, reference);
+      if (enabled) {
+        keptSyncedLocations.add(location);
+      } else {
+        keptSyncedLocations.remove(location);
+      }
     }
     getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(enabled);
     promise.resolve(null);
