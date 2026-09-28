@@ -1,0 +1,8 @@
+/**
+ * Host-only Clang module so production Swift (`import FirebaseCore`) compiles against
+ * HostStubs in the macOS XCTest target. Not shipped in the production pod.
+ */
+module FirebaseCore {
+  header "FirebaseCore/FirebaseCore.h"
+  export *
+}
