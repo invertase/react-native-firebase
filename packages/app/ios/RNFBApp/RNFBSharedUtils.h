@@ -18,12 +18,9 @@
 #ifndef RNFBSharedUtils_h
 #define RNFBSharedUtils_h
 
-#if __has_include(<FirebaseCore/FirebaseCore.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-#endif
 #import <React/RCTBridgeModule.h>
+
+@class FIRApp;
 
 #ifdef DEBUG
 #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);

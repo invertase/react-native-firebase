@@ -14,7 +14,58 @@
  * limitations under the License.
  */
 
+import FirebaseCore
 import Foundation
+
+/**
+ * Adapts live `FirebaseOptions` (`FIROptions`) to `RNFBFIROptionsProviding`.
+ *
+ * Field mapping matches
+ * https://github.com/firebase/firebase-ios-sdk/blob/main/FirebaseCore/Sources/Public/FirebaseCore/FIROptions.h
+ * (`apiKey`, `googleAppID`, `projectID`, `databaseURL`, `storageBucket`, `gcmSenderID`, `clientID`).
+ */
+@objc(RNFBFIROptionsAdapter)
+final class RNFBFIROptionsAdapter: NSObject, RNFBFIROptionsProviding {
+  private let options: FirebaseOptions
+
+  init(options: FirebaseOptions) {
+    self.options = options
+  }
+
+  var apiKey: String? { options.apiKey }
+  var googleAppID: String? { options.googleAppID }
+  var projectID: String? { options.projectID }
+  var databaseURL: String? { options.databaseURL }
+  var storageBucket: String? { options.storageBucket }
+  var gcmSenderID: String? { options.gcmSenderID }
+  var clientID: String? { options.clientID }
+}
+
+/**
+ * Adapts live `FirebaseApp` (`FIRApp`) to `RNFBFIRAppProviding`.
+ *
+ * Uses `name`, `options`, and `isDataCollectionDefaultEnabled` from
+ * https://github.com/firebase/firebase-ios-sdk/blob/main/FirebaseCore/Sources/Public/FirebaseCore/FIRApp.h
+ */
+@objc(RNFBFIRAppAdapter)
+final class RNFBFIRAppAdapter: NSObject, RNFBFIRAppProviding {
+  private let app: FirebaseApp
+  private let optionsAdapter: RNFBFIROptionsAdapter
+
+  init(app: FirebaseApp) {
+    self.app = app
+    optionsAdapter = RNFBFIROptionsAdapter(options: app.options)
+  }
+
+  var name: String { app.name }
+
+  var options: RNFBFIROptionsProviding { optionsAdapter }
+
+  @objc(isDataCollectionDefaultEnabled)
+  func isDataCollectionDefaultEnabled() -> Bool {
+    app.isDataCollectionDefaultEnabled
+  }
+}
 
 /**
  * FIROptions fields needed by `firAppToDictionary`.
@@ -75,6 +126,18 @@ public final class RNFBSharedUtilsFIRApp: NSObject {
   /// Matches `DEFAULT_APP_DISPLAY_NAME` in `RNFBSharedUtils.m`.
   private static let defaultAppDisplayName = "[DEFAULT]"
 
+  /// Live `FIRApp` entry used by `RNFBSharedUtils` (adapts via `RNFBFIRAppAdapter`).
+  @objc(firAppToDictionaryFromFIRApp:customDomainProvider:)
+  public static func firAppToDictionary(
+    fromFIRApp firApp: FirebaseApp,
+    customDomainProvider: RNFBCustomDomainProviding
+  ) -> NSDictionary {
+    firAppToDictionary(
+      RNFBFIRAppAdapter(app: firApp),
+      customDomainProvider: customDomainProvider
+    )
+  }
+
   @objc(firAppToDictionary:customDomainProvider:)
   public static func firAppToDictionary(
     _ app: RNFBFIRAppProviding,
@@ -111,6 +174,22 @@ public final class RNFBSharedUtilsFIRApp: NSObject {
     firAppDictionary["options"] = firAppOptions
     firAppDictionary["appConfig"] = firAppConfig
     return firAppDictionary
+  }
+
+  /// Live `FIRApp` entry used by `RNFBSharedUtils` (adapts via `RNFBFIRAppAdapter`).
+  @objc(sendJSEventForFIRApp:name:body:eventSender:)
+  public static func sendJSEvent(
+    forFIRApp firApp: FirebaseApp,
+    name: String,
+    body: NSDictionary,
+    eventSender: RNFBJSEventSending
+  ) {
+    sendJSEvent(
+      forApp: RNFBFIRAppAdapter(app: firApp),
+      name: name,
+      body: body,
+      eventSender: eventSender
+    )
   }
 
   @objc(sendJSEventForApp:name:body:eventSender:)

@@ -18,6 +18,7 @@
 
 #import <React/RCTBridge.h>
 
+#import "FirebaseCore/FirebaseCore.h"
 #import "RNFBAppModule.h"
 #import "RNFBHandleMapStorage-Swift.inc"
 #import "RNFBRCTEventEmitter.h"
