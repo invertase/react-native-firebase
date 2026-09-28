@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import FirebaseCore
 import Foundation
 
 /**
@@ -30,6 +31,23 @@ import Foundation
 }
 
 /**
+ * Adapts `FirebaseApp.app()` / `FirebaseApp.app(name:)` (`+[FIRApp defaultApp]` /
+ * `+[FIRApp appNamed:]`) for `RCTConvertFIRApp`.
+ */
+@objc(RNFBFIRAppRegistryAdapter)
+final class RNFBFIRAppRegistryAdapter: NSObject, RNFBFIRAppLookingUp {
+  @objc static let shared = RNFBFIRAppRegistryAdapter()
+
+  func defaultApp() -> AnyObject? {
+    FirebaseApp.app()
+  }
+
+  func appNamed(_ name: String) -> AnyObject? {
+    FirebaseApp.app(name: name)
+  }
+}
+
+/**
  * FIRApp name → instance lookup previously inline in `RCTConvert+FIRApp.m`.
  *
  * Mirrors pre-port:
@@ -40,6 +58,11 @@ import Foundation
 public final class RCTConvertFIRApp: NSObject {
   /// Matches `DEFAULT_APP_DISPLAY_NAME` in `RNFBSharedUtils.m`.
   private static let defaultAppDisplayName = "[DEFAULT]"
+
+  @objc(firAppFromString:)
+  public static func firApp(fromString appName: String) -> AnyObject? {
+    firApp(fromString: appName, registry: RNFBFIRAppRegistryAdapter.shared)
+  }
 
   @objc(firAppFromString:registry:)
   public static func firApp(fromString appName: String, registry: RNFBFIRAppLookingUp) -> AnyObject? {

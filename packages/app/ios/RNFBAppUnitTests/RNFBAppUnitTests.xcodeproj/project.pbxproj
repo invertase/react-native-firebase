@@ -442,11 +442,16 @@
 				OTHER_LDFLAGS = (
 					"-fprofile-instr-generate",
 				);
+				OTHER_SWIFT_FLAGS = (
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/HostStubs/module.modulemap",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppUnitTests;
 				PRODUCT_MODULE_NAME = RNFBAppUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/HostStubs";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
 				SWIFT_VERSION = 5.10;
 			};
@@ -472,11 +477,16 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_SWIFT_FLAGS = (
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/HostStubs/module.modulemap",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppUnitTests;
 				PRODUCT_MODULE_NAME = RNFBAppUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/HostStubs";
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
 				SWIFT_VERSION = 5.10;
 			};

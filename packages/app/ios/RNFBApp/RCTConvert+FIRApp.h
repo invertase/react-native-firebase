@@ -15,12 +15,9 @@
  *
  */
 
-#if __has_include(<FirebaseCore/FirebaseCore.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-#endif
 #import <React/RCTConvert.h>
+
+@class FIRApp;
 
 @interface RCTConvert (FIRApp)
 + (FIRApp *)firAppFromString:(NSString *)appName;

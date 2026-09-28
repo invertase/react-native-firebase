@@ -27,36 +27,9 @@
 #error "RNFBApp Swift interface not found"
 #endif
 
-/**
- * Adapts `[FIRApp defaultApp]` / `[FIRApp appNamed:]` for `RCTConvertFIRApp`.
- */
-@interface RNFBFIRAppRegistryAdapter : NSObject <RNFBFIRAppLookingUp>
-@end
-
-@implementation RNFBFIRAppRegistryAdapter
-
-- (NSObject *)defaultApp {
-  return [FIRApp defaultApp];
-}
-
-- (NSObject *)appNamed:(NSString *)name {
-  return [FIRApp appNamed:name];
-}
-
-@end
-
-static id<RNFBFIRAppLookingUp> RNFBFIRAppRegistry(void) {
-  static RNFBFIRAppRegistryAdapter *sharedRegistry;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedRegistry = [[RNFBFIRAppRegistryAdapter alloc] init];
-  });
-  return sharedRegistry;
-}
-
 @implementation RCTConvert (FIRApp)
 + (FIRApp *)firAppFromString:(NSString *)appName {
-  return (FIRApp *)[RCTConvertFIRApp firAppFromString:appName registry:RNFBFIRAppRegistry()];
+  return (FIRApp *)[RCTConvertFIRApp firAppFromString:appName];
 }
 
 RCT_CUSTOM_CONVERTER(FIRApp *, FIRApp, [self firAppFromString:[self NSString:json]]);
