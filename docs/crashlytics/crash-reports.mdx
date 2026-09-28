@@ -5,6 +5,12 @@ next: /database/usage
 previous: /crashlytics/usage
 ---
 
+## Prerequisites
+
+- Crashlytics installed and collecting reports per [Crashlytics usage](/crashlytics/usage) (including [Android Additional Setup](/crashlytics/android-setup) when using React Native CLI Android).
+- Access to the [Firebase Console](https://console.firebase.google.com/) for the same Firebase project your app uses.
+- At least one forced crash or `recordError` event from a device or emulator after a full app restart (Crashlytics uploads queued reports on launch).
+
 # Overview
 
 Once you have Crashlytics up and running in your app, you can navigate to Crashlytics in your Firebase Console underneath

@@ -1,9 +1,18 @@
 ---
 title: Crashlytics
-description: 'Crashlytics: logging events, setUserId()/setAttribute(s)(), recordError() for JS exceptions, crash(), setCrashlyticsCollectionEnabled(), and firebase.json flags for auto-collection, debug mode, NDK reporting and JS exception handling.'
+description: 'Crashlytics: getCrashlytics, log, setUserId/setAttribute(s), recordError, crash, collection toggles, unsent-report helpers, SDK_VERSION, and firebase.json flags for auto-collection, debug mode, NDK reporting and JS exception handling.'
 next: /crashlytics/crash-reports
 previous: /app/utils
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install Crashlytics: `npm install --save @react-native-firebase/crashlytics` or `yarn add @react-native-firebase/crashlytics`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Complete [Android Additional Setup](/crashlytics/android-setup) for React Native CLI Android builds (Expo config plugin covers those Gradle steps).
+- Enable Crashlytics for your Firebase project in the [Firebase Console](https://console.firebase.google.com/). Crashlytics supports only the default Firebase app. There is no firebase-js-sdk web Crashlytics module (`firebase/crashlytics` does not exist).
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/crashlytics.tsx
 
 # Installation
 
@@ -34,12 +43,13 @@ you can follow the manual installation steps for [iOS](/crashlytics/usage/instal
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-> **React Native only:** There is no firebase-js-sdk web equivalent for Crashlytics.
+**Platform notes:** Crashlytics is native-only. The firebase-js-sdk does not ship a modular public API for this product, so there is no web parity surface under `firebase/crashlytics`. Crashlytics supports only the default Firebase app. React Native Firebase exports `SDK_VERSION`, `getCrashlytics`, `log`, `setUserId`, `setAttribute`, `setAttributes`, `recordError`, `crash`, `setCrashlyticsCollectionEnabled`, `checkForUnsentReports`, `sendUnsentReports`, `deleteUnsentReports`, `didCrashOnPreviousExecution`, the `Crashlytics` instance type, the legacy namespaced `Statics` type, and a deprecated package-local `FirebaseApp` type alias. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -61,11 +71,44 @@ Crashlytics also supports sending JavaScript stack traces to the Firebase consol
 
 > Crash reporting is disabled by default whilst developing. To enable this, view the [enable debug crash logs](/crashlytics/usage#enable-debug-crash-logs) documentation.
 
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Crashlytics package version string exported from `@react-native-firebase/crashlytics`. The firebase-js-sdk does not export `SDK_VERSION` from a Crashlytics entry point (there is no `@firebase/crashlytics` modular package).
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/crashlytics';
+
+console.log('Crashlytics package version:', SDK_VERSION);
+```
+
+The legacy namespaced `Statics` type describes the old `firebase.crashlytics` statics shape that exposed `SDK_VERSION`. Prefer importing `SDK_VERSION` from the modular entry point.
+
+## Get a Crashlytics instance
+
+`getCrashlytics` returns the `Crashlytics` module instance for the default Firebase app only. Crashlytics does not support secondary Firebase apps. Passing `getApp()` still resolves that same default-app instance. The firebase-js-sdk does not ship this helper.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getCrashlytics } from '@react-native-firebase/crashlytics';
+
+function readCrashlyticsInstance() {
+  const crashlytics = getCrashlytics();
+  const sameDefaultApp = getCrashlytics(getApp());
+  console.log('Default app name:', crashlytics.app.name);
+  console.log('Collection enabled:', crashlytics.isCrashlyticsCollectionEnabled);
+  console.log('Same instance for default app:', sameDefaultApp === crashlytics);
+}
+```
+
+`Crashlytics` is the TypeScript type of that instance (methods such as `log` and `recordError` take a `Crashlytics` as their first argument).
+
+The package also exports a deprecated `FirebaseApp` type alias for older namespaced typings. Prefer importing `FirebaseApp` from `@react-native-firebase/app` instead.
+
 ## Crash Attributes
 
 There are various methods to set attributes for the crash report, in order to provide analytics for crashes and help you review them. You can use set methods to set predefined attributes, but you can also set your own custom attributes.
 
-```js
+```jsx
 import React, { useEffect } from 'react';
 import { View, Button } from 'react-native';
 import {
@@ -110,6 +153,7 @@ export default function App() {
           })
         }
       />
+      {/* WARNING: crash() forces a native crash. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
       <Button title="Test Crash" onPress={() => crash(getCrashlytics())} />
     </View>
   );
@@ -123,44 +167,39 @@ Crashlytics using the `recordError` method. This will also provide you with the 
 
 ```jsx
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Button, Text } from 'react-native';
 import { getCrashlytics, log, recordError } from '@react-native-firebase/crashlytics';
 
-const users = [];
-
 export default function App() {
-  const [userCounts, setUserCounts] = useState(null);
+  const [status, setStatus] = useState('idle');
 
-  function updateUserCounts() {
+  useEffect(() => {
+    log(getCrashlytics(), 'App mounted.');
+  }, []);
+
+  async function loadUsers() {
     const crashlytics = getCrashlytics();
     log(crashlytics, 'Updating user count.');
     try {
-      if (users) {
-        setUserCounts(userCounts.push(users.length));
+      const response = await fetch('https://example.com/users.json');
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
       }
+      const users = await response.json();
+      setStatus(`Loaded ${users.length} users.`);
     } catch (error) {
-      recordError(crashlytics, error);
+      if (error instanceof Error) {
+        recordError(crashlytics, error);
+        setStatus(error.message);
+      }
       console.log(error);
     }
   }
 
-  useEffect(() => {
-    log(getCrashlytics(), 'App mounted.');
-    if (users == true) setUserCounts([]);
-    updateUserCounts();
-  }, []);
-
-  if (userCounts) {
-    return (
-      <View>
-        <Text>There are currently {userCounts[userCounts.length - 1]} users.</Text>
-      </View>
-    );
-  }
-
   return (
     <View>
-      <Text>Unable to display user information.</Text>
+      <Button title="Load Users" onPress={loadUsers} />
+      <Text>{status}</Text>
     </View>
   );
 }
@@ -192,10 +231,50 @@ export default function App() {
   return (
     <View>
       <Button title="Toggle Crashlytics" onPress={toggleCrashlytics} />
+      {/* WARNING: crash() forces a native crash. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
       <Button title="Crash" onPress={() => crash(getCrashlytics())} />
       <Text>Crashlytics is currently {enabled ? 'enabled' : 'disabled'}</Text>
     </View>
   );
+}
+```
+
+## Unsent reports and previous crashes
+
+When automatic collection is disabled (via `firebase.json` and/or `setCrashlyticsCollectionEnabled`), Crashlytics can keep reports on device. The React Native Firebase JS helpers gate by the current `isCrashlyticsCollectionEnabled` value:
+
+- `checkForUnsentReports` resolves `true` when cached unsent reports exist. It **throws** if collection is currently enabled, because reports are sent automatically in that mode.
+- `sendUnsentReports` calls into native only when collection is currently **enabled**. When collection is disabled it is a silent no-op; it does not enqueue cached reports in that mode.
+- `deleteUnsentReports` discards cached reports on the device.
+- `didCrashOnPreviousExecution` resolves whether the app crashed during the previous run.
+
+```js
+import {
+  getCrashlytics,
+  setCrashlyticsCollectionEnabled,
+  checkForUnsentReports,
+  sendUnsentReports,
+  deleteUnsentReports,
+  didCrashOnPreviousExecution,
+} from '@react-native-firebase/crashlytics';
+
+async function reviewQueuedReports() {
+  const crashlytics = getCrashlytics();
+  await setCrashlyticsCollectionEnabled(crashlytics, false);
+
+  const crashedLastLaunch = await didCrashOnPreviousExecution(crashlytics);
+  console.log('Crashed on previous execution:', crashedLastLaunch);
+
+  // WARNING: checkForUnsentReports throws when Crashlytics collection is enabled.
+  const hasUnsent = await checkForUnsentReports(crashlytics);
+  if (hasUnsent) {
+    // sendUnsentReports only reaches native when collection is enabled;
+    // with collection disabled it is a silent no-op.
+    await setCrashlyticsCollectionEnabled(crashlytics, true);
+    sendUnsentReports(crashlytics);
+  } else {
+    await deleteUnsentReports(crashlytics);
+  }
 }
 ```
 
@@ -275,19 +354,17 @@ React Native Crashlytics module's global javascript exception handler by default
 
 ## Crashlytics non-fatal exceptions native handling
 
-In case you need to log non-fatal (handled) exceptions on the native side (e.g from `try catch` block), you may use the following static methods:
+In case you need to log non-fatal (handled) exceptions on the native side (for example from a `try` / `catch` block), you may use the following static methods.
 
 ### Android
 
 ```java
 import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
-//...
 
 try {
-  //...
+  throw new Exception("Handled native failure");
 } catch (Exception e) {
   ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
-  return null;
 }
 ```
 
@@ -295,20 +372,20 @@ try {
 
 ```objectivec
 #import <RNFBCrashlytics/RNFBCrashlyticsNativeHelper.h>
-//...
 
 @try {
-  //...
+  @throw [NSException exceptionWithName:@"HandledNativeFailure"
+                                 reason:@"Example handled native failure"
+                               userInfo:nil];
 } @catch (NSException *exception) {
-  NSMutableDictionary * info = [NSMutableDictionary dictionary];
+  NSMutableDictionary *info = [NSMutableDictionary dictionary];
   [info setValue:exception.name forKey:@"ExceptionName"];
   [info setValue:exception.reason forKey:@"ExceptionReason"];
   [info setValue:exception.callStackReturnAddresses forKey:@"ExceptionCallStackReturnAddresses"];
   [info setValue:exception.callStackSymbols forKey:@"ExceptionCallStackSymbols"];
   [info setValue:exception.userInfo forKey:@"ExceptionUserInfo"];
 
-  NSError *error = [[NSError alloc] initWithDomain:yourdomain code:errorcode userInfo:info];
+  NSError *error = [[NSError alloc] initWithDomain:@"com.example.app" code:1 userInfo:info];
   [RNFBCrashlyticsNativeHelper recordNativeError:error];
 }
-
 ```
