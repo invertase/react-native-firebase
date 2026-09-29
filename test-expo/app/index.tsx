@@ -14,6 +14,7 @@ const ROUTES = [
   { href: '/firestore', label: 'firestore' },
   { href: '/functions', label: 'functions' },
   { href: '/installations', label: 'installations' },
+  { href: '/in-app-messaging', label: 'in-app-messaging' },
   { href: '/messaging', label: 'messaging' },
   { href: '/ml', label: 'ml' },
   { href: '/perf', label: 'perf' },

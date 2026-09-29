@@ -18,6 +18,7 @@
     "@react-native-firebase/database": "26.4.0",
     "@react-native-firebase/firestore": "26.4.0",
     "@react-native-firebase/functions": "26.4.0",
+    "@react-native-firebase/in-app-messaging": "26.4.0",
     "@react-native-firebase/installations": "26.4.0",
     "@react-native-firebase/messaging": "26.4.0",
     "@react-native-firebase/ml": "26.4.0",
