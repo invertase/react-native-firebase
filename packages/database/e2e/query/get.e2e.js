@@ -74,11 +74,15 @@ describe('get()', function () {
     const queryRef = query(ref(getDatabase(), `${TEST_PATH}/types`), orderByKey(), limitToFirst(2));
     const snapshot = await get(queryRef);
 
-    Object.keys(snapshot.val()).should.eql(Object.keys(CONTENT.TYPES).sort().slice(0, 2));
+    // val() is a plain object whose key order the bridge does not keep; forEach walks the query order.
+    const keys = [];
+    snapshot.forEach(childSnapshot => {
+      keys.push(childSnapshot.key);
+    });
+    keys.should.eql(Object.keys(CONTENT.TYPES).sort().slice(0, 2));
   });
 
   it('waits for the connection while offline, like once()', async function () {
-    this.timeout(20000);
     const { getDatabase, ref, child, get, goOffline, goOnline } = databaseModular;
 
     const db = getDatabase();
