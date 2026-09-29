@@ -1,17 +1,13 @@
 import * as eslintPluginMdx from 'eslint-plugin-mdx';
 
 /**
- * Narrow, opt-in ESLint flat config that lints the *code
- * inside* `docs/**\/*.mdx` fenced blocks via eslint-plugin-mdx's
- * `flatCodeBlocks`.
+ * Narrow ESLint flat config that lints the *code inside* `docs/**\/*.mdx`
+ * fenced blocks via eslint-plugin-mdx's `flatCodeBlocks`.
  *
- * Staged, not blocking. Deliberately NOT part of the default `eslint.config.mjs`
- * export and NOT wired into `yarn lint:markdown` (or `yarn lint`, `yarn lint:all`,
- * any CI workflow) — `yarn lint:markdown` only ever loads `eslint.config.mjs`,
- * never this file, so its output is unaffected by this file's existence. There
- * is no package.json script for this config either; run it explicitly:
- *
- *   yarn eslint --config eslint.docs-snippets.config.mjs "docs/**\/*.mdx"
+ * Blocking via `yarn lint:markdown` (second eslint invocation) and the
+ * Documentation CI job. Kept as a separate config file so
+ * `eslintJs.configs.all` from `eslint.config.mjs` is never pointed at
+ * doc snippets.
  *
  * Scope is intentionally narrow — only:
  *   - parse errors (inherent to eslint-mdx's remark processor; reported
@@ -20,24 +16,91 @@ import * as eslintPluginMdx from 'eslint-plugin-mdx';
  *   - `no-unused-vars`
  * eslint-plugin-mdx's own `flatCodeBlocks` preset turns both of those rules
  * OFF by default (`configs/code-blocks.js`) because docs snippets are
- * routinely partial. This file turns them back on, and only those two —
- * not the full JS ruleset from `eslint.config.mjs` (`eslintJs.configs.all`
- * would flood on illustrative docs code that isn't meant to be complete).
+ * routinely partial. This file turns them back on, and only those two.
  *
- * A future phase will decide whether/how to promote this to blocking
- * once the docs corpus has been rewritten. Do not wire this
- * into `yarn lint:markdown` before then.
+ * Fences whose first non-blank line starts with `// codeblock-ignore` are
+ * replaced with a no-op before lint (same opt-out as `yarn docs:tsc:check`).
+ * Named example helpers (`function foo()` / `const foo = () =>`) are marked
+ * used via a trailing `void (...)` so the teaching wrapper is not reported
+ * as dead code; unused imports and unused non-function bindings still fail.
  */
+
+const IGNORE_MARKER = '// codeblock-ignore';
+
+/** Top-level `function name` / `async function name` (optional `export`). */
+const TOP_LEVEL_FUNCTION_RE =
+  /^(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\b/gm;
+/** Top-level `const name = (…) =>` / `async (…) =>` / `function (…)`. */
+const TOP_LEVEL_FN_BINDING_RE =
+  /^(?:export\s+)?(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/gm;
+const TOP_LEVEL_FN_EXPR_RE =
+  /^(?:export\s+)?(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s+)?function\b/gm;
+
+function isMarkerExcluded(blockText) {
+  const firstNonBlank = blockText.split('\n').find(l => l.trim().length > 0);
+  return Boolean(firstNonBlank && firstNonBlank.trim().startsWith(IGNORE_MARKER));
+}
+
+function collectExampleHelperNames(blockText) {
+  const names = new Set();
+  for (const re of [TOP_LEVEL_FUNCTION_RE, TOP_LEVEL_FN_BINDING_RE, TOP_LEVEL_FN_EXPR_RE]) {
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(blockText)) !== null) {
+      names.add(m[1]);
+    }
+  }
+  return [...names];
+}
+
+function transformCodeBlockText(blockText) {
+  if (isMarkerExcluded(blockText)) {
+    return '/* codeblock-ignore: excluded from docs snippet lint */\n';
+  }
+  const helpers = collectExampleHelperNames(blockText);
+  if (helpers.length === 0) {
+    return blockText;
+  }
+  // Keep no-unused-vars from flagging the named helper that *is* the example.
+  return `${blockText}\n;void (${helpers.join(', ')});\n`;
+}
+
+function createDocsSnippetsProcessor() {
+  const base = eslintPluginMdx.createRemarkProcessor({ lintCodeBlocks: true });
+  return {
+    meta: base.meta,
+    supportsAutofix: base.supportsAutofix,
+    preprocess(text, filename) {
+      const parts = base.preprocess(text, filename);
+      return parts.map((part, index) => {
+        // Index 0 is the full MDX document; later parts are extracted fences.
+        if (index === 0 || typeof part === 'string') {
+          return part;
+        }
+        return {
+          ...part,
+          text: transformCodeBlockText(part.text),
+        };
+      });
+    },
+    postprocess(messages, filename) {
+      return base.postprocess(messages, filename);
+    },
+  };
+}
+
 export default [
   {
-    name: 'MDX (docs snippets: code-block lint staging)',
+    name: 'MDX (docs snippets: code-block lint)',
     files: ['**/*.mdx'],
     ...eslintPluginMdx.flat,
     // Explicit processor instance (not the shared `eslintPluginMdx.remark`
     // singleton, whose `lintCodeBlocks` toggle is driven by a mutable
     // module-level side effect keyed off the last-seen `mdx/code-blocks`
     // ESLint setting) so this file's behavior never depends on run order.
-    processor: eslintPluginMdx.createRemarkProcessor({ lintCodeBlocks: true }),
+    // Wrapped so `// codeblock-ignore` matches `yarn docs:tsc:check` and
+    // named example helpers are not reported as unused.
+    processor: createDocsSnippetsProcessor(),
   },
   {
     name: 'MDX code blocks (narrow: no-undef + no-unused-vars only)',
@@ -67,7 +130,15 @@ export default [
     },
     rules: {
       'no-undef': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
 ];

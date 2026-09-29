@@ -19,9 +19,12 @@ import {
   isSupported,
   onDeletedMessages,
   onMessage,
+  onMessageSent,
+  onSendError,
   onTokenRefresh,
   registerDeviceForRemoteMessages,
   requestPermission,
+  sendMessage,
   setAPNSToken,
   setAutoInitEnabled,
   setBackgroundMessageHandler,
@@ -166,6 +169,53 @@ export default function MessagingScreen() {
         title="getIsHeadless"
         onPress={() => run('getIsHeadless', () => getIsHeadless(getMessaging()))}
       />
+
+      <Text style={styles.section}>Device-to-device XMPP (Android)</Text>
+      <Text style={styles.hint}>
+        Needs a custom XMPP bridge (see Messaging with XMPP docs). sendMessage is Android only and
+        throws in JS on iOS.
+      </Text>
+      <AppButton
+        title="onMessageSent (install)"
+        onPress={() =>
+          run('onMessageSent', () => {
+            const unsubscribe = onMessageSent(getMessaging(), () => {
+              // Fired when an upstream sendMessage completes.
+            });
+            trackUnsubscribe(unsubscribe);
+            return 'listener installed';
+          })
+        }
+      />
+      <AppButton
+        title="onSendError (install)"
+        onPress={() =>
+          run('onSendError', () => {
+            const unsubscribe = onSendError(getMessaging(), () => {
+              // Fired when an upstream sendMessage fails.
+            });
+            trackUnsubscribe(unsubscribe);
+            return 'listener installed';
+          })
+        }
+      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="sendMessage"
+          variant="secondary"
+          onPress={() =>
+            run('sendMessage', () =>
+              sendMessage(getMessaging(), {
+                data: { foo: 'bar' },
+              }),
+            )
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: Android only; requires an XMPP/device-to-device bridge. On iOS this throws in
+          JavaScript before any native call.
+        </Text>
+      </View>
 
       <Text style={styles.section}>Topics</Text>
       <AppButton

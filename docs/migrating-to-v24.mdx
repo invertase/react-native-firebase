@@ -18,6 +18,7 @@ Additionally, to match the JS SDK, they are now exported separately at the root,
 Most commonly these types will be affected: `CollectionReference`, `DocumentReference`, `DocumentSnapshot`, `QueryDocumentSnapshot`, `QuerySnapshot`, `Query`.
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { doc, getFirestore, onSnapshot, FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
@@ -29,6 +30,7 @@ onSnapshot(doc(getFirestore(), 'foo', 'foo'), {
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { doc, getFirestore, onSnapshot, DocumentSnapshot } from '@react-native-firebase/firestore';
 

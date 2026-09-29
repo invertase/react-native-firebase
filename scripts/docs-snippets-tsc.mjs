@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Docs snippet type-check harness — NON-BLOCKING / advisory only.
+ * Docs snippet type-check harness — blocking.
  *
  * Extracts every ```js``` / ```jsx``` fenced code block under `docs/**\/*.mdx`
  * into a standalone generated module, then type-checks each one against the
@@ -9,11 +9,8 @@
  * script extends `tsconfig.consumer.json`; it does not invent a separate
  * module-resolution strategy).
  *
- * Not wired into `yarn lint`, `yarn lint:markdown`, `yarn lint:all`, or any CI
- * workflow. It is a standalone script an agent/author runs manually while
- * writing docs. Today's docs corpus (pre-rewrite) is expected to
- * produce many failures — that is normal; this harness's job is to exist and
- * report accurately, not to make today's docs pass.
+ * Wired into the Documentation CI job (`.github/workflows/docs.yml`) and
+ * invoked via `yarn docs:tsc:check`. A failed fence exits non-zero.
  *
  * Opt-out marker (explicit, documented — silent skipping is not supported):
  *   Put `// codeblock-ignore` as the first non-blank line *inside* the fence
@@ -278,13 +275,13 @@ function main() {
   const jsxClean = cleanRecords.filter(r => r.isJSX);
   const awaitClean = cleanRecords.filter(r => r.hasAwait);
 
-  console.log('[docs:tsc:check] docs snippet type-check harness (non-blocking)');
+  console.log('[docs:tsc:check] docs snippet type-check harness');
   console.log(`[docs:tsc:check] mdx files scanned:      ${mdxFiles.length}`);
   console.log(`[docs:tsc:check] js/jsx fences found:    ${records.length}`);
   console.log(`[docs:tsc:check] marker-excluded:        ${markerExcludedCount} (${IGNORE_MARKER})`);
   console.log(`[docs:tsc:check] extracted + compiled:   ${extractedRecords.length}`);
   console.log(`[docs:tsc:check]   compiled clean:       ${cleanRecords.length}`);
-  console.log(`[docs:tsc:check]   failed (expected on unrewritten docs): ${failedRecords.length}`);
+  console.log(`[docs:tsc:check]   failed:               ${failedRecords.length}`);
   console.log(`[docs:tsc:check]   JSX fences clean:     ${jsxClean.length} / ${jsxTotal.length} JSX total`);
   console.log(
     `[docs:tsc:check]   contains-await fences clean: ${awaitClean.length} / ${awaitTotal.length} await total`,
@@ -298,13 +295,9 @@ function main() {
         `[docs:tsc:check]   ${r.relPath}:${r.startLine} (${path.relative(REPO_ROOT, r.generatedAbsPath)}) — ${r.firstDiagnostic}`,
       );
     }
+    process.exit(1);
   }
 
-  // Advisory harness: always exit 0 when it ran successfully. Per-block
-  // compile failures are the expected, informational signal on today's
-  // not-yet-rewritten docs corpus — nothing invokes this script in CI, so a
-  // non-zero exit here would not gate anything anyway; it would just make the
-  // manual/agent invocation look like tooling failure when it is not.
   process.exit(0);
 }
 

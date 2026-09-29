@@ -243,7 +243,7 @@ onSnapshot(collection(db, 'Users'), onResult, onError);
 `useEffect` hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
 
 ```js
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { collection, doc, getFirestore, onSnapshot } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
@@ -424,15 +424,7 @@ You can combine multiple filters using `and()` and `or()` composite constraints.
 For example:
 
 ```js
-import {
-  and,
-  collection,
-  getDocs,
-  getFirestore,
-  or,
-  query,
-  where,
-} from '@react-native-firebase/firestore';
+import { collection, getDocs, getFirestore, query, where } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 
@@ -1100,8 +1092,8 @@ import {
 const db = getFirestore();
 await terminate(db);
 await clearPersistence(db);
-// Equivalent alias:
-// await clearIndexedDbPersistence(db);
+// clearIndexedDbPersistence is the same function as clearPersistence (web SDK name parity):
+console.log('Alias is same function:', clearIndexedDbPersistence === clearPersistence);
 console.log('Instance terminated and persistence cleared');
 ```
 

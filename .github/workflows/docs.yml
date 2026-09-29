@@ -52,6 +52,10 @@ jobs:
       - name: Spell check
         run: |
           yarn lint:spellcheck
+      - name: Docs snippet type-check
+        run: yarn docs:tsc:check
+      - name: Docs member check
+        run: yarn docs:member:check
       # https://github.com/actions/cache/releases
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save

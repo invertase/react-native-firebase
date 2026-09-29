@@ -382,6 +382,7 @@ if (Platform.OS === 'web') {
 }
 
 const firebaseApp = getApp();
+console.log('Default app name:', firebaseApp.name);
 ```
 
 Replace the placeholder `firebaseConfig` values with the web app config from the Firebase console. After initialization, use React Native Firebase modular APIs as on native (for example `getApp()` above).
