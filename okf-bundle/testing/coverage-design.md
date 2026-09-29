@@ -119,7 +119,7 @@ After `tests:<platform>:test-cover`:
 
 * **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text`
 * **iOS Ruby:** `yarn tests:ios:ruby` → `coverage/ios-ruby/lcov.info` (`SF:` / `DA:` lines); HTML under `coverage/ios-ruby/` — [§ iOS Ruby SimpleCov](#ios-ruby-simplecov)
-* **iOS native:** `yarn tests:ios:unit` → `coverage/ios-unit/lcov.info` (merged into `coverage/ios-native/lcov.info`). After e2e: `yarn tests:ios:test:process-coverage` → e2e LLVM export **then merge unit LCOV** → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing.
+* **iOS native:** `yarn tests:ios:unit` → `coverage/ios-unit/lcov.info` (merged into `coverage/ios-native/lcov.info`). After e2e: `yarn tests:ios:test:process-coverage` → e2e LLVM export **then merge unit LCOV** → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing. Non-zero exit from the trailing NYC JS report does not mean native LCOV is missing — [§ E2e iOS native](#e2e-ios-native-llvm).
 * **Android native:** `yarn tests:android:unit` (produces module `*.exec`) then e2e + `yarn tests:android:post-e2e-coverage` → merged **`jacocoTestReport`** XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing. Unit-only: `yarn tests:android:test:jacoco-report` (same merged task; needs fresh `*.exec` and any available `*.ec`).
 * macOS e2e overwrites `coverage/lcov.info`; process iOS/Android native before a macOS run if you need both.
 
@@ -296,6 +296,8 @@ reporter: ['lcov', 'html', 'text-summary'],
   - `jacocoAndroidTestReport` — e2e only (`**/*.ec`); local diagnostic, **not** the Codecov upload path
 - Yarn: `tests:android:post-e2e-coverage` and `tests:android:test:jacoco-report` both drive `jacocoTestReport`
 
+<a id="e2e-ios-native-llvm"></a>
+
 # E2e iOS native (LLVM)
 
 1. **Build:** LLVM flags in **`tests/ios/Podfile` `post_install`** (`pod install` after checkout):
@@ -308,6 +310,9 @@ reporter: ['lcov', 'html', 'text-summary'],
    - delegates to `rn-coverage ios export` (llvm-cov + `SF:` rewrite + presence assert)
    - **merge** `coverage/ios-unit/lcov.info` when present (`tests/scripts/ios-native-lcov.js`) so XCTest counts for 100%
    - **delete processed `.profraw`** (package CLI; missing file next run = no fresh coverage)
+   - then `reportJsCoverage('ios')` (NYC JS report in `pull-native-coverage.js`)
+
+**Gotcha:** native LCOV (`coverage/ios-native/lcov.info`) is written and merged **before** the trailing NYC JS report. That report can exit non-zero (e.g. NYC `concurrency` got `0`), so the node process exits 1 even though the native file is already usable. Read `coverage/ios-native/lcov.info`; do not treat the process exit as "no native coverage."
 
 ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
 
@@ -508,6 +513,7 @@ Optional: TS e2e `coverage/lcov.info` for `e2e-ts-*` is unchanged by native flus
 | No `[jet-coverage] WS received` | Patches missing | `yarn install`; `.yarn/patches/` |
 | WS closed on `reconnect_recovered` | Handshake on dead socket | Client retry + server pull; `JET_COVERAGE_TEARDOWN_RE` — [iOS issue 8](../ci-workflows/ios.md#8-coverage-teardown-handshake-failure-tests-pass-nyc-00) |
 | Empty NYC / lcov | Environment or patch issue during `:test-cover` | Re-run per [running e2e](running-e2e.md) — do not invoke the test runner directly |
+| `tests:ios:test:process-coverage` exits 1; NYC `concurrency` got `0` | Trailing NYC JS report failed after native LCOV write | Read `coverage/ios-native/lcov.info` — still the artifact; exit ≠ missing native coverage ([§ E2e iOS native](#e2e-ios-native-llvm)) |
 | Codecov missing iOS native | Wrong path/name | `coverage/ios-native/lcov.info` |
 | Upload **Unusable** | Bad `SF:` paths | package `sourcePathRewrite` + `ios-native-lcov.js` |
 | `ios-native` / `android-native` fail | Upload missing → 0% | Uploads tab; process/post-e2e steps |
