@@ -8,6 +8,7 @@ const ROUTES = [
   { href: '/app', label: 'app' },
   { href: '/analytics', label: 'analytics' },
   { href: '/app-check', label: 'app-check' },
+  { href: '/app-distribution', label: 'app-distribution' },
   { href: '/auth', label: 'auth' },
   { href: '/crashlytics', label: 'crashlytics' },
   { href: '/database', label: 'database' },

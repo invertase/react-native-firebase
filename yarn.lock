@@ -27210,6 +27210,7 @@ __metadata:
     "@react-native-firebase/analytics": "npm:26.4.0"
     "@react-native-firebase/app": "npm:26.4.0"
     "@react-native-firebase/app-check": "npm:26.4.0"
+    "@react-native-firebase/app-distribution": "npm:26.4.0"
     "@react-native-firebase/auth": "npm:26.4.0"
     "@react-native-firebase/crashlytics": "npm:26.4.0"
     "@react-native-firebase/database": "npm:26.4.0"

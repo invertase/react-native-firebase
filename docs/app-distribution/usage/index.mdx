@@ -1,9 +1,18 @@
 ---
 title: App Distribution
-description: 'App Distribution for beta testers: new-version alerts and tester sign-in status via the JS API, with the rest of the service handled by native build integrations.'
+description: 'App Distribution: getAppDistribution, isTesterSignedIn, signInTester, checkForUpdate, signOutTester, SDK_VERSION, and AppDistributionRelease fields for iOS in-app new-build alerts. Android JS alerts are not supported.'
 next: /auth/usage
 previous: /app-check/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install App Distribution: `npm install --save @react-native-firebase/app-distribution` or `yarn add @react-native-firebase/app-distribution`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Enable the **Firebase App Testers API** for your Google Cloud project before expecting in-app alerts (see [Notify testers about new builds](https://firebase.google.com/docs/app-distribution/set-up-alerts?platform=ios&utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution)).
+- Upload a pre-release build and invite testers in the [Firebase Console App Distribution](https://console.firebase.google.com/project/_/appdistribution) tab (or CLI / CI). In-app alerts need a real device; they cannot be tested on a simulator.
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/app-distribution.tsx
 
 # Installation
 
@@ -25,7 +34,7 @@ cd ios/ && pod install
 
 > If you're using Expo, make sure to add the `@react-native-firebase/app-distribution` config plugin to your `app.json` or `app.config.js`. It handles the below installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section.
 
-On Android, you need to install the Google App Distribution Plugin.
+On Android, you need to install the Google App Distribution Gradle plugin so you can upload releases from Gradle. That plugin is a **build/upload** integration. It does not enable the JavaScript alert APIs on Android (those reject at runtime; see Platform support).
 
 Add the plugin to your `/android/build.gradle` file as a dependency:
 
@@ -46,12 +55,36 @@ apply plugin: 'com.google.firebase.appdistribution'
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Package installs on Android and iOS. **JavaScript alert APIs (`isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`) are iOS-only** and reject on Android and other platforms. Android still uses the Gradle upload plugin above. |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-> **React Native only:** There is no firebase-js-sdk web equivalent for App Distribution.
+> **React Native only:** There is no firebase-js-sdk web modular API for App Distribution (`firebase/app-distribution` does not exist). Every export below is React Native Firebase only.
+
+**Platform notes:** App Distribution supports only the **default** Firebase app (`hasMultiAppSupport: false`). Passing a secondary app to `getAppDistribution` throws. There is no App Distribution emulator and no `connect*Emulator` helper; App Distribution is not started by `yarn tests:emulator:start-ci`. On iOS, when the Firebase App Distribution product headers are absent (for example some Mac Catalyst / SPM layouts), native calls reject with an unsupported message.
+
+React Native Firebase exports runtime `getAppDistribution`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, and `SDK_VERSION`, plus the TypeScript types `AppDistribution` and `AppDistributionRelease`. Each runtime export is explained in the section that uses it. The type-only exports are for typing only and are not demonstrated on the Expo screen.
+
+## Official Firebase docs walked and left out
+
+Official pages read while writing this guide:
+
+- [Firebase App Distribution overview](https://firebase.google.com/docs/app-distribution?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution)
+- [Notify testers about new builds (Apple)](https://firebase.google.com/docs/app-distribution/set-up-alerts?platform=ios&utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution)
+- [Notify testers about new builds (Android)](https://firebase.google.com/docs/app-distribution/set-up-alerts?platform=android&utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution)
+- [Collect feedback from testers](https://firebase.google.com/docs/app-distribution/collect-feedback-from-testers?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution) (Android SDK feedback APIs)
+- Console / CLI / Gradle / CI automation / REST upload guides linked from the overview (build pipeline, not the JS client)
+
+Left out of this page (each with a reason):
+
+- **Android `updateIfNewReleaseAvailable`, `checkForNewRelease`, and `updateApp`**: native Android SDK APIs. `@react-native-firebase/app-distribution` does not export them; the modular surface mirrors the iOS `checkForUpdate` / tester sign-in flow and rejects on Android.
+- **In-app feedback** (`showFeedbackNotification`, `cancelFeedbackNotification`, `startFeedback`): Android SDK only in official docs; not exported by this package.
+- **Build upload and tester invite workflows** (Firebase console, Firebase CLI, CI automation plugins, Gradle `appDistributionUpload*`, REST API): native / CI integrations. Summarized under Installation (Gradle plugin) and Prerequisites; detail stays on official distribute guides.
+- **Android App Bundle / Google Play internal app sharing** and **Crashlytics stability for test builds**: product/console integrations outside this JS module.
+- **App Delegate `application(_:open:options:)` URL forwarding** when swizzling is disabled: native iOS setup from the Apple alerts guide; not a modular JS export.
+- **Best-practice CI/CD distribution guides** and Flutter get-started pages: wrong layer or wrong client for this package.
 
 # What does it do
 
@@ -65,25 +98,108 @@ Firebase App Distribution makes distributing your apps to trusted testers painle
 
 - Cross-platform Manage both your iOS and Android pre-release distributions from the same place.
 - Fast distributions Get early releases into your testers' hands quickly, with fast onboarding, no SDK to install, and instant app delivery.
-- Fits into your workflow Distribute builds using the Firebase console, the Firebase Command Line Interface (CLI) tool, - or Gradle (Android). Automate distribution by integrating the CLI into CI jobs.
+- Fits into your workflow Distribute builds using the Firebase console, the Firebase Command Line Interface (CLI) tool, or Gradle (Android). Automate distribution by integrating the CLI into CI jobs.
 - Tester management Manage your testing teams by organizing them into groups. Easily add new testers with email invitations that walk them through the onboarding process. See the status of each tester for specific versions of your app: view who has accepted a testing invitation and downloaded the app.
-- Works with Android App Bundles Distribute releases to testers for your Android App Bundle in Google Play. App - Distribution integrates with Google Play's internal app sharing service to streamline your app testing and launching processes.
+- Works with Android App Bundles Distribute releases to testers for your Android App Bundle in Google Play. App Distribution integrates with Google Play's internal app sharing service to streamline your app testing and launching processes.
 - Works with Crashlytics When combined with Crashlytics, get insights into the stability of your test distributions.
 
-The [official Firebase App Check documentation](https://firebase.google.com/docs/app-distribution) has more information, including about build upload integration, it is worth a read.
+The [official Firebase App Distribution documentation](https://firebase.google.com/docs/app-distribution?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution) has more information, including about build upload integration.
 
 # Usage
 
-The react-native-firebase module for App Distribution is meant to expose the new version alert capabilities of the iOS SDK. The majority of the App Distribution Firebase service depends on native build/release integrations. Those build/release integrations must be natively implemented for iOS and Android, according to [the upstream docs from Firebase](https://firebase.google.com/docs/app-distribution) or our build system provider.
+Most of App Distribution is build upload and tester management outside the app. The React Native Firebase module exposes the **iOS** in-app new-version alert APIs so you can sign testers in and check for updates from JavaScript. Those modular helpers reject on Android and other non-iOS platforms.
 
-## New Version Alerts
+## Package version
 
-On iOS if you include the App Distribution module, you can optionally enable in-app alerts that appear when new builds are available to test.
+`SDK_VERSION` is the React Native Firebase App Distribution package version string exported from `@react-native-firebase/app-distribution`. The firebase-js-sdk does not export `SDK_VERSION` from a `firebase/app-distribution` entry point (that modular product does not exist).
 
-## Tester Sign-in Status
+```js
+import { SDK_VERSION } from '@react-native-firebase/app-distribution';
 
-The methods signInTester and isTesterSignedIn give you more flexibility customizing your tester's sign-in experience, so it can better match your app's look and feel.
+console.log('App Distribution package version:', SDK_VERSION);
+```
 
-You may check if your tester has already signed into their Firebase App Distribution tester account, so you can choose to display your sign-in UI only for testers who haven't yet signed in. After the tester has signed in, you can then call checkForUpdate to check whether the tester has access to a new build.
+## Get an App Distribution instance
 
-##
+`getAppDistribution(app?)` returns the `AppDistribution` instance for the default app, or for the `FirebaseApp` you pass. This module does **not** support secondary Firebase apps: passing a non-default app throws. Prefer omitting `app` or passing `getApp()`.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getAppDistribution } from '@react-native-firebase/app-distribution';
+
+function readAppDistributionInstance() {
+  const appDistribution = getAppDistribution();
+  const sameDefaultApp = getAppDistribution(getApp());
+  console.log('Default app name:', appDistribution.app.name);
+  console.log('Same instance for default app:', sameDefaultApp === appDistribution);
+  return appDistribution;
+}
+```
+
+## Tester sign-in status
+
+`isTesterSignedIn(appDistribution)` resolves to whether the App Distribution tester is signed in on this device. `signInTester(appDistribution)` presents the native Google sign-in UI for App Distribution. `signOutTester(appDistribution)` signs the tester out and clears enabled alerts until they sign in again.
+
+On **non-iOS** platforms these helpers reject with `App Distribution is not supported on the <platform> platform.`
+
+`signInTester` may reject with native code `tester-sign-in-error` when Google sign-in fails.
+
+```js
+import {
+  getAppDistribution,
+  isTesterSignedIn,
+  signInTester,
+  signOutTester,
+} from '@react-native-firebase/app-distribution';
+
+async function ensureTesterSignedIn() {
+  const appDistribution = getAppDistribution();
+  const alreadySignedIn = await isTesterSignedIn(appDistribution);
+  if (!alreadySignedIn) {
+    await signInTester(appDistribution);
+  }
+  console.log('Tester signed in:', await isTesterSignedIn(appDistribution));
+}
+
+async function signOutAppDistributionTester() {
+  const appDistribution = getAppDistribution();
+  await signOutTester(appDistribution);
+  console.log('Tester signed in:', await isTesterSignedIn(appDistribution));
+}
+```
+
+## Check for a new build
+
+`checkForUpdate(appDistribution)` asks the native iOS SDK whether a newer App Distribution release is available for the signed-in tester. When a release exists, the promise resolves to an `AppDistributionRelease` object with:
+
+- `displayVersion` (string)
+- `buildVersion` (string)
+- `releaseNotes` (`string` or `null`)
+- `downloadURL` (string)
+- `isExpired` (boolean)
+
+Use `downloadURL` (for example with `Linking.openURL`) if you show your own update UI. Official iOS docs also describe a basic flow where `checkForUpdate` can prompt for sign-in when alerts are not yet enabled.
+
+On **non-iOS** platforms this helper rejects with `App Distribution is not supported on the <platform> platform.`
+
+When the native SDK returns no release, React Native Firebase rejects with code `checkupdate-null` (`no update checked`). Other native failures reject with code `check-update-error`.
+
+```js
+import { Linking } from 'react-native';
+import { getAppDistribution, checkForUpdate } from '@react-native-firebase/app-distribution';
+
+async function promptIfUpdateAvailable() {
+  const appDistribution = getAppDistribution();
+  const release = await checkForUpdate(appDistribution);
+  console.log('New version:', release.displayVersion, release.buildVersion);
+  console.log('Notes:', release.releaseNotes);
+  console.log('Expired:', release.isExpired);
+  if (!release.isExpired) {
+    await Linking.openURL(release.downloadURL);
+  }
+}
+```
+
+## Types only (not runtime)
+
+`AppDistribution` and `AppDistributionRelease` are TypeScript interfaces re-exported from `@react-native-firebase/app-distribution` for annotating the value returned by `getAppDistribution` and `checkForUpdate`. They have no runtime value. Keep them out of the Expo example screen; import them with `import type` only when you need annotations in TypeScript source.
