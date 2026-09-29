@@ -344,6 +344,8 @@ Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([wh
 
 **Packager start** — `yarn tests:packager:jet` / `jet-reset-cache` (and macOS variants). Honor `RCT_METRO_PORT`. **Always kill** the listener on that port (SIGTERM then SIGKILL of **that port’s PIDs**), then start clean — a control layer (human or Mellifera) owns the slot, so reuse detection is not required. `TMPDIR` is per listen port (e.g. `$HOME/.metro/rnfb-${RCT_METRO_PORT}`). Wait until `http://127.0.0.1:${RCT_METRO_PORT}/status` contains `packager-status:running` (long documented timeout), then succeed or **fail** — no hidden restart inside `:test-cover`. Before start, drop a stale Watchman watch for **this Metro project root** and watch **only** the trees Metro would reload (allowlist), not the whole monorepo plus native `*/build`.
 
+**One `tests/` packager per worktree:** do **not** start a second `yarn tests:packager:jet` against `tests/` while another is already running in the same worktree (e.g. iOS slot + Android slot). `scripts/e2e/start-packager.sh` runs `watchman watch-del` on that shared Metro root; the second start deletes the watch the first Metro needs, and both are dead by `:test-cover`. Distinct `RCT_METRO_PORT` values do **not** prevent it. Share one `tests/` Metro, or use separate worktrees.
+
 <a id="packager-reset-cache-eaddrinuse"></a>
 
 **Packager restart (`jet-reset-cache`)** — same kill-then-start as above (port from env, default `:8081`). Matching packager only — iOS/Android (`tests/`) vs macOS (`tests-macos/`); not interchangeable.
