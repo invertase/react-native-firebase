@@ -1,9 +1,16 @@
 ---
 title: Installations
-description: 'Firebase Installations: unique app-installation identifiers and auth tokens, plus GDPR-compliant installation deletion.'
+description: 'Installations: getInstallations, getId, getToken, deleteInstallations, onIdChange (unsupported), and SDK_VERSION for Firebase installation IDs and auth tokens.'
 next: /ml/usage
 previous: /in-app-messaging/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install Installations: `npm install --save @react-native-firebase/installations` or `yarn add @react-native-firebase/installations`, then rebuild native apps (`cd ios && pod install` on iOS).
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/installations.tsx
 
 # Installation
 
@@ -23,12 +30,17 @@ cd ios/ && pod install
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-> **React Native only:** There is no firebase-js-sdk web equivalent for Installations.
+**Platform notes:** Modular `onIdChange` is present for firebase-js-sdk API shape parity and throws on React Native Firebase. There is no Installations emulator and no `connect*Emulator` helper; Installations is not started by `yarn tests:emulator:start-ci`.
+
+React Native Firebase exports `SDK_VERSION`, `getInstallations`, `getId`, `getToken`, `deleteInstallations`, and `onIdChange`. Each is explained in the section that uses it.
+
+This page covers the client modular API. Server-side Firebase Admin deletion of an installation ID, Firebase console targeting workflows, and the historical Instance ID to Installations migration for older native SDKs are out of scope here. iOS Notification Center and Android retry monitoring for installation ID changes are also out of scope; those are platform-native monitoring patterns, and the React Native surface is modular `onIdChange`, which throws. Details live in the [Firebase Installations documentation](https://firebase.google.com/docs/projects/manage-installations?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=installations).
 
 # What does it do
 
@@ -36,10 +48,96 @@ The Firebase installations service:
 
 - provides a unique identifier for a Firebase installation
 - provides an auth token for a Firebase installation
-- provides an API to perform GDPR-compliant deletion of a Firebase installation.
+- provides an API to perform GDPR-compliant deletion of a Firebase installation
 
-Each configured `FirebaseApp` has a corresponding single instance of Installations. An instance of the class provides access to the installation info for the FirebaseApp as well as the ability to delete it. A Firebase Installation is unique by `FirebaseApp.name` and `FirebaseApp.options.googleAppID`
+Each configured `FirebaseApp` has a corresponding single instance of Installations. An instance of the class provides access to the installation info for the FirebaseApp as well as the ability to delete it. A Firebase Installation is unique by `FirebaseApp.name` and `FirebaseApp.options.googleAppID`.
 
 # Usage
 
-Please see the API Reference for detailed usage information on the available APIs
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Installations package version string exported from `@react-native-firebase/installations`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/installations`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/installations';
+
+console.log('Installations package version:', SDK_VERSION);
+```
+
+## Get an Installations instance
+
+`getInstallations(app?)` returns the `Installations` instance for the default app, or for the `FirebaseApp` you pass. The public instance exposes `app` only. Use the modular helpers below instead of instance methods.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getInstallations } from '@react-native-firebase/installations';
+
+function readInstallationsInstance() {
+  const installations = getInstallations();
+  const sameDefaultApp = getInstallations(getApp());
+  console.log('Default app name:', installations.app.name);
+  console.log('Same instance for default app:', sameDefaultApp === installations);
+  return installations;
+}
+```
+
+## Get the installation ID
+
+`getId(installations)` creates a Firebase Installation if there is not already one for the app, then returns the Firebase installation ID (FID).
+
+```js
+import { getId, getInstallations } from '@react-native-firebase/installations';
+
+async function readInstallationId() {
+  const installations = getInstallations();
+  const installationId = await getId(installations);
+  console.log('Installation ID:', installationId);
+  return installationId;
+}
+```
+
+## Get an installation auth token
+
+`getToken(installations, forceRefresh?)` returns a short-lived Firebase Installations auth token (JWT) for the current installation. Pass `forceRefresh: true` to request a new token regardless of expiration. The default token lifetime is one week.
+
+```js
+import { getInstallations, getToken } from '@react-native-firebase/installations';
+
+async function readInstallationAuthToken() {
+  const installations = getInstallations();
+  const token = await getToken(installations, true);
+  console.log('Installation auth token:', token);
+  return token;
+}
+```
+
+## Delete the installation
+
+`deleteInstallations(installations)` deletes the Firebase Installation and associated data for this app instance. Unless you disable Firebase services that create installation IDs, Firebase may create a new installation ID later; that new ID is not associated with the previous one.
+
+```js
+import { deleteInstallations, getInstallations } from '@react-native-firebase/installations';
+
+async function removeFirebaseInstallation() {
+  const installations = getInstallations();
+  await deleteInstallations(installations);
+  console.log('Installation deleted.');
+}
+```
+
+## Monitor installation ID changes
+
+On the web SDK, `onIdChange(installations, callback)` subscribes to Firebase installation ID rotation. On React Native Firebase the modular helper is exported for API shape parity and throws when called.
+
+```js
+import { getInstallations, onIdChange } from '@react-native-firebase/installations';
+
+function subscribeToIdChanges() {
+  // WARNING: onIdChange throws on React Native Firebase. It is unsupported.
+  const installations = getInstallations();
+  const unsubscribe = onIdChange(installations, newId => {
+    console.log('New installation ID:', newId);
+  });
+  return unsubscribe;
+}
+```
