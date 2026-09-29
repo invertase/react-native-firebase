@@ -15,6 +15,7 @@ const ROUTES = [
   { href: '/functions', label: 'functions' },
   { href: '/installations', label: 'installations' },
   { href: '/messaging', label: 'messaging' },
+  { href: '/ml', label: 'ml' },
   { href: '/perf', label: 'perf' },
   { href: '/phone-number-verification', label: 'phone-number-verification' },
   { href: '/remote-config', label: 'remote-config' },
