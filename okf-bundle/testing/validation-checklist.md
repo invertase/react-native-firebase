@@ -106,7 +106,7 @@ When `packages/*/ios/**` Objective-C/C++ bridge logic changed (or an in-package 
 yarn tests:ios:unit                   # macOS/host-first — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)
 ```
 
-Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/lcov.info`. After iOS e2e, `yarn tests:ios:test:process-coverage` merges unit LCOV again so e2e export does not drop XCTest hits — [coverage design](coverage-design.md). In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
+Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/lcov.info`. After iOS e2e, `yarn tests:ios:test:process-coverage` merges unit LCOV again so e2e export does not drop XCTest hits — [coverage design](coverage-design.md) (non-zero exit from the trailing NYC JS report can leave `coverage/ios-native/lcov.info` already written and usable). In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
 
 <a id="ios-ruby-unit-tests"></a>
 
