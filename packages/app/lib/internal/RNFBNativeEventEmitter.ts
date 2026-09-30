@@ -92,7 +92,8 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       return listener(...args);
     };
 
-    let subscription = super.addListener(`rnfb_${eventType}`, listenerDebugger, context);
+    // Installed RN types disagree across 0.86 (`Object`) and 0.88 (wider emitter args).
+    let subscription = super.addListener(`rnfb_${eventType}`, listenerDebugger, context as any);
 
     // React Native 0.65+ altered EventEmitter:
     // - removeSubscription is gone
@@ -123,7 +124,8 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
 
   removeAllListeners(eventType?: string | null): void {
     if (eventType == null) {
-      super.removeAllListeners(eventType);
+      // 0.86 types require `string`; 0.88 accepts a missing event type. The value is unchanged.
+      super.removeAllListeners(eventType as any);
       return;
     }
     // NewArch-AD-18 E1: raw host for eventsRemoveListener.
