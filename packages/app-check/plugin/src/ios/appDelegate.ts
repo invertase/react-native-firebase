@@ -131,7 +131,7 @@ export function modifySwiftAppDelegate(contents: string): string {
   // run before that call. Do not append a second FirebaseApp.configure().
   const existingConfigure = /^([ \t]*)FirebaseApp\.configure\(\)/m.exec(contents);
   if (existingConfigure) {
-    const indent = existingConfigure[1] ?? '';
+    const indent = existingConfigure[1];
     return contents.replace(
       existingConfigure[0],
       `${indent}RNFBAppCheckModule.sharedInstance()\n${existingConfigure[0]}`,
