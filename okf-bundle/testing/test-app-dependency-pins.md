@@ -12,6 +12,8 @@ Canonical owner for **intentional** version locks on the e2e apps (`tests/` mobi
 
 Codegen determinism: [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted).
 
+**Apple CI / local e2e alignment:** dedicated iOS jobs require **Xcode 27** (stable) and default simulator runtime **`iOS 27.0`** ([iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27)); local hosts should match [running e2e § Apple host toolchain](running-e2e.md#apple-host-toolchain-local). These pins are **test-fixture only** — do not raise RNFB consumer deployment or Xcode floors in product metadata when documenting them.
+
 <a id="dual-app-model"></a>
 
 ## Workspace e2e apps, Expo example, and fixtures
@@ -100,9 +102,12 @@ Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macO
 
 ## Related
 
+- [Running e2e § Apple host toolchain](running-e2e.md#apple-host-toolchain-local) — local Xcode 27 + iOS 27.0 + Device Hub
+- [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27) — GHA `macos-27` gate
 - [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) — codegen reproducibility / no floating toolchain
 - [NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) — ResultT inject **retired** on mobile 0.86 (upstream emits `ResultT`)
 - [Other CI — macOS e2e](../ci-workflows/other.md) — macOS pipeline (`tests-macos/`)
 - [Agent command policy](agent-command-policy.md) — install / patch / fmt gate
 - [`tests/package.json`](../../tests/package.json) / [`tests-macos/package.json`](../../tests-macos/package.json) / [`test-expo/package.json`](../../test-expo/package.json) / [`test-rn-bare/package.json`](../../test-rn-bare/package.json) — declared pins
 - [`tests/metro.config.js`](../../tests/metro.config.js) — mobile async-storage singleton + nested blocklist
+- [Local Tart lab](local-ios-e2e-reproduction.md) — suspended; not an alternate pin source

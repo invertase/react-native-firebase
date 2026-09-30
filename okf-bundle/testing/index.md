@@ -14,3 +14,4 @@
 * [Published types ADR](architecture-decisions.md) — attw / Expo plugin decisions (`Types-AD-*`); [Types-AD-5](architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted) (`ios/**/build` for pack)
 * [Firebase testing project](firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
 * [Test app dependency pins](test-app-dependency-pins.md) — intentional RN / CLI locks (mobile + Expo/RN CLI fixtures share one line; `react-native-macos` is independent)
+* [Local iOS e2e reproduction (Tart lab)](local-ios-e2e-reproduction.md) — optional VM stress path; [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended); canonical e2e stays [running e2e](running-e2e.md)

@@ -82,7 +82,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 |-------|------|----------|
 | **RNFB e2e** | Ports, devices, `export-slot-env`, packager, emulator, check/release, `:build` / `:test-cover`. Parallel = all platforms at once, and multiple same-platform runs via **slots** + extra worktrees. | Read `tests/mellifera.env.json`; change native build settings; invent a second runbook |
 | **Mellifera** | Leases. A user **publishes** that a host has available RNFB e2e slots; Mellifera **executes** RNFB e2e using those slots (export `RNFB_*`, then `yarn tests:*`). | Detox/Gradle/Watchman/runbook order; `--mellifera` inside core check/release |
-| **Tart** | Fully separate speculative VM system. A published Mellifera slot **may** be a process inside a Tart VM. | Define RNFB e2e commands or justify Debug Detox flags |
+| **Tart** | Fully separate speculative VM system. A published Mellifera slot **may** be a process inside a Tart VM. Lab path [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended) during Xcode 27 / iOS 27 ratchet. | Define RNFB e2e commands or justify Debug Detox flags |
 
 > Mellifera is additive. Serial `yarn tests:*` never requires it. Older drafts called macOS `macos-global`; superseded by `macos-slot-N` + `RNFB_MACOS_PRODUCT_NAME`.
 
