@@ -32,6 +32,26 @@ e2e_sanitize_serial_env
 METRO_ROOT="${REPO_ROOT}/${APP_DIR}"
 PORT="${RCT_METRO_PORT:-${RNFB_METRO_PORT:-${JET_METRO_PORT:-8081}}}"
 export RCT_METRO_PORT="$PORT"
+# Sanitize clears JET_*/RNFB_* carry-in for serial runs. Re-pin concrete defaults so
+# babel-plugin-transform-inline-environment-variables embeds them (unset → undefined
+# and tests-macos/.jetrc.js assertMetroBundleInlinesJetPort fails).
+export JET_REMOTE_PORT="${JET_REMOTE_PORT:-$E2E_DEFAULT_JET_PORT}"
+export RNFB_JET_CONTROL_PORT="${RNFB_JET_CONTROL_PORT:-$E2E_DEFAULT_JET_CONTROL_PORT}"
+export JET_METRO_PORT="${JET_METRO_PORT:-$PORT}"
+export RNFB_METRO_PORT="${RNFB_METRO_PORT:-$PORT}"
+for _plat in ANDROID IOS MACOS; do
+  _metro_key="RNFB_${_plat}_METRO_PORT"
+  _jet_key="RNFB_${_plat}_JET_PORT"
+  _jc_key="RNFB_${_plat}_JET_CONTROL_PORT"
+  export "${_metro_key}=${!_metro_key:-$PORT}"
+  export "${_jet_key}=${!_jet_key:-$JET_REMOTE_PORT}"
+  export "${_jc_key}=${!_jc_key:-$RNFB_JET_CONTROL_PORT}"
+done
+unset _plat _metro_key _jet_key _jc_key
+if [[ "$APP_DIR" == "tests-macos" && "$PORT" != "8081" && -z "${RNFB_MACOS_JET_PORT:-}" ]]; then
+  echo "error: macOS Metro on :${PORT} requires RNFB_MACOS_JET_PORT on the packager process (eval \"\$(yarn tests:e2e:export-slot-env macos <slot>)\" before yarn tests:macos:packager:jet*)" >&2
+  exit 2
+fi
 CACHE_DIR="${HOME}/.metro/rnfb-${PORT}"
 mkdir -p "$CACHE_DIR"
 export TMPDIR="$CACHE_DIR"

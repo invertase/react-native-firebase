@@ -12,7 +12,7 @@ timestamp: 2026-08-26T00:00:00Z
 
 ## Apple CI toolchain (Xcode 27)
 
-Dedicated Apple jobs use the **`macos-27`** runner label, `maxim-lobanov/setup-xcode` with **`latest-stable`**, then `.github/workflows/scripts/configure-apple-ci.sh` (D6):
+Dedicated Apple jobs use the **`xcode-27`** runner label (macOS 27 image), `maxim-lobanov/setup-xcode` with **`latest-stable`**, then `.github/workflows/scripts/configure-apple-ci.sh` (D6):
 
 | Check | Behavior |
 |-------|----------|
@@ -666,7 +666,7 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh xcbeautify
 
 5. **Update this doc** — bump the version and upstream-commit columns in the table above.
 
-6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `macos-27`).
+6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `xcode-27`).
 
 #### Local dev (optional)
 
@@ -678,4 +678,4 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
 
 See also `CONTRIBUTING.md` and `tests/README.md`.
 
-**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `macos-27` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.
+**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `xcode-27` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.

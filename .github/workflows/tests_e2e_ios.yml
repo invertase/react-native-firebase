@@ -105,7 +105,7 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   ios:
     name: iOS (${{ matrix.buildmode }}, ${{ matrix.dep-resolution }}, ${{ matrix.iteration }})
-    runs-on: macos-27
+    runs-on: xcode-27
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 107
@@ -120,8 +120,8 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
-      # macos-27 + latest-stable (D6): stable Xcode 27 + iOS 27 sim runtime
-      XCODE_VERSION: latest-stable
+      # xcode-27 runner (macOS 27) + Xcode 27.0 pin (D6): stable Xcode 27 + iOS 27 sim runtime
+      XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
     strategy:
       fail-fast: false
@@ -201,7 +201,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v3 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v4-xcode27 # bust ccache polluted by Xcode 27.1 beta / prior majors
           save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
@@ -264,8 +264,8 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4
 
       - name: Configure Dependency Resolution Mode
         run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
@@ -610,7 +610,7 @@ jobs:
   # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
   ios-release-archive:
     name: iOS Release Archive (${{ matrix.dep-resolution }})
-    runs-on: macos-27
+    runs-on: xcode-27
     timeout-minutes: 45
     env:
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -618,7 +618,7 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
-      XCODE_VERSION: latest-stable
+      XCODE_VERSION: '27.0'
       RNFB_CI_REQUIRE_IOS_SIM_RUNTIME: '0'
     strategy:
       fail-fast: false
@@ -652,7 +652,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-archive-${{ matrix.dep-resolution }}-ios-v1
+          key: ${{ runner.os }}-archive-${{ matrix.dep-resolution }}-ios-v2-xcode27
           save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
@@ -689,8 +689,8 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v3
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4
 
       - name: Configure Dependency Resolution Mode
         run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"

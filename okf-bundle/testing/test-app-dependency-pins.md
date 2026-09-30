@@ -103,7 +103,7 @@ Mobile `tests/` is on async-storage **3.x** (TurboModule `RNAsyncStorage`). macO
 ## Related
 
 - [Running e2e § Apple host toolchain](running-e2e.md#apple-host-toolchain-local) — local Xcode 27 + iOS 27.0 + Device Hub
-- [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27) — GHA `macos-27` gate
+- [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27) — GHA `xcode-27` gate
 - [NewArch-AD-20](../new-architecture/architecture-decisions.md#newarch-ad-20--pin-the-rncodegen-toolchain-rn-bumps-are-coordinated-breaking-changes--accepted) — codegen reproducibility / no floating toolchain
 - [NewArch-AD-21](../new-architecture/architecture-decisions.md#newarch-ad-21--interim-ios-resultt-alias-without-full-codegen-regen--accepted) — ResultT inject **retired** on mobile 0.86 (upstream emits `ResultT`)
 - [Other CI — macOS e2e](../ci-workflows/other.md) — macOS pipeline (`tests-macos/`)

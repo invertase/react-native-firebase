@@ -85,20 +85,55 @@ xcrun simctl boot "$UDID" 2>/dev/null || true
 xcrun simctl bootstatus "$UDID" -b >/dev/null
 
 log "xcodebuild Debug (simulator ${UDID}, log: ${XCODEBUILD_LOG})"
+# Cap compile time: prior CI run sat silent after ~18m of xcodebuild env spam until the
+# 60m job timeout. Prefer GNU timeout when present; otherwise perl alarm.
+XCODEBUILD_TIMEOUT_SEC="${RNFB_TEST_EXPO_XCODEBUILD_TIMEOUT_SEC:-2400}"
 set +e
-xcodebuild \
-  ARCHS="$HOST_ARCH" \
-  ONLY_ACTIVE_ARCH=YES \
-  -workspace "$WORKSPACE" \
-  -scheme "$XCODE_SCHEME" \
-  -configuration Debug \
-  -destination "id=${UDID}" \
-  CODE_SIGNING_ALLOWED=NO \
-  CODE_SIGNING_REQUIRED=NO \
-  CODE_SIGN_IDENTITY="" \
-  build 2>&1 | tee "$XCODEBUILD_LOG"
-xcodebuild_status=${PIPESTATUS[0]}
+if command -v gtimeout >/dev/null 2>&1; then
+  gtimeout "$XCODEBUILD_TIMEOUT_SEC" xcodebuild \
+    ARCHS="$HOST_ARCH" \
+    ONLY_ACTIVE_ARCH=YES \
+    -workspace "$WORKSPACE" \
+    -scheme "$XCODE_SCHEME" \
+    -configuration Debug \
+    -destination "id=${UDID}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    build 2>&1 | tee "$XCODEBUILD_LOG"
+  xcodebuild_status=${PIPESTATUS[0]}
+elif command -v timeout >/dev/null 2>&1; then
+  timeout "$XCODEBUILD_TIMEOUT_SEC" xcodebuild \
+    ARCHS="$HOST_ARCH" \
+    ONLY_ACTIVE_ARCH=YES \
+    -workspace "$WORKSPACE" \
+    -scheme "$XCODE_SCHEME" \
+    -configuration Debug \
+    -destination "id=${UDID}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    build 2>&1 | tee "$XCODEBUILD_LOG"
+  xcodebuild_status=${PIPESTATUS[0]}
+else
+  perl -e 'alarm shift; exec @ARGV' "$XCODEBUILD_TIMEOUT_SEC" \
+    xcodebuild \
+    ARCHS="$HOST_ARCH" \
+    ONLY_ACTIVE_ARCH=YES \
+    -workspace "$WORKSPACE" \
+    -scheme "$XCODE_SCHEME" \
+    -configuration Debug \
+    -destination "id=${UDID}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    build 2>&1 | tee "$XCODEBUILD_LOG"
+  xcodebuild_status=${PIPESTATUS[0]}
+fi
 set -e
+if [[ "$xcodebuild_status" -eq 124 || "$xcodebuild_status" -eq 142 ]]; then
+  fail "xcodebuild Debug timed out after ${XCODEBUILD_TIMEOUT_SEC}s (log: ${XCODEBUILD_LOG})"
+fi
 [[ "$xcodebuild_status" -eq 0 ]] || fail "xcodebuild Debug failed (exit ${xcodebuild_status})"
 
 APP="$(

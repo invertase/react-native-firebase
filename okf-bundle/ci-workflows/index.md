@@ -4,7 +4,7 @@ GitHub Actions job shape, platform reliability, and artifact triage.
 
 ## Platforms
 
-* [iOS](ios.md) — **`macos-27`** + **Xcode 27** + **iOS 27.0** runtime, **Device Hub** boot, XCTest unit (`yarn tests:ios:unit`), logging, troubleshooting, [CI baseload policy](ios.md#ci-baseload-policy-instrumentation); [Tart lab suspended](../testing/local-ios-e2e-reproduction.md#status-suspended)
+* [iOS](ios.md) — **`xcode-27`** + **Xcode 27** + **iOS 27.0** runtime, **Device Hub** boot, XCTest unit (`yarn tests:ios:unit`), logging, troubleshooting, [CI baseload policy](ios.md#ci-baseload-policy-instrumentation); [Tart lab suspended](../testing/local-ios-e2e-reproduction.md#status-suspended)
 * [Android](android.md) — JVM unit step, idling, adb teardown, merged Jacoco / native coverage
 * [Other](other.md) — macOS e2e, Windows/shared
 

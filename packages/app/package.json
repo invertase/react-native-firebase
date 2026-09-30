@@ -111,7 +111,7 @@
   "peerDependencies": {
     "expo": ">=47.0.0",
     "react": "*",
-    "react-native": "*"
+    "react-native": ">=0.60.0-0"
   },
   "dependencies": {
     "firebase": "12.19.0"

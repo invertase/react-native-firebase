@@ -87,7 +87,7 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   other:
     name: Other (${{ matrix.iteration }})
-    runs-on: macos-27
+    runs-on: xcode-27
     needs: matrix_prep
     timeout-minutes: 100
     env:
@@ -98,7 +98,7 @@ jobs:
       # Xcode 27+ default toolchain (MetalToolchain cryptex); pin for async-storage Swift compat.
       # https://github.com/actions/runner-images/issues/13135
       TOOLCHAINS: com.apple.dt.toolchain.XcodeDefault
-      XCODE_VERSION: latest-stable
+      XCODE_VERSION: '27.0'
       RNFB_CI_REQUIRE_IOS_SIM_RUNTIME: '0'
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true

@@ -48,10 +48,10 @@ concurrency:
 jobs:
   test-rn-bare-ios-build:
     name: test-rn-bare iOS build + launch smoke
-    runs-on: macos-27
+    runs-on: xcode-27
     timeout-minutes: 60
     env:
-      XCODE_VERSION: latest-stable
+      XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
     steps:
       # https://github.com/actions/checkout/releases
