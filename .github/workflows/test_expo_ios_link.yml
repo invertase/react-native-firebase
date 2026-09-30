@@ -1,9 +1,7 @@
-name: Test Expo iOS Link (informational)
+name: Test Expo iOS Link
 
-# Informational, path-filtered check for the test-expo/ fixture (GitHub #9158
-# and #9202). Not wired into branch protection as a required check. It keeps
-# the documented-default Expo SPM + dynamic + prebuilt-RNCore link graph
-# visible on PRs that touch the fixture, without blocking merges on its own.
+# Path-filtered ratchet for the test-expo/ fixture (GitHub #9158 / #9202): documented-default
+# Expo SPM + dynamic + prebuilt-RNCore link graph, plus iOS 27 UIScene launch smoke.
 
 on:
   pull_request:
@@ -11,20 +9,36 @@ on:
       - '**'
     paths:
       - 'test-expo/**'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+      - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/ios/**'
+      - 'packages/app/plugin/**'
+      - 'packages/app/app.plugin.js'
+      - 'packages/app/__tests__/firebase_spm*_test.rb'
+      - 'scripts/e2e/lib/ios-simulator-helpers.sh'
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
-      - 'packages/app/firebase_spm.rb'
-      - 'packages/app/__tests__/firebase_spm*_test.rb'
+      - '.github/workflows/scripts/test-expo-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
   push:
     branches:
       - main
       - release-v*
     paths:
       - 'test-expo/**'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+      - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/ios/**'
+      - 'packages/app/plugin/**'
+      - 'packages/app/app.plugin.js'
+      - 'packages/app/__tests__/firebase_spm*_test.rb'
+      - 'scripts/e2e/lib/ios-simulator-helpers.sh'
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
-      - 'packages/app/firebase_spm.rb'
-      - 'packages/app/__tests__/firebase_spm*_test.rb'
+      - '.github/workflows/scripts/test-expo-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
 
 permissions:
   contents: read
@@ -35,12 +49,12 @@ concurrency:
 
 jobs:
   test-expo-ios-link:
-    name: test-expo iOS link
-    # macos-26 + latest-stable matches tests_e2e_ios.yml (firebase-ios-sdk requires Xcode 26.2+)
-    runs-on: macos-26
-    timeout-minutes: 45
+    name: test-expo iOS link + launch smoke
+    runs-on: macos-27
+    timeout-minutes: 60
     env:
       XCODE_VERSION: latest-stable
+      RNFB_IOS_SIM_RUNTIME: iOS 27.0
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -55,8 +69,14 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
+      - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
+
       - name: Yarn Install
         run: yarn
 
       - name: test-expo iOS link
         run: yarn test-expo:ios:link
+
+      - name: test-expo iOS launch smoke
+        run: yarn test-expo:ios:launch-smoke

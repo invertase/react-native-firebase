@@ -87,7 +87,7 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   other:
     name: Other (${{ matrix.iteration }})
-    runs-on: macos-26
+    runs-on: macos-27
     needs: matrix_prep
     timeout-minutes: 100
     env:
@@ -95,10 +95,11 @@ jobs:
       NX_NO_CLOUD: true
       NX_CACHE_DIRECTORY: .nx/cache
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
-      # Xcode 26+ MetalToolchain cryptex omits swiftCompatibility* libs; pin default
-      # toolchain so SharedAsyncStorage (async-storage 3.x) links on Other CI.
+      # Xcode 27+ default toolchain (MetalToolchain cryptex); pin for async-storage Swift compat.
       # https://github.com/actions/runner-images/issues/13135
       TOOLCHAINS: com.apple.dt.toolchain.XcodeDefault
+      XCODE_VERSION: latest-stable
+      RNFB_CI_REQUIRE_IOS_SIM_RUNTIME: '0'
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true
       CCACHE_DEPEND: true
@@ -139,12 +140,15 @@ jobs:
       # https://github.com/maxim-lobanov/setup-xcode/releases
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
-          xcode-version: 'latest-stable'
+          xcode-version: ${{ env.XCODE_VERSION }}
 
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50
+
+      - name: Configure Apple CI (Xcode 27)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
 
       # Set path variables needed for caches
       - name: Set workflow variables
