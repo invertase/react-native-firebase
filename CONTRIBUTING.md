@@ -157,6 +157,8 @@ To run end-to-end tests for `Other`, please run:
 See [the local testing guide](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
 with `e2e` testing this project.
 
+**iOS toolchain (contributors and CI):** use **Xcode 27** (stable), the **iOS 27.0** simulator runtime, and **Device Hub** for simulator UI — not legacy **Simulator.app** launch patterns. E2e mobile fixtures track **React Native 0.88.0-rc.3** and **Expo SDK 58** in `test-expo/` ([pins](okf-bundle/testing/test-app-dependency-pins.md#current-pins)). Canonical commands and host setup: [running e2e § Apple host toolchain](okf-bundle/testing/running-e2e.md#apple-host-toolchain-local). CI behaviour: [iOS CI workflows](okf-bundle/ci-workflows/ios.md#apple-ci-toolchain-xcode-27). Optional Tart VM stress runs are [suspended](okf-bundle/testing/local-ios-e2e-reproduction.md#status-suspended); an **iOS 26.5** runtime does not satisfy the iOS 27 / UIScene gates.
+
 ---
 
 ## Submitting code for review

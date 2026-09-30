@@ -22,6 +22,12 @@ Dedicated Apple jobs use the **`macos-27`** runner label, `maxim-lobanov/setup-x
 
 Archive-only and macOS-only jobs set `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=0` (Xcode major check only). Expo / bare fixture workflows run link/build plus **`yarn test-expo:ios:launch-smoke`** / **`yarn test-rn-bare:ios:launch-smoke`** on the pinned iOS 27 runtime.
 
+**Local contributors** mirror the same Xcode / runtime / Device Hub expectations — [running e2e § Apple host toolchain](../testing/running-e2e.md#apple-host-toolchain-local). Mobile fixture versions (**RN 0.88.0-rc.3**, **Expo 58**) are in [test app dependency pins](../testing/test-app-dependency-pins.md#current-pins).
+
+**iOS 26.5 sim runtime** (or an older Tart seed) is **not** a substitute for this ratchet: it may help explain **runtime-only** deltas (see [§ issue 5](#5-metro-unresponsive-at-launch--waitforactive-hang-active-app) `localhost` vs `127.0.0.1`), but it cannot satisfy the **Xcode 27** / **iOS 27** / UIScene launch-smoke gates. Details: [local Tart lab § iOS 26.5 not proof](../testing/local-ios-e2e-reproduction.md#ios-26-5-not-proof).
+
+**Tart VM lab** — optional stress repro under `scripts/tart/` is [temporarily suspended](../testing/local-ios-e2e-reproduction.md#status-suspended); CI truth remains this workflow and `configure-apple-ci.sh`.
+
 ## Simulator reliability
 
 ### Problem

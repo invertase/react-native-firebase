@@ -1,5 +1,7 @@
 # Local iOS E2E reproduction (Tart)
 
+> **Temporarily suspended (lab path).** CI and contributors gate on **Xcode 27**, **iOS 27.0**, and **Device Hub** — see [okf-bundle/testing/local-ios-e2e-reproduction.md § status](../../okf-bundle/testing/local-ios-e2e-reproduction.md#status-suspended). Use [running e2e](../../okf-bundle/testing/running-e2e.md) for canonical iOS e2e. Scripts below remain for when the lab is resumed; `manifests/golden-expected.json` may still describe the legacy **Xcode 26.5** / **`macos-26`** seed until rebaked (C1).
+
 Self-contained Tart VM pipeline for reproducing **Testing E2E iOS** locally. Full design: [okf-bundle/testing/local-ios-e2e-reproduction.md](../../okf-bundle/testing/local-ios-e2e-reproduction.md).
 
 **Isolation:** everything lives under `scripts/tart/` plus OKF documentation. This system does not modify `.github/`, CI workflows, or package scripts.

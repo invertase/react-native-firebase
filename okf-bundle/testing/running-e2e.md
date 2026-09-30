@@ -30,6 +30,23 @@ yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote
 
 **Keep host toolchains current.** Android Studio / emulator and Xcode / CocoaPods are expected to track upstream, not be pinned indefinitely. A stale Android Emulator (e.g. 36.2.12.0) can lack CLI flags newer Detox patches rely on (`-crash-report-mode`, requires **≥ 37**, see [detox-patches.md](../ci-workflows/detox-patches.md)) and fail at spawn rather than at test time. When a patch or e2e step breaks only on your host, update the toolchain first — don't reach for a runtime capability probe as the default fix.
 
+<a id="apple-host-toolchain-local"></a>
+
+### Apple host toolchain (local)
+
+Align the Mac with [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27) and [test app dependency pins](test-app-dependency-pins.md#current-pins):
+
+| Expectation | Local default |
+|-------------|----------------|
+| **Xcode** | **27** stable (beta fails CI gate; match `xcodebuild -version` major to CI) |
+| **iOS Simulator runtime** | **`iOS 27.0`** — export `RNFB_IOS_SIM_RUNTIME` if your install uses a different label; `yarn tests:e2e:setup-ios-sims` creates devices on that runtime |
+| **Simulator UI** | **Device Hub** from the selected Xcode bundle (`…/Applications/DeviceHub.app`). Do not use `open -a Simulator` / `open -a Device Hub` for CI-parity boot paths — see [iOS CI § simulator reliability](../ci-workflows/ios.md#simulator-reliability) |
+| **Mobile e2e fixtures** | **RN 0.88.0-rc.3**, **Expo 58** (`test-expo/`), same RN line in `tests/` / `test-rn-bare/` — test-fixture pins only; do not document higher consumer Xcode/RN floors than product metadata |
+
+**iOS 26.5** simulators or hosts are **runtime-differential context only** (e.g. Metro hostname quirks in [iOS CI § issue 5](../ci-workflows/ios.md#5-metro-unresponsive-at-launch--waitforactive-hang-active-app)). They do **not** replace **iOS 27** for UIScene launch-smoke gates or Xcode 27 closure — [local Tart lab § not proof](local-ios-e2e-reproduction.md#ios-26-5-not-proof).
+
+**Tart VM lab** (`scripts/tart/`) is [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended); use this runbook, not `run-ephemeral.sh`, for contributor e2e.
+
 ## Rules
 
 1. **Packager** (background):

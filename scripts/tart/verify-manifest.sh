@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Compare baked manifests to golden-expected.json pins.
+# golden-expected may still list legacy Xcode 26.5 / macos-26 until Tart lab resume (C1) — see okf-bundle/testing/local-ios-e2e-reproduction.md.
 set -euo pipefail
 
 # shellcheck source=lib/common.sh
