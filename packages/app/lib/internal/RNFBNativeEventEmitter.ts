@@ -53,8 +53,10 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
 
   addListener(
     eventType: string,
-    listener: (...args: unknown[]) => unknown,
-    context?: object,
+    // RN 0.88 NativeEventEmitter types the payload as `Object`, not `object`.
+    // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
+    listener: (...args: readonly Object[]) => unknown,
+    context?: unknown,
   ): EmitterSubscription {
     // NewArch-AD-18 E1: event bridge identity requires raw app-module host for listener registration.
     const RNFBAppModule = getReactNativeModule(
@@ -69,7 +71,8 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       // eslint-disable-next-line no-console
       console.debug(`[RNFB-->Event][👂] ${eventType} -> listening`);
     }
-    const listenerDebugger = (...args: unknown[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-wrapper-object-types
+    const listenerDebugger = (...args: readonly Object[]) => {
       if (globalThis.RNFBDebug) {
         // eslint-disable-next-line no-console
         console.debug(`[RNFB<--Event][📣] ${eventType} <-`, JSON.stringify(args[0]));
@@ -118,7 +121,11 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     return subscription;
   }
 
-  removeAllListeners(eventType: string): void {
+  removeAllListeners(eventType?: string | null): void {
+    if (eventType == null) {
+      super.removeAllListeners(eventType);
+      return;
+    }
     // NewArch-AD-18 E1: raw host for eventsRemoveListener.
     const RNFBAppModule = getReactNativeModule(
       APP_NATIVE_MODULE,
