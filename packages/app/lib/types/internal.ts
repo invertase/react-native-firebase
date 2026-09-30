@@ -20,6 +20,25 @@
  * These types are used internally across multiple files and should not be exported to consumers
  */
 
+import type { EventSubscription } from 'react-native';
+
+/**
+ * RN 0.88's generated `EventEmitter` class types require a `context` argument
+ * and `Object` payloads. The runtime still accepts the historical 2-argument
+ * `addListener` and nullable `emit` values used across modules.
+ */
+export interface ReactNativeFirebaseEventEmitter {
+  addListener(
+    eventType: string,
+    // RN 0.88 listener params are invariant; `any` keeps module-specific callbacks assignable.
+    listener: (...args: any[]) => any,
+    context?: unknown,
+  ): EventSubscription;
+  emit(eventType: string, ...args: any[]): void;
+  removeAllListeners(eventType?: string | null): void;
+  listenerCount(eventType: string): number;
+}
+
 /**
  * Firebase JSON configuration from firebase.json file
  * Structure: { "react-native": { [key: string]: boolean | string }, ... }

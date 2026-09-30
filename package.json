@@ -111,10 +111,10 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@inquirer/prompts": "^8.4.2",
     "@octokit/core": "^7.0.6",
-    "@react-native-community/cli": "20.1.0",
-    "@react-native/jest-preset": "0.86.2",
+    "@react-native-community/cli": "20.2.0",
+    "@react-native/jest-preset": "0.88.0-rc.3",
     "@tsconfig/node-lts": "^24.0.0",
-    "@types/react": "~19.2.14",
+    "@types/react": "~19.3.0",
     "@types/react-native": "^0.73.0",
     "@typescript-eslint/parser": "^8.59.1",
     "babel-jest": "^30.3.0",
@@ -149,7 +149,7 @@
     "typescript-eslint": "^8.59.1"
   },
   "resolutions": {
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "mocha-remote-client@npm:^1.13.0": "patch:mocha-remote-client@npm%3A1.13.2#~/.yarn/patches/mocha-remote-client-npm-1.13.2-a2e7596aba.patch",
     "mocha-remote-server@npm:^1.13.0": "patch:mocha-remote-server@npm%3A1.13.2#~/.yarn/patches/mocha-remote-server-npm-1.13.2-619a29d2e3.patch"
   },

@@ -17,7 +17,6 @@
 
 #import "AppDelegate.h"
 
-#import "RNFBMessagingModule.h"
 #import "RNFBAppCheckModule.h"
 #import <Firebase.h>
 
@@ -294,13 +293,9 @@ static void RNFBTestingRegisterJavaScriptLoadObservers(id observer)
   self.messagingDelegateProbe = [[RNFBTestingMessagingDelegateProbe alloc] init];
   [FIRMessaging messaging].delegate = self.messagingDelegateProbe;
 
-  self.moduleName = @"testing";
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
-  self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:@{}];
-  BOOL didFinish = [super application:application didFinishLaunchingWithOptions:launchOptions];
+  // Window + React Native startup live in SceneDelegate (UIScene lifecycle).
   RNFBTestingLogLifecycle(@"didFinishLaunching+after");
-  return didFinish;
+  return YES;
 }
 
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
@@ -311,29 +306,6 @@ static void RNFBTestingRegisterJavaScriptLoadObservers(id observer)
 
 - (void)aTest {
   NSLog(@"TESTING3");
-}
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  return [self bundleURL];
-}
-
-- (NSURL *)bundleURL
-{
-#if DEBUG
-  RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
-  // Bypass RCTBundleURLProvider's localhost fallback — iOS 26 simulators resolve 127.0.0.1 more reliably.
-  return [RCTBundleURLProvider jsBundleURLForBundleRoot:@"index"
-                                           packagerHost:RNFBTestingMetroHostPort()
-                                         packagerScheme:settings.packagerScheme ?: @"http"
-                                              enableDev:settings.enableDev
-                                     enableMinification:settings.enableMinification
-                                        inlineSourceMap:settings.inlineSourceMap
-                                            modulesOnly:NO
-                                              runModule:YES];
-#else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
 }
 
 @end

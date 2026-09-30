@@ -31,12 +31,21 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 
 | Package | Pin | Where |
 |---------|-----|--------|
-| `react-native` (mobile) | **`0.86.2`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
-| `react` (mobile) | **`19.2.3`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
-| `@react-native-community/cli` (+ platform packages) | **`20.1.0`** | `tests/package.json`, `test-rn-bare/package.json` (and root `devDependencies` for tooling convenience) |
-| `@react-native/babel-preset` / `@react-native/metro-config` | **`0.86.2`** | `tests/package.json`, `test-rn-bare/package.json` |
-| `@react-native/jest-preset` | **`0.86.2`** | `tests/package.json` (and root `devDependencies` for Jest / toolchain lockstep with mobile RN) |
-| `@react-native/codegen` | **`0.86.2`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |
+| `react-native` (mobile) | **`0.88.0-rc.3`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
+| `react` (mobile) | **`19.3.0`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
+| `engines.node` (mobile fixtures) | **`^22.13.0`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
+| `@react-native-community/cli` (+ platform packages) | **`20.2.0`** | `tests/package.json`, `test-rn-bare/package.json` (and root `devDependencies` for tooling convenience) |
+| `@react-native/babel-preset` / `@react-native/metro-config` | **`0.88.0-rc.3`** | `tests/package.json`, `test-rn-bare/package.json` |
+| `@react-native/jest-preset` | **`0.88.0-rc.3`** | `tests/package.json` (and root `devDependencies` for Jest / toolchain lockstep with mobile RN) |
+| `@react-native/codegen` | **`0.88.0-rc.3`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |
+| `expo` | **`58.0.0`** | `test-expo/package.json` |
+| `expo-build-properties` / `expo-constants` / `expo-dev-client` / `expo-linking` | **`~58.0.9`** | `test-expo/package.json` |
+| `expo-router` | **`~58.0.10`** | `test-expo/package.json` |
+| `babel-preset-expo` | **`~58.0.6`** | `test-expo/package.json` |
+| `react-native-gesture-handler` | **`~3.2.1`** | `test-expo/package.json` |
+| `react-native-reanimated` / `react-native-worklets` | **`~4.7.0`** / **`0.13.0`** | `test-expo/package.json` (expo-router 58 peers) |
+| `react-native-safe-area-context` | **`~5.9.1`** | `test-expo/package.json` |
+| `react-native-screens` | **`~4.28.0`** | `test-expo/package.json` |
 | `react-native` (macOS shell) | **`0.78.3`** | `tests-macos/package.json` |
 | `react-native-macos` | **`0.78.6`** | `tests-macos/package.json` |
 | macOS CLI band | **`15.1.3`** | `tests-macos/package.json` |
@@ -45,13 +54,13 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | `@react-native-firebase/*` (e2e apps + `test-expo` + `test-rn-bare`) | **must match current lerna / package version** | `tests/package.json`, `tests-macos/package.json`, `test-expo/package.json`, and `test-rn-bare/package.json` — see [RNFB workspace pins](#rnfb-workspace-pins) |
 | `@react-native-firebase/app-types` | **`6.7.2`** | both apps (legacy types package; not a workspace) |
 
-**CLI rationale:** mobile CLI **`20.1.0`** matches the React Native **0.86** community template. macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
+**CLI rationale:** mobile CLI **`20.2.0`** matches the React Native **0.88.0-rc.3** community template (`@react-native-community/template@0.88.0-rc.3-ada64d0`; the bare `0.88.0-rc.3` tag is not that template). macOS keeps the **0.78** CLI band with `react-native-macos@0.78.6`. Never add a global resolution that would pull `tests-macos` onto the mobile line.
 
-**fmt / Apple Clang:** RN **0.86.2** ships fmt **12.1.0** upstream (no mobile `patch-package` fmt bump). macOS **0.78.3** still applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch). Always verify via [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking).
+**fmt / Apple Clang:** RN **0.88.0-rc.3** ships fmt **12.1.0** upstream (no mobile `patch-package` fmt bump). macOS **0.78.3** still applies [`tests-macos/patches/react-native+0.78.3.patch`](../../tests-macos/patches/react-native+0.78.3.patch). Always verify via [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking).
 
 **macOS deployment target (Xcode 27):** Xcode 27 rejects `MACOSX_DEPLOYMENT_TARGET` below **12.0**. `react-native-macos` **0.78.6** podspecs still declare macOS **11.0**, and `react_native_post_install` only clamps to that floor, so a Podfile `platform` bump alone is insufficient. [`tests-macos/macos/Podfile`](../../tests-macos/macos/Podfile) therefore sets `platform :macos, '12.0'` and, in `post_install` after `react_native_post_install`, raises every pod target (including `*_privacy` resource bundles and aggregate targets) whose `MACOSX_DEPLOYMENT_TARGET` is unset or below 12.0 to **12.0**. The app project already targets **12.0**. Test fixture only — RNFB consumer React Native, Xcode, and deployment floors are unchanged. Remove the override only when `react-native-macos` moves to a line whose podspecs declare ≥ **12.0**.
 
-**iOS pods (mobile):** RN 0.86 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!`. The e2e app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so third-party dynamic pods (`react-native-device-info`, `@invertase/react-native-apple-authentication`) link against source RNCore (`RCTEventEmitter`) under SPM-dynamic Firebase. That pin is **Issue 2** and stays on `tests/`. Vanilla RN CLI consumer compile (GitHub #8883) is `test-rn-bare/` plus `yarn test-rn-bare:ios:build` ([agent command policy](agent-command-policy.md)). Do **not** “fix” `test-rn-bare/` by flipping `tests/ios/Podfile`. RNFB podspec Clang / xcconfig order is **Issue 1** ([iOS RNCore podspec invariants](../ios-rncore-podspec.md)). Do not re-enable prebuilt RNCore for the e2e app without re-validating those third-party pods.
+**iOS pods (mobile):** RN 0.88.0-rc.3 defaults `RCT_USE_PREBUILT_RNCORE` / `RCT_USE_RN_DEP` to **1** inside `use_react_native!` (unchanged from 0.86: on unless the env var is `0`). The e2e app sets both to **`0`** in [`tests/ios/Podfile`](../../tests/ios/Podfile) before requiring `react_native_pods` so third-party dynamic pods (`react-native-device-info`, `@invertase/react-native-apple-authentication`) link against source RNCore (`RCTEventEmitter`) under SPM-dynamic Firebase. That pin is **Issue 2** and stays on `tests/`. Vanilla RN CLI consumer compile (GitHub #8883) is `test-rn-bare/` plus `yarn test-rn-bare:ios:build` ([agent command policy](agent-command-policy.md)). Do **not** “fix” `test-rn-bare/` by flipping `tests/ios/Podfile`. RNFB podspec Clang / xcconfig order is **Issue 1** ([iOS RNCore podspec invariants](../ios-rncore-podspec.md)). Do not re-enable prebuilt RNCore for the e2e app without re-validating those third-party pods.
 
 **Agent / Dependabot rule:** leave these pins alone unless the change is an intentional mobile-line (e2e + Expo example + RN CLI fixture) or macOS upgrade. Reject RN / codegen / CLI bumps that only “look green” for one app while breaking the other, a tracking fixture, or codegen verify.
 
