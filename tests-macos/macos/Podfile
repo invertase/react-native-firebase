@@ -10,7 +10,10 @@ prepare_react_native_project!
 ENV['RCT_NEW_ARCH_ENABLED'] = '0'
 
 target 'io.invertase.testing-macOS' do
-  platform :macos, '11.0'
+  # Xcode 27 rejects MACOSX_DEPLOYMENT_TARGET < 12.0; react-native-macos 0.78 podspecs
+  # still declare macOS 11.0, so align every pod target to the app project's 12.0.
+  macos_deployment_target = '12.0'
+  platform :macos, macos_deployment_target
   # use_native_modules!
 
   # Flags change depending on the env values.
@@ -28,5 +31,23 @@ target 'io.invertase.testing-macOS' do
 
   post_install do |installer|
     react_native_post_install(installer)
+
+    # updateOSDeploymentTarget (inside react_native_post_install) clamps to the
+    # podspec floor. Raise anything still below 12.0, including *_privacy bundles.
+    # pods_project.targets already includes those; add any aggregate native target
+    # that is not already in the list.
+    targets = installer.pods_project.targets.to_a
+    installer.target_installation_results.aggregate_target_installation_results.each_value do |result|
+      targets << result.native_target unless targets.include?(result.native_target)
+    end
+
+    targets.each do |target|
+      target.build_configurations.each do |config|
+        current = config.build_settings['MACOSX_DEPLOYMENT_TARGET']
+        next unless current.nil? || current.to_f < macos_deployment_target.to_f
+
+        config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = macos_deployment_target
+      end
+    end
   end
 end
