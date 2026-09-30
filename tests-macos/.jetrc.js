@@ -206,8 +206,8 @@ module.exports = {
             JET_REMOTE_PORT: String(jetPort),
           },
         });
-        macApp.on('close', code => {
-          if (code === 0) {
+        macApp.on('close', (code, signal) => {
+          if (code === 0 || (code == null && signal)) {
             return;
           }
           if (macOsRetries < 3) {
