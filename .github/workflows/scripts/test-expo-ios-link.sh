@@ -76,6 +76,16 @@ if [[ "$firebase_configure_count" -ne 1 ]]; then
   log "ERROR: expected exactly one FirebaseApp.configure() in AppDelegate, found ${firebase_configure_count}"
   exit 1
 fi
+if ! grep -q 'RNFBAppCheckModule.sharedInstance()' "$APP_DELEGATE"; then
+  log "ERROR: App Check provider factory missing from AppDelegate (scene AppDelegate anchor was not found)"
+  exit 1
+fi
+factory_line="$(grep -n 'RNFBAppCheckModule.sharedInstance()' "$APP_DELEGATE" | head -1 | cut -d: -f1)"
+configure_line="$(grep -n 'FirebaseApp.configure()' "$APP_DELEGATE" | head -1 | cut -d: -f1)"
+if [[ -z "$factory_line" || -z "$configure_line" || "$factory_line" -gt "$configure_line" ]]; then
+  log "ERROR: App Check provider factory must be registered before FirebaseApp.configure() (factory line ${factory_line:-missing}, configure line ${configure_line:-missing})"
+  exit 1
+fi
 if ! awk '/UIApplicationSupportsMultipleScenes/{getline; if ($0 ~ /<false\/>/) found=1} END{exit !found}' "$INFO_PLIST"; then
   log "ERROR: UIApplicationSupportsMultipleScenes is not false (single-scene contract)"
   exit 1
@@ -84,7 +94,7 @@ if ! grep -q 'UISceneDelegateClassName' "$INFO_PLIST"; then
   log "ERROR: Info.plist missing UIScene manifest entries"
   exit 1
 fi
-log "PASS: Expo owns SceneDelegate; RNFB configures Firebase once in AppDelegate; single-scene manifest"
+log "PASS: Expo owns SceneDelegate; RNFB configures Firebase once in AppDelegate after App Check; single-scene manifest"
 log "--- end Expo 58 UIScene / RNFB plugin contract ---"
 
 # Diagnosis: did #9164's rnfirebase_add_spm_core_to_app_target run during

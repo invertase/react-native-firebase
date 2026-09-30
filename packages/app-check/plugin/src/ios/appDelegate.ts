@@ -127,27 +127,26 @@ export function modifySwiftAppDelegate(contents: string): string {
     return contents;
   }
 
-  // Find the Firebase initialization end line to insert after
-  const firebaseLine = '// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions';
-
-  if (contents.includes(firebaseLine)) {
-    // Insert right after Firebase initialization
+  // App plugin (or an earlier pass) already calls configure. The provider factory must
+  // run before that call. Do not append a second FirebaseApp.configure().
+  const existingConfigure = /^([ \t]*)FirebaseApp\.configure\(\)/m.exec(contents);
+  if (existingConfigure) {
+    const indent = existingConfigure[1] ?? '';
     return contents.replace(
-      firebaseLine,
-      `${firebaseLine}
-        RNFBAppCheckModule.sharedInstance()
-        FirebaseApp.configure()
-      `,
+      existingConfigure[0],
+      `${indent}RNFBAppCheckModule.sharedInstance()\n${existingConfigure[0]}`,
     );
   }
 
-  // If Firebase initialization block not found, register the App Check provider factory
-  // then call FirebaseApp.configure(). Firebase requires the factory before configure
-  // (AppCheck-AD-3); do not reverse this order.
+  // No configure yet. Register the factory, then configure. Firebase requires the
+  // factory before configure (AppCheck-AD-3). Expo 58 scene AppDelegates start
+  // React Native from SceneDelegate, so the anchor is the didFinishLaunching return
+  // rather than factory.startReactNative.
   const methodInvocationBlock = `RNFBAppCheckModule.sharedInstance()
     FirebaseApp.configure()`;
 
-  const methodInvocationLineMatcher = /(?:factory\.startReactNative\()/;
+  const methodInvocationLineMatcher =
+    /(?:factory\.startReactNative\()|(?:return\s+super\.application\(\s*application\s*,\s*didFinishLaunchingWithOptions:\s*launchOptions\s*\))/;
 
   if (!methodInvocationLineMatcher.test(contents)) {
     WarningAggregator.addWarningIOS(
