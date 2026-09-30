@@ -2,12 +2,16 @@
 
 # Boot the Detox iOS simulator, wait until it is fully ready for testing (including
 # first-boot data migration on fresh simulators), then install the test app.
-# Uses the device *name* from tests/.detoxrc.js — no pinned UDID in the workflow.
+# Resolves or creates the simulator UDID on the pinned iOS 27 runtime (simctl backend).
 set -euo pipefail
 
 BOOT_POLL_INTERVAL_SECONDS="${BOOT_POLL_INTERVAL_SECONDS:-20}"
 BOOT_PROBE_TIMEOUT_SECONDS="${BOOT_PROBE_TIMEOUT_SECONDS:-12}"
 BOOT_MAX_WAIT_SECONDS="${BOOT_MAX_WAIT_SECONDS:-660}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../../../scripts/e2e/lib/ios-simulator-helpers.sh
+source "${SCRIPT_DIR}/../../../scripts/e2e/lib/ios-simulator-helpers.sh"
 
 run_with_timeout() {
   local max="$1"
@@ -31,69 +35,37 @@ log_boot_status() {
   echo "[boot-status] $*"
 }
 
-describe_booted_device() {
-  local device="$1"
+describe_booted_udid() {
+  local udid="$1"
   xcrun simctl list devices booted 2>/dev/null \
-    | grep -i "${device} (" \
-    | grep -v 'Phone:' \
+    | grep -F "(${udid})" \
     | grep -v 'unavailable' \
-    | grep -v CoreSimulator \
     | head -1 \
     || true
 }
 
-resolve_device_udid() {
-  local device="$1"
-  local udid
-
-  udid="$(
-    xcrun simctl list devices booted 2>/dev/null \
-      | grep -F "${device} (" \
-      | grep -v 'unavailable' \
-      | head -1 \
-      | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/' \
-      || true
-  )"
-  if [[ -n "$udid" ]]; then
-    echo "$udid"
-    return 0
-  fi
-
-  udid="$(
-    xcrun simctl list devices available 2>/dev/null \
-      | grep -F "${device} (" \
-      | grep -v 'unavailable' \
-      | head -1 \
-      | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/' \
-      || true
-  )"
-  echo "$udid"
-}
-
 kill_resolved_simulator() {
-  local device="$1"
-  local udid
+  local udid="$1"
+  local name="${2:-}"
 
-  udid="$(resolve_device_udid "$device")"
   if [[ -z "$udid" ]]; then
-    log_boot_status "phase=kill_resolved device=\"${device}\" not found, skipping"
+    log_boot_status "phase=kill_resolved udid=empty name=\"${name}\" not found, skipping"
     return 0
   fi
 
-  log_boot_status "phase=kill_resolved udid=${udid} device=\"${device}\""
-  killall Simulator 2>/dev/null || true
+  log_boot_status "phase=kill_resolved udid=${udid} name=\"${name}\""
+  rnfb_kill_foreground_simulator_ui
   xcrun simctl terminate "$udid" io.invertase.testing 2>/dev/null || true
   xcrun simctl shutdown "$udid" 2>/dev/null || true
-  xcrun simctl shutdown "$device" 2>/dev/null || true
 }
 
 log_migration_status() {
-  local device="$1"
+  local udid="$1"
   local migration_output probe_rc
 
   log_boot_status "probing data migration (bootstatus -d, up to ${BOOT_PROBE_TIMEOUT_SECONDS}s)..."
   set +e
-  migration_output="$(run_with_timeout "$BOOT_PROBE_TIMEOUT_SECONDS" xcrun simctl bootstatus "$device" -d 2>&1)"
+  migration_output="$(run_with_timeout "$BOOT_PROBE_TIMEOUT_SECONDS" xcrun simctl bootstatus "$udid" -d 2>&1)"
   probe_rc=$?
   set -e
 
@@ -114,31 +86,32 @@ log_migration_status() {
 }
 
 wait_for_simulator_ready() {
-  local device="$1"
+  local udid="$1"
+  local name="${2:-}"
   local start=$SECONDS
 
   while (( SECONDS - start < BOOT_MAX_WAIT_SECONDS )); do
     local elapsed=$(( SECONDS - start ))
     local booted_line ready_rc
 
-    log_boot_status "elapsed=${elapsed}s phase=wait_for_full_boot device=\"${device}\""
+    log_boot_status "elapsed=${elapsed}s phase=wait_for_full_boot udid=${udid} name=\"${name}\""
 
-    booted_line="$(describe_booted_device "$device")"
+    booted_line="$(describe_booted_udid "$udid")"
     if [[ -z "$booted_line" ]]; then
       log_boot_status "  simctl list: not in Booted state yet"
     else
       log_boot_status "  simctl list: ${booted_line}"
-      log_migration_status "$device" || true
+      log_migration_status "$udid" || true
     fi
 
     set +e
-    run_with_timeout "$BOOT_PROBE_TIMEOUT_SECONDS" xcrun simctl bootstatus "$device" >/dev/null 2>&1
+    run_with_timeout "$BOOT_PROBE_TIMEOUT_SECONDS" xcrun simctl bootstatus "$udid" >/dev/null 2>&1
     ready_rc=$?
     set -e
 
     if [[ "$ready_rc" -eq 0 ]]; then
       log_boot_status "bootstatus: simulator ready after ${elapsed}s"
-      log_migration_status "$device" || true
+      log_migration_status "$udid" || true
       return 0
     fi
 
@@ -158,7 +131,7 @@ wait_for_simulator_ready() {
 BOOT_MODE="${RNFB_SIM_BOOT_MODE:-full}"
 
 # shellcheck source=simulator-logging.sh
-source "$(dirname "$0")/simulator-logging.sh"
+source "${SCRIPT_DIR}/simulator-logging.sh"
 
 if [[ "$BOOT_MODE" == "logs" ]]; then
   restart_simulator_logging || true
@@ -166,20 +139,23 @@ if [[ "$BOOT_MODE" == "logs" ]]; then
 fi
 
 # shellcheck source=resolve-ios-simulator-name.sh
-source "$(dirname "$0")/resolve-ios-simulator-name.sh"
-SIM="$(resolve_ios_simulator_name "$(dirname "$0")/../../../tests/.detoxrc.js")"
+source "${SCRIPT_DIR}/resolve-ios-simulator-name.sh"
+SIM="$(resolve_ios_simulator_name "${SCRIPT_DIR}/../../../tests/.detoxrc.js")"
 if [[ -n "${RNFB_IOS_SIMULATOR:-}" ]]; then
   log_boot_status "phase=resolve_device name=\"${SIM}\" (from RNFB_IOS_SIMULATOR)"
 else
   log_boot_status "phase=resolve_device name=\"${SIM}\" (from tests/.detoxrc.js)"
 fi
 
-# Kill the resolved simulator first when present (CI pre-boot and e2e Jet retries).
-kill_resolved_simulator "$SIM"
+SIM_UDID="$(rnfb_ensure_ios_simulator_udid "$SIM")"
+export RNFB_IOS_SIMULATOR_UDID="$SIM_UDID"
+log_boot_status "phase=resolve_udid udid=${SIM_UDID} runtime=$(rnfb_ios_sim_runtime_label)"
 
-log_boot_status "phase=boot_command starting simctl boot..."
+kill_resolved_simulator "$SIM_UDID" "$SIM"
+
+log_boot_status "phase=boot_command starting simctl boot udid=${SIM_UDID}..."
 set +e
-boot_output="$(xcrun simctl boot "$SIM" 2>&1)"
+boot_output="$(xcrun simctl boot "$SIM_UDID" 2>&1)"
 boot_rc=$?
 set -e
 if [[ "$boot_rc" -ne 0 ]]; then
@@ -188,14 +164,17 @@ else
   log_boot_status "simctl boot command returned (device may still be migrating data)"
 fi
 
-log_boot_status "phase=foreground_simulator opening Simulator.app..."
-open -a Simulator.app
+if [[ "${RNFB_SIM_UI_HEADLESS:-0}" != "1" ]]; then
+  hub="$(rnfb_resolve_foreground_simulator_ui_app 2>/dev/null || true)"
+  log_boot_status "phase=foreground_simulator opening ${hub:-DeviceHub} udid=${SIM_UDID}..."
+  rnfb_open_device_hub_for_udid "$SIM_UDID"
+fi
 
-if ! wait_for_simulator_ready "$SIM"; then
+if ! wait_for_simulator_ready "$SIM_UDID" "$SIM"; then
   exit 1
 fi
 
-pushd "$(dirname "$0")/../../../tests" >/dev/null || exit 1
+pushd "${SCRIPT_DIR}/../../../tests" >/dev/null || exit 1
 BUILDDIR="$(find ios/build/Build/Products -type d -name 'testing.app' 2>/dev/null | head -1)"
 
 if [[ -z "$BUILDDIR" || ! -d "$BUILDDIR" ]]; then
@@ -204,34 +183,31 @@ if [[ -z "$BUILDDIR" || ! -d "$BUILDDIR" ]]; then
   exit 1
 fi
 
-install_udid="$(resolve_device_udid "$SIM")"
-if [[ -n "$install_udid" ]]; then
-  booted_line="$(describe_booted_device "$SIM")"
-  if [[ -z "$booted_line" ]]; then
-    log_boot_status "phase=wait_shutdown udid=${install_udid} waiting for Shutdown before install..."
-    shutdown_wait=0
-    while (( shutdown_wait < 120 )); do
-      booted_line="$(describe_booted_device "$SIM")"
-      if [[ -z "$booted_line" ]]; then
-        log_boot_status "phase=wait_shutdown udid=${install_udid} device not Booted after ${shutdown_wait}s"
-        break
-      fi
-      sleep 2
-      shutdown_wait=$((shutdown_wait + 2))
-    done
-    if [[ -n "$(describe_booted_device "$SIM")" ]]; then
-      log_boot_status "phase=wait_shutdown udid=${install_udid} still Booted after ${shutdown_wait}s — proceeding with install anyway"
+booted_line="$(describe_booted_udid "$SIM_UDID")"
+if [[ -z "$booted_line" ]]; then
+  log_boot_status "phase=wait_shutdown udid=${SIM_UDID} waiting for Shutdown before install..."
+  shutdown_wait=0
+  while (( shutdown_wait < 120 )); do
+    booted_line="$(describe_booted_udid "$SIM_UDID")"
+    if [[ -z "$booted_line" ]]; then
+      log_boot_status "phase=wait_shutdown udid=${SIM_UDID} device not Booted after ${shutdown_wait}s"
+      break
     fi
+    sleep 2
+    shutdown_wait=$((shutdown_wait + 2))
+  done
+  if [[ -n "$(describe_booted_udid "$SIM_UDID")" ]]; then
+    log_boot_status "phase=wait_shutdown udid=${SIM_UDID} still Booted after ${shutdown_wait}s — proceeding with install anyway"
   fi
 fi
 
-log_boot_status "phase=install_app bundle=\"${BUILDDIR}\""
+log_boot_status "phase=install_app udid=${SIM_UDID} bundle=\"${BUILDDIR}\""
 install_start=$SECONDS
-xcrun simctl install "$SIM" "$BUILDDIR"
+xcrun simctl install "$SIM_UDID" "$BUILDDIR"
 log_boot_status "install complete in $((SECONDS - install_start))s"
 popd >/dev/null || exit 1
 
-log_boot_status "phase=complete device=\"${SIM}\" ready with test app installed"
+log_boot_status "phase=complete udid=${SIM_UDID} name=\"${SIM}\" ready with test app installed"
 
 if [[ "${RNFB_START_SIM_LOGS:-1}" == "1" && "$BOOT_MODE" == "full" ]]; then
   restart_simulator_logging || true

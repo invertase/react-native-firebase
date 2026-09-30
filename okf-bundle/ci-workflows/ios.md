@@ -17,7 +17,7 @@ timestamp: 2026-08-26T00:00:00Z
 On GHA macOS runners, `simctl list` can show `Booted` before the simulator is test-ready:
 
 1. First-boot `com.apple.datamigrator` can run for minutes; app install/launch is unreliable until done.
-2. Device names are ambiguous across runtimes; use `tests/.detoxrc.js` name, not pinned UDID.
+2. Device names are ambiguous across runtimes; `boot-simulator.sh` resolves or creates a **UDID** on the pinned iOS 27 runtime (`RNFB_IOS_SIM_RUNTIME`, default `iOS 27.0`) before boot/install. Detox still allocates by name from `tests/.detoxrc.js`.
 3. `Booted` ≠ ready; install/launch during migration can hang/fail.
 
 ### What we do
@@ -28,9 +28,11 @@ On GHA macOS runners, `simctl list` can show `Booted` before the simulator is te
 
 | Phase | What happens |
 |--------|----------------|
-| `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17`) |
-| `kill_resolved` | Kill `Simulator.app`, terminate app, `simctl shutdown` the resolved UDID |
-| `boot_command` | `xcrun simctl boot <name>` |
+| `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17` or `RNFB E2E iOS slot-N`) |
+| `resolve_udid` | `rnfb_ensure_ios_simulator_udid` on `RNFB_IOS_SIM_RUNTIME` (default iOS 27.0); export `RNFB_IOS_SIMULATOR_UDID` |
+| `kill_resolved` | Kill Device Hub (or legacy Simulator.app), terminate app, `simctl shutdown` the resolved UDID |
+| `boot_command` | `xcrun simctl boot <udid>` |
+| `foreground_simulator` | `open <selected-Xcode>/Applications/DeviceHub.app --args -CurrentDeviceUDID <udid>` (never `open -a Simulator` / `open -a Device Hub`) |
 | `wait_for_full_boot` | Poll every 20s (up to 11 min) until `simctl bootstatus` reports ready |
 | `wait_shutdown` | If device is still `Booted` when install is about to run, poll up to 120s for `Shutdown` (avoids LaunchServices races after Jet retries) |
 | `install_app` | `simctl install` the built `testing.app` **only after** bootstatus succeeds |
@@ -65,7 +67,7 @@ Artifacts upload on every run (`if: always()`).
 | `resource-monitor-<buildmode>-<iteration>_log` | `.github/workflows/scripts/resource-monitor.sh` → `resource-monitor.log` | Periodic `uptime` + `ps` snapshots (10s default) to correlate WS drops with CPU/memory pressure |
 | `metro-<buildmode>-<iteration>_log` | Metro stdout/stderr from `yarn tests:packager:jet-ci` → `metro.log` (debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch |
 | `simulator-<buildmode>-<iteration>_video` | `simctl recordVideo` → `simulator.mp4` | Visual confirmation (**`workflow_dispatch` / `workflow_call` `record_screens: true` only**) |
-| `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Simulator.app window (**`record_screens: true` only**) |
+| `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Device Hub window (**`record_screens: true` only**) |
 | `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup (**`record_screens: true` only**) |
 | `emulator-scripts-logs-<buildmode>-<iteration>` | `.github/workflows/scripts/*.log` | Script output if redirected |
 

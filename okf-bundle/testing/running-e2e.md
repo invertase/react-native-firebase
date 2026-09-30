@@ -759,7 +759,7 @@ Slotted mode: no e2e retries (fail-fast). Serial mode: up to 3 `:test-cover` att
 
 **Readiness (orchestrator):** follow [§2 Services ready](#2-services-ready) — Metro `curl /status` with `packager-status:running`; emulator ready = `yarn tests:emulator:start` exit 0 (Functions port via `e2e_port_listening` inside that script). No fixed `sleep` for readiness; poll or delegate to canonical `yarn tests:*`.
 
-**First use of a slot:** `yarn tests:e2e:setup-android-avds [count]` / `yarn tests:e2e:setup-ios-sims [count]`. Default **count=1** (CI / typical developer). Pass a higher count on a host that can sustain it (e.g. `8`). Serial unslotted devices stay `TestingAVD` / `iPhone 17`.
+**First use of a slot:** `yarn tests:e2e:setup-android-avds [count]` / `yarn tests:e2e:setup-ios-sims [count]`. Default **count=1** (CI / typical developer). Pass a higher count on a host that can sustain it (e.g. `8`). Serial unslotted devices stay `TestingAVD` / `iPhone 17`. iOS simulators are created on **`RNFB_IOS_SIM_RUNTIME`** (default `iOS 27.0`); CI/Jet reboot paths use **UDID** + selected-Xcode **Device Hub** — see [iOS CI simulator reliability](../ci-workflows/ios.md#simulator-reliability).
 
 Keep exported env in the **same shell**. `export-slot-env` loads full `RNFB_{ANDROID,IOS,MACOS}_*` carry-in, `ANDROID_SERIAL=emulator-$((5556+2*N))`, `RNFB_ANDROID_CONSOLE_PORT` (Detox must not FreePortFinder **10000–20000**), `RNFB_MACOS_PRODUCT_NAME=io.invertase.testing.sN`. Does not set `GRADLE_USER_HOME`.
 
