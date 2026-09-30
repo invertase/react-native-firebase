@@ -168,11 +168,9 @@
 // called when `registerForRemoteNotifications` completes successfully
 - (void)application:(UIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-#ifdef DEBUG
-  [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeSandbox];
-#else
-  [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeProd];
-#endif
+  // DEBUG is not the signed aps-environment. Unknown makes Firebase Messaging
+  // read it from the provisioning profile.
+  [[FIRMessaging messaging] setAPNSToken:deviceToken type:FIRMessagingAPNSTokenTypeUnknown];
 
   RCTPromiseResolveBlock resolve = nil;
   RCTPromiseRejectBlock reject = nil;
