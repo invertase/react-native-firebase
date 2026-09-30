@@ -8,13 +8,13 @@ jobs:
     if: "(github.repository == 'invertase/react-native-firebase') && (github.event_name == 'workflow_dispatch')"
     name: 'NPM'
     timeout-minutes: 60
-    runs-on: macos-27
+    runs-on: xcode-27
     permissions:
       id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
       contents: read
     env:
-      # macos-27 + latest-stable matches tests_e2e_ios.yml; needed for CocoaPods in scripts/version.js
-      XCODE_VERSION: latest-stable
+      # xcode-27 runner (macOS 27) + 27.0 pin matches tests_e2e_ios.yml; needed for CocoaPods in scripts/version.js
+      XCODE_VERSION: '27.0'
       RNFB_CI_REQUIRE_IOS_SIM_RUNTIME: '0'
     steps:
       # https://github.com/actions/checkout/releases

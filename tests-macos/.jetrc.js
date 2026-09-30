@@ -1,3 +1,6 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const { execSync, spawn } = require('child_process');
 const { promisify } = require('util');
 const execFile = promisify(require('child_process').execFile);
@@ -129,6 +132,23 @@ function registerMacOsExitHandlers() {
   });
 }
 
+async function assertMetroBundleInlinesJetPort(bundlePath, jetPort) {
+  // Serial default 8090 is also packages/app/e2e/helpers.js DEFAULT_JET_SERIAL —
+  // the numeric literal is always in the bundle. Babel inline of process.env is
+  // only required when the active Jet port differs from that default (slotted).
+  if (String(jetPort) === String(SERIAL_JET_PORT)) {
+    return;
+  }
+  try {
+    await execFile('grep', ['-q', '-F', `"${jetPort}"`, bundlePath]);
+  } catch (_e) {
+    throw new Error(
+      `Metro bundle does not inline Jet port ${jetPort} (babel env missing on the packager process?). ` +
+        `Restart with: eval "$(yarn tests:e2e:export-slot-env macos <slot>)" && yarn tests:macos:packager:jet-reset-cache`,
+    );
+  }
+}
+
 async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
   const host = '127.0.0.1';
   const statusUrl = `http://${host}:${metroPort}/status`;
@@ -158,11 +178,34 @@ async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
   while (Date.now() - started < timeoutMs) {
     const remainingSec = Math.max(30, Math.ceil((timeoutMs - (Date.now() - started)) / 1000));
     const sliceSec = Math.min(120, remainingSec);
+    const bundlePath = path.join(
+      os.tmpdir(),
+      `rnfb-macos-bundle-prefetch-${metroPort}-${Date.now()}.js`,
+    );
     try {
-      await execFile('curl', ['-sf', '--max-time', String(sliceSec), '-o', '/dev/null', bundleUrl]);
-      console.warn(`[rnfb-e2e] macOS Metro bundle prefetched from ${bundleUrl}`);
-      return;
+      try {
+        await execFile('curl', [
+          '-sf',
+          '--max-time',
+          String(sliceSec),
+          '-o',
+          bundlePath,
+          bundleUrl,
+        ]);
+        await assertMetroBundleInlinesJetPort(bundlePath, String(readJetPort()));
+        console.warn(`[rnfb-e2e] macOS Metro bundle prefetched from ${bundleUrl}`);
+        return;
+      } finally {
+        try {
+          fs.unlinkSync(bundlePath);
+        } catch (_e) {
+          // temp bundle already removed
+        }
+      }
     } catch (err) {
+      if (String(err?.message || err).includes('does not inline Jet port')) {
+        throw err;
+      }
       // curl 18 = partial transfer; 28 = timeout while Metro is still compiling.
       console.warn(`[rnfb-e2e] macOS Metro bundle prefetch retry (code=${err?.code ?? 'unknown'})`);
     }
@@ -208,6 +251,9 @@ module.exports = {
         });
         macApp.on('close', (code, signal) => {
           if (code === 0 || (code == null && signal)) {
+            return;
+          }
+          if (isMacOsTestAppRunning()) {
             return;
           }
           if (macOsRetries < 3) {

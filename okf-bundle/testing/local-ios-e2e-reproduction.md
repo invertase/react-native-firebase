@@ -26,7 +26,7 @@ The **Tart VM pipeline** under `scripts/tart/` is a **suspendable lab path** (D9
 
 Re-open this path only when **all** of the following hold:
 
-1. **CI parity** — Dedicated Apple jobs on **`macos-27`** with stable **Xcode 27** and default **`RNFB_IOS_SIM_RUNTIME` = `iOS 27.0`** are green and documented in [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27).
+1. **CI parity** — Dedicated Apple jobs on **`xcode-27`** with stable **Xcode 27** and default **`RNFB_IOS_SIM_RUNTIME` = `iOS 27.0`** are green and documented in [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.md#apple-ci-toolchain-xcode-27).
 2. **Tart seed** — A Cirrus (or equivalent) macOS image ships **Xcode 27** (not 26.5); `scripts/tart/manifests/golden-expected.json` is updated to match that seed and `tests_e2e_ios.yml` pins.
 3. **Rebake** — Operators run `bake-golden.sh` → `bake-warmed.sh` on a worktree at the target `origin/main` SHAs; `verify-manifest.sh` passes against the new expected manifest.
 4. **In-VM boot** — Iteration uses the same **Device Hub + UDID** semantics as CI (`scripts/tart/lib/boot-simulator.sh` delegates to `.github/workflows/scripts/boot-simulator.sh`).
