@@ -207,4 +207,54 @@ class AppDelegate: ExpoAppDelegate {
     const secondImportCount = (twiceModifiedContents.match(/import RNFBAppCheck/g) || []).length;
     expect(secondImportCount).toBe(0);
   });
+
+  it('registers App Check before configure on an Expo 58 scene AppDelegate', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk58.swift'),
+      { encoding: 'utf8' },
+    );
+    const result = modifySwiftAppDelegate(appDelegate);
+    const factoryIndex = result.indexOf('RNFBAppCheckModule.sharedInstance()');
+    const configureIndex = result.indexOf('FirebaseApp.configure()');
+    const returnIndex = result.indexOf(
+      'return super.application(application, didFinishLaunchingWithOptions: launchOptions)',
+    );
+
+    expect(factoryIndex).toBeGreaterThan(-1);
+    expect(configureIndex).toBeGreaterThan(factoryIndex);
+    expect(returnIndex).toBeGreaterThan(configureIndex);
+    expect(result.match(/FirebaseApp\.configure\(\)/g)).toHaveLength(1);
+
+    const twice = modifySwiftAppDelegate(result);
+    expect(twice.match(/RNFBAppCheckModule\.sharedInstance\(\)/g)).toHaveLength(1);
+    expect(twice.match(/FirebaseApp\.configure\(\)/g)).toHaveLength(1);
+  });
+
+  it('inserts the App Check factory before an existing configure without a second call', function () {
+    const appDelegate = `import Expo
+import FirebaseCore
+
+class AppDelegate: ExpoAppDelegate {
+  public override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions
+FirebaseApp.configure()
+// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+`;
+    const result = modifySwiftAppDelegate(appDelegate);
+    const factoryIndex = result.indexOf('RNFBAppCheckModule.sharedInstance()');
+    const configureIndex = result.indexOf('FirebaseApp.configure()');
+
+    expect(factoryIndex).toBeGreaterThan(-1);
+    expect(configureIndex).toBeGreaterThan(factoryIndex);
+    expect(result.match(/FirebaseApp\.configure\(\)/g)).toHaveLength(1);
+    expect(result).toContain(
+      '// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions',
+    );
+  });
 });
