@@ -197,7 +197,7 @@ execSync(
 );
 
 // Darwin-only: refresh CocoaPods lockfiles during `lerna version` so the release
-// commit includes them. Publish CI is macos-26 so this path runs there; Linux
+// commit includes them. Publish CI is macos-27 so this path runs there; Linux
 // (local or otherwise) skips it.
 if (process.platform === 'darwin') {
   assertTestsMacosFmtAtLeastFloor();

@@ -105,7 +105,7 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   ios:
     name: iOS (${{ matrix.buildmode }}, ${{ matrix.dep-resolution }}, ${{ matrix.iteration }})
-    runs-on: macos-26
+    runs-on: macos-27
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 107
@@ -120,8 +120,9 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
-      # macos-26 + latest-stable matches local Xcode 26.5; firebase-ios-sdk requires Xcode 26.2+
+      # macos-27 + latest-stable (D6): stable Xcode 27 + iOS 27 sim runtime
       XCODE_VERSION: latest-stable
+      RNFB_IOS_SIM_RUNTIME: iOS 27.0
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
@@ -161,27 +162,13 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
-      - name: Workaround Simulator Availability issues
-        run: |
-          # If using `latest-stable` xcode-version above, this is likely not needed.
-          # If you use *anything* but latest-stable, you may inadvertently be using a SimRuntime that is no longer installed.
-          # This will install the needed SimRuntime if it is missing.
-          if [[ "$XCODE_VERSION" != "latest-stable" ]] && ! xcrun simctl list | grep "^iOS $XCODE_VERSION"; then
-            # note if you specify the build version to be exactly same as xcode version
-            # you may see "iOS <version> is not available for download"
-            #xcodebuild -downloadPlatform iOS -buildVersion "$XCODE_VERSION"
-            xcodebuild -downloadPlatform iOS
-          fi
-
-          # Apparently just listing the installed simulators fixes availability inconsistency
-          # Without this, runs fail *intermittently* with build target not available because simulators not available
-          # See https://github.com/actions/runner-images/issues/13459#issuecomment-3681674842
-          xcrun simctl list
-
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50
+
+      - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
 
       # Set path variables needed for caches
       - name: Set workflow variables
@@ -623,7 +610,7 @@ jobs:
   # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
   ios-release-archive:
     name: iOS Release Archive (${{ matrix.dep-resolution }})
-    runs-on: macos-26
+    runs-on: macos-27
     timeout-minutes: 45
     env:
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -632,6 +619,7 @@ jobs:
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
       XCODE_VERSION: latest-stable
+      RNFB_CI_REQUIRE_IOS_SIM_RUNTIME: '0'
     strategy:
       fail-fast: false
       matrix:
@@ -648,6 +636,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50
+
+      - name: Configure Apple CI (Xcode 27)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
 
       - name: Yarn Cache Restore
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

@@ -10,6 +10,18 @@ timestamp: 2026-08-26T00:00:00Z
 
 **Testing E2E iOS** workflow (`.github/workflows/tests_e2e_ios.yml`) and `.github/workflows/scripts/`.
 
+## Apple CI toolchain (Xcode 27)
+
+Dedicated Apple jobs use the **`macos-27`** runner label, `maxim-lobanov/setup-xcode` with **`latest-stable`**, then `.github/workflows/scripts/configure-apple-ci.sh` (D6):
+
+| Check | Behavior |
+|-------|----------|
+| Xcode major | Must be **27** (stable); **beta** builds fail the step |
+| iOS sim runtime | When `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=1` (default), resolve `RNFB_IOS_SIM_RUNTIME` (default **`iOS 27.0`**) via `scripts/e2e/lib/ios-simulator-helpers.sh` |
+| simctl list | Always run once after selection (GHA simulator availability workaround) |
+
+Archive-only and macOS-only jobs set `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=0` (Xcode major check only). Expo / bare fixture workflows run link/build plus **`yarn test-expo:ios:launch-smoke`** / **`yarn test-rn-bare:ios:launch-smoke`** on the pinned iOS 27 runtime.
+
 ## Simulator reliability
 
 ### Problem
@@ -562,6 +574,7 @@ from this job is a known Xcode Archive bug, not a regression — see
 | `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
 | `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
 | `.github/workflows/scripts/configure-ios-dep-resolution.sh <spm\|cocoapods> [podfile-dir]` | — | Grep-verified `tests/ios/Podfile` patch for the `dep-resolution` matrix leg; shared by the `ios` job and `ios-release-archive` job so they can't drift apart |
+| `.github/workflows/scripts/configure-apple-ci.sh` | `XCODE_VERSION` / `RNFB_CI_XCODE_SELECTOR`, `RNFB_IOS_SIM_RUNTIME`, `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME` | Post-`setup-xcode` gate: stable Xcode major 27 + optional iOS 27 runtime pin |
 
 Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact preserves full output while the step still fails correctly.
 
@@ -647,7 +660,7 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh xcbeautify
 
 5. **Update this doc** — bump the version and upstream-commit columns in the table above.
 
-6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `macos-26`).
+6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `macos-27`).
 
 #### Local dev (optional)
 
@@ -659,4 +672,4 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
 
 See also `CONTRIBUTING.md` and `tests/README.md`.
 
-**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `macos-26` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.
+**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `macos-27` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.
