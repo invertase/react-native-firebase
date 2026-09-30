@@ -75,8 +75,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 #if TARGET_IPHONE_SIMULATOR
   constants[@"isRegisteredForRemoteNotifications"] = @NO;
 #else
-  constants[@"isRegisteredForRemoteNotifications"] = @(
-      [RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
+  // Under TurboModules getConstants runs on the JS thread; UIApplication is main-thread only.
+  __block BOOL isRegisteredForRemoteNotifications = NO;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    isRegisteredForRemoteNotifications =
+        [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
+  });
+  constants[@"isRegisteredForRemoteNotifications"] =
+      @([RCTConvert BOOL:@(isRegisteredForRemoteNotifications)]);
 #endif
   constants[@"isDeliveryMetricsExportToBigQueryEnabled"] =
       @([RCTConvert BOOL:@(_isDeliveryMetricsExportToBigQueryEnabled)]);
