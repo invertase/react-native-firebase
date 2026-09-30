@@ -35,6 +35,7 @@ DEVICES=0
 MAX_FORCE_ROUNDS=2
 E2E_ALL_SLOTS="${E2E_ALL_SLOTS:-0}"
 E2E_SLOT_OVERRIDE="${E2E_SLOT_OVERRIDE:-}"
+E2E_SLOT_SELECTOR_PRESENT=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -60,6 +61,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --slot=*)
       E2E_SLOT_OVERRIDE="${1#--slot=}"
+      E2E_SLOT_SELECTOR_PRESENT=1
       shift
       ;;
     -h|--help)
@@ -75,6 +77,9 @@ done
 
 export E2E_ALL_SLOTS E2E_SLOT_OVERRIDE
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && export E2E_PLATFORM_OVERRIDE
+if [[ -n "${E2E_SLOT_OVERRIDE:-}" || "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
+  e2e_validate_slot "$E2E_SLOT_OVERRIDE"
+fi
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && e2e_validate_platform_name "$E2E_PLATFORM_OVERRIDE"
 [[ -n "${RNFB_E2E_PLATFORM:-}" ]] && e2e_validate_platform_name "$RNFB_E2E_PLATFORM"
 
@@ -289,8 +294,9 @@ clear_android_emulator() {
   if [[ "${E2E_ALL_SLOTS:-0}" == "1" ]] &&
     [[ -z "${RNFB_ANDROID_AVD:-}${RNFB_ANDROID_AVD_NAME:-}" && -z "${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}${E2E_SLOT_OVERRIDE:-}}" ]] &&
     command -v adb >/dev/null 2>&1; then
-    local i serial
-    for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+    local i serial max
+    max="$(e2e_effective_slot_max)"
+    for ((i = 0; i <= max; i++)); do
       serial="emulator-$(e2e_slot_android_console_port "$i")"
       adb -s "$serial" emu kill 2>/dev/null || true
     done

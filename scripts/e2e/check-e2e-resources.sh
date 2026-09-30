@@ -32,6 +32,7 @@ JSON=0
 SERVICES=0
 E2E_ALL_SLOTS="${E2E_ALL_SLOTS:-0}"
 E2E_SLOT_OVERRIDE="${E2E_SLOT_OVERRIDE:-}"
+E2E_SLOT_SELECTOR_PRESENT=0
 for arg in "$@"; do
   case "$arg" in
     --json)
@@ -45,6 +46,7 @@ for arg in "$@"; do
       ;;
     --slot=*)
       E2E_SLOT_OVERRIDE="${arg#--slot=}"
+      E2E_SLOT_SELECTOR_PRESENT=1
       ;;
     --platform=*)
       E2E_PLATFORM_OVERRIDE="${arg#--platform=}"
@@ -62,6 +64,9 @@ done
 
 export E2E_ALL_SLOTS E2E_SLOT_OVERRIDE
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && export E2E_PLATFORM_OVERRIDE
+if [[ -n "${E2E_SLOT_OVERRIDE:-}" || "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
+  e2e_validate_slot "$E2E_SLOT_OVERRIDE"
+fi
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && e2e_validate_platform_name "$E2E_PLATFORM_OVERRIDE"
 [[ -n "${RNFB_E2E_PLATFORM:-}" ]] && e2e_validate_platform_name "$RNFB_E2E_PLATFORM"
 
@@ -176,14 +181,22 @@ fi
 
 if platform_active ios; then
   if command -v xcrun >/dev/null 2>&1; then
-    if e2e_ios_sim_booted "$E2E_IOS_SIMULATOR"; then
+    busy_ios_sim=""
+    while IFS= read -r ios_sim_name; do
+      [[ -z "$ios_sim_name" ]] && continue
+      if e2e_ios_sim_booted "$ios_sim_name"; then
+        busy_ios_sim="$ios_sim_name"
+        break
+      fi
+    done < <(e2e_ios_simulator_names_for_release)
+    if [[ -n "$busy_ios_sim" ]]; then
       if platform_explicit ios; then
-        report BUSY "ios simulator booted (${E2E_IOS_SIMULATOR} or any booted for default)"
+        report BUSY "ios simulator booted (${busy_ios_sim} or any booted for default)"
       else
         # Finding #3: "global" is an ambiguous fallback, not confirmed iOS intent — do not
         # fail the whole host-clear check just because an unrelated simulator happens to
         # be booted. Pass --platform=ios (or set RNFB_E2E_PLATFORM=ios) to enforce.
-        report INFO "ios simulator booted (${E2E_IOS_SIMULATOR} or another) — global mode does not fail on this; pass --platform=ios to enforce"
+        report INFO "ios simulator booted (${busy_ios_sim} or another) — global mode does not fail on this; pass --platform=ios to enforce"
       fi
     else
       report CLEAR "ios simulator (${E2E_IOS_SIMULATOR})"

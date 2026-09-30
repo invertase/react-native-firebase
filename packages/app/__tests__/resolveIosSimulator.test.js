@@ -28,8 +28,8 @@ describe('resolve_ios_simulator_name', function () {
   ].join('\n');
 
   it('prefers RNFB_IOS_SIMULATOR when set', function () {
-    expect(resolveName({ RNFB_IOS_SIMULATOR: 'RNFB E2E iOS slot-0' }, fixture)).toBe(
-      'RNFB E2E iOS slot-0',
+    expect(resolveName({ RNFB_IOS_SIMULATOR: 'RN E2E iOS slot-0' }, fixture)).toBe(
+      'RN E2E iOS slot-0',
     );
   });
 
