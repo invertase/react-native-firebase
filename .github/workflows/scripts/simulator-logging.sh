@@ -9,6 +9,11 @@ restart_simulator_logging() {
   local sim_app_log="${log_dir}/sim-app.log"
   local resource_log="${log_dir}/resource-monitor.log"
   local repo_root="${RNFB_REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
+  local sim_udid="${RNFB_IOS_SIMULATOR_UDID:-}"
+  local simctl_target="booted"
+  if [[ -n "$sim_udid" ]]; then
+    simctl_target="$sim_udid"
+  fi
   # dyld logs its own fatal-launch-failure reason (e.g. "Symbol not found" / "Library not
   # loaded") directly to the unified log via subsystem com.apple.dyld, independently of
   # ReportCrash (which this workflow disables for CI performance -- see "Install yeetd and
@@ -17,15 +22,19 @@ restart_simulator_logging() {
   # from sim-app.log without re-enabling the crash reporter daemon.
   local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR subsystem == "com.apple.dyld" OR eventMessage CONTAINS[c] "dyld"'
 
-  if ! xcrun simctl list devices booted 2>/dev/null | grep -q Booted; then
+  if [[ -z "$sim_udid" ]] && ! xcrun simctl list devices booted 2>/dev/null | grep -q Booted; then
     echo "[boot-status] phase=log_streams skipped=no_booted_simulator"
     return 1
   fi
 
-  echo "[boot-status] phase=log_streams_restart ts=$(date -u +%Y-%m-%dT%H:%M:%SZ) stdout=${with_stdout} record_screens=${record_screens} dir=${log_dir}"
+  echo "[boot-status] phase=log_streams_restart ts=$(date -u +%Y-%m-%dT%H:%M:%SZ) stdout=${with_stdout} record_screens=${record_screens} dir=${log_dir} udid=${sim_udid:-booted}"
 
   pkill -f 'simctl spawn booted log stream' 2>/dev/null || true
   pkill -f 'simctl io booted recordVideo' 2>/dev/null || true
+  if [[ -n "$sim_udid" ]]; then
+    pkill -f "simctl spawn ${sim_udid} log stream" 2>/dev/null || true
+    pkill -f "simctl io ${sim_udid} recordVideo" 2>/dev/null || true
+  fi
   pkill -f resource-monitor.sh 2>/dev/null || true
   sleep 1
 
@@ -36,17 +45,17 @@ restart_simulator_logging() {
 
   if [[ "$record_screens" == "1" ]]; then
     if [[ "$with_stdout" == "1" ]]; then
-      xcrun simctl io booted recordVideo --codec=h264 -f "${log_dir}/simulator.mp4" 2>&1 &
+      xcrun simctl io "$simctl_target" recordVideo --codec=h264 -f "${log_dir}/simulator.mp4" 2>&1 &
     else
-      nohup sh -c "xcrun simctl io booted recordVideo --codec=h264 -f '${log_dir}/simulator.mp4' 2>&1 &" >/dev/null 2>&1 &
+      nohup sh -c "xcrun simctl io '${simctl_target}' recordVideo --codec=h264 -f '${log_dir}/simulator.mp4' 2>&1 &" >/dev/null 2>&1 &
     fi
   fi
 
   if [[ "$with_stdout" == "1" ]]; then
-    xcrun simctl spawn booted log stream --level debug --style compact \
+    xcrun simctl spawn "$simctl_target" log stream --level debug --style compact \
       --predicate "$log_predicate" 2>&1 | tee -a "$sim_app_log" &
   else
-    nohup sh -c "xcrun simctl spawn booted log stream --level debug --style compact --predicate '${log_predicate}' >>'${sim_app_log}' 2>&1 &" >/dev/null 2>&1 &
+    nohup sh -c "xcrun simctl spawn '${simctl_target}' log stream --level debug --style compact --predicate '${log_predicate}' >>'${sim_app_log}' 2>&1 &" >/dev/null 2>&1 &
   fi
 
   chmod +x "${repo_root}/.github/workflows/scripts/resource-monitor.sh"

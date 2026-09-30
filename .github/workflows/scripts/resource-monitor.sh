@@ -23,12 +23,12 @@ while true; do
     fi
     echo "--- e2e-related ---"
     e2e_ps="$(ps -arc www -o pid,pcpu,pmem,rss,etime,command 2>/dev/null \
-      | grep -E 'testing|node |java |Simulator|Metro|simctl|log stream|screencapture' \
+      | grep -E 'testing|node |java |Simulator|DeviceHub|Metro|simctl|log stream|screencapture' \
       | grep -v grep || true)"
     if [[ -z "$e2e_ps" ]]; then
       echo "[resource-monitor] ps-empty falling back to ps aux grep"
       ps aux 2>/dev/null \
-        | grep -E 'testing|node |java |Simulator|Metro|simctl|log stream|screencapture' \
+        | grep -E 'testing|node |java |Simulator|DeviceHub|Metro|simctl|log stream|screencapture' \
         | grep -v grep \
         | head -20 || true
     else
