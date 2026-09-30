@@ -75,6 +75,7 @@
     "tests:ios:test-cover-and-process": "yarn tests:ios:test-cover && yarn tests:ios:test:process-coverage",
     "tests:ios:pod:install": "cd tests/ios && bundle exec pod install",
     "test-expo:ios:link": "bash .github/workflows/scripts/test-expo-ios-link.sh",
+    "test-expo:ios:launch-smoke": "bash .github/workflows/scripts/test-expo-ios-launch-smoke.sh",
     "test-expo:ios": "cd test-expo && yarn ios",
     "test-expo:android": "cd test-expo && yarn android",
     "test-rn-bare:ios:build": "bash .github/workflows/scripts/test-rn-bare-ios-build.sh",
