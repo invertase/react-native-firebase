@@ -146,7 +146,7 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | `packages/**` or `test-expo/**` JS/TS | `yarn lint:js` | ESLint `packages/*` and `test-expo/` (one script; do not invent a `test-expo` lint entrypoint). Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. A flood under `packages/app/__tests__/vendor/` is local Bundler vendor, not product lint. Do not treat it as the lint gate. [Agent command policy § JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor). |
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
 | Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
-| iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. |
+| iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Pin npm `clang-format@1.7.0` (1.8.0 darwin tarball is x64-only on arm64). Implementation may `yarn lint:ios:fix` then re-check. |
 | `docs/**` | `yarn lint:markdown` then `yarn lint:spellcheck` | Scripts glob `docs/**` only (CI docs job). OKF-only diffs skip these. Gotchas below. |
 
 **Docs lint gotchas** (`docs/**` only):

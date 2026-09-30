@@ -121,6 +121,15 @@ if [[ -n "$scene_ips" ]]; then
   fail "scene lifecycle runtime issue detected — see ${APP_LOG}"
 fi
 if ! grep -Fq 'Window did become application key' "$APP_LOG"; then
+  firebase_hint="$(
+    grep -Ei 'Firebase|FIRApp|GOOGLE_APP_ID|FirebaseApp\.configure|Configuration fails|terminated due to signal|abort\(\)' "$APP_LOG" \
+      | grep -Ev '^Filtering the log data using' \
+      | tail -8 \
+      || true
+  )"
+  if [[ -n "$firebase_hint" ]]; then
+    fail "app window never became key (Firebase/init crash likely) — log excerpt: ${firebase_hint} — full log: ${APP_LOG}"
+  fi
   fail "app window never became key — see ${APP_LOG}"
 fi
 if ! grep -Fq "sceneOfRecord: sceneID: sceneID:${BUNDLE_ID}-default" "$APP_LOG"; then
