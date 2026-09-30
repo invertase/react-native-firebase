@@ -19,12 +19,19 @@ describe('RNFBNativeEventEmitter removeAllListeners', function () {
     const superRemove = jest
       .spyOn(NativeEventEmitter.prototype, 'removeAllListeners')
       .mockImplementation(() => undefined);
+    jest.spyOn(NativeEventEmitter.prototype, 'addListener').mockImplementation(() => {
+      return { remove: jest.fn() } as never;
+    });
 
+    emitter.addListener('ping', () => undefined);
     emitter.removeAllListeners();
     emitter.removeAllListeners(null);
+    emitter.removeAllListeners('ping');
 
-    expect(removeListener).not.toHaveBeenCalled();
+    expect(removeListener).toHaveBeenCalledTimes(1);
+    expect(removeListener).toHaveBeenCalledWith('ping', true);
     expect(superRemove.mock.calls[0][0]).toBeUndefined();
     expect(superRemove.mock.calls[1][0]).toBeNull();
+    expect(superRemove.mock.calls[2][0]).toBe('rnfb_ping');
   });
 });
