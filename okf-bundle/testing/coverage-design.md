@@ -316,6 +316,10 @@ reporter: ['lcov', 'html', 'text-summary'],
 
 ObjC + Swift share this. Raw export is mostly Pods/SDK; healthy full run includes ~50–60 `packages/*/ios/**` files among ~2000 entries.
 
+### Accepted Clang line-counter gaps
+
+**2026-09-29:** In `packages/app/ios/RNFBApp/RNFBAppModule.mm` `initializeApp`, a format-stable single-line `[self completeInitializeApp:…]` call (clang-format off/on) still leaves LCOV `DA:212,0` on that call and `DA:214,0` on the `});` closing `RCTUnsafeExecuteOnMainQueueSync`, while `initializeApp` / block invoke / the preceding line / method `}` and `completeInitializeApp:` body all hit. User-accepted [intractable limitation](change-authoring-workflow.md#acceptable-exceptions); do not reshape the call to chase those two counters.
+
 ### SPM + dynamic frameworks
 
 **Tests Podfile default (dynamic):** RNFB pods stay separate `RNFB*.framework` images. Compile-only instrumentation is not enough — those frameworks must **link** the profile runtime (`link_profile: true` for `RNFB*` when `linkage == dynamic`, including `-Wl,-u,___llvm_profile_set_filename` so set_filename is not dead-stripped), flush must dump **each** loaded RNFB image, and `rn-coverage ios export` must pass every `RNFB*.framework` binary as an extra `llvm-cov -object` (`ios.frameworkNamePrefixes: ['RNFB']`). App-only export → **`packagesHits=0`**.
