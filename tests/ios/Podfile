@@ -202,6 +202,33 @@ target 'testing' do
         end
       end
     end
+
+    # The upstream phase defaults to the Release Hermes engine unless
+    # GCC_PREPROCESSOR_DEFINITIONS contains DEBUG=1. The Release engine does
+    # not export the CDP symbols a debug link needs. Choose the engine from
+    # $CONFIGURATION, and run the extractor from $PODS_ROOT because
+    # replace_hermes_version.js writes a CWD-relative hermes-engine directory.
+    installer.pods_project.targets.each do |target|
+      target.build_phases.each do |phase|
+        next unless phase.respond_to?(:shell_script) && phase.name&.include?('Replace Hermes')
+
+        node_line = phase.shell_script.to_s.lines.find { |line| line.include?('replace_hermes_version.js') }
+        next if node_line.nil? || node_line.strip.empty?
+
+        phase.shell_script = <<~SH
+          . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+
+          if [ "$CONFIGURATION" = "Debug" ]; then
+            CONFIG="Debug"
+          else
+            CONFIG="Release"
+          fi
+
+          cd "$PODS_ROOT"
+          #{node_line.strip}
+        SH
+      end
+    end
   end
 end
 
