@@ -34,9 +34,9 @@
 
 - (void)testFacadeOptionsFactoryCreatesFIROptions {
   id<RNFBFIROptionsCreating> factory = [RNFBAppModuleFirebase optionsFactory];
-  id<RNFBFIROptionsConfiguring> options = [factory createWithGoogleAppID:@"app-id"
-                                                             gcmSenderID:@"sender-id"];
-  FIROptions *firOptions = (FIROptions *)options;
+  id options = [factory createWithGoogleAppID:@"app-id" gcmSenderID:@"sender-id"];
+  XCTAssertTrue([options isKindOfClass:NSClassFromString(@"RNFBFIROptionsConfiguringAdapter")]);
+  FIROptions *firOptions = [options valueForKey:@"options"];
 
   XCTAssertEqualObjects(firOptions.googleAppID, @"app-id");
   XCTAssertEqualObjects(firOptions.GCMSenderID, @"sender-id");
@@ -44,8 +44,9 @@
 
 - (void)testFacadeOptionsFactoryForwardsNilGoogleAppIDAndSenderID {
   id<RNFBFIROptionsCreating> factory = [RNFBAppModuleFirebase optionsFactory];
-  id<RNFBFIROptionsConfiguring> options = [factory createWithGoogleAppID:nil gcmSenderID:nil];
-  FIROptions *firOptions = (FIROptions *)options;
+  id options = [factory createWithGoogleAppID:nil gcmSenderID:nil];
+  XCTAssertTrue([options isKindOfClass:NSClassFromString(@"RNFBFIROptionsConfiguringAdapter")]);
+  FIROptions *firOptions = [options valueForKey:@"options"];
 
   XCTAssertNil(firOptions.googleAppID);
   XCTAssertNil(firOptions.GCMSenderID);

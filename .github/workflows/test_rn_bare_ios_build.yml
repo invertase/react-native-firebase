@@ -10,6 +10,7 @@ on:
     paths:
       - 'test-rn-bare/**'
       - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/package.json'
       - 'packages/app/ios/**'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
@@ -17,9 +18,11 @@ on:
       - 'packages/app/app.plugin.js'
       - 'scripts/e2e/lib/ios-simulator-helpers.sh'
       - '.github/workflows/test_rn_bare_ios_build.yml'
+      - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
+      - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
   push:
     branches:
       - main
@@ -27,6 +30,7 @@ on:
     paths:
       - 'test-rn-bare/**'
       - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/package.json'
       - 'packages/app/ios/**'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
@@ -34,9 +38,11 @@ on:
       - 'packages/app/app.plugin.js'
       - 'scripts/e2e/lib/ios-simulator-helpers.sh'
       - '.github/workflows/test_rn_bare_ios_build.yml'
+      - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
+      - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
 
 permissions:
   contents: read
@@ -78,3 +84,39 @@ jobs:
 
       - name: test-rn-bare iOS launch smoke
         run: yarn test-rn-bare:ios:launch-smoke
+
+  # Permanent probe: App links through the local dynamic RNFBFirebase package
+  # instead of direct firebase-ios-sdk. Flag off job above stays the shipped path.
+  test-rn-bare-ios-build-dynamic-firebase:
+    name: test-rn-bare iOS build (dynamic Firebase probe)
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      XCODE_VERSION: '27.0'
+      RNFB_IOS_SIM_RUNTIME: iOS 27.0
+      RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE: '1'
+      RNFB_TEST_RN_BARE_POD_LOG: /tmp/test-rn-bare-pod-install-probe.log
+      RNFB_TEST_RN_BARE_XCODEBUILD_LOG: /tmp/test-rn-bare-xcodebuild-probe.log
+      RNFB_TEST_RN_BARE_DERIVED_DATA: /tmp/test-rn-bare-derived-data-probe
+    steps:
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
+
+      - name: Yarn Install
+        run: yarn
+
+      - name: test-rn-bare iOS build (dynamic Firebase probe)
+        run: yarn test-rn-bare:ios:build

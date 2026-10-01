@@ -1,0 +1,580 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B20000000000000000000040 /* RNFBFirebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000030 /* RNFBFirebase.swift */; };
+		B20000000000000000000094 /* RNFBFirebaseBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000092 /* RNFBFirebaseBridge.m */; };
+		B20000000000000000000095 /* RNFBFirebaseBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = B20000000000000000000093 /* RNFBFirebaseBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B20000000000000000000041 /* FIRApp.m in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000031 /* FIRApp.m */; };
+		B20000000000000000000042 /* FIRInstallations.m in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000032 /* FIRInstallations.m */; };
+		B20000000000000000000043 /* RNFBAppDynamicFacadeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000033 /* RNFBAppDynamicFacadeTests.swift */; };
+		B2000000000000000000004C /* RNFBFirebaseAppClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000003B /* RNFBFirebaseAppClientTests.swift */; };
+		B20000000000000000000044 /* RCTConvertFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000034 /* RCTConvertFIRApp.swift */; };
+		B20000000000000000000045 /* RCTConvertFIROptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000035 /* RCTConvertFIROptions.swift */; };
+		B20000000000000000000046 /* RNFBSharedUtilsFIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000036 /* RNFBSharedUtilsFIRApp.swift */; };
+		B20000000000000000000047 /* RNFBAppModuleFirebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000037 /* RNFBAppModuleFirebase.swift */; };
+		B20000000000000000000048 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000038 /* RNFBSharedUtilsFormatting.swift */; };
+		B20000000000000000000049 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000039 /* RNFBAppCustomAuthDomains.swift */; };
+		B2000000000000000000004A /* RNFBAppInitializeOptionsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000003A /* RNFBAppInitializeOptionsMapper.swift */; };
+		B2000000000000000000004B /* RNFBFirebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2000000000000000000003C /* RNFBFirebase.framework */; };
+		B2000000000000000000004D /* RNFBFirebaseClientImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2000000000000000000003E /* RNFBFirebaseClientImport.swift */; };
+		B2000000000000000000004E /* RNFBFirebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2000000000000000000003C /* RNFBFirebase.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B20000000000000000000050 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B20000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B20000000000000000000010;
+			remoteInfo = RNFBFirebase;
+		};
+		B20000000000000000000083 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B20000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B20000000000000000000080;
+			remoteInfo = RNFBFirebaseClientCheck;
+		};
+		B20000000000000000000089 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B20000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B20000000000000000000010;
+			remoteInfo = RNFBFirebase;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B20000000000000000000030 /* RNFBFirebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFirebase.swift; path = ../RNFBFirebase/Sources/RNFBFirebase/RNFBFirebase.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000092 /* RNFBFirebaseBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirebaseBridge.m; path = ../RNFBFirebase/Sources/RNFBFirebaseBridge/RNFBFirebaseBridge.m; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000093 /* RNFBFirebaseBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirebaseBridge.h; path = ../RNFBFirebase/Sources/RNFBFirebaseBridge/include/RNFBFirebaseBridge.h; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000031 /* FIRApp.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRApp.m; path = ../RNFBAppUnitTests/HostStubs/FirebaseCore/FIRApp.m; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000032 /* FIRInstallations.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRInstallations.m; path = ../RNFBAppUnitTests/HostStubs/FirebaseInstallations/FIRInstallations.m; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000033 /* RNFBAppDynamicFacadeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppDynamicFacadeTests.swift; sourceTree = "<group>"; };
+		B2000000000000000000003B /* RNFBFirebaseAppClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFirebaseAppClientTests.swift; path = ../RNFBAppUnitTests/RNFBFirebaseAppClientTests.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000034 /* RCTConvertFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RCTConvertFIRApp.swift; path = ../RNFBApp/RCTConvertFIRApp.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000035 /* RCTConvertFIROptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RCTConvertFIROptions.swift; path = ../RNFBApp/RCTConvertFIROptions.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000036 /* RNFBSharedUtilsFIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFIRApp.swift; path = ../RNFBApp/RNFBSharedUtilsFIRApp.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000037 /* RNFBAppModuleFirebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppModuleFirebase.swift; path = ../RNFBApp/RNFBAppModuleFirebase.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000038 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBSharedUtilsFormatting.swift; path = ../RNFBApp/RNFBSharedUtilsFormatting.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000039 /* RNFBAppCustomAuthDomains.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppCustomAuthDomains.swift; path = ../RNFBApp/RNFBAppCustomAuthDomains.swift; sourceTree = SOURCE_ROOT; };
+		B2000000000000000000003A /* RNFBAppInitializeOptionsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppInitializeOptionsMapper.swift; path = ../RNFBApp/RNFBAppInitializeOptionsMapper.swift; sourceTree = SOURCE_ROOT; };
+		B2000000000000000000003C /* RNFBFirebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RNFBFirebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2000000000000000000003D /* RNFBFirebaseUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBFirebaseUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2000000000000000000003E /* RNFBFirebaseClientImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBFirebaseClientImport.swift; sourceTree = "<group>"; };
+		B2000000000000000000003F /* libRNFBFirebaseClientCheck.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBFirebaseClientCheck.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B20000000000000000000021 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2000000000000000000004B /* RNFBFirebase.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B20000000000000000000011 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B20000000000000000000081 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2000000000000000000004E /* RNFBFirebase.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B20000000000000000000004 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000005 /* Products */,
+				B20000000000000000000030 /* RNFBFirebase.swift */,
+				B20000000000000000000092 /* RNFBFirebaseBridge.m */,
+				B20000000000000000000093 /* RNFBFirebaseBridge.h */,
+				B20000000000000000000031 /* FIRApp.m */,
+				B20000000000000000000032 /* FIRInstallations.m */,
+				B20000000000000000000033 /* RNFBAppDynamicFacadeTests.swift */,
+				B2000000000000000000003E /* RNFBFirebaseClientImport.swift */,
+				B2000000000000000000003B /* RNFBFirebaseAppClientTests.swift */,
+				B20000000000000000000034 /* RCTConvertFIRApp.swift */,
+				B20000000000000000000035 /* RCTConvertFIROptions.swift */,
+				B20000000000000000000036 /* RNFBSharedUtilsFIRApp.swift */,
+				B20000000000000000000037 /* RNFBAppModuleFirebase.swift */,
+				B20000000000000000000038 /* RNFBSharedUtilsFormatting.swift */,
+				B20000000000000000000039 /* RNFBAppCustomAuthDomains.swift */,
+				B2000000000000000000003A /* RNFBAppInitializeOptionsMapper.swift */,
+			);
+			sourceTree = "<group>";
+		};
+		B20000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B2000000000000000000003C /* RNFBFirebase.framework */,
+				B2000000000000000000003F /* libRNFBFirebaseClientCheck.a */,
+				B2000000000000000000003D /* RNFBFirebaseUnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B20000000000000000000010 /* RNFBFirebase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B20000000000000000000071 /* Build configuration list for PBXNativeTarget "RNFBFirebase" */;
+			buildPhases = (
+				B20000000000000000000096 /* Headers */,
+				B20000000000000000000012 /* Sources */,
+				B20000000000000000000011 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFBFirebase;
+			productName = RNFBFirebase;
+			productReference = B2000000000000000000003C /* RNFBFirebase.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		B20000000000000000000080 /* RNFBFirebaseClientCheck */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B20000000000000000000087 /* Build configuration list for PBXNativeTarget "RNFBFirebaseClientCheck" */;
+			buildPhases = (
+				B20000000000000000000082 /* Sources */,
+				B20000000000000000000081 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B2000000000000000000008A /* PBXTargetDependency */,
+			);
+			name = RNFBFirebaseClientCheck;
+			productName = RNFBFirebaseClientCheck;
+			productReference = B2000000000000000000003F /* libRNFBFirebaseClientCheck.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B20000000000000000000020 /* RNFBFirebaseUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B20000000000000000000072 /* Build configuration list for PBXNativeTarget "RNFBFirebaseUnitTests" */;
+			buildPhases = (
+				B20000000000000000000022 /* Sources */,
+				B20000000000000000000021 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B20000000000000000000051 /* PBXTargetDependency */,
+				B20000000000000000000084 /* PBXTargetDependency */,
+			);
+			name = RNFBFirebaseUnitTests;
+			productName = RNFBFirebaseUnitTests;
+			productReference = B2000000000000000000003D /* RNFBFirebaseUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B20000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					B20000000000000000000010 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					B20000000000000000000020 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					B20000000000000000000080 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = B20000000000000000000070 /* Build configuration list for PBXProject "RNFBFirebaseUnitTests" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B20000000000000000000004 /* Main */;
+			productRefGroup = B20000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B20000000000000000000010 /* RNFBFirebase */,
+				B20000000000000000000080 /* RNFBFirebaseClientCheck */,
+				B20000000000000000000020 /* RNFBFirebaseUnitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B20000000000000000000096 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B20000000000000000000095 /* RNFBFirebaseBridge.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B20000000000000000000012 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B20000000000000000000040 /* RNFBFirebase.swift in Sources */,
+				B20000000000000000000094 /* RNFBFirebaseBridge.m in Sources */,
+				B20000000000000000000041 /* FIRApp.m in Sources */,
+				B20000000000000000000042 /* FIRInstallations.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B20000000000000000000022 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B20000000000000000000043 /* RNFBAppDynamicFacadeTests.swift in Sources */,
+				B2000000000000000000004C /* RNFBFirebaseAppClientTests.swift in Sources */,
+				B20000000000000000000044 /* RCTConvertFIRApp.swift in Sources */,
+				B20000000000000000000045 /* RCTConvertFIROptions.swift in Sources */,
+				B20000000000000000000046 /* RNFBSharedUtilsFIRApp.swift in Sources */,
+				B20000000000000000000047 /* RNFBAppModuleFirebase.swift in Sources */,
+				B20000000000000000000048 /* RNFBSharedUtilsFormatting.swift in Sources */,
+				B20000000000000000000049 /* RNFBAppCustomAuthDomains.swift in Sources */,
+				B2000000000000000000004A /* RNFBAppInitializeOptionsMapper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B20000000000000000000082 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2000000000000000000004D /* RNFBFirebaseClientImport.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B20000000000000000000051 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B20000000000000000000010 /* RNFBFirebase */;
+			targetProxy = B20000000000000000000050 /* PBXContainerItemProxy */;
+		};
+		B20000000000000000000084 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B20000000000000000000080 /* RNFBFirebaseClientCheck */;
+			targetProxy = B20000000000000000000083 /* PBXContainerItemProxy */;
+		};
+		B2000000000000000000008A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B20000000000000000000010 /* RNFBFirebase */;
+			targetProxy = B20000000000000000000089 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B20000000000000000000060 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		B20000000000000000000061 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		B20000000000000000000062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
+					"$(SRCROOT)/../RNFBFirebase/Sources/RNFBFirebaseBridge/include",
+				);
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fmodule-map-file=$(SRCROOT)/../RNFBAppUnitTests/HostStubs/module.modulemap",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/../RNFBAppUnitTests/HostStubs/module.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBFirebase;
+				PRODUCT_MODULE_NAME = RNFBFirebase;
+				PRODUCT_NAME = RNFBFirebase;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../RNFBAppUnitTests/HostStubs";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		B20000000000000000000063 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
+					"$(SRCROOT)/../RNFBFirebase/Sources/RNFBFirebaseBridge/include",
+				);
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fmodule-map-file=$(SRCROOT)/../RNFBAppUnitTests/HostStubs/module.modulemap",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/../RNFBAppUnitTests/HostStubs/module.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBFirebase;
+				PRODUCT_MODULE_NAME = RNFBFirebase;
+				PRODUCT_NAME = RNFBFirebase;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/../RNFBAppUnitTests/HostStubs";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		B20000000000000000000064 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				DEFINES_MODULE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
+					"$(SRCROOT)/../RNFBApp",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fprofile-instr-generate",
+					"-fcoverage-mapping",
+				);
+				OTHER_LDFLAGS = (
+					"-fprofile-instr-generate",
+					"-Xlinker",
+					"-force_load",
+					"-Xlinker",
+					"$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/RNFBFirebase",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/../RNFBAppUnitTests/HostStubs/module.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBFirebaseUnitTests;
+				PRODUCT_MODULE_NAME = RNFBFirebaseUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = (
+					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
+					"$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/Modules",
+				);
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		B20000000000000000000065 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				DEFINES_MODULE = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
+					"$(SRCROOT)/../RNFBApp",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_SWIFT_FLAGS = (
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/../RNFBAppUnitTests/HostStubs/module.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBFirebaseUnitTests;
+				PRODUCT_MODULE_NAME = RNFBFirebaseUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = (
+					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
+					"$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/Modules",
+				);
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		B20000000000000000000085 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				DEFINES_MODULE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_NAME = RNFBFirebaseClientCheck;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = "$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/Modules";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		B20000000000000000000086 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				DEFINES_MODULE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)",
+				);
+				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_NAME = RNFBFirebaseClientCheck;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_INCLUDE_PATHS = "$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/Modules";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B20000000000000000000070 /* Build configuration list for PBXProject "RNFBFirebaseUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000060 /* Debug */,
+				B20000000000000000000061 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B20000000000000000000071 /* Build configuration list for PBXNativeTarget "RNFBFirebase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000062 /* Debug */,
+				B20000000000000000000063 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B20000000000000000000072 /* Build configuration list for PBXNativeTarget "RNFBFirebaseUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000064 /* Debug */,
+				B20000000000000000000065 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B20000000000000000000087 /* Build configuration list for PBXNativeTarget "RNFBFirebaseClientCheck" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000085 /* Debug */,
+				B20000000000000000000086 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B20000000000000000000001 /* Project object */;
+}
