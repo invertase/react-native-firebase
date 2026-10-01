@@ -67,6 +67,18 @@ jobs:
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn
+      # Yarn 4 workspace audit. Recursive/full (`-R`) currently fails on known
+      # transitive advisories in lockfile (dev/test tooling). `--severity critical`
+      # is a real gate: the job fails if any workspace has a critical finding on
+      # a direct dependency (`--all` covers every workspace).
+      - name: Yarn npm audit
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 10
+          max_attempts: 3
+          command: yarn npm audit --all --severity critical
       - name: Lint
         # https://github.com/nick-fields/retry/releases
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0

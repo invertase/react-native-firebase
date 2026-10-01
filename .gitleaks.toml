@@ -1,0 +1,32 @@
+# Extend default rules. Allowlists are limited to known public fixtures /
+# documentation examples so the CI gate still fails on new secrets.
+title = "react-native-firebase"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Public Firebase demo and docs-example GCP API keys (not production secrets)"
+regexes = [
+  '''AIzaSyAHAsf51D0A407EklG1bs-5wA7EbyfNFg0''',
+  '''AIzaSyCuu4tbv9CwwTudNOweMNstzZHIDBhgJxA''',
+  '''AIzaSyDdVgKwhZl0sTTTLZ7iTmt1r3N2cJLnaDk''',
+]
+
+[[allowlists]]
+description = "High-entropy binary media fixtures for Vertex AI local tests"
+paths = [
+  '''tests/local-tests/vertexai/base-64-media\.(js|ts)$''',
+]
+
+[[allowlists]]
+description = "CocoaPods SPEC CHECKSUMS (pod-name: sha1) look like generic-api-key"
+paths = [
+  '''(^|/)Podfile\.lock$''',
+]
+
+[[allowlists]]
+description = "Public docs.page agent site key in docs.json (not a production secret)"
+regexes = [
+  '''6e277cd7-0065-4ade-a14a-3ecfa3f369a4''',
+]
