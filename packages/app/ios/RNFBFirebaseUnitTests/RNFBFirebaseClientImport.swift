@@ -12,13 +12,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-#import <React/RCTConvert.h>
+import Foundation
+import RNFBFirebase
 
-@class FIROptions;
+/// Client of RNFBFirebase compiled with FirebaseCore and FirebaseInstallations
+/// absent from the module path. `import RNFBFirebase` is the dynamic-probe failure.
+enum RNFBFirebaseClientImportCheck {
+  static func boot() {
+    RNFBFirebaseAppClient.configure()
+  }
 
-@interface RCTConvert (FIROptions)
-+ (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions;
-@end
+  static func snapshot() -> RNFBFirebaseAppSnapshot {
+    RNFBFirebaseAppSnapshot(
+      name: "client",
+      apiKey: nil,
+      googleAppID: nil,
+      projectID: nil,
+      databaseURL: nil,
+      storageBucket: nil,
+      gcmSenderID: nil,
+      clientID: nil,
+      isDataCollectionDefaultEnabled: false
+    )
+  }
+}

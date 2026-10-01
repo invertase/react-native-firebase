@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import FirebaseCore
 import Foundation
 import XCTest
 
@@ -178,6 +179,57 @@ final class RNFBAppModuleFirebaseTests: XCTestCase {
 
     XCTAssertEqual(lifecycle.lastConfigureName, "secondary")
     XCTAssertTrue(result === lifecycle.namedApps["secondary"])
+  }
+
+  func testConfigureOrReuseUnwrapsConfiguringAdapterToLiveOptions() {
+    let lifecycle = StubFIRAppLifecycle()
+    let names = RNFBAppInitializeNameResolution(
+      appName: "secondary",
+      jsAppName: "secondary",
+      isDefaultApp: false
+    )
+    let live = FirebaseOptions(googleAppID: "app-id", gcmSenderID: "sender-id")
+    let adapter = RNFBFIROptionsConfiguringAdapter(live)
+
+    _ = RNFBAppModuleFirebase.configureOrReuseApp(
+      options: adapter,
+      nameResolution: names,
+      lifecycle: lifecycle
+    )
+
+    XCTAssertTrue(lifecycle.lastConfigureOptions === live)
+  }
+
+  func testOptionsFactoryBalancesAllocOwnershipAndPreservesNilIdentifiers() {
+    weak var releasedOptions: FirebaseOptions?
+
+    autoreleasepool {
+      let configured = RNFBAppModuleFirebase.optionsFactory().create(
+        googleAppID: nil,
+        gcmSenderID: nil
+      )
+      let adapter = configured as! RNFBFIROptionsConfiguringAdapter
+      releasedOptions = adapter.options
+
+      XCTAssertNil(adapter.options.googleAppID)
+      XCTAssertNil(adapter.options.gcmSenderID)
+    }
+
+    XCTAssertNil(releasedOptions)
+  }
+
+  func testDirectRegisterLibrarySkipsMissingSelectorAndForwardsWhenPresent() {
+    FirebaseApp.resetRegistryForTesting()
+    RNFBFIRLibraryRegisteringAdapter.registerLibrary("skipped", version: "0", on: NSObject.self)
+    XCTAssertNil(FirebaseApp.lastRegisteredLibraryNameForTesting())
+
+    RNFBFIRLibraryRegisteringAdapter.registerLibrary(
+      "react-native-firebase",
+      version: "1.0.0",
+      on: FirebaseApp.self
+    )
+    XCTAssertEqual(FirebaseApp.lastRegisteredLibraryNameForTesting(), "react-native-firebase")
+    XCTAssertEqual(FirebaseApp.lastRegisteredLibraryVersionForTesting(), "1.0.0")
   }
 
   func testRegisterLibraryOnceOnlyRegistersOnce() {

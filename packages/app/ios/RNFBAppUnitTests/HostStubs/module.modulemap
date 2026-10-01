@@ -6,3 +6,8 @@ module FirebaseCore {
   header "FirebaseCore/FirebaseCore.h"
   export *
 }
+
+module FirebaseInstallations {
+  header "FirebaseInstallations/FirebaseInstallations.h"
+  export *
+}

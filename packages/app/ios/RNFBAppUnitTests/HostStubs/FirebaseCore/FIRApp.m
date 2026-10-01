@@ -23,6 +23,7 @@ static FIRApp *_Nullable RNFBStubDefaultApp;
 static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
 static NSString *_Nullable RNFBStubLastLibraryName;
 static NSString *_Nullable RNFBStubLastLibraryVersion;
+static BOOL RNFBStubRegisterLibraryAvailable = YES;
 
 + (NSMutableDictionary<NSString *, FIRApp *> *)namedAppsRegistry {
   if (RNFBStubNamedApps == nil) {
@@ -76,6 +77,17 @@ static NSString *_Nullable RNFBStubLastLibraryVersion;
 + (void)registerLibrary:(NSString *)name withVersion:(NSString *)version {
   RNFBStubLastLibraryName = [name copy];
   RNFBStubLastLibraryVersion = [version copy];
+}
+
++ (void)setRegisterLibraryAvailableForTesting:(BOOL)available {
+  RNFBStubRegisterLibraryAvailable = available;
+}
+
++ (BOOL)respondsToSelector:(SEL)selector {
+  if (selector == @selector(registerLibrary:withVersion:) && !RNFBStubRegisterLibraryAvailable) {
+    return NO;
+  }
+  return [super respondsToSelector:selector];
 }
 
 - (void)deleteApp:(void (^)(BOOL success))completion {

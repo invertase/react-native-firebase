@@ -21,6 +21,18 @@
 #import "RNFBAppModuleImplementation.h"
 #import "RNFBAppTurboModules.h"
 
+#if defined(RNFB_DYNAMIC_FIREBASE_PROBE)
+#if __has_include(<FirebaseCore/FirebaseCore.h>)
+#error "FirebaseCore headers visible in RNFB dynamic probe"
+#endif
+#if __has_include(<FirebaseInstallations/FirebaseInstallations.h>)
+#error "FirebaseInstallations headers visible in RNFB dynamic probe"
+#endif
+#if __has_feature(cxx_modules)
+#error "C++ modules enabled in RNFB dynamic probe"
+#endif
+#endif
+
 @interface RNFBAppModule () <NativeRNFBTurboAppSpec, RCTInvalidating>
 
 @end

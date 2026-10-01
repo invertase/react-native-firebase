@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+#if canImport(RNFBFirebase)
+import RNFBFirebase
+#else
 import FirebaseCore
+#endif
 import Foundation
 
 /**
@@ -39,11 +43,19 @@ final class RNFBFIRAppRegistryAdapter: NSObject, RNFBFIRAppLookingUp {
   @objc static let shared = RNFBFIRAppRegistryAdapter()
 
   func defaultApp() -> AnyObject? {
+#if canImport(RNFBFirebase)
+    RNFBFirebaseAppClient.defaultApp()
+#else
     FirebaseApp.app()
+#endif
   }
 
   func appNamed(_ name: String) -> AnyObject? {
+#if canImport(RNFBFirebase)
+    RNFBFirebaseAppClient.app(named: name)
+#else
     FirebaseApp.app(name: name)
+#endif
   }
 }
 

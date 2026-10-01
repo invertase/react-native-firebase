@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+#if canImport(RNFBFirebase)
+import RNFBFirebase
+#else
 import FirebaseCore
+#endif
 import Foundation
 
 /**
@@ -70,27 +74,73 @@ import Foundation
 }
 
 /**
- * Adapts live `FirebaseOptions` (`FIROptions`) creation for `RNFBFIROptionsCreating`.
+ * Adapts live options creation for `RNFBFIROptionsCreating`.
+ * Ownership lives in `RNFBFIROptionsAllocation` (always `takeRetainedValue()`).
  */
 @objc(RNFBAppModuleFIROptionsFactory)
 final class RNFBAppModuleFIROptionsFactory: NSObject, RNFBFIROptionsCreating {
   @objc static let shared = RNFBAppModuleFIROptionsFactory()
 
   func create(googleAppID: String?, gcmSenderID: String?) -> RNFBFIROptionsConfiguring {
-    // Pre-port forwarded nil into `initWithGoogleAppID:GCMSenderID:`. The Swift
-    // `FirebaseOptions(googleAppID:gcmSenderID:)` overlay requires non-optional String,
-    // so call the ObjC initializer directly to preserve nil.
-    let allocated = FirebaseOptions.perform(NSSelectorFromString("alloc"))!
-      .takeUnretainedValue() as! NSObject
-    let initialized = allocated.perform(
-      NSSelectorFromString("initWithGoogleAppID:GCMSenderID:"),
-      with: googleAppID,
-      with: gcmSenderID
-    )!.takeUnretainedValue()
-    return initialized as! RNFBFIROptionsConfiguring
+    RNFBFIROptionsConfiguringAdapter(
+      RNFBFIROptionsAllocation.create(googleAppID: googleAppID, gcmSenderID: gcmSenderID)
+    )
   }
 }
 
+#if canImport(RNFBFirebase)
+/**
+ * Adapts `RNFBFirebaseAppClient` class methods for `RNFBAppModuleFirebase`.
+ */
+@objc(RNFBFIRAppLifecycleAdapter)
+final class RNFBFIRAppLifecycleAdapter: NSObject, RNFBFIRAppLifecycle {
+  @objc static let shared = RNFBFIRAppLifecycleAdapter()
+
+  func defaultApp() -> AnyObject? {
+    RNFBFirebaseAppClient.defaultApp()
+  }
+
+  func appNamed(_ name: String) -> AnyObject? {
+    RNFBFirebaseAppClient.app(named: name)
+  }
+
+  func allApps() -> [AnyHashable: Any]? {
+    RNFBFirebaseAppClient.allApps()
+  }
+
+  func configure(withOptions options: AnyObject) {
+    RNFBFirebaseAppClient.configure(options: options as! NSObject)
+  }
+
+  func configure(withName name: String, options: AnyObject) {
+    RNFBFirebaseAppClient.configure(name: name, options: options as! NSObject)
+  }
+}
+
+/**
+ * Adapts logger level through the facade.
+ */
+@objc(RNFBFIRLoggerConfigurationAdapter)
+final class RNFBFIRLoggerConfigurationAdapter: NSObject, RNFBFIRLoggerConfiguring {
+  @objc static let shared = RNFBFIRLoggerConfigurationAdapter()
+
+  func setLoggerLevel(_ level: Int) {
+    RNFBFirebaseAppClient.setLoggerLevel(level)
+  }
+}
+
+/**
+ * Adapts optional library registration through the facade.
+ */
+@objc(RNFBFIRLibraryRegisteringAdapter)
+final class RNFBFIRLibraryRegisteringAdapter: NSObject, RNFBFIRLibraryRegistering {
+  @objc static let shared = RNFBFIRLibraryRegisteringAdapter()
+
+  func registerLibrary(_ name: String, withVersion version: String) {
+    RNFBFirebaseAppClient.registerLibrary(name: name, version: version)
+  }
+}
+#else
 /**
  * Adapts live `FirebaseApp` (`FIRApp`) class methods for `RNFBAppModuleFirebase`.
  */
@@ -166,15 +216,16 @@ final class RNFBFIRLibraryRegisteringAdapter: NSObject, RNFBFIRLibraryRegisterin
 
   private static let registerSelector = NSSelectorFromString("registerLibrary:withVersion:")
 
-  var isAvailable: Bool {
-    FirebaseApp.responds(to: Self.registerSelector)
+  static func registerLibrary(_ name: String, version: String, on target: NSObject.Type) {
+    guard target.responds(to: registerSelector) else { return }
+    target.perform(registerSelector, with: name, with: version)
   }
 
   func registerLibrary(_ name: String, withVersion version: String) {
-    guard isAvailable else { return }
-    FirebaseApp.perform(Self.registerSelector, with: name, with: version)
+    Self.registerLibrary(name, version: version, on: FirebaseApp.self)
   }
 }
+#endif
 
 /**
  * FIRApp / FIROptions / FIRConfiguration helpers previously inline in `RNFBAppModule.mm`.
@@ -260,7 +311,14 @@ public final class RNFBAppModuleFirebase: NSObject {
     nameResolution: RNFBAppInitializeNameResolution,
     lifecycle: RNFBFIRAppLifecycle
   ) -> AnyObject {
-    let firOptions = options as AnyObject
+    // Production factories wrap live `FirebaseOptions` in
+    // `RNFBFIROptionsConfiguringAdapter`. Configure needs the underlying SDK object.
+    let firOptions: AnyObject
+    if let adapter = options as? RNFBFIROptionsConfiguringAdapter {
+      firOptions = adapter.options
+    } else {
+      firOptions = options
+    }
     if nameResolution.isDefaultApp {
       if let existing = lifecycle.defaultApp() {
         return existing
@@ -285,23 +343,38 @@ public final class RNFBAppModuleFirebase: NSObject {
 
   @objc(setAutomaticDataCollectionEnabled:forAppName:)
   public static func setAutomaticDataCollectionEnabled(_ enabled: Bool, forAppName appName: String) {
-    guard let app = app(forName: appName) as? FirebaseApp else { return }
-    RNFBFIRAppMutatingAdapter(app: app).setDataCollectionDefaultEnabled(enabled)
+    guard let app = app(forName: appName) else { return }
+#if canImport(RNFBFirebase)
+    _ = RNFBFirebaseAppClient.setDataCollectionDefaultEnabled(enabled, forApp: app as! NSObject)
+#else
+    guard let firebaseApp = app as? FirebaseApp else { return }
+    RNFBFIRAppMutatingAdapter(app: firebaseApp).setDataCollectionDefaultEnabled(enabled)
+#endif
   }
 
   @objc(setDataCollectionDefaultEnabled:forApp:)
   public static func setDataCollectionDefaultEnabled(_ enabled: Bool, forApp app: AnyObject) {
+#if canImport(RNFBFirebase)
+    _ = RNFBFirebaseAppClient.setDataCollectionDefaultEnabled(enabled, forApp: app as! NSObject)
+#else
     guard let firebaseApp = app as? FirebaseApp else { return }
     RNFBFIRAppMutatingAdapter(app: firebaseApp).setDataCollectionDefaultEnabled(enabled)
+#endif
   }
 
   @objc(deleteApp:completion:)
   public static func deleteApp(_ app: AnyObject, completion: @escaping (Bool) -> Void) {
+#if canImport(RNFBFirebase)
+    if !RNFBFirebaseAppClient.deleteApp(app as! NSObject, completion: completion) {
+      completion(false)
+    }
+#else
     guard let firebaseApp = app as? FirebaseApp else {
       completion(false)
       return
     }
     RNFBFIRAppMutatingAdapter(app: firebaseApp).deleteApp(completion)
+#endif
   }
 
   @objc(deleteApp:mutating:completion:)
