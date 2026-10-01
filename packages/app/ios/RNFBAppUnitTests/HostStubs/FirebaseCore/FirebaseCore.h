@@ -13,7 +13,7 @@ typedef NS_ENUM(NSInteger, FIRLoggerLevel) {
   FIRLoggerLevelNotice = 5,
   FIRLoggerLevelInfo = 6,
   FIRLoggerLevelDebug = 7,
-};
+} NS_SWIFT_NAME(FirebaseLoggerLevel);
 
 NS_SWIFT_NAME(FirebaseOptions)
 @interface FIROptions : NSObject
@@ -46,16 +46,31 @@ NS_SWIFT_NAME(FirebaseApp)
 
 + (nullable FIRApp *)defaultApp NS_SWIFT_NAME(app());
 + (nullable FIRApp *)appNamed:(nonnull NSString *)name NS_SWIFT_NAME(app(name:));
+@property(class, readonly, nullable) NSDictionary<NSString *, FIRApp *> *allApps;
+
++ (void)configure;
++ (void)configureWithOptions:(nonnull FIROptions *)options NS_SWIFT_NAME(configure(options:));
++ (void)configureWithName:(nonnull NSString *)name
+                  options:(nonnull FIROptions *)options NS_SWIFT_NAME(configure(name:options:));
+
++ (void)registerLibrary:(nonnull NSString *)name withVersion:(nonnull NSString *)version;
+
+- (void)deleteApp:(void (^_Nonnull)(BOOL success))completion;
 
 + (void)setDefaultAppForTesting:(nullable FIRApp *)app;
 + (void)registerAppForTesting:(nonnull FIRApp *)app;
 + (void)resetRegistryForTesting;
+
++ (nullable NSString *)lastRegisteredLibraryNameForTesting;
++ (nullable NSString *)lastRegisteredLibraryVersionForTesting;
 @end
 
+NS_SWIFT_NAME(FirebaseConfiguration)
 @interface FIRConfiguration : NSObject
 @property(nonatomic, assign, readonly) FIRLoggerLevel loggerLevel;
 
-+ (nonnull instancetype)sharedInstance;
+@property(class, nonatomic, readonly, nonnull)
+    FIRConfiguration *sharedInstance NS_SWIFT_NAME(shared);
 - (void)setLoggerLevel:(FIRLoggerLevel)loggerLevel;
 
 + (void)resetForTesting;

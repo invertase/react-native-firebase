@@ -20,9 +20,13 @@
 /**
  * Host stub for unit tests: provides the `RNFBUtilsModule` class so
  * `RNFBUtilsModule+Foundation` category forwards can link without compiling TurboModule `.mm`.
- * Photos `fetchAssetForPath:` stays production-only in `RNFBUtilsModule.mm`.
+ * PhotoKit behavior stays production-only in `RNFBUtilsModule+PhotoAssets.m`.
  */
 @implementation RNFBUtilsModule
+
+@end
+
+@implementation RNFBUtilsModule (PhotoAssets)
 
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
   (void)localFilePath;

@@ -19,8 +19,12 @@
 
 @interface RNFBAppModule : NSObject
 
-+ (NSString *)getCustomDomain:(NSString *)appName;
-
 - (void)setLogLevel:(NSString *)logLevel;
+
+@end
+
+@interface RNFBAppModule (CustomAuthDomain)
+
++ (NSString *)getCustomDomain:(NSString *)appName;
 
 @end

@@ -12,27 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-#import <Foundation/Foundation.h>
+#import "RNFBAppModule.h"
 
-@class PHAsset;
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
 
-@interface RNFBUtilsModule : NSObject
+@implementation RNFBAppModule (CustomAuthDomain)
 
-@end
-
-@interface RNFBUtilsModule (FoundationHelpers)
-
-+ (BOOL)isRemoteAsset:(NSString *)localFilePath;
-+ (BOOL)unused_isHeic:(NSString *)localFilePath;
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
-
-@end
-
-@interface RNFBUtilsModule (PhotoAssets)
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
++ (NSString *)getCustomDomain:(NSString *)appName {
+  return [RNFBAppCustomAuthDomains getCustomDomain:appName];
+}
 
 @end

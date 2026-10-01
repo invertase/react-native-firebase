@@ -15,75 +15,24 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseCore/FirebaseCore.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-#endif
 #import <React/RCTInvalidating.h>
-#import <React/RCTUtils.h>
 
-#import "RCTConvert+FIRApp.h"
 #import "RNFBAppModule.h"
+#import "RNFBAppModuleImplementation.h"
 #import "RNFBAppTurboModules.h"
-#import "RNFBJSON.h"
-#import "RNFBMeta.h"
-#import "RNFBPreferences.h"
-#import "RNFBRCTEventEmitter.h"
-#import "RNFBSharedUtils.h"
-#import "RNFBVersion.h"
-
-#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
-#import <RNFBApp/RNFBApp-Swift.h>
-#elif __has_include("RNFBApp-Swift.h")
-#import "RNFBApp-Swift.h"
-#elif __has_include("RNFBHandleMapStorage-Swift.inc")
-#import "RNFBHandleMapStorage-Swift.inc"
-#else
-#error "RNFBApp Swift interface not found"
-#endif
-
-#if __has_include(<FirebaseCore/FIRAppInternal.h>)
-#import <FirebaseCore/FIRAppInternal.h>
-#define REGISTER_LIB
-#endif
 
 @interface RNFBAppModule () <NativeRNFBTurboAppSpec, RCTInvalidating>
 
-+ (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName;
-
 @end
-
-/**
- * Adapts `[[FIROptions alloc] initWithGoogleAppID:GCMSenderID:]` for
- * `RNFBAppInitializeOptionsMapper` (same shape as `RCTConvert+FIROptions.m`).
- * Must sit outside `@implementation RNFBAppModule` (nested @implementation is invalid).
- */
-@interface RNFBAppModuleFIROptionsFactory : NSObject <RNFBFIROptionsCreating>
-@end
-
-@implementation RNFBAppModuleFIROptionsFactory
-
-- (id<RNFBFIROptionsConfiguring>)createWithGoogleAppID:(NSString *)googleAppID
-                                           gcmSenderID:(NSString *)gcmSenderID {
-  return (id<RNFBFIROptionsConfiguring>)[[FIROptions alloc] initWithGoogleAppID:googleAppID
-                                                                    GCMSenderID:gcmSenderID];
-}
-
-@end
-
-static id<RNFBFIROptionsCreating> RNFBAppModuleOptionsFactory(void) {
-  static RNFBAppModuleFIROptionsFactory *sharedFactory;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedFactory = [[RNFBAppModuleFIROptionsFactory alloc] init];
-  });
-  return sharedFactory;
-}
 
 @implementation RNFBAppModule
+
+- (instancetype)init {
+  if ((self = [super init])) {
+    RNFBAppModuleInitialize();
+  }
+  return self;
+}
 
 #pragma mark -
 #pragma mark Module Setup
@@ -96,232 +45,115 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
 }
 
 - (void)setBridge:(RCTBridge *)bridge {
-  [RNFBRCTEventEmitter shared].bridge = bridge;
+  RNFBAppModuleSetBridge(bridge);
 }
 
 - (RCTBridge *)bridge {
-  return [RNFBRCTEventEmitter shared].bridge;
-}
-
-- (id)init {
-  if (self = [super init]) {
-#ifdef REGISTER_LIB
-    static dispatch_once_t once;
-    dispatch_once(&once, ^{
-      [FIRApp registerLibrary:@"react-native-firebase" withVersion:[RNFBVersionString copy]];
-    });
-#endif
-    if ([[RNFBJSON shared] contains:@"app_log_level"]) {
-      NSString *logLevel = [[RNFBJSON shared] getStringValue:@"app_log_level" defaultValue:@"info"];
-      [self setLogLevel:logLevel];
-    }
-  }
-
-  return self;
+  return RNFBAppModuleBridge();
 }
 
 - (void)invalidate {
-  [[RNFBRCTEventEmitter shared] invalidate];
+  RNFBAppModuleInvalidate();
 }
 
 #pragma mark -
 #pragma mark Constants
 
-- (NSDictionary *)appConstantsDictionary {
-  NSDictionary *firApps = [FIRApp allApps];
-  NSMutableArray *appsArray = [NSMutableArray new];
-  NSMutableDictionary *constants = [NSMutableDictionary new];
-
-  for (id key in firApps) {
-    [appsArray addObject:[RNFBSharedUtils firAppToDictionary:firApps[key]]];
-  }
-
-  constants[@"NATIVE_FIREBASE_APPS"] = appsArray;
-  constants[@"FIREBASE_RAW_JSON"] = [[RNFBJSON shared] getRawJSON];
-
-  return constants;
-}
-
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants>)constantsToExport {
-  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self appConstantsDictionary]];
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:RNFBAppModuleConstantsDictionary()];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboApp::Constants>)getConstants {
-  return [self constantsToExport];
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:RNFBAppModuleConstantsDictionary()];
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
 }
 
 #pragma mark -
-#pragma mark META Methods
+#pragma mark Methods
 
-- (void)metaGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  resolve([RNFBMeta getAll]);
+- (void)initializeApp:(NSDictionary *)options
+            appConfig:(NSDictionary *)appConfig
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModuleInitializeApp(options, appConfig, resolve, reject);
 }
 
-#pragma mark -
-#pragma mark JSON Methods
-
-- (void)jsonGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  resolve([[RNFBJSON shared] getAll]);
+- (void)setAutomaticDataCollectionEnabled:(NSString *)appName enabled:(BOOL)enabled {
+  RNFBAppModuleSetAutomaticDataCollectionEnabled(appName, enabled);
 }
 
-#pragma mark -
-#pragma mark Preference Methods
-
-- (void)preferencesSetBool:(NSString *)key
-                     value:(BOOL)value
-                   resolve:(RCTPromiseResolveBlock)resolve
-                    reject:(RCTPromiseRejectBlock)reject {
-  [[RNFBPreferences shared] setBooleanValue:key boolValue:value];
-  resolve([NSNull null]);
+- (void)deleteApp:(NSString *)appName
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModuleDeleteApp(appName, resolve, reject);
 }
-
-- (void)preferencesSetString:(NSString *)key
-                       value:(NSString *)value
-                     resolve:(RCTPromiseResolveBlock)resolve
-                      reject:(RCTPromiseRejectBlock)reject {
-  [[RNFBPreferences shared] setStringValue:key stringValue:value];
-  resolve([NSNull null]);
-}
-
-- (void)preferencesGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  resolve([[RNFBPreferences shared] getAll]);
-}
-
-- (void)preferencesClearAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  [[RNFBPreferences shared] clearAll];
-  resolve([NSNull null]);
-}
-
-#pragma mark -
-#pragma mark Event Methods
 
 - (void)eventsNotifyReady:(BOOL)ready {
-  [[RNFBRCTEventEmitter shared] notifyJsReady:ready];
+  RNFBAppModuleEventsNotifyReady(ready);
 }
 
 - (void)eventsGetListeners:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  resolve([[RNFBRCTEventEmitter shared] getListenersDictionary]);
+  RNFBAppModuleEventsGetListeners(resolve, reject);
 }
 
 - (void)eventsPing:(NSString *)eventName
          eventBody:(NSDictionary *)eventBody
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
-  [[RNFBRCTEventEmitter shared] sendEventWithName:eventName body:eventBody];
-  resolve(eventBody);
+  RNFBAppModuleEventsPing(eventName, eventBody, resolve, reject);
 }
 
 - (void)eventsAddListener:(NSString *)eventName {
-  [[RNFBRCTEventEmitter shared] addListener:eventName];
+  RNFBAppModuleEventsAddListener(eventName);
 }
 
 - (void)eventsRemoveListener:(NSString *)eventName all:(BOOL)all {
-  [[RNFBRCTEventEmitter shared] removeListeners:eventName all:all];
+  RNFBAppModuleEventsRemoveListener(eventName, all);
 }
 
-#pragma mark -
-#pragma mark Events Unused
-
 - (void)addListener:(NSString *)eventName {
-  // Keep: Required for RN built in Event Emitter Calls.
+  RNFBAppModuleAddListener(eventName);
 }
 
 - (void)removeListeners:(double)count {
-  // Keep: Required for RN built in Event Emitter Calls.
+  RNFBAppModuleRemoveListeners(count);
 }
 
-#pragma mark -
-#pragma mark Firebase App Methods
-
-- (void)initializeApp:(NSDictionary *)options
-            appConfig:(NSDictionary *)appConfig
-              resolve:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject {
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    FIRApp *firApp;
-    RNFBAppInitializeNameResolution *names =
-        [RNFBAppInitializeOptionsMapper resolveNameFromAppConfig:appConfig];
-    NSString *authDomain = [RNFBAppInitializeOptionsMapper authDomainFromOptions:options];
-    FIROptions *firOptions = (FIROptions *)[RNFBAppInitializeOptionsMapper
-        buildOptionsFrom:options
-          optionsFactory:RNFBAppModuleOptionsFactory()];
-
-    @try {
-      if (names.isDefaultApp) {
-        // Native bootstrap often already called [FIRApp configure]. Still accept a JS/bridge
-        // initializeApp for the default app so customAuthDomains can be keyed by [DEFAULT].
-        if ([FIRApp defaultApp] != nil) {
-          firApp = [FIRApp defaultApp];
-        } else {
-          [FIRApp configureWithOptions:firOptions];
-          firApp = [FIRApp defaultApp];
-        }
-      } else {
-        [FIRApp configureWithName:names.appName options:firOptions];
-        firApp = [FIRApp appNamed:names.appName];
-      }
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-
-    // Store under the JS bridge app name ([DEFAULT]), never native __FIRAPP_DEFAULT.
-    [RNFBAppModule setCustomDomain:authDomain forAppName:names.jsAppName];
-
-    firApp.dataCollectionDefaultEnabled =
-        (BOOL)[appConfig valueForKey:@"automaticDataCollectionEnabled"];
-
-    resolve([RNFBSharedUtils firAppToDictionary:firApp]);
-  });
+- (void)metaGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModuleMetaGetAll(resolve, reject);
 }
 
-+ (NSString *)getCustomDomain:(NSString *)appName {
-  return [RNFBAppCustomAuthDomains getCustomDomain:appName];
+- (void)jsonGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModuleJSONGetAll(resolve, reject);
 }
 
-+ (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName {
-  [RNFBAppCustomAuthDomains setCustomDomain:authDomain forAppName:appName];
+- (void)preferencesSetBool:(NSString *)key
+                     value:(BOOL)value
+                   resolve:(RCTPromiseResolveBlock)resolve
+                    reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModulePreferencesSetBool(key, value, resolve, reject);
+}
+
+- (void)preferencesSetString:(NSString *)key
+                       value:(NSString *)value
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModulePreferencesSetString(key, value, resolve, reject);
+}
+
+- (void)preferencesGetAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModulePreferencesGetAll(resolve, reject);
+}
+
+- (void)preferencesClearAll:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  RNFBAppModulePreferencesClearAll(resolve, reject);
 }
 
 - (void)setLogLevel:(NSString *)logLevel {
-  int level = (int)[RNFBAppLogLevelMapper loggerLevelForString:logLevel];
-  DLog(@"RNFBSetLogLevel: setting level to %d from %@.", level, logLevel);
-  [[FIRConfiguration sharedInstance] setLoggerLevel:(FIRLoggerLevel)level];
-}
-
-- (void)setAutomaticDataCollectionEnabled:(NSString *)appName enabled:(BOOL)enabled {
-  FIRApp *firApp = [RCTConvert firAppFromString:appName];
-  if (firApp) {
-    firApp.dataCollectionDefaultEnabled = enabled;
-  }
-}
-
-- (void)deleteApp:(NSString *)appName
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firApp = [RCTConvert firAppFromString:appName];
-  if (!firApp) {
-    return resolve([NSNull null]);
-  }
-
-  [firApp deleteApp:^(BOOL success) {
-    if (success) {
-      [RNFBAppModule setCustomDomain:nil forAppName:appName];
-      resolve([NSNull null]);
-    } else {
-      [firApp deleteApp:^(BOOL success2) {
-        if (success2) {
-          [RNFBAppModule setCustomDomain:nil forAppName:appName];
-          resolve([NSNull null]);
-        } else {
-          reject(@"app/delete-app-failed", @"Failed to delete the specified app.", nil);
-        }
-      }];
-    }
-  }];
-}
-
-+ (BOOL)requiresMainQueueSetup {
-  return NO;
+  RNFBAppModuleSetLogLevel(logLevel);
 }
 
 @end
