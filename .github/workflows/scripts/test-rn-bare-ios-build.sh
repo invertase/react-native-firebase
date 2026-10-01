@@ -109,7 +109,7 @@ xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
   ONLY_ACTIVE_ARCH=YES
-  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++
+  CC=clang CPLUSPLUS=clang++
   -workspace "$WORKSPACE"
   -scheme "$SCHEME"
   -configuration Release

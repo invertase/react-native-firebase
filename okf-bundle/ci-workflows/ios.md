@@ -10,6 +10,24 @@ timestamp: 2026-08-26T00:00:00Z
 
 **Testing E2E iOS** workflow (`.github/workflows/tests_e2e_ios.yml`) and `.github/workflows/scripts/`.
 
+## Apple CI toolchain (Xcode 27)
+
+Dedicated Apple jobs use the **`xcode-27`** runner label (macOS 27 image), `maxim-lobanov/setup-xcode` with **`latest-stable`**, then `.github/workflows/scripts/configure-apple-ci.sh` (D6):
+
+| Check | Behavior |
+|-------|----------|
+| Xcode major | Must be **27** (stable); **beta** builds fail the step |
+| iOS sim runtime | When `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=1` (default), resolve `RNFB_IOS_SIM_RUNTIME` (default **`iOS 27.0`**) via `scripts/e2e/lib/ios-simulator-helpers.sh` |
+| simctl list | Always run once after selection (GHA simulator availability workaround) |
+
+Archive-only and macOS-only jobs set `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=0` (Xcode major check only). Expo / bare fixture workflows run link/build plus **`yarn test-expo:ios:launch-smoke`** / **`yarn test-rn-bare:ios:launch-smoke`** on the pinned iOS 27 runtime.
+
+**Local contributors** mirror the same Xcode / runtime / Device Hub expectations — [running e2e § Apple host toolchain](../testing/running-e2e.md#apple-host-toolchain-local). Mobile fixture versions (**RN 0.88.0-rc.3**, **Expo 58**) are in [test app dependency pins](../testing/test-app-dependency-pins.md#current-pins).
+
+**iOS 26.5 sim runtime** (or an older Tart seed) is **not** a substitute for this ratchet: it may help explain **runtime-only** deltas (see [§ issue 5](#5-metro-unresponsive-at-launch--waitforactive-hang-active-app) `localhost` vs `127.0.0.1`), but it cannot satisfy the **Xcode 27** / **iOS 27** / UIScene launch-smoke gates. Details: [local Tart lab § iOS 26.5 not proof](../testing/local-ios-e2e-reproduction.md#ios-26-5-not-proof).
+
+**Tart VM lab** — optional stress repro under `scripts/tart/` is [temporarily suspended](../testing/local-ios-e2e-reproduction.md#status-suspended); CI truth remains this workflow and `configure-apple-ci.sh`.
+
 ## Simulator reliability
 
 ### Problem
@@ -17,7 +35,7 @@ timestamp: 2026-08-26T00:00:00Z
 On GHA macOS runners, `simctl list` can show `Booted` before the simulator is test-ready:
 
 1. First-boot `com.apple.datamigrator` can run for minutes; app install/launch is unreliable until done.
-2. Device names are ambiguous across runtimes; use `tests/.detoxrc.js` name, not pinned UDID.
+2. Device names are ambiguous across runtimes; `boot-simulator.sh` resolves or creates a **UDID** on the pinned iOS 27 runtime (`RNFB_IOS_SIM_RUNTIME`, default `iOS 27.0`) before boot/install. Detox still allocates by name from `tests/.detoxrc.js`.
 3. `Booted` ≠ ready; install/launch during migration can hang/fail.
 
 ### What we do
@@ -28,9 +46,11 @@ On GHA macOS runners, `simctl list` can show `Booted` before the simulator is te
 
 | Phase | What happens |
 |--------|----------------|
-| `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17`) |
-| `kill_resolved` | Kill `Simulator.app`, terminate app, `simctl shutdown` the resolved UDID |
-| `boot_command` | `xcrun simctl boot <name>` |
+| `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17` or `RNFB E2E iOS slot-N`) |
+| `resolve_udid` | `rnfb_ensure_ios_simulator_udid` on `RNFB_IOS_SIM_RUNTIME` (default iOS 27.0); export `RNFB_IOS_SIMULATOR_UDID` |
+| `kill_resolved` | Kill Device Hub (or legacy Simulator.app), terminate app, `simctl shutdown` the resolved UDID |
+| `boot_command` | `xcrun simctl boot <udid>` |
+| `foreground_simulator` | `open <selected-Xcode>/Applications/DeviceHub.app --args -CurrentDeviceUDID <udid>` (never `open -a Simulator` / `open -a Device Hub`) |
 | `wait_for_full_boot` | Poll every 20s (up to 11 min) until `simctl bootstatus` reports ready |
 | `wait_shutdown` | If device is still `Booted` when install is about to run, poll up to 120s for `Shutdown` (avoids LaunchServices races after Jet retries) |
 | `install_app` | `simctl install` the built `testing.app` **only after** bootstatus succeeds |
@@ -65,7 +85,7 @@ Artifacts upload on every run (`if: always()`).
 | `resource-monitor-<buildmode>-<iteration>_log` | `.github/workflows/scripts/resource-monitor.sh` → `resource-monitor.log` | Periodic `uptime` + `ps` snapshots (10s default) to correlate WS drops with CPU/memory pressure |
 | `metro-<buildmode>-<iteration>_log` | Metro stdout/stderr from `yarn tests:packager:jet-ci` → `metro.log` (debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch |
 | `simulator-<buildmode>-<iteration>_video` | `simctl recordVideo` → `simulator.mp4` | Visual confirmation (**`workflow_dispatch` / `workflow_call` `record_screens: true` only**) |
-| `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Simulator.app window (**`record_screens: true` only**) |
+| `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Device Hub window (**`record_screens: true` only**) |
 | `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup (**`record_screens: true` only**) |
 | `emulator-scripts-logs-<buildmode>-<iteration>` | `.github/workflows/scripts/*.log` | Script output if redirected |
 
@@ -560,6 +580,7 @@ from this job is a known Xcode Archive bug, not a regression — see
 | `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
 | `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
 | `.github/workflows/scripts/configure-ios-dep-resolution.sh <spm\|cocoapods> [podfile-dir]` | — | Grep-verified `tests/ios/Podfile` patch for the `dep-resolution` matrix leg; shared by the `ios` job and `ios-release-archive` job so they can't drift apart |
+| `.github/workflows/scripts/configure-apple-ci.sh` | `XCODE_VERSION` / `RNFB_CI_XCODE_SELECTOR`, `RNFB_IOS_SIM_RUNTIME`, `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME` | Post-`setup-xcode` gate: stable Xcode major 27 + optional iOS 27 runtime pin |
 
 Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact preserves full output while the step still fails correctly.
 
@@ -645,7 +666,7 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh xcbeautify
 
 5. **Update this doc** — bump the version and upstream-commit columns in the table above.
 
-6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `macos-26`).
+6. **Open a PR** — CI will exercise the same install script as production workflows. Watch the **Install brew utilities** step timing (`applesimutils` often builds from source on `xcode-27`).
 
 #### Local dev (optional)
 
@@ -657,4 +678,4 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
 
 See also `CONTRIBUTING.md` and `tests/README.md`.
 
-**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `macos-26` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.
+**`applesimutils` on modern runners** — upstream bottles target older macOS releases; GHA `xcode-27` typically **builds from source** (needs Xcode). Expect a longer “Install brew utilities” step than `xcbeautify`, which usually installs from a matching bottle.

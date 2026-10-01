@@ -18,9 +18,12 @@
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 import type { ReactNativeFirebase } from '../types/app';
-import type { FirebaseJsonConfig, ModuleConfig } from '../types/internal';
+import type {
+  FirebaseJsonConfig,
+  ModuleConfig,
+  ReactNativeFirebaseEventEmitter,
+} from '../types/internal';
 import type { ReactNativeFirebaseNativeModules } from './NativeModules';
-import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 let firebaseJson: FirebaseJsonConfig | null = null;
 
@@ -55,7 +58,7 @@ export default class FirebaseModule<
     return firebaseJson as FirebaseJsonConfig;
   }
 
-  get emitter(): EventEmitter {
+  get emitter(): ReactNativeFirebaseEventEmitter {
     return SharedEventEmitter;
   }
 

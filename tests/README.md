@@ -98,8 +98,7 @@ yarn tests:emulator:start:windows # if developing on windows
 
 This action will launch a new simulator (if not already open) and run the tests on it.
 
-> 💡 iOS by default will background launch the simulator - to have
-> it launch in the foreground make sure any simulator is currently open, `Finder -> Simulator.app`.
+> 💡 iOS Detox boots simulators via `simctl`; CI and OKF expect **Xcode 27**, **iOS 27.0**, and **Device Hub** (not `open -a Simulator`). See [running e2e § Apple host toolchain](../okf-bundle/testing/running-e2e.md#apple-host-toolchain-local) and [iOS CI workflows](../okf-bundle/ci-workflows/ios.md#simulator-reliability).
 
 > 💡 Android by default looks for a predefined emulator named `TestingAVD` - make sure you have one named the same setup on Android Studio.
 > Or you can change this name in the `package.json` of the tests project (don't commit the change though please).

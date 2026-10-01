@@ -3,7 +3,7 @@ index be01a0dbeeaebbada21810269e4e30d114bf4476..88af8da4545e4458d340c3b0b4e37f13
 --- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
 @@ -50,23 +50,6 @@ class NetworkIdlingResource(private val dispatcher: Dispatcher) : DetoxIdlingRes
-
+ 
      @Synchronized
      override fun checkIdle(): Boolean {
 -        busyResources.clear()
@@ -32,7 +32,7 @@ index d71c007b729a09d0359a1f2dc8d2481b860ddae5..1489a0bc920f150ce9fe6c3f93166936
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/FabricTimersIdlingResource.kt
 @@ -11,15 +11,8 @@ class FabricTimersIdlingResource(
  ) : DetoxIdlingResource(), Choreographer.FrameCallback {
-
+ 
      override fun checkIdle(): Boolean {
 -        val hasActiveTimers = JavaTimersReflected.hasActiveTimers(reactContext)
 -
@@ -46,14 +46,14 @@ index d71c007b729a09d0359a1f2dc8d2481b860ddae5..1489a0bc920f150ce9fe6c3f93166936
 +        notifyIdle()
 +        return true
      }
-
+ 
      override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
 diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835a8b348ed 100644
 --- a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
 @@ -32,15 +32,8 @@ class TimersIdlingResource @JvmOverloads constructor(
-
+ 
      @SuppressLint("VisibleForTests")
      override fun checkIdle(): Boolean {
 -        val isIdle = !timingModule.hasActiveTimersInRange(BUSY_WINDOW_THRESHOLD)
@@ -68,7 +68,7 @@ index 462908c3427599bb06bf04ca2d4662d320519ff4..a367e18b34750a4f6d163be343fa3835
 +        notifyIdle()
 +        return true
      }
-
+ 
      override fun doFrame(frameTimeNanos: Long) {
 diff --git a/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
 index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6ff1caf97a 100644
@@ -76,7 +76,7 @@ index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6f
 +++ b/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
 @@ -20,47 +20,8 @@ class FabricUIManagerIdlingResources(
      private var isSteadyState: Boolean = false
-
+ 
      override fun checkIdle(): Boolean {
 -        val mountItemsCount = getMountItemsSize()
 -        val viewCommandMountItemsCount = getViewCommandMountItemsSize()
@@ -122,7 +122,7 @@ index d6db5d5d7a4173eae88d97bf06eaeaf8b38c3b94..a85ebdf5a30607459be68463b3238b6f
 +        notifyIdle()
 +        return true
      }
-
+ 
      override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
 diff --git a/src/client/actions/actions.js b/src/client/actions/actions.js
 index cc5279636cf581fcd4a578e3aff073515d0502ae..1a2669a33d1c70ada9906c75513d76f5cd6aca1f 100644
@@ -130,43 +130,30 @@ index cc5279636cf581fcd4a578e3aff073515d0502ae..1a2669a33d1c70ada9906c75513d76f5
 +++ b/src/client/actions/actions.js
 @@ -41,7 +41,7 @@ class Login extends Action {
    }
-
+ 
    get timeout() {
 -    return 1000;
 +    return 15000;
    }
-
+ 
    async handle(response) {
 @@ -265,7 +265,7 @@ class CurrentStatus extends Action {
    }
-
+ 
    get timeout() {
 -    return 5000;
 +    return 30000;
    }
-
+ 
    async handle(response) {
-diff --git a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
-index 0000000000000000000000000000000000000000..0000000000000000000000000000000000000000 100644
---- a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
-+++ b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
-@@ -70,6 +70,8 @@ class LaunchCommand extends ExecCommand {
-       '-no-boot-anim',
-       headless ? '-no-window' : '',
-       readonly ? '-read-only' : '',
-+      '-crash-report-mode',
-+      'never',
-       gpuMode !== undefined ? '-gpu' : '',
-       gpuMode !== undefined ? `${gpuMode}` : '',
-       port ? '-port' : '',
 diff --git a/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js b/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
 index a9a7ec21421f4751343e9b4b397538e6a4091738..991484053811dbc8ec8ff6ad5345fd5d01ed43ac 100644
 --- a/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
 +++ b/src/devices/allocation/drivers/android/emulator/EmulatorAllocDriver.js
 @@ -9,6 +9,20 @@ const AndroidAllocDriver = require('../AndroidAllocDriver');
-
+ 
  const { patchAvdSkinConfig } = require('./patchAvdSkinConfig');
-
+ 
 +function pinnedAndroidConsolePort() {
 +  const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
 +  if (raw === undefined || raw === '') {
@@ -186,7 +173,7 @@ index a9a7ec21421f4751343e9b4b397538e6a4091738..991484053811dbc8ec8ff6ad5345fd5d
     * @param {object} options
 @@ -57,6 +71,38 @@ class EmulatorAllocDriver extends AndroidAllocDriver {
      await this._fixAvdConfigIniSkinNameIfNeeded(avdName, deviceConfig.headless);
-
+ 
      const adbName = await this._deviceRegistry.registerDevice(async () => {
 +      const pinnedPort = pinnedAndroidConsolePort();
 +      if (pinnedPort != null) {
@@ -230,7 +217,7 @@ index 37263e87f18fb2cf0f7def74de6e4d13a486cd3c..68c4f79db9b5ec4d7c1e028a34bec746
 @@ -6,7 +6,32 @@ class FreePortFinder {
      this._max = max;
    }
-
+ 
 +  _pinnedConsolePort() {
 +    const raw = process.env.RNFB_ANDROID_CONSOLE_PORT;
 +    if (raw === undefined || raw === '') {
@@ -258,8 +245,135 @@ index 37263e87f18fb2cf0f7def74de6e4d13a486cd3c..68c4f79db9b5ec4d7c1e028a34bec746
 +    }
 +
      let port;
-
+ 
      do {
+diff --git a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
+index 6bd0f46519b970bfb8a268bc07134d58ae759b6d..b61db32a0dc6d2c32774aeb7f63a3923f033a540 100644
+--- a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
++++ b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js
+@@ -71,6 +71,8 @@ class LaunchCommand extends ExecCommand {
+       '-no-boot-anim',
+       headless ? '-no-window' : '',
+       readonly ? '-read-only' : '',
++      '-crash-report-mode',
++      'never',
+       gpuMode !== undefined ? '-gpu' : '',
+       gpuMode !== undefined ? `${gpuMode}` : '',
+       port ? '-port' : '',
+diff --git a/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js.orig b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js.orig
+new file mode 100644
+index 0000000000000000000000000000000000000000..6bd0f46519b970bfb8a268bc07134d58ae759b6d
+--- /dev/null
++++ b/src/devices/common/drivers/android/emulator/exec/EmulatorExec.js.orig
+@@ -0,0 +1,108 @@
++const os = require('os');
++
++const _ = require('lodash');
++
++const { getAndroidEmulatorPath } = require('../../../../../../utils/environment');
++const {
++  BinaryExec,
++  ExecCommand,
++} = require('../../exec/BinaryExec');
++
++class EmulatorExec extends BinaryExec {
++  constructor() {
++    super(getAndroidEmulatorPath());
++  }
++}
++
++class ListAVDsCommand extends ExecCommand {
++  _getArgs() {
++    return ['-list-avds', '--verbose'];
++  }
++}
++
++class QueryVersionCommand extends ExecCommand {
++  constructor({ headless }) {
++    super();
++    this._headless = headless;
++  }
++
++  _getArgs() {
++    return ['-version', this._headless ? '-no-window' : ''];
++  }
++}
++
++class LaunchCommand extends ExecCommand {
++  constructor(options) {
++    super();
++    this._options = options;
++    this._args = this._getEmulatorArgs();
++  }
++
++  get adbName() {
++    return this._options.adbName;
++  }
++
++  get avdName() {
++    return this._options.avdName;
++  }
++
++  get port() {
++    return this._options.port;
++  }
++
++  _getArgs() {
++    return this._args;
++  }
++
++  _getEmulatorArgs() {
++    const {
++      avdName,
++      bootArgs,
++      gpuMode = this._getDefaultGPUMode(),
++      headless,
++      readonly = true,
++      port,
++    } = this._options;
++
++    const deviceBootArgs = (bootArgs || '').split(/\s+/);
++    const emulatorArgs = _.compact([
++      '-verbose',
++      '-no-audio',
++      '-no-boot-anim',
++      headless ? '-no-window' : '',
++      readonly ? '-read-only' : '',
++      gpuMode !== undefined ? '-gpu' : '',
++      gpuMode !== undefined ? `${gpuMode}` : '',
++      port ? '-port' : '',
++      port ? `${port}` : '',
++      ...deviceBootArgs,
++      `@${avdName}`
++    ]);
++
++    return emulatorArgs;
++  }
++
++  _getDefaultGPUMode() {
++    if (this._options.headless) {
++      switch (os.platform()) {
++        case 'darwin':
++          return 'host';
++        case 'linux':
++          return 'swiftshader_indirect';
++        case 'win32':
++          return 'angle_indirect';
++        default:
++          return 'auto';
++      }
++    }
++
++    return undefined;
++  }
++}
++
++module.exports = {
++  EmulatorExec,
++  ListAVDsCommand,
++  QueryVersionCommand,
++  LaunchCommand,
++};
 diff --git a/src/devices/common/drivers/android/exec/ADB.js b/src/devices/common/drivers/android/exec/ADB.js
 index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..f2fd1ed5d1f0bfb981340ec27fa478ccbc439f9f 100644
 --- a/src/devices/common/drivers/android/exec/ADB.js
@@ -272,10 +386,10 @@ index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..f2fd1ed5d1f0bfb981340ec27fa478cc
 +  timeout: 300000,
    retries: 3,
  };
-
+ 
 @@ -380,7 +380,19 @@ class ADB {
    }
-
+ 
    async reverseRemove(deviceId, port) {
 -    return this.adbCmd(deviceId, `reverse --remove tcp:${port}`);
 +    try {
@@ -292,8 +406,67 @@ index 3954219065ca5ac7c3ea81cb801b37ae5b5ff2d1..f2fd1ed5d1f0bfb981340ec27fa478cc
 +      throw error;
 +    }
    }
-
+ 
    async emuKill(deviceId) {
+diff --git a/src/devices/common/drivers/ios/tools/AppleSimUtils.js b/src/devices/common/drivers/ios/tools/AppleSimUtils.js
+index f536ea924cd33a38bea17e6d93f4d507ff2b8c58..f651dbbf4dbc46449ce177ec289a10248fb36090 100644
+--- a/src/devices/common/drivers/ios/tools/AppleSimUtils.js
++++ b/src/devices/common/drivers/ios/tools/AppleSimUtils.js
+@@ -1,5 +1,7 @@
+ // @ts-nocheck
++const fs = require('fs');
+ const path = require('path');
++const { execSync } = require('child_process');
+ 
+ const _ = require('lodash');
+ const semver = require('semver');
+@@ -188,9 +190,32 @@ class AppleSimUtils {
+     return device;
+   }
+ 
++  _resolveForegroundSimulatorUiApp() {
++    try {
++      const developerDir = execSync('xcode-select -p', { encoding: 'utf8' }).trim();
++      const deviceHub = path.normalize(path.join(developerDir, '..', 'Applications', 'DeviceHub.app'));
++      if (fs.existsSync(deviceHub)) {
++        return deviceHub;
++      }
++      const legacySimulator = path.join(developerDir, 'Applications', 'Simulator.app');
++      if (fs.existsSync(legacySimulator)) {
++        return legacySimulator;
++      }
++    } catch (error) {
++      // fall through
++    }
++    return null;
++  }
++
+   async _openSimulatorApp(udid) {
++    const appPath = this._resolveForegroundSimulatorUiApp();
++    if (!appPath) {
++      this._logUnableToOpenSimulator();
++      return;
++    }
++    const openCmd = `open ${quote([appPath])} --args -CurrentDeviceUDID ${udid}`;
+     try {
+-      await childProcess.execWithRetriesAndLogs(`open -a Simulator --args -CurrentDeviceUDID ${udid}`, { retries: 0 });
++      await childProcess.execWithRetriesAndLogs(openCmd, { retries: 0 });
+     } catch (error) {
+       this._logUnableToOpenSimulator();
+     }
+@@ -198,9 +223,9 @@ class AppleSimUtils {
+ 
+   _logUnableToOpenSimulator() {
+     log.warn(
+-      `Unable to open the Simulator app. Please make sure you have Xcode and iOS Simulator installed ` +
+-      `(https://developer.apple.com/xcode/). In case you already have the latest Xcode version installed, ` +
+-      `try run the command: \`sudo xcode-select -s /Applications/Xcode.app\`. If you are running tests from CI, ` +
++      `Unable to open Device Hub (or legacy Simulator.app) for the selected Xcode install. ` +
++      `Please make sure Xcode is installed and \`xcode-select\` points at it ` +
++      `(https://developer.apple.com/xcode/). If you are running tests from CI, ` +
+       `we recommend running them with "--headless" device configuration (see: ` +
+       `https://wix.github.io/Detox/docs/cli/test/#options).`
+     );
 diff --git a/src/server/handlers/AnonymousConnectionHandler.js b/src/server/handlers/AnonymousConnectionHandler.js
 index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a4bb9e738 100644
 --- a/src/server/handlers/AnonymousConnectionHandler.js
@@ -304,12 +477,12 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
      this._api = api;
 +    this._pendingEarlyReadyAction = null;
    }
-
+ 
    handle(action) {
 @@ -74,7 +75,17 @@ class AnonymousConnectionHandler {
        },
      });
-
+ 
 +    const pendingEarlyReadyAction = this._pendingEarlyReadyAction;
 +    this._pendingEarlyReadyAction = null;
 +
@@ -322,12 +495,12 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
 +      session.tester.sendAction(pendingEarlyReadyAction);
 +    }
    }
-
+ 
    _handleUnknownAction(action) {
 @@ -85,8 +96,11 @@ class AnonymousConnectionHandler {
      });
    }
-
+ 
 -  _handleEarlyReadyAction() {
 -    this._api.log.debug('The app has dispatched "ready" action too early.');
 +  _handleEarlyReadyAction(action) {
@@ -337,15 +510,15 @@ index 10743c87d17de135317e1bac3e65159b9872412f..abbb302307fbd5eabbbff875983f284a
 +    this._pendingEarlyReadyAction = action;
    }
  }
-
+ 
 diff --git a/src/utils/ExclusiveLockfile.js b/src/utils/ExclusiveLockfile.js
 index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c1b601815 100644
 --- a/src/utils/ExclusiveLockfile.js
 +++ b/src/utils/ExclusiveLockfile.js
 @@ -6,6 +6,9 @@ const DetoxRuntimeError = require('../errors/DetoxRuntimeError');
-
+ 
  const retry = require('./retry');
-
+ 
 +// proper-lockfile default stale is 10s; CI runners under load can miss lock heartbeats → ECOMPROMISED.
 +const DEVICE_REGISTRY_LOCK_STALE_MS = 20000;
 +
@@ -354,12 +527,12 @@ index da29ae99c8b90877f15715cdeb692ed8a2b47569..f53f49bca03b3acca4c4d8b05d087a8c
    read: { encoding: 'utf8' },
 @@ -107,7 +110,9 @@ class ExclusiveLockfile {
      this._ensureFileExists();
-
+ 
      await retry(this._options.retry, () => {
 -      const operationResult = plockfile.lockSync(this._lockFilePath);
 +      const operationResult = plockfile.lockSync(this._lockFilePath, {
 +        stale: DEVICE_REGISTRY_LOCK_STALE_MS,
 +      });
-
+ 
        this._isLocked = true;
        this._invalidate();

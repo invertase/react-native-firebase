@@ -15,7 +15,10 @@
  *
  */
 
-import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
+import type {
+  ModuleConfig,
+  ReactNativeFirebaseEventEmitter,
+} from '@react-native-firebase/app/dist/module/types/internal';
 import type {
   FirebaseStorage,
   StorageReference,
@@ -28,8 +31,6 @@ import type {
   ListResult,
   ListOptions,
 } from './storage';
-import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-
 /**
  * Internal Storage type with access to private properties.
  * Used internally by StorageReference and other internal classes.
@@ -37,7 +38,7 @@ import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitte
 export type StorageInternal = FirebaseStorage & {
   native: NativeRNFBTurboStorage;
   _customUrlOrRegion: string | null;
-  emitter: EventEmitter;
+  emitter: ReactNativeFirebaseEventEmitter;
   eventNameForApp: (...args: Array<string | number>) => string;
   _config: ModuleConfig;
   /**

@@ -1,5 +1,5 @@
 {
-  "description": "Expected toolchain pins for rnfb-ios-e2e-golden. Update when CI macos-26 / tests_e2e_ios.yml changes.",
+  "description": "Legacy Tart lab pins (Xcode 26.5 / macos-26 seed). CI now uses macos-27 + Xcode 27 + iOS 27.0 — see okf-bundle/testing/local-ios-e2e-reproduction.md. Update this file when C1 rebakes golden on an Xcode 27 seed; do not treat 26.5 as satisfying iOS 27 / UIScene gates.",
   "tart_seed_image": "ghcr.io/cirruslabs/macos-tahoe-xcode:26.5",
   "xcode_version": "26.5",
   "node_major": 24,

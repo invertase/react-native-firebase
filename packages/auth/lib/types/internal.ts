@@ -20,8 +20,8 @@ import type {} from '@react-native-firebase/app/dist/module/internal/NativeModul
 import type {
   ModuleConfig,
   NativeErrorUserInfo,
+  ReactNativeFirebaseEventEmitter,
 } from '@react-native-firebase/app/dist/module/types/internal';
-import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import type {
   ActionCodeInfo,
   ActionCodeSettings,
@@ -411,7 +411,7 @@ export type AuthInternal = Auth & {
   verifyPasswordResetCode(code: string): Promise<string>;
   revokeToken(authorizationCode: string): Promise<void>;
   native: RNFBAuthModule;
-  emitter: EventEmitter;
+  emitter: ReactNativeFirebaseEventEmitter;
   eventNameForApp(...args: Array<string | number>): string;
   _config: ModuleConfig;
   _tenantId: string | null;

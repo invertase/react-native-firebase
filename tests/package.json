@@ -2,6 +2,9 @@
   "name": "react-native-firebase-tests",
   "version": "26.4.0",
   "private": true,
+  "engines": {
+    "node": "^22.13.0"
+  },
   "codegenConfig": {
     "name": "RNFBTestingTurboModules",
     "type": "modules",
@@ -25,9 +28,9 @@
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.5.1",
     "@react-native-async-storage/async-storage": "^3.1.1",
-    "@react-native-community/cli": "20.1.0",
-    "@react-native-community/cli-platform-android": "20.1.0",
-    "@react-native-community/cli-platform-ios": "20.1.0",
+    "@react-native-community/cli": "20.2.0",
+    "@react-native-community/cli-platform-android": "20.2.0",
+    "@react-native-community/cli-platform-ios": "20.2.0",
     "@react-native-firebase/ai": "26.4.0",
     "@react-native-firebase/analytics": "26.4.0",
     "@react-native-firebase/app": "26.4.0",
@@ -50,17 +53,17 @@
     "postinstall-postinstall": "2.1.0",
     "prop-types": "^15.8.1",
     "qrcode-generator": "^2.0.4",
-    "react": "19.2.3",
-    "react-native": "0.86.2",
+    "react": "19.3.0",
+    "react-native": "0.88.0-rc.3",
     "react-native-coverage": "0.2.0",
     "react-native-device-info": "^15.0.2",
     "util": "^0.12.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.0",
-    "@react-native/babel-preset": "0.86.2",
-    "@react-native/jest-preset": "0.86.2",
-    "@react-native/metro-config": "0.86.2",
+    "@react-native/babel-preset": "0.88.0-rc.3",
+    "@react-native/jest-preset": "0.88.0-rc.3",
+    "@react-native/metro-config": "0.88.0-rc.3",
     "assert": "^2.1.0",
     "axios": "^1.15.2",
     "babel-plugin-istanbul": "^7.0.1",
