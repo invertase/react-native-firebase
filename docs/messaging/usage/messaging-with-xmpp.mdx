@@ -79,7 +79,7 @@ Deploy a custom server based, for example, on Node XCS.
 Below is an example of how to configure a custom XMPP server using `node-xcs`.
 
 ```js
-// codeblock-ignore: node-xcs is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: server-side sample that requires the node-xcs package
 const Sender = require('node-xcs').Sender;
 
 async function operation() {
@@ -115,7 +115,7 @@ app();
 For sending messages from the server, use the Firebase Admin SDK.
 
 ```js
-// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: server-side sample that requires the firebase-admin package
 const admin = require('firebase-admin');
 const serviceAccount = require('./service-account.json');
 

@@ -8,6 +8,8 @@ import {
   deleteToken,
   experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
   getAPNSToken,
+  getDidOpenSettingsForNotification,
+  getInitialNotification,
   getIsHeadless,
   getMessaging,
   getToken,
@@ -20,6 +22,7 @@ import {
   onDeletedMessages,
   onMessage,
   onMessageSent,
+  onNotificationOpenedApp,
   onSendError,
   onTokenRefresh,
   registerDeviceForRemoteMessages,
@@ -29,6 +32,7 @@ import {
   setAutoInitEnabled,
   setBackgroundMessageHandler,
   setNotificationDelegationEnabled,
+  setOpenSettingsForNotificationsHandler,
   subscribeToTopic,
   unregisterDeviceForRemoteMessages,
   unsubscribeFromTopic,
@@ -105,26 +109,43 @@ export default function MessagingScreen() {
           })
         }
       />
-      <AppButton
-        title="deleteToken"
-        onPress={() => run('deleteToken', () => deleteToken(getMessaging()))}
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="deleteToken"
+          variant="secondary"
+          onPress={() => run('deleteToken', () => deleteToken(getMessaging()))}
+        />
+        <Text style={styles.warnText}>
+          Warning: invalidates the current FCM token immediately and permanently. Call getToken
+          afterwards to get a new one.
+        </Text>
+      </View>
 
       <Text style={styles.section}>Permissions (deprecated)</Text>
-      <AppButton
-        title="requestPermission"
-        onPress={() => run('requestPermission', () => requestPermission(getMessaging()))}
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="requestPermission"
+          variant="secondary"
+          onPress={() => run('requestPermission', () => requestPermission(getMessaging()))}
+        />
+        <Text style={styles.warnText}>
+          Warning: deprecated. On iOS this shows the system permission dialog once. On Android it
+          resolves AUTHORIZED (1) without showing a dialog.
+        </Text>
+      </View>
       <AppButton
         title="hasPermission"
         onPress={() => run('hasPermission', () => hasPermission(getMessaging()))}
       />
       <AppButton
-        title="AuthorizationStatus.AUTHORIZED"
+        title="AuthorizationStatus"
         onPress={() =>
           run('AuthorizationStatus', () => ({
-            AUTHORIZED: AuthorizationStatus.AUTHORIZED,
+            NOT_DETERMINED: AuthorizationStatus.NOT_DETERMINED,
             DENIED: AuthorizationStatus.DENIED,
+            AUTHORIZED: AuthorizationStatus.AUTHORIZED,
+            PROVISIONAL: AuthorizationStatus.PROVISIONAL,
+            EPHEMERAL: AuthorizationStatus.EPHEMERAL,
           }))
         }
       />
@@ -142,12 +163,65 @@ export default function MessagingScreen() {
           })
         }
       />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="onDeletedMessages (install)"
+          variant="secondary"
+          onPress={() =>
+            run('onDeletedMessages', () => {
+              const unsubscribe = onDeletedMessages(getMessaging(), () => {
+                // Fired when FCM deletes pending messages for this instance.
+              });
+              trackUnsubscribe(unsubscribe);
+              return 'listener installed';
+            })
+          }
+        />
+        <Text style={styles.warnText}>Warning: Android only. The listener never fires on iOS.</Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="setBackgroundMessageHandler"
+          variant="secondary"
+          onPress={() =>
+            run('setBackgroundMessageHandler', () => {
+              setBackgroundMessageHandler(getMessaging(), async () => {
+                // Prefer registering this in the app entry file in production.
+              });
+              return 'handler registered (prefer entry file in production)';
+            })
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: registering here replaces any handler set in the entry file. In an app, register
+          it in the entry file before AppRegistry.registerComponent.
+        </Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="getIsHeadless"
+          variant="secondary"
+          onPress={() => run('getIsHeadless', () => getIsHeadless(getMessaging()))}
+        />
+        <Text style={styles.warnText}>Android always resolves false. Meaningful on iOS only.</Text>
+      </View>
+
+      <Text style={styles.section}>Notification interaction</Text>
+      <Text style={styles.hint}>
+        Tap a delivered notification, then open or return to the app. getInitialNotification covers
+        a launch from a quit state; on Android a given notification is returned once, so a second
+        call resolves null.
+      </Text>
       <AppButton
-        title="onDeletedMessages (install)"
+        title="getInitialNotification"
+        onPress={() => run('getInitialNotification', () => getInitialNotification(getMessaging()))}
+      />
+      <AppButton
+        title="onNotificationOpenedApp (install)"
         onPress={() =>
-          run('onDeletedMessages', () => {
-            const unsubscribe = onDeletedMessages(getMessaging(), () => {
-              // Fired when FCM deletes pending messages for this instance.
+          run('onNotificationOpenedApp', () => {
+            const unsubscribe = onNotificationOpenedApp(getMessaging(), () => {
+              // Fired when a notification tap brings the app from the background.
             });
             trackUnsubscribe(unsubscribe);
             return 'listener installed';
@@ -155,19 +229,42 @@ export default function MessagingScreen() {
         }
       />
       <AppButton
-        title="setBackgroundMessageHandler"
+        title="getDidOpenSettingsForNotification"
         onPress={() =>
-          run('setBackgroundMessageHandler', () => {
-            setBackgroundMessageHandler(getMessaging(), async () => {
-              // Prefer registering this in the app entry file in production.
-            });
-            return 'handler registered (prefer entry file in production)';
-          })
+          run('getDidOpenSettingsForNotification', () =>
+            getDidOpenSettingsForNotification(getMessaging()),
+          )
         }
       />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="setOpenSettingsForNotificationsHandler"
+          variant="secondary"
+          onPress={() =>
+            run('setOpenSettingsForNotificationsHandler', () => {
+              setOpenSettingsForNotificationsHandler(getMessaging(), async () => {
+                // Fired when the app is opened from the iOS notification settings button.
+              });
+              return 'handler registered';
+            })
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: iOS only. The handler is never called on Android. In an app, register it in the
+          entry file before AppRegistry.registerComponent.
+        </Text>
+      </View>
       <AppButton
-        title="getIsHeadless"
-        onPress={() => run('getIsHeadless', () => getIsHeadless(getMessaging()))}
+        title="Remove installed listeners"
+        variant="secondary"
+        onPress={() =>
+          run('Remove installed listeners', () => {
+            const count = unsubscribers.current.length;
+            unsubscribers.current.forEach(unsubscribe => unsubscribe());
+            unsubscribers.current = [];
+            return `removed ${count}`;
+          })
+        }
       />
 
       <Text style={styles.section}>Device-to-device XMPP (Android)</Text>
@@ -230,14 +327,22 @@ export default function MessagingScreen() {
       />
 
       <Text style={styles.section}>Device registration</Text>
-      <AppButton
-        title="registerDeviceForRemoteMessages"
-        onPress={() =>
-          run('registerDeviceForRemoteMessages', () =>
-            registerDeviceForRemoteMessages(getMessaging()),
-          )
-        }
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="registerDeviceForRemoteMessages"
+          variant="secondary"
+          onPress={() =>
+            run('registerDeviceForRemoteMessages', () =>
+              registerDeviceForRemoteMessages(getMessaging()),
+            )
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: iOS only, a no-op on Android. Only needed when auto-registration is disabled in
+          firebase.json (otherwise it logs a warning). On the ARM64 iOS Simulator it can reject with
+          messaging/registration-timeout.
+        </Text>
+      </View>
       <AppButton
         title="isDeviceRegisteredForRemoteMessages"
         onPress={() =>
@@ -246,20 +351,34 @@ export default function MessagingScreen() {
           )
         }
       />
-      <AppButton
-        title="unregisterDeviceForRemoteMessages"
-        onPress={() =>
-          run('unregisterDeviceForRemoteMessages', () =>
-            unregisterDeviceForRemoteMessages(getMessaging()),
-          )
-        }
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="unregisterDeviceForRemoteMessages"
+          variant="secondary"
+          onPress={() =>
+            run('unregisterDeviceForRemoteMessages', () =>
+              unregisterDeviceForRemoteMessages(getMessaging()),
+            )
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: iOS only, a no-op on Android. After this the device stops receiving remote
+          notifications until it registers again.
+        </Text>
+      </View>
 
       <Text style={styles.section}>APNs (iOS)</Text>
-      <AppButton
-        title="getAPNSToken"
-        onPress={() => run('getAPNSToken', () => getAPNSToken(getMessaging()))}
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="getAPNSToken"
+          variant="secondary"
+          onPress={() => run('getAPNSToken', () => getAPNSToken(getMessaging()))}
+        />
+        <Text style={styles.warnText}>
+          Resolves null on Android. On iOS it rejects with messaging/unregistered when the app is
+          not registered for remote notifications.
+        </Text>
+      </View>
       <Text style={styles.hint}>APNs token hex for setAPNSToken</Text>
       <TextField
         placeholder="APNs device token hex"
@@ -309,14 +428,21 @@ export default function MessagingScreen() {
           )
         }
       />
-      <AppButton
-        title="setNotificationDelegationEnabled(false)"
-        onPress={() =>
-          run('setNotificationDelegationEnabled', () =>
-            setNotificationDelegationEnabled(getMessaging(), false),
-          )
-        }
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="setNotificationDelegationEnabled(false)"
+          variant="secondary"
+          onPress={() =>
+            run('setNotificationDelegationEnabled', () =>
+              setNotificationDelegationEnabled(getMessaging(), false),
+            )
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: Android only, a no-op on iOS. Changes the FCM notification delegation setting
+          until it is set again.
+        </Text>
+      </View>
 
       <Text style={styles.section}>Delivery metrics (BigQuery)</Text>
       <AppButton
@@ -327,14 +453,21 @@ export default function MessagingScreen() {
           )
         }
       />
-      <AppButton
-        title="experimentalSetDeliveryMetricsExportedToBigQueryEnabled(false)"
-        onPress={() =>
-          run('experimentalSetDeliveryMetricsExportedToBigQueryEnabled', () =>
-            experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), false),
-          )
-        }
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="experimentalSetDeliveryMetricsExportedToBigQueryEnabled(false)"
+          variant="secondary"
+          onPress={() =>
+            run('experimentalSetDeliveryMetricsExportedToBigQueryEnabled', () =>
+              experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), false),
+            )
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: experimental. Changes whether delivery metrics are exported to BigQuery for this
+          app instance. Export needs the FCM to BigQuery link in the Firebase console.
+        </Text>
+      </View>
 
       <Text style={styles.section}>Payload constants</Text>
       <AppButton

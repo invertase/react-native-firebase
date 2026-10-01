@@ -12,7 +12,7 @@ previous: /messaging/usage
 - An active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
 - A **physical iOS device** for end-to-end FCM/APNs registration and message delivery.
   - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/).
-  - On **ARM64 iOS Simulator**, React Native Firebase skips UIKit `registerForRemoteNotifications` (calling it can wedge the main thread). `registerDeviceForRemoteMessages` may then reject with `messaging/registration-timeout` and will not yield a real APNs token — see [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+  - On **ARM64 iOS Simulator**, React Native Firebase skips UIKit `registerForRemoteNotifications` (calling it can wedge the main thread). `registerDeviceForRemoteMessages` may then reject with `messaging/registration-timeout` and will not yield a real APNs token. See [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and [Migrating to v26, iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
 ## Version requirements
 

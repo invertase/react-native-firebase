@@ -36,13 +36,13 @@ async function requestUserPermission() {
   const messaging = getMessaging();
   const authorizationStatus = await requestPermission(messaging);
 
-  if (authorizationStatus) {
-    console.log('Permission status:', authorizationStatus);
-  }
+  console.log('Permission status:', authorizationStatus);
 }
 
 await requestUserPermission();
 ```
+
+`requestPermission` is an iOS permission API. On Android it resolves `AuthorizationStatus.AUTHORIZED` (`1`) without showing a dialog and without reading the notification setting, and `hasPermission` reads the current Android notification setting instead. On Android 13 and above, request the `POST_NOTIFICATIONS` permission with another library.
 
 Once a user has selected a permission status, iOS prevents the permission dialog from being displayed again. This allows the users of your application full control of how notifications are handled:
 
@@ -81,9 +81,12 @@ The full list of permission settings can be seen in the table below along with t
 | `announcement` | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods. |
 | `badge` | `true` | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications. |
 | `carPlay` | `true` | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/). |
-| `provisional` | `false` | Sets whether provisional permissions are granted. See [Provisional permission](/messaging/ios-permissions#provisional-permission) for more information. |
+| `criticalAlert` | `false` | Requests the critical alerts authorization, which lets notifications play a sound even when the device is muted or Do Not Disturb is on. Apple requires an entitlement for it. |
+| `provisional` | `false` | Sets whether provisional permissions are granted. See [Provisional authorization](/messaging/ios-permissions#provisional-authorization) for more information. |
 | `sound` | `true` | Sets whether a sound will be played when a notification is displayed on the device. |
 | `providesAppNotificationSettings` | `false` | Indicates the system to display a button for in-app notification settings. |
+
+Every value must be a boolean and every key must be one of the names above. On iOS, `requestPermission` throws an `Error` synchronously for an unknown key or a non-boolean value. Keys you omit keep the default from the table.
 
 The settings provided will be stored by the device and will be visible in the iOS Settings UI for your application.
 
@@ -145,9 +148,7 @@ console.log('hasPermission:', status, status === AuthorizationStatus.AUTHORIZED)
 ### Provisional authorization
 
 Devices on iOS 12+ can use provisional authorization. This type of permission system allows for notification
-permission to be instantly granted without displaying a dialog to your user. The permission allows notifications to be displayed quietly;
-
-- meaning they're only visible within the device notification center.
+permission to be instantly granted without displaying a dialog to your user. The permission allows notifications to be displayed quietly, meaning they are only visible within the device notification center.
 
 To enable provisional notifications, pass an object to the `requestPermission` method, with the `provisional` key set to `true`:
 
@@ -175,7 +176,7 @@ import { getMessaging, requestPermission } from '@react-native-firebase/messagin
 await requestPermission(getMessaging(), { providesAppNotificationSettings: true });
 ```
 
-2. Handle interaction when the app is in a background state. Register the open-settings handler in the entry file **before** `AppRegistry.registerComponent` (same placement rule as `setBackgroundMessageHandler`):
+2. Handle interaction when the app is in a background state. `setOpenSettingsForNotificationsHandler` and `getDidOpenSettingsForNotification` are iOS features: on Android the handler is never called and `getDidOpenSettingsForNotification` resolves `false`. Register the open-settings handler in the entry file **before** `AppRegistry.registerComponent` (same placement rule as `setBackgroundMessageHandler`):
 
 ```js
 // index.js

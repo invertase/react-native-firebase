@@ -9,7 +9,7 @@ previous: /messaging/ios-permissions
 
 - `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then rebuild native apps (`cd ios && pod install` on iOS). From v26, New Architecture is required for packages with a native bridge.
 - Native Firebase config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup).
-- On iOS, complete [iOS Messaging Setup](/messaging/usage/ios-setup) and request notification permission (prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/); Messaging's `requestPermission` is deprecated — see [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283)).
+- On iOS, complete [iOS Messaging Setup](/messaging/usage/ios-setup) and request notification permission (prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/); Messaging's `requestPermission` is deprecated, see [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283)).
 - On Android API 33+, request `POST_NOTIFICATIONS` before expecting notification UI.
 - Register `setBackgroundMessageHandler` in the entry file before `AppRegistry.registerComponent` if you handle background/quit messages (see [Cloud Messaging usage](/messaging/usage#background--quit-state-messages)).
 
@@ -27,7 +27,9 @@ property to be attached to a message.
 
 If an incoming message with this property exists, and the app is not visible (quit or in the background),
 a notification is displayed on the device. However, if the application is in the foreground, an event will be delivered
-containing the notification data and no visible notification will be displayed. See the [Usage](/messaging/usage) documentation
+containing the notification data and, by default, no visible notification will be displayed. On iOS you can opt in to presenting
+foreground notifications with `messaging_ios_foreground_presentation_options` (see
+[Foreground Presentation Options (iOS)](/messaging/usage#foreground-presentation-options-ios)). See the [Usage](/messaging/usage) documentation
 to learn more about handling events.
 
 ## Via Firebase Console
@@ -56,7 +58,7 @@ For example, when using the [`firebase-admin`](https://www.npmjs.com/package/fir
 to send [messages from a server](/messaging/server-integration), a `notification` property can be added to the message payload:
 
 ```js
-// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: server-side sample that requires the firebase-admin package
 const admin = require('firebase-admin');
 
 await admin.messaging().sendEachForMulticast({
@@ -70,11 +72,12 @@ await admin.messaging().sendEachForMulticast({
 ```
 
 The Cloud Messaging module will intercept these messages and if the `notification` property is available, it will display
-a system notification when the app is in the background or quit. In the foreground, no system notification is shown; the
-payload is delivered to `onMessage` instead. Messages with both a `notification` and `data` property follow the same split:
-foreground uses `onMessage` only (no system notification); background and quit show a system notification and call
-`setBackgroundMessageHandler` (not `onMessage`). Display and `onMessage` do not fire together. See the
-[message-handler table](/messaging/usage#message-handlers) on Usage.
+a system notification when the app is in the background or quit. In the foreground, no system notification is shown by
+default (on iOS, unless `messaging_ios_foreground_presentation_options` is set); the payload is delivered to `onMessage`
+instead. Messages with both a `notification` and `data` property follow the same split: foreground uses `onMessage`;
+background and quit show a system notification and, on Android, call `setBackgroundMessageHandler` (not `onMessage`). On
+iOS, a notification message in the background or quit state reaches `setBackgroundMessageHandler` only when it also sets
+`content-available`. See the [message-handler table](/messaging/usage#message-handlers) on Usage.
 
 The different Admin SDKs available have similar implementation details on how to add a custom `notification` property to
 the FCM payload, however the Cloud Messaging module will handle all requests. To learn more, view the
@@ -111,23 +114,25 @@ and select the "REST" tab under the code examples.
 # Handling Interaction
 
 When a user interacts with your notification by pressing on it, the default behavior is to open the application (since
-notifications via FCM only display when the application is in the background, the application will always open).
+notifications via FCM only display when the application is in the background by default, the application will always open).
 
 In many cases, it is useful to detect whether the application was opened by pressing on a notification (so you
 could open a specific screen for example). The API provides two APIs for handling interaction:
 
-- `getInitialNotification`: When the application is opened from a quit state.
-- `onNotificationOpenedApp`: When the application is running, but in the background.
+- `getInitialNotification`: When the application is opened from a quit state. It resolves the `RemoteMessage` or `null`.
+  On Android a given notification is returned once, and the call resolves `null` (with a logged warning) when the current
+  activity is not ready yet, so call it again later in the React lifecycle.
+- `onNotificationOpenedApp`: When the application is running, but in the background. It returns a function that removes the listener.
 
 These fire for the **default notification open** (user taps the notification body). They do **not** fire for
-custom notification-category actions or dismiss; those interactions need a dedicated response API (tracked
-internally — do not route custom-action navigation through opened/initial).
+custom notification-category actions or dismiss, so do not route custom-action navigation through them. Use a
+local notification library such as [Notifee](https://notifee.app) for those interactions.
 
 To handle both scenarios, the code can be executed during setup. For example, using [React Navigation](https://reactnavigation.org/)
 we can set an initial route when the app is opened from a quit state, and push to a new screen when the app is in a background state:
 
 ```jsx
-// codeblock-ignore: @react-navigation/native and @react-navigation/stack are not workspace dependencies; types unavailable to docs:tsc:check
+// codeblock-ignore: requires the @react-navigation/native and @react-navigation/stack packages
 import React from 'react';
 import { Linking, ActivityIndicator, View, Text } from 'react-native';
 import {
@@ -282,9 +287,9 @@ export default App;
 **Quick Tip:** On `Android` you can test receiving remote notifications on the emulator. On `iOS`,
 use a **physical device** for real APNs tokens and delivery. On ARM64 Simulator,
 `registerDeviceForRemoteMessages` may reject with `messaging/registration-timeout` (UIKit register
-is skipped intentionally so the main thread cannot hang) — see
+is skipped intentionally so the main thread cannot hang), see
 [Auto Registration (iOS)](/messaging/usage#auto-registration-ios) and
-[Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+[Migrating to v26, iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
 # Getting a Device Token
 

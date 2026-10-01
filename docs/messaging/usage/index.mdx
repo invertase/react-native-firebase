@@ -1,6 +1,6 @@
 ---
 title: Cloud Messaging
-description: 'Cloud Messaging: getMessaging/isSupported, FCM tokens (getToken/deleteToken/onTokenRefresh), permissions, foreground/background handlers, topics, APNs helpers, auto-init, delivery-metrics export, and RN payload types (RemoteMessage, Notification, MessagePriority).'
+description: 'Cloud Messaging: getMessaging/isSupported, FCM tokens (getToken/deleteToken/onTokenRefresh), permissions, foreground/background handlers, topics, APNs helpers, auto-init, delivery-metrics export, Expo config plugin options, firebase.json keys, and RN payload types (RemoteMessage, Notification, MessagePriority).'
 next: /messaging/usage/ios-setup
 previous: /functions/writing-deploying-functions
 ---
@@ -36,6 +36,36 @@ cd ios/ && pod install
 The manual installation pages for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Expo
+
+## Config plugin (Android notification icon and color)
+
+Add `@react-native-firebase/messaging` to the `plugins` array of `app.json` or `app.config.js`, after `@react-native-firebase/app`, then run prebuild again:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      "@react-native-firebase/app",
+      [
+        "@react-native-firebase/messaging",
+        {
+          "android": {
+            "notificationIcon": "./assets/notification-icon.png",
+            "notificationColor": "#4CAF50"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The plugin only edits `AndroidManifest.xml`. It does not enable the iOS capabilities or upload an APNs key (see [iOS Messaging Setup](/messaging/usage/ios-setup)).
+
+- It adds `com.google.firebase.messaging.default_notification_icon` pointing at `@drawable/notification_icon`, and, when a color is found, `com.google.firebase.messaging.default_notification_color` pointing at `@color/notification_icon_color`. It does not create those resources, so they must exist in the Android project.
+- It looks for the icon and color in this order: the `android.notificationIcon` and `android.notificationColor` plugin options, then the options of an `expo-notifications` plugin entry written in array form (`icon`, `color`), then the top-level `notification` field of the Expo config (`icon`, `color`).
+- If no icon is found, prebuild logs a warning, because Android 8.0 and above need a notification icon to display notifications correctly.
+- An existing manifest entry with the same name is left unchanged.
 
 ## iOS - Notifications entitlement
 
@@ -75,9 +105,9 @@ If you use the REST v1 APIs (used by the Firebase Admin SDKs) and your app is ru
 
 To work around this incompatibility, react-native-firebase disables notification delegation by default, using the `AndroidManifest.xml` method listed as one of the options described here: https://firebase.google.com/docs/cloud-messaging/android/message-priority#proxy.
 
-You may re-enable notification delegation if your use case requires it and you can accept the messaging listener methods not executing for delegated messages by setting `messaging_android_notification_delegation_enabled` to `true` in `firebase.json`.
+You may re-enable notification delegation if your use case requires it and you can accept the messaging listener methods not executing for delegated messages by setting `messaging_android_notification_delegation_enabled` to `true` in `firebase.json` (rebuild the Android app after changing it).
 
-You may also use the messaging APIs to read and update the notification delegation state for the app:
+`isNotificationDelegationEnabled` and `setNotificationDelegationEnabled` read and update the delegation state at runtime. They are Android only: on iOS `isNotificationDelegationEnabled` reports `false` and `setNotificationDelegationEnabled` resolves without doing anything.
 
 ```js
 import {
@@ -101,7 +131,21 @@ await setNotificationDelegationEnabled(messaging, true);
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `getAPNSToken` / `setAPNSToken` are **iOS only**. `sendMessage` is **Android only**. `getIsHeadless` is exported on both platforms: it is meaningful on iOS; on Android it always resolves `false`. `isNotificationDelegationEnabled` / `setNotificationDelegationEnabled` are Android-only (delegation always reports disabled on iOS). FCM foreground/background listeners use the legacy native event proxy (same runtime behavior as pre-v26). React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, token/permission/APNs helpers, topic subscribe APIs, background handlers, and payload types (`RemoteMessage`, `Notification`, `MessagePriority`, and related). Each is explained in the section that uses it. See [Migrating to v26 — Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
+All modular functions are exported on both platforms. Platform-specific ones behave as follows on the other platform:
+
+{/* prettier-ignore */}
+| API | Platform | On the other platform |
+| --- | --- | --- |
+| `getAPNSToken`, `setAPNSToken` | iOS | Android: `getAPNSToken` resolves `null`, `setAPNSToken` resolves without doing anything. |
+| `registerDeviceForRemoteMessages`, `unregisterDeviceForRemoteMessages` | iOS | Android: resolve without doing anything. `isDeviceRegisteredForRemoteMessages` always returns `true` on Android. |
+| `requestPermission` | iOS prompt | Android: resolves `AuthorizationStatus.AUTHORIZED` without prompting. |
+| `getDidOpenSettingsForNotification`, `setOpenSettingsForNotificationsHandler` | iOS | Android: `getDidOpenSettingsForNotification` resolves `false`, the handler is never called. |
+| `getIsHeadless` | iOS | Android: resolves `false`. |
+| `sendMessage`, `onMessageSent`, `onSendError` | Android | iOS: `sendMessage` throws an `Error` in JavaScript, the listeners never fire. |
+| `onDeletedMessages` | Android | iOS: the listener never fires. |
+| `isNotificationDelegationEnabled`, `setNotificationDelegationEnabled` | Android | iOS: `isNotificationDelegationEnabled` returns `false`, `setNotificationDelegationEnabled` resolves without doing anything. |
+
+React Native Firebase also exports helpers with no firebase-js-sdk equivalent: `SDK_VERSION`, the token, permission and APNs helpers, topic subscribe APIs, background handlers, and the payload types (`RemoteMessage`, `Notification`, `MessagePriority`, and related). Each is explained in the section that uses it. The firebase-js-sdk Installation ID registration functions (`register`, `unregister`, `onRegistered`, `onUnregistered`) do not exist in React Native Firebase: use `getToken` and `onTokenRefresh`. See [Migrating to v26, Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
 
 # What does it do
 
@@ -127,7 +171,7 @@ console.log('Messaging package version:', SDK_VERSION);
 
 ## Check support
 
-`isSupported` reports whether Cloud Messaging can run on this device. On React Native it always resolves `true` on iOS. On Android it resolves based on Google Play services availability (via the App utils native module). The firebase-js-sdk `isSupported()` takes no messaging instance and checks browser Push API support instead; React Native Firebase takes the `Messaging` instance for API shape consistency with other modular calls.
+`isSupported` reports whether Cloud Messaging can run on this device. On React Native it always resolves `true` on iOS. On Android it resolves `true` when Google Play services is available and `false` otherwise. The firebase-js-sdk `isSupported()` takes no messaging instance and checks browser Push API support instead; React Native Firebase takes the `Messaging` instance for API shape consistency with other modular calls.
 
 ```js
 import { getMessaging, isSupported } from '@react-native-firebase/messaging';
@@ -140,33 +184,53 @@ console.log('Messaging supported:', supported);
 
 Use `getToken` to read the FCM registration token for this app instance, and `onTokenRefresh` when the token rotates. Store the token on your backend if you send to individual devices (see [Server Integration](/messaging/server-integration)).
 
-`@react-native-firebase/messaging` still exports `GetTokenOptions`, but the web fields `vapidKey` and `serviceWorkerRegistration` are not meaningful on native. Use `NativeTokenOptions` (`appName` on Android, `senderId` on iOS) with `getToken` / `deleteToken`. Do not pass VAPID or service-worker options.
+`@react-native-firebase/messaging` still exports `GetTokenOptions`, but the web fields `vapidKey` and `serviceWorkerRegistration` are not meaningful on native. Use `NativeTokenOptions` (`appName` on Android, `senderId` on iOS) with `getToken` / `deleteToken`. Do not pass VAPID or service-worker options. When omitted, `appName` defaults to the app name and `senderId` defaults to the `messagingSenderId` of the app options. Both must be strings, otherwise the call throws.
+
+On iOS, `getToken` rejects with `messaging/unregistered` when the app is not registered for remote notifications. Register first with auto-registration (the default) or with [`registerDeviceForRemoteMessages`](#auto-registration-ios).
+
+`onTokenRefresh` returns an unsubscribe function. The listener is only called while the app is in the foreground.
 
 ```js
-import {
-  getMessaging,
-  getToken,
-  deleteToken,
-  onTokenRefresh,
-} from '@react-native-firebase/messaging';
+import { getMessaging, getToken, onTokenRefresh } from '@react-native-firebase/messaging';
 
 const messaging = getMessaging();
 
 const token = await getToken(messaging);
 console.log('FCM token:', token);
 
-// Optional NativeTokenOptions (RN-only fields):
-// await getToken(messaging, { senderId: 'YOUR_SENDER_ID' }); // iOS
-// await getToken(messaging, { appName: '[DEFAULT]' }); // Android
-
 const unsubscribe = onTokenRefresh(messaging, newToken => {
   console.log('FCM token refreshed:', newToken);
 });
 
+// Call the unsubscribe function when the listener is no longer needed.
 unsubscribe();
+```
 
-// Invalidate the current token (for example on logout). It cannot be reused.
+`deleteToken` invalidates the current token immediately and permanently: messages sent to it fail. Use it when a user logs out (see [Signing out users](/messaging/server-integration#signing-out-users)). The next `getToken` call returns a new token.
+
+```js
+import { getMessaging, deleteToken, getToken } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
 await deleteToken(messaging);
+const newToken = await getToken(messaging);
+console.log('New FCM token:', newToken);
+```
+
+`NativeTokenOptions` overrides the defaults per platform:
+
+```js
+import { Platform } from 'react-native';
+import { getMessaging, getToken } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
+
+const token = await getToken(
+  messaging,
+  Platform.OS === 'ios' ? { senderId: 'YOUR_SENDER_ID' } : { appName: '[DEFAULT]' },
+);
+console.log('FCM token:', token);
 ```
 
 ## iOS - Requesting permissions
@@ -270,7 +334,13 @@ The device state and message contents determine which handler will be called:
 
 - On iOS in cases where the message is data-only and the device is in the background or quit, the message will be delayed
   until the background message handler is registered via `setBackgroundMessageHandler`, signaling the application's JavaScript
-  is loaded and ready to run.
+  is loaded and ready to run. If the handler is not registered within 25 seconds, the message is dropped.
+
+- On iOS, `setBackgroundMessageHandler` is driven by the native `application:didReceiveRemoteNotification:fetchCompletionHandler:` callback. For a message that has a `notification` payload and arrives while the app is in the background or quit, iOS shows the notification itself and only calls that callback when the message also sets `content-available` to `true`. Without it, your JavaScript does not run until the user taps the notification (then use `onNotificationOpenedApp` or `getInitialNotification`, see [Notifications](/messaging/notifications#handling-interaction)). The rows above for **Notification** and **Notification + Data** apply to Android, and to iOS only with `content-available`. Apple does not guarantee delivery of background notifications.
+
+- When you send data messages to Apple devices, Firebase requires the APNs priority to be `5` (normal). A high priority data message is rejected by the FCM backend with `INVALID_ARGUMENT`. Keep the Android `priority` at `high` and the APNs `apns-priority` header at `5`.
+
+- Reserved data keys: do not use `from`, `message_type`, or any key starting with `google.`, `gcm.` or `gcm.notification.` in the `data` payload. The maximum payload size is 4096 bytes.
 
 To learn more about how to send these options in your message payload, view the Firebase documentation for your [FCM API implementation](https://firebase.google.com/docs/cloud-messaging/customize-messages/setting-message-priority).
 
@@ -284,6 +354,8 @@ The device state and message contents can also determine whether a [Notification
 | **Notification** | Notification: &#10060; | Notification: &#9989; | Notification: &#9989; |
 | **Notification + Data** | Notification: &#10060; | Notification: &#9989; | Notification: &#9989; |
 | **Data** | Notification: &#10060; | Notification: &#10060; | Notification: &#10060; |
+
+The foreground column describes the default. On iOS, a foreground notification message is presented when `messaging_ios_foreground_presentation_options` in `firebase.json` is set (see [Foreground Presentation Options (iOS)](#foreground-presentation-options-ios)). On Android, a foreground notification message is never displayed by FCM.
 
 ### Foreground state messages
 
@@ -319,16 +391,15 @@ export default App;
 ```
 
 The `remoteMessage` property contains all of the information about the message sent to the device from FCM, including
-any custom data (via the `data` property) and notification data. To learn more, view the [`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html)
+any custom data (via the `data` property) and notification data. To learn more, view the [`RemoteMessage`](https://reference.rnfirebase.io/_react-native-firebase/messaging/types/messaging/RemoteMessage.html)
 API reference.
 
-If the `RemoteMessage` payload contains a `notification` property when sent to the `onMessage` handler, the device
-will not show any notification to the user. Instead, you could trigger a [local notification](/messaging/notifications#advanced-local-notifications)
+If the `RemoteMessage` payload contains a `notification` property when sent to the `onMessage` handler, Android does not show a notification to the user, and neither does iOS unless `messaging_ios_foreground_presentation_options` is configured (see [Foreground Presentation Options (iOS)](#foreground-presentation-options-ios)). Instead, you could trigger a [local notification](/messaging/notifications#advanced-local-notifications)
 or update the in-app UI to signal a new notification.
 
 ### Deleted messages
 
-`onDeletedMessages` fires when the FCM server deletes pending messages for this app instance (for example after too many pending messages accumulated while the device was offline). There is no firebase-js-sdk modular equivalent.
+`onDeletedMessages` is **Android only**: it never fires on iOS. It fires when the FCM server deletes pending messages for this app instance, which Firebase documents as happening when more than 100 messages are pending for the app on a device when it connects, or when the device has not connected to FCM for more than one month. When it fires, perform a full sync with your app server. There is no firebase-js-sdk modular equivalent.
 
 ```js
 import { getMessaging, onDeletedMessages } from '@react-native-firebase/messaging';
@@ -352,7 +423,7 @@ Instead, you need to setup a background callback handler via the `setBackgroundM
 Full entry-file sample:
 
 ```js
-// index.js — register the background handler BEFORE AppRegistry.registerComponent
+// index.js: register the background handler BEFORE AppRegistry.registerComponent
 import { AppRegistry } from 'react-native';
 import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
 
@@ -374,8 +445,10 @@ AppRegistry.registerComponent('app', () => App);
 The handler must return a promise once your logic has completed to free up device resources. It must not attempt to update
 any UI (e.g. via state) - you can however perform network requests, update local storage etc.
 
+On iOS the system is told the background work has finished when the returned promise settles, or after 25 seconds, whichever comes first. On Android the handler runs inside a Headless JS task that is stopped after a timeout (see [Background handler timeout (Android)](#background-handler-timeout-android)). If no handler has been registered when a background message arrives, a warning is logged and the message is not processed.
+
 The `remoteMessage` property contains all of the information about the message sent to the device from FCM, including
-any custom data via the `data` property. To learn more, view the [`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html)
+any custom data via the `data` property. To learn more, view the [`RemoteMessage`](https://reference.rnfirebase.io/_react-native-firebase/messaging/types/messaging/RemoteMessage.html)
 API reference.
 
 If the `RemoteMessage` payload contains a `notification` property when sent to the `setBackgroundMessageHandler` handler, the device
@@ -389,7 +462,7 @@ handler, you must set the "priority" to "high" on Android, and enable the `conte
 if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
 
 ```js
-// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: server-side sample that requires the firebase-admin package
 const admin = require('firebase-admin');
 
 admin.messaging().sendEachForMulticast({
@@ -417,7 +490,7 @@ admin.messaging().sendEachForMulticast({
 For iOS-specific "data-only" messages, the message must include the appropriate APNs headers as well as the `content-available` flag in order to trigger the background handler. For example, if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a "data-only" message to an iOS device:
 
 ```js
-// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: server-side sample that requires the firebase-admin package
 const admin = require('firebase-admin');
 
 admin.messaging().send({
@@ -455,7 +528,7 @@ On iOS however, when a message is received the device silently starts your appli
 you can configure your `AppDelegate` to inject an `isHeadless` prop into your root component. Use this property to conditionally render `null` ("nothing") if your app is launched in the background:
 
 ```jsx
-// index.js — background handler first, then HeadlessCheck wrapper for iOS silent launches
+// index.js: background handler first, then HeadlessCheck wrapper for iOS silent launches
 import React from 'react';
 import { AppRegistry, View, Text } from 'react-native';
 import { getMessaging, setBackgroundMessageHandler } from '@react-native-firebase/messaging';
@@ -486,7 +559,7 @@ function HeadlessCheck({ isHeadless }) {
 AppRegistry.registerComponent('app', () => HeadlessCheck);
 ```
 
-Wire the native `isHeadless` prop in `AppDelegate` as described in [iOS Messaging Setup — Headless prop](/messaging/usage/ios-setup#headless-prop-appdelegate).
+Wire the native `isHeadless` prop in `AppDelegate` as described in [iOS Messaging Setup, Headless prop](/messaging/usage/ios-setup#headless-prop-appdelegate).
 
 - For projects that use react-native-navigation (or if you prefer not to change launch props), call `getIsHeadless` from messaging. It is exported on both platforms: meaningful on iOS; on Android it always resolves `false`:
 
@@ -530,7 +603,7 @@ documentation.
 
 #### Subscribing to topics
 
-To subscribe a device, call the `subscribeToTopic` method with the topic name (must not include "/"):
+To subscribe a device, call the `subscribeToTopic` method with the topic name. The name must be a string and must not include "/", otherwise the call throws an `Error` synchronously (before any native call). The returned promise rejects when the native subscription fails:
 
 ```js
 import { getMessaging, subscribeToTopic } from '@react-native-firebase/messaging';
@@ -543,7 +616,7 @@ console.log('Subscribed to topic!');
 
 #### Unsubscribing to topics
 
-To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
+To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name. It applies the same name validation as `subscribeToTopic`:
 
 ```js
 import { getMessaging, unsubscribeFromTopic } from '@react-native-firebase/messaging';
@@ -556,9 +629,9 @@ console.log('Unsubscribed from the topic!');
 
 ## Message and notification payload shapes
 
-Incoming handlers receive a [`RemoteMessage`](https://invertase.github.io/react-native-firebase/_react-native-firebase/messaging/types/messaging/RemoteMessage.html). That type is React Native Firebase-specific (firebase-js-sdk uses `MessagePayload` / `NotificationPayload` instead).
+Incoming handlers receive a [`RemoteMessage`](https://reference.rnfirebase.io/_react-native-firebase/messaging/types/messaging/RemoteMessage.html). That type is React Native Firebase-specific (firebase-js-sdk uses `MessagePayload` / `NotificationPayload` instead).
 
-- `Notification` describes the optional `remoteMessage.notification` object (title, body, image, plus `android` / `ios` platform fields).
+- `Notification` describes the optional `remoteMessage.notification` object (`title`, `body`, localization keys, plus `android` / `ios` platform fields). The image URL on Android is `notification.android.imageUrl`; the top-level `icon` and `image` fields are documented as web only.
 - `MessagePriority` is the Android-only enum type on `remoteMessage.priority` / `originalPriority` (`PRIORITY_UNKNOWN` = 0, `PRIORITY_HIGH` = 1, `PRIORITY_NORMAL` = 2).
 - `NotificationAndroidPriority` and `NotificationAndroidVisibility` are re-exported constant objects for Android notification `priority` / `visibility` fields on `Notification.android` (and for comparing values you read back).
 - `NotificationIOSCriticalSound` is the object shape used when `notification.ios.sound` is a critical-alert sound (`name`, optional `critical`, optional `volume`) rather than a plain string.
@@ -600,7 +673,7 @@ console.log('Notification preview title:', preview.title, 'priority sample:', hi
 
 # firebase.json
 
-Messaging can be further configured to provide more control over how FCM is handled internally within your application.
+Messaging can be further configured to provide more control over how FCM is handled internally within your application. Keys go under the `react-native` object of the `firebase.json` file at the project root, and the native app must be rebuilt after changing them. The keys `messaging_android_notification_delivery_metrics_export_enabled` and `messaging_max_stored_notifications` (both Android only) are described in [firebase.json configuration](/app/json-config).
 
 ## Auto Registration (iOS)
 
@@ -634,7 +707,9 @@ async function registerAppWithFCM() {
 await registerAppWithFCM();
 ```
 
-`isDeviceRegisteredForRemoteMessages` returns whether this app instance has completed `registerDeviceForRemoteMessages`. Call `unregisterDeviceForRemoteMessages` when you need to stop receiving remote notifications through APNs/FCM device registration (for example before a controlled re-register):
+When auto-registration is on (the default), calling `registerDeviceForRemoteMessages` logs a console warning that the call is not required.
+
+`isDeviceRegisteredForRemoteMessages` is a synchronous read of a cached value. On iOS the value is read from the system when the Messaging module is created (it is always `false` on the iOS Simulator at that point) and is then updated by `registerDeviceForRemoteMessages` and `unregisterDeviceForRemoteMessages`. On Android it always returns `true`. `unregisterDeviceForRemoteMessages` removes the app's registration for remote notifications on iOS and does nothing on Android:
 
 ```js
 import {
@@ -654,19 +729,21 @@ console.log('Still registered:', isDeviceRegisteredForRemoteMessages(messaging))
 > main thread indefinitely. `registerDeviceForRemoteMessages` therefore stays pending until a
 > ~10 second **global-queue** timer rejects with `messaging/registration-timeout`.
 > `requestPermission` still resolves with `AuthorizationStatus` (it does **not** reject with that
-> code). You will not get a real APNs device token on that simulator — use a physical iOS device
+> code). You will not get a real APNs device token on that simulator, so use a physical iOS device
 > when you need end-to-end push registration. If `registerDeviceForRemoteMessages` is called again
 > before a prior attempt settles, the earlier promise rejects with
 > `messaging/registration-superseded`. See
-> [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
+> [Migrating to v26, iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
 ## APNs device tokens (iOS)
 
-`getAPNSToken` and `setAPNSToken` are **iOS only**. Use `getAPNSToken` when another push provider (or your own server) needs the raw APNs device token rather than the FCM registration token. Use `setAPNSToken` when your `AppDelegate` (or another library) receives the APNs token and you need to hand it to Firebase Messaging yourself (`type` is `'prod'`, `'sandbox'`, or `'unknown'`).
+`getAPNSToken` and `setAPNSToken` are **iOS only**. Use `getAPNSToken` when another push provider (or your own server) needs the raw APNs device token rather than the FCM registration token. It resolves the token as a hexadecimal string, or `null` when no token is available (and always `null` on Android). On iOS it rejects with `messaging/unregistered` when the app is not registered for remote notifications, and it resolves `null` on a simulator that has no APNs support.
+
+Use `setAPNSToken` when your `AppDelegate` (or another library) receives the APNs token and you need to hand it to Firebase Messaging yourself. `token` must be a string and `type` is `'prod'`, `'sandbox'`, or `'unknown'` (the default). A non-string `token` or an invalid `type` throws an `Error` synchronously on both platforms. On iOS, `token` must also be a non-empty, even-length hexadecimal string, otherwise the call throws an `Error` before reaching the native module. On Android, `setAPNSToken` resolves without doing anything.
 
 ```js
 import { Platform } from 'react-native';
-import { getMessaging, getAPNSToken } from '@react-native-firebase/messaging';
+import { getMessaging, getAPNSToken, setAPNSToken } from '@react-native-firebase/messaging';
 
 async function syncApnsToken() {
   if (Platform.OS !== 'ios') {
@@ -678,13 +755,24 @@ async function syncApnsToken() {
   console.log('APNs token:', token);
 }
 
+async function handOverApnsToken(hexToken) {
+  if (Platform.OS !== 'ios') {
+    return;
+  }
+
+  await setAPNSToken(getMessaging(), hexToken, 'prod');
+}
+
 await syncApnsToken();
+await handOverApnsToken('0123456789abcdef');
 ```
 
 ## Foreground Presentation Options (iOS)
 
 React Native Firebase Messaging configures how to present a notification in a foreground app.
 Refer to [UNNotificationPresentationOptions](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions) for the details.
+
+The value is an array of any of `"badge"`, `"sound"`, `"alert"`, `"list"` and `"banner"`. The default is an empty array, so no notification is presented while the app is in the foreground. When `"list"` or `"banner"` is present, `"alert"` is ignored.
 
 ```json
 {
@@ -694,13 +782,15 @@ Refer to [UNNotificationPresentationOptions](https://developer.apple.com/documen
 }
 ```
 
+These options only apply when no other `UNUserNotificationCenter` delegate (for example the one installed by `expo-notifications`) handles foreground presentation. When another delegate implements foreground presentation, it decides.
+
 ## Auto initialization
 
 Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
 you do not need to change this behavior.
 
-If you prefer to prevent Instance ID auto-generation, disable auto initialization for FCM and Analytics:
+If you prefer to prevent Instance ID auto-generation, disable auto initialization for FCM and Analytics. `messaging_auto_init_enabled` applies to both Android and iOS:
 
 ```json
 {
@@ -711,7 +801,7 @@ If you prefer to prevent Instance ID auto-generation, disable auto initializatio
 }
 ```
 
-To re-enable initialization (for example once permission is granted) call `setAutoInitEnabled(messaging, true)`. Read the current flag with `isAutoInitEnabled`:
+To re-enable initialization (for example once permission is granted) call `setAutoInitEnabled(messaging, true)`. The value persists across app restarts once set, per the Firebase [iOS](https://firebase.google.com/docs/cloud-messaging/ios/client#prevent_auto_initialization) documentation. `setAutoInitEnabled` throws an `Error` if `enabled` is not a boolean. Read the current flag with `isAutoInitEnabled`:
 
 ```js
 import {
@@ -727,7 +817,7 @@ await setAutoInitEnabled(messaging, true);
 
 ## Delivery metrics export (BigQuery)
 
-After you link FCM to BigQuery in the Firebase console ([Understand message delivery](https://firebase.google.com/docs/cloud-messaging/understand-delivery#bigquery-data-export)), you can enable per-app-instance delivery-metrics export from the client. `isDeliveryMetricsExportToBigQueryEnabled` reads the current flag. `experimentalSetDeliveryMetricsExportedToBigQueryEnabled` sets it (name matches the firebase-js-sdk experimental helper; React Native Firebase exposes it on the modular entry even though the current web modular public surface focuses on other registration APIs).
+After you link FCM to BigQuery in the Firebase console ([Understand message delivery](https://firebase.google.com/docs/cloud-messaging/understand-delivery#bigquery-data-export)), you can enable per-app-instance delivery-metrics export from the client. `isDeliveryMetricsExportToBigQueryEnabled` reads the current flag. `experimentalSetDeliveryMetricsExportedToBigQueryEnabled` sets it (the name matches the firebase-js-sdk experimental helper). Both are exported on Android and iOS. On Android the setting is forwarded to the Firebase Messaging SDK. The Android default can also be set at build time with `messaging_android_notification_delivery_metrics_export_enabled` in `firebase.json`, see [firebase.json configuration](/app/json-config).
 
 ```js
 import {
@@ -756,7 +846,7 @@ canceled to free up device resources. If you wish to override this value, set th
 
 ## Notification Channel ID
 
-On Android, any message which displays a [Notification](/messaging/notifications) use a default Notification Channel
+On Android, any message which displays a [Notification](/messaging/notifications) uses a default Notification Channel
 (created by FCM called "Miscellaneous"). This channel contains basic notification settings which may not be appropriate for
 your application. You can change what Channel is used by updating the `messaging_android_notification_channel_id` property:
 
