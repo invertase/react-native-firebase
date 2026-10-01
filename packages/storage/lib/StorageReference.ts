@@ -339,9 +339,9 @@ export default class Reference extends ReferenceBase implements StorageReference
           _metadata = {};
         }
         _metadata!.contentType = mediaType;
-        _string = base64String;
-        _format = StringFormat.BASE64;
       }
+      _string = base64String;
+      _format = StringFormat.BASE64;
     }
     return { _string, _metadata, _format };
   }
