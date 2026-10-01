@@ -29,11 +29,9 @@ yarn add @react-native-firebase/firestore
 cd ios/ && pod install
 ```
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/firestore/usage/installation/ios) and [Android](/firestore/usage/installation/android).
+The manual installation pages for [iOS](/firestore/usage/installation/ios) and [Android](/firestore/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
-If you have started to receive a `app:mergeDexDebug` error after adding Cloud Firestore, please read the
-[Enabling Multidex](/enabling-multidex) documentation for more information on how to resolve this error.
+If you receive an `app:mergeDexDebug` error after adding Cloud Firestore, note that the [Enabling Multidex](/enabling-multidex) page only applies when your app's `minSdk` is below 21. React Native Firebase v26 sets the default `minSdk` to `23`, where multidex is native, so read the full Gradle output for the underlying cause instead.
 
 # Platform support and New Architecture
 
@@ -67,7 +65,7 @@ console.log('Firestore package version:', SDK_VERSION);
 
 ## Emulator
 
-Use `connectFirestoreEmulator` before any Firestore reads, writes, or listeners when talking to the Local Emulator Suite (for example the Firestore emulator started by `yarn tests:emulator:start-ci` in this repository, default port `8080`). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use). See also [Cloud Firestore Emulator](/firestore/emulator).
+Use `connectFirestoreEmulator` before any Firestore reads, writes, or listeners when talking to the Local Emulator Suite (the Firestore emulator listens on port `8080` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine. See also [Cloud Firestore Emulator](/firestore/emulator).
 
 `FirebaseApp` is the React Native Firebase app type re-exported for `getFirestore(app)` / `initializeFirestore(app, settings)`. The optional `mockUserToken` argument on `connectFirestoreEmulator` accepts a string or an `EmulatorMockTokenOptions` object. That options shape is built from the RN helper types `FirebaseIdToken` and `FirebaseSignInProvider` (sign-in provider strings such as `'anonymous'` or `'google.com'`), which firebase-js-sdk does not export from the public Firestore API.
 

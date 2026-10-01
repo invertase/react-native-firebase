@@ -29,8 +29,7 @@ cd ios/ && pod install
 
 > **This package is mostly discontinued.** Upstream Firebase ML Cloud Vision and custom-model hosting APIs are deprecated. For on-device models use [Google ML Kit](https://developers.google.com/ml-kit) (for example via [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit)). For generative image understanding use [`@react-native-firebase/ai`](/ai/usage). For Cloud Vision REST from your backend, prefer Firebase Authentication plus Cloud Functions (see the [vision-annotate-images](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images) sample). Do **not** use the deprecated `@react-native-firebase/vertexai` package; that package only points at `@react-native-firebase/ai`.
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/ml/usage/installation/ios) and [Android](/ml/usage/installation/android).
+The manual installation pages for [iOS](/ml/usage/installation/ios) and [Android](/ml/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Platform support and New Architecture
 
@@ -40,7 +39,7 @@ you can follow the manual installation steps for [iOS](/ml/usage/installation/io
 | **Platforms** | Android, iOS (native TurboModule shell; no firebase-js-sdk modular API) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** The firebase-js-sdk does not ship a modular public API for this product (`firebase/ml` does not exist). Every export below is React Native Firebase only. There is no ML emulator and no `connect*Emulator` helper; ML is not started by `yarn tests:emulator:start-ci`.
+**Platform notes:** The firebase-js-sdk does not ship a modular public API for this product (`firebase/ml` does not exist). Every export below is React Native Firebase only. There is no ML emulator and no `connect*Emulator` helper for this package.
 
 React Native Firebase exports runtime `getML` and `SDK_VERSION`, plus the TypeScript types `FirebaseApp` and `FirebaseML`. Each runtime export is explained in the section that uses it. The type-only exports are for typing only and are not demonstrated on the Expo screen.
 

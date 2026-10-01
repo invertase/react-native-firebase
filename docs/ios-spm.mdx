@@ -1,8 +1,8 @@
 ---
 title: iOS SPM Support
-description: 'Swift Package Manager and CocoaPods support for Firebase iOS SDK dependencies: requirements, dynamic linkage, and Expo configuration.'
-next: /faqs-and-tips
-previous: /platforms
+description: 'Swift Package Manager and CocoaPods support for Firebase iOS SDK dependencies: requirements, dynamic linkage, Expo configuration, the rnfirebase_* Podfile fallbacks, static-framework opt-out, sharing FirebaseCore with other native pods, troubleshooting, and a tvOS hybrid-linkage TestFlight note.'
+next: /platforms
+previous: /typescript
 ---
 
 # iOS SPM Support
@@ -11,7 +11,7 @@ previous: /platforms
 
 - `@react-native-firebase/app` installed (and any other `@react-native-firebase/*` packages you use). Complete [Getting Started](/) so `GoogleService-Info.plist` / Expo `googleServicesFile` and `FirebaseApp.configure()` (React Native CLI) are in place.
 - React Native **0.75 or newer** for the SPM default. Older React Native versions use CocoaPods because their pod tooling does not provide `spm_dependency`.
-- Xcode `>= 26.2` when using firebase-ios-sdk `12.12.0` or newer (this release pins firebase-ios-sdk `12.19.0`).
+- Xcode `>= 26.2` when using firebase-ios-sdk `12.12.0` or newer (v26 pins firebase-ios-sdk `12.19.0`).
 - Expo projects: use config plugins (`expo-build-properties`, `@react-native-firebase/app`); do not hand-edit a generated `ios/Podfile` if Expo regenerates it on prebuild.
 
 React Native Firebase can resolve its Firebase Apple SDK dependencies with
@@ -25,8 +25,8 @@ native application code do not change.
 - `$RNFirebaseDisableSPM = true` selects CocoaPods.
 - React Native versions older than 0.75 use CocoaPods because their pod tooling
   does not provide `spm_dependency`.
-- SPM requires CocoaPods 1.10 or newer. React Native 0.75+ templates already
-  satisfy this requirement.
+- SPM requires CocoaPods 1.12.0 or newer (the `RNFBApp` podspec declares
+  `cocoapods_version` as `>= 1.12.0`).
 - SPM pins the Firebase iOS SDK to the same exact version CocoaPods uses
   (`sdkVersions.ios.firebase` in `@react-native-firebase/app`). It does not
   float to a newer 12.x release.
@@ -34,7 +34,7 @@ native application code do not change.
 SPM requires dynamic framework linkage. Edit `ios/Podfile` **before** `pod install`:
 
 ```ruby
-# File: ios/Podfile. Inside your app target, before use_react_native!. Required for SPM mode. Run pod install after editing.
+# File: ios/Podfile. Top level, after prepare_react_native_project! and before the app target block. Required for SPM mode. Run pod install after editing.
 use_frameworks! :linkage => :dynamic
 ```
 
@@ -109,7 +109,7 @@ For React Native 0.75 or newer, SPM is selected automatically. Configure dynamic
 linkage in your `ios/Podfile`, then install pods:
 
 ```ruby
-# File: ios/Podfile. Inside your app target, before use_react_native!. Step 1 of 2 for SPM (React Native CLI).
+# File: ios/Podfile. Top level, after prepare_react_native_project! and before the app target block. Step 1 of 2 for SPM (React Native CLI).
 use_frameworks! :linkage => :dynamic
 ```
 
@@ -204,6 +204,49 @@ other value -- `false`, `nil`, or leaving it unset -- uses SPM (React Native
 0.75+ default). This matters for generated or template-based Podfiles that
 always emit the variable, e.g. `$RNFirebaseDisableSPM = false`: that still
 uses SPM, it does not fall back to CocoaPods.
+
+## Static frameworks with CocoaPods
+
+Static linkage requires CocoaPods mode, so opt out of SPM first. Never combine static linkage with RNFB's SPM mode.
+
+For React Native CLI projects, edit `ios/Podfile` at the top level, before the app `target` block, then run `pod install`. `$RNFirebaseAsStaticFramework` makes the RNFB pods that read it (for example `RNFBApp`) set `static_framework` to its value:
+
+```ruby
+# File: ios/Podfile. Top level, after prepare_react_native_project! and before the app target block. CocoaPods static opt-out; then pod install.
+$RNFirebaseDisableSPM = true
+use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
+```
+
+For Expo projects, set `disableSPM` on the `@react-native-firebase/app` config plugin and configure static frameworks through `expo-build-properties`. `forceStaticLinking` is an `expo-build-properties` option that lists CocoaPods to link statically while `useFrameworks` is enabled. It exists for React Native prebuilt binaries that fail to build as dynamic frameworks. List every RNFB native module you use (the module names below are examples). The first React Native and Expo releases that need it are not pinned here, so check the Expo documentation for your SDK. Apply **before** the next `npx expo prebuild --clean`:
+
+```json
+// File: app.json (or app.config.js). CocoaPods static opt-out for Expo. Apply before npx expo prebuild --clean.
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/app",
+        {
+          "ios": {
+            "disableSPM": true
+          }
+        }
+      ],
+      "@react-native-firebase/auth",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "forceStaticLinking": ["RNFBApp", "RNFBAuth"]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
 
 ## Sharing FirebaseCore with other native pods
 

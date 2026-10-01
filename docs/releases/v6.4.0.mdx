@@ -3,10 +3,12 @@ title: v6.4.0
 description: 'v6.4.0: Messaging-focused release adding onNotificationOpenedApp()/getInitialNotification(), iOS setBackgroundMessageHandler() support, an upgraded iOS permissions API, and an iOS static-frameworks Podfile option, plus Analytics, Auth, Dynamic Links, Firestore, Functions and Storage fixes.'
 ---
 
+> **Historical release note, superseded.** This page describes the v6.4.0 release and is kept for reference only. For current installation and APIs, see [Getting Started](/) and the [migration guides](/migrating-to-v22).
+
 ## Features
 
 - `iOS`: added a `Podfile` option to allow using React Native Firebase packages as static frameworks ([`#3253`](https://github.com/invertase/react-native-firebase/issues/3253)) ([`#530f8bb`](https://github.com/invertase/react-native-firebase/commit/530f8bbb51f89f106854dbf1df5ec80211e2cf8b))
-  - see [Allow iOS Static Frameworks](/#allow-ios-static-frameworks) to learn more. This option will default to true in the next major release.
+  - see [Static frameworks with CocoaPods](/ios-spm#static-frameworks-with-cocoapods) for the Podfile options in v26. This v6.4.0 note said the option would default to true in the next major release; the default `static_framework` value in the v26 `RNFBApp` podspec is `false`.
 
 ### Messaging
 

@@ -31,7 +31,7 @@ yarn add @react-native-firebase/app-check
 cd ios/ && pod install
 ```
 
-> If you're using Expo, add the `@react-native-firebase/app-check` config plugin to your `app.json` or `app.config.js`. The plugin registers the native App Check module before `FirebaseApp.configure()` (Firebase requires that order). You still call `initializeAppCheck` from JavaScript. For plugin setup, see the [Expo](/#expo) installation section.
+> If you're using Expo, add the `@react-native-firebase/app-check` config plugin to your `app.json` or `app.config.js`. The plugin registers the native App Check module before `FirebaseApp.configure()` (Firebase requires that order). You still call `initializeAppCheck` from JavaScript. For plugin setup, see the [Expo](/#installation-for-expo-projects) installation section.
 
 # Platform support and New Architecture
 
@@ -45,7 +45,7 @@ cd ios/ && pod install
 
 React Native Firebase exports `SDK_VERSION`, `initializeAppCheck`, `getToken`, `getLimitedUseToken`, `setTokenAutoRefreshEnabled`, `onTokenChanged`, `ReactNativeFirebaseAppCheckProvider`, `CustomProvider`, the `AppCheckProvider` interface, and the React Native provider option types (`ReactNativeFirebaseAppCheckProviderOptions`, `ReactNativeFirebaseAppCheckProviderWebOptions`, `ReactNativeFirebaseAppCheckProviderAppleOptions`, `ReactNativeFirebaseAppCheckProviderAndroidOptions`, `ReactNativeFirebaseAppCheckProviderOptionsMap`, `ReactNativeFirebaseAppCheckProviderConfig`). Each is explained in the section that uses it.
 
-This page does not cover console-only workflows such as App Check metrics dashboards, enforcement toggles, reCAPTCHA score thresholds, or web-only `self.FIREBASE_APPCHECK_DEBUG_TOKEN` setup. Those live in the [Firebase App Check documentation](https://firebase.google.com/docs/app-check?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-check). There is no App Check emulator and no `connect*Emulator` helper; App Check is not started by `yarn tests:emulator:start-ci`.
+This page does not cover console-only workflows such as App Check metrics dashboards, enforcement toggles, reCAPTCHA score thresholds, or web-only `self.FIREBASE_APPCHECK_DEBUG_TOKEN` setup. Those live in the [Firebase App Check documentation](https://firebase.google.com/docs/app-check?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-check). There is no App Check emulator and no `connect*Emulator` helper for this package.
 
 # What does it do
 

@@ -37,7 +37,7 @@ yarn add @react-native-firebase/phone-number-verification
 | **Platforms** | **Android only** (native Firebase Phone Number Verification SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** The firebase-js-sdk does not ship a modular public API for Phone Number Verification (`firebase/phone-number-verification` does not exist). Every export below is React Native Firebase only. On non-Android platforms, each runtime function throws before reaching native code. There is no Phone Number Verification emulator and no `connect*Emulator` helper; this product is not started by `yarn tests:emulator:start-ci`.
+**Platform notes:** The firebase-js-sdk does not ship a modular public API for Phone Number Verification (`firebase/phone-number-verification` does not exist). Every export below is React Native Firebase only. On non-Android platforms, each runtime function throws before reaching native code. There is no Phone Number Verification emulator and no `connect*Emulator` helper for this package.
 
 React Native Firebase exports `enableTestSession`, `getVerificationSupportInfo`, `getVerifiedPhoneNumber`, `getDigitalCredentialPayload`, `exchangeCredentialResponseForPhoneNumber`, and the runtime `PnvErrorCode` object, plus the TypeScript types `VerificationSupportStatus`, `VerificationSupportResult`, `VerifiedPhoneNumberTokenResult`, and `PnvError`. Each is explained in the section that uses it.
 

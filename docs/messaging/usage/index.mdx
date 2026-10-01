@@ -33,8 +33,7 @@ cd ios/ && pod install
 
 > Use of the `sendMessage()` API and its associated listeners requires a custom `XMPP` server. Read [Messaging with XMPP](/messaging/usage/messaging-with-xmpp) for the device-to-device setup. `sendMessage()` is Android only.
 
-If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
+The manual installation pages for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Expo
 
@@ -324,7 +323,7 @@ any custom data (via the `data` property) and notification data. To learn more, 
 API reference.
 
 If the `RemoteMessage` payload contains a `notification` property when sent to the `onMessage` handler, the device
-will not show any notification to the user. Instead, you could trigger a [local notification](/messaging/notifications#notifee---advanced-notifications)
+will not show any notification to the user. Instead, you could trigger a [local notification](/messaging/notifications#advanced-local-notifications)
 or update the in-app UI to signal a new notification.
 
 ### Deleted messages

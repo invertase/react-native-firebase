@@ -1,8 +1,8 @@
 ---
 title: FAQs and Tips
-description: "Troubleshooting: react-native-firebase vs firebase-js-sdk, New Architecture compatibility, CI build hangs, Analytics 'items' parameter, InternalFirebaseAuth.FIREBASE_AUTH_API errors, Crashlytics iOS SIGABRT, in-app message testing, and iOS background message handling."
+description: "Troubleshooting: react-native-firebase vs firebase-js-sdk, New Architecture compatibility, CI build hangs, Analytics 'items' parameter, InternalFirebaseAuth.FIREBASE_AUTH_API errors, Crashlytics iOS crash testing under the Xcode debugger, in-app message testing, and iOS background message handling."
 next: /ai/usage
-previous: /ios-spm
+previous: /platforms
 ---
 
 ## Prerequisites
@@ -53,26 +53,35 @@ This may be fixed by creating a `firebase.json` file at the root of your project
 
 ### I have a custom Analytics parameter called 'items' and it's not showing up on the Firebase console. How come?
 
-This happens to be a known problem with the upstream Analytics SDKs. The Firebase team doesn't have any plans to fix it soon. More information about this can be found [here](https://github.com/invertase/react-native-firebase/issues/4018#issuecomment-682174087).
+This is a known problem with the upstream Analytics SDKs, and the fix is on their side rather than in React Native Firebase. Details are in [issue #4018](https://github.com/invertase/react-native-firebase/issues/4018#issuecomment-682174087).
 
 ### I'm receiving `InternalFirebaseAuth.FIREBASE_AUTH_API is not available on this device`. How do I fix this?
 
 To use some Firebase services (like auth) in an emulator, you need an Android virtual device with Google Play services installed. Check this [Stack Overflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android virtual device with the necessary APIs installed.
 
-### I'm getting an SIGABRT error in Xcode when faking a crash on iOS. How do I fix this?
+### Xcode stops on a crash line in `RNFBCrashlyticsModule.mm` when faking a crash on iOS. How do I fix this?
 
-When you get an error on this line when faking a crash on iOS (library source under `node_modules`, not app code you edit):
+`crash(getCrashlytics())` deliberately crashes the app. With the debugger attached, Xcode can stop at the crashing line in the library source under `node_modules` (not app code you edit), and Crashlytics does not receive the report. The native `crash` method writes through a null pointer:
 
 ```objectivec
-// Library source (RNFB Crashlytics). Shown for orientation only; do not copy into your app.
-RCT_EXPORT_METHOD(crash) {
+// Library source (RNFB Crashlytics, RNFBCrashlyticsModule.mm). Shown for orientation only; do not copy into your app.
+- (void)crash {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    assert(NO);
+    if ([self isDebuggerAttached]) {
+      RCTLog(@"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
+    }
+
+    int *p = 0;
+    *p = 0;
+  } else {
+    RCTLog(@"Crashlytics - INFO: crashlytics collection is not enabled, not crashing.");
   }
 }
 ```
 
-Just disable your debugger in Xcode. 'Project name' -> 'Edit Scheme...' -> 'Run' -> deselect "Debug executable"
+If Crashlytics collection is disabled, `crash` skips the crash and only logs `Crashlytics - INFO: crashlytics collection is not enabled, not crashing.`
+
+The module logs `Debugger detected. Crashlytics will not receive crash reports.` when it sees an attached debugger. To test a real crash report, run the app without the Xcode debugger attached, for example by clearing "Debug executable" under 'Project name' -> 'Edit Scheme...' -> 'Run' -> 'Info', or by stopping the debug session and relaunching the installed app from the device or simulator.
 
 ### I have the SDK installed, but I can't send a test in app message from the console. How do I fix this?
 

@@ -1,42 +1,28 @@
 ---
 title: Android Installation
-description: 'Manual Android linking for @react-native-firebase/crashlytics: settings.gradle module include, build.gradle dependency, registering ReactNativeFirebaseCrashlyticsPackage in MainApplication.java, and a link to the required Android Setup steps.'
+description: 'Legacy manual Android linking for @react-native-firebase/crashlytics on React Native 0.59 and earlier (settings.gradle include, build.gradle dependency, ReactNativeFirebaseCrashlyticsPackage registration in MainApplication.java), plus a link to the Crashlytics Gradle setup that React Native CLI projects still need. Not supported by v26; use autolinking.'
 ---
 
-# Android Manual Installation
+# Android Manual Installation (legacy)
+
+> **Legacy, not supported in v26 and later.** Manual linking only applied to React Native **0.59 and earlier**. `@react-native-firebase/app` v26 declares the peer range `react-native` `>=0.60.0-0` and requires React Native's New Architecture, so those versions cannot run it. Follow [Getting Started](/) for the supported Android setup (autolinking). The manual linking steps below are kept only for projects still pinned to an older major version. The Crashlytics Gradle setup in [Android Setup](/crashlytics/android-setup) is separate and still required. For Expo projects, the `@react-native-firebase/crashlytics` config plugin covers only steps 2 and 3 of [Android Setup](/crashlytics/android-setup).
 
 ## Prerequisites
 
 These steps assume:
 
-- `@react-native-firebase/app` is already installed and linked (see [App Android installation](/install-android) or [Getting Started](/)).
+- `@react-native-firebase/app` is already installed and linked (follow [Getting Started](/) for the supported setup).
 - `@react-native-firebase/crashlytics` is already listed in your app `package.json` (install with `npm install --save @react-native-firebase/crashlytics` or `yarn add @react-native-firebase/crashlytics`).
-- You are on React Native **0.59 or earlier** and must link the native module by hand. React Native 0.60+ projects use [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) and should follow [Crashlytics usage](/crashlytics/usage) instead.
-- Your Android app already meets the version pins below.
 
-## Version requirements
-
-{/* prettier-ignore */}
-| Requirement | Version |
-| --- | --- |
-| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
-| Expo (when using Expo) | `>= 47.0.0` |
-| Xcode (iOS builds) | `>= 26.2` |
-| Firebase Android SDK | `34.19.0` (default pin) |
-| Firebase Apple SDK | `12.19.0` (default pin) |
-| Android `minSdk` | `23` |
-| JDK | `>= 17` |
-
-From v26, every React Native Firebase package with a native bridge requires New Architecture. This release pins `firebase-android-sdk` `34.19.0` and firebase-ios-sdk `12.19.0`. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer.
-
-Apply the five steps below **in order**, then rebuild.
+Apply the three manual linking steps below **in order**, then complete the Crashlytics Gradle setup and rebuild.
 
 ## 1. Update Gradle Settings
 
 File: `/android/settings.gradle`. Do this before editing `android/app/build.gradle`.
 
 ```groovy
-// File: android/settings.gradle. Step 1 of 5 (before android/app/build.gradle dependency).
+// Legacy (React Native 0.59 and earlier only): not needed or supported with autolinking. See Getting Started.
+// File: android/settings.gradle. Step 1 of 3 (before android/app/build.gradle dependency).
 include ':@react-native-firebase_crashlytics'
 project(':@react-native-firebase_crashlytics').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/crashlytics/android')
 ```
@@ -46,17 +32,19 @@ project(':@react-native-firebase_crashlytics').projectDir = new File(rootProject
 File: `/android/app/build.gradle`. Add the module inside the existing `dependencies { }` block after step 1.
 
 ```groovy
-// File: android/app/build.gradle. Step 2 of 5 (after settings.gradle include; before MainApplication.java).
+// Legacy (React Native 0.59 and earlier only): not needed or supported with autolinking. See Getting Started.
+// File: android/app/build.gradle. Step 2 of 3 (after settings.gradle include; before MainApplication.java).
 // Add this line inside the existing dependencies { } block:
 implementation project(path: ":@react-native-firebase_crashlytics")
 ```
 
 ## 3. Add package to the Android Application
 
-File: `/android/app/src/main/java/**/MainApplication.java` (path under `java/` matches your `applicationId` package). Register the package after steps 1 and 2.
+File: `/android/app/src/main/java/**/MainApplication.java` (path under `java/` matches your `applicationId` package). Register the package after steps 1 and 2. If `getPackages()` already exists on the class, add only `new ReactNativeFirebaseCrashlyticsPackage(),` to the returned list.
 
 ```java
-// File: android/app/src/main/java/**/MainApplication.java. Step 3 of 5 (after Gradle settings and dependency; Android Setup next).
+// Legacy (React Native 0.59 and earlier only): Java getPackages() registration, not needed or supported with autolinking.
+// File: android/app/src/main/java/**/MainApplication.java. Step 3 of 3 (after Gradle settings and dependency).
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,17 +61,15 @@ protected List<ReactPackage> getPackages() {
 }
 ```
 
-If `getPackages()` already exists on the class, add only `new ReactNativeFirebaseCrashlyticsPackage(),` to the returned list.
+## Crashlytics Gradle setup (still required)
 
-## 4. Additional Android Setup
+This step is not legacy. Every React Native CLI Android setup, including projects that use autolinking, also needs the Crashlytics Gradle plugin steps. In Expo projects the `@react-native-firebase/crashlytics` config plugin covers only steps 2 and 3 of that page (adding the Gradle plugin dependency and applying the plugin); the Google repository (step 1) and the optional NDK block (step 4) stay manual. Steps 1 and 4 need a native `android/` folder, which `npx expo prebuild` generates in an Expo project. Because that folder is regenerated by `npx expo prebuild --clean` and by EAS Build, edits made directly in it may not persist, so a workflow that regenerates it needs those changes made another way (for example a custom config plugin). Follow [Android Setup](/crashlytics/android-setup), then rebuild.
 
-Android requires additional Crashlytics Gradle plugin steps. View the [Android Setup](/crashlytics/android-setup) documentation for more information, then continue to step 5.
+## Rebuild the project
 
-## 5. Rebuild the project
-
-After steps 1–4, rebuild Android from the project root:
+After the steps above (the manual linking steps only if you are on React Native 0.59 or earlier, then the Crashlytics Gradle setup), rebuild Android from the project root:
 
 ```bash
-# Project root. Step 5 of 5 (after settings.gradle, app/build.gradle, MainApplication.java, and Android Setup).
+# Project root. Final step, after the Crashlytics Gradle setup.
 npx react-native run-android
 ```

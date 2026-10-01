@@ -35,8 +35,7 @@ yarn add @react-native-firebase/in-app-messaging
 cd ios/ && pod install
 ```
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/in-app-messaging/usage/installation/ios) and [Android](/in-app-messaging/usage/installation/android).
+The manual installation pages for [iOS](/in-app-messaging/usage/installation/ios) and [Android](/in-app-messaging/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Platform support and New Architecture
 
@@ -46,7 +45,7 @@ you can follow the manual installation steps for [iOS](/in-app-messaging/usage/i
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** The firebase-js-sdk does not ship a modular public API for this product (`firebase/in-app-messaging` does not exist). Every export below is React Native Firebase only. In-App Messaging supports only the **default** Firebase app (`hasMultiAppSupport: false`). There is no In-App Messaging emulator and no `connect*Emulator` helper; In-App Messaging is not started by `yarn tests:emulator:start-ci`. Do not confuse this package with [Cloud Messaging](/messaging/usage).
+**Platform notes:** The firebase-js-sdk does not ship a modular public API for this product (`firebase/in-app-messaging` does not exist). Every export below is React Native Firebase only. In-App Messaging supports only the **default** Firebase app (`hasMultiAppSupport: false`). There is no In-App Messaging emulator and no `connect*Emulator` helper for this package. Do not confuse this package with [Cloud Messaging](/messaging/usage).
 
 React Native Firebase exports runtime `getInAppMessaging`, `isMessagesDisplaySuppressed`, `setMessagesDisplaySuppressed`, `isAutomaticDataCollectionEnabled`, `setAutomaticDataCollectionEnabled`, `triggerEvent`, and `SDK_VERSION`, plus the TypeScript type `InAppMessaging`. Each runtime export is explained in the section that uses it. The type-only export is for typing only and is not demonstrated on the Expo screen.
 

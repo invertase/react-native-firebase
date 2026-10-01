@@ -36,7 +36,7 @@ cd ios/ && pod install
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** Modular `onIdChange` is present for firebase-js-sdk API shape parity and throws on React Native Firebase. There is no Installations emulator and no `connect*Emulator` helper; Installations is not started by `yarn tests:emulator:start-ci`.
+**Platform notes:** Modular `onIdChange` is present for firebase-js-sdk API shape parity and throws on React Native Firebase. There is no Installations emulator and no `connect*Emulator` helper for this package.
 
 React Native Firebase exports `SDK_VERSION`, `getInstallations`, `getId`, `getToken`, `deleteInstallations`, and `onIdChange`. Each is explained in the section that uses it.
 

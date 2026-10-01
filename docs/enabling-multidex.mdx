@@ -1,13 +1,15 @@
 ---
 title: Enabling Multidex
-description: Enable Android multidex to work around the 64k method-count limit that can break React Native Firebase builds.
+description: 'Legacy and rarely needed: Android multidex steps (multiDexEnabled, the androidx.multidex dependency, MultiDexApplication) for the 64k method-count limit. React Native Firebase v26 requires minSdk 23, where multidex is native.'
 ---
 
-As more native dependencies are added to your project, it may bump you over the
+> **Legacy, rarely needed.** `@react-native-firebase/app` v26 sets the default Android `minSdk` to `23` (`sdkVersions.android.minSdk` in its `package.json`). Android 5.0 (API 21) and higher support multidex natively, per the official [Android documentation](https://developer.android.com/studio/build/multidex#mdex-gradle), so apps at `minSdk` 23 do not need the steps below. Use them only if you lower `minSdk` below 21 for a project on an older React Native Firebase major version.
+
+As more native dependencies are added to a project with a low `minSdk`, it may bump you over the
 64k method limit on the Android build system. Once this limit has been reached, you will start to see the following error
 whilst attempting to build your Android application:
 
-```
+```text
 Execution failed for task ':app:mergeDexDebug'.
 ```
 
@@ -17,36 +19,43 @@ To learn more about multidex, view the official [Android documentation](https://
 
 There are 3 steps involved in enabling multidex.
 
-Steps 1 and 2 tell Gradle to turn on multidex with a directive, and add new dependency.
+Steps 1 and 2 tell Gradle to turn on multidex with a directive, and add a new dependency.
 
-Open the `/android/app/build.gradle` file. Under `dependencies` we need to add the module, and then enable it
+Open the `/android/app/build.gradle` file. Under `dependencies` add the module, and then enable it
 within the `defaultConfig`:
 
 ```groovy
+// Legacy: only for a minSdk below 21. Not needed at React Native Firebase's default minSdk 23.
+// File: android/app/build.gradle. Add multiDexEnabled to the existing defaultConfig and the dependency to the existing dependencies block.
 android {
     defaultConfig {
-        // ...
-        multiDexEnabled true // <-- ADD THIS in the defaultConfig section
+        multiDexEnabled true
     }
-    // ...
 }
 
 dependencies {
-  implementation 'androidx.multidex:multidex:2.0.1'  // <-- ADD THIS DEPENDENCY
+    implementation 'androidx.multidex:multidex:2.0.1'
 }
 ```
 
-The 3rd step is to alter your `android/app/src/main/java/.../MainApplication.java` file to extend `MultiDexApplication` like so:
+The 3rd step is to make your `Application` class extend `MultiDexApplication`. Edit `MainApplication.kt` (Kotlin templates) or `MainApplication.java` (older Java templates) under `/android/app/src/main/java/`, and change only the import and the parent class in the class declaration. Leave the existing class body as it is.
+
+```kotlin
+// Legacy: only for a minSdk below 21. File: android/app/src/main/java/<your package path>/MainApplication.kt
+// Add this import with your other imports:
+import androidx.multidex.MultiDexApplication
+
+// Change the superclass in the class declaration from Application() to MultiDexApplication():
+class MainApplication : MultiDexApplication(), ReactApplication
+```
 
 ```java
+// Legacy: only for a minSdk below 21. File: android/app/src/main/java/<your package path>/MainApplication.java (older Java templates)
+// Add this import with your other imports:
+import androidx.multidex.MultiDexApplication;
 
-// ... all your other imports here
-import androidx.multidex.MultiDexApplication; // <-- ADD THIS IMPORT
-
-
-// Your class definition needs `extends MultiDexApplication` like below
-public class MainApplication extends MultiDexApplication implements ReactApplication {
-
+// Change the superclass in the class declaration from Application to MultiDexApplication:
+public class MainApplication extends MultiDexApplication implements ReactApplication
 ```
 
 Once added, rebuild your application: `npx react-native run-android`.

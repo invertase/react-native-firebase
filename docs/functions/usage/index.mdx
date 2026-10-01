@@ -9,7 +9,7 @@ previous: /firestore/pipelines/sdk-compatibility
 
 - `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
 - Install Functions: `npm install --save @react-native-firebase/functions` or `yarn add @react-native-firebase/functions`, then rebuild native apps (`cd ios && pod install` on iOS).
-- Deploy HTTPS callable functions to your Firebase project, or run the Functions emulator (for example via `yarn tests:emulator:start-ci` in this repository, default port `5001`). See [Writing & Deploying Functions](/functions/writing-deploying-functions).
+- Deploy HTTPS callable functions to your Firebase project, or run the Functions emulator (the Functions emulator listens on port `5001` by default). See [Writing & Deploying Functions](/functions/writing-deploying-functions).
 
 Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/functions.tsx
 
@@ -29,8 +29,7 @@ yarn add @react-native-firebase/functions
 cd ios/ && pod install
 ```
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/functions/usage/installation/ios) and [Android](/functions/usage/installation/android).
+The manual installation pages for [iOS](/functions/usage/installation/ios) and [Android](/functions/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Platform support and New Architecture
 
@@ -76,7 +75,7 @@ console.log('Functions package version:', SDK_VERSION);
 
 ## Emulator
 
-Use `connectFunctionsEmulator` before any callable or stream calls when talking to the Local Emulator Suite (for example the Functions emulator started by `yarn tests:emulator:start-ci` in this repository, default port `5001`). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use).
+Use `connectFunctionsEmulator` before any callable or stream calls when talking to the Local Emulator Suite (the Functions emulator listens on port `5001` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine.
 
 ```js
 import { Platform } from 'react-native';

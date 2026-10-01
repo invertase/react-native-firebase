@@ -19,13 +19,13 @@ previous: /messaging/usage
 {/* prettier-ignore */}
 | Requirement | Version |
 | --- | --- |
-| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| React Native | New Architecture enabled. `@react-native-firebase/app` declares the peer range `>=0.60.0-0` (not a tested floor). Tested on `0.88.0-rc.3` (Expo `58.0.0`) |
 | Expo (when using Expo) | `>= 47.0.0` |
 | Xcode | `>= 26.2` |
 | Firebase Apple SDK | `12.19.0` (default pin) |
 | iOS deployment target | `15.0` |
 
-From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0`.
+From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; v26 pins firebase-ios-sdk `12.19.0`.
 
 Integrating the Cloud Messaging module on iOS requires the Xcode capabilities and APNs linking steps below before devices receive messages.
 

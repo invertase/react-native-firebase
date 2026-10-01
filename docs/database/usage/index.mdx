@@ -29,8 +29,7 @@ yarn add @react-native-firebase/database
 cd ios/ && pod install && cd ..
 ```
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/database/usage/installation/ios) and [Android](/database/usage/installation/android).
+The manual installation pages for [iOS](/database/usage/installation/ios) and [Android](/database/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Platform support and New Architecture
 
@@ -66,7 +65,7 @@ console.log('Database package version:', SDK_VERSION);
 
 ## Emulator
 
-Use `connectDatabaseEmulator` before any Realtime Database reads or writes when talking to the Local Emulator Suite (for example the database emulator started by `yarn tests:emulator:start-ci` in this repository, default port `9000`). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine (the same mapping the e2e helpers use).
+Use `connectDatabaseEmulator` before any Realtime Database reads or writes when talking to the Local Emulator Suite (the Realtime Database emulator listens on port `9000` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine.
 
 ```js
 import { Platform } from 'react-native';
@@ -283,7 +282,7 @@ If your application requires more advanced query capabilities, it is recommended
 
 #### Ordering
 
-By default, results are ordered based on the node [keys](/database/usage#database-keys). If however you are using custom keys you can use
+By default, results are ordered based on the node [keys](/database/usage#how-ordered-results-are-sorted). If however you are using custom keys you can use
 the `orderByX` query constraints with `query` to order your data.
 
 For example, if all of the nodes children are scalar values (string, number or boolean) you can use `orderByValue`,

@@ -1,10 +1,10 @@
 ---
 title: React Native Firebase
-description: 'Getting started: React Native CLI and Expo installation, native config files, FirebaseApp.configure(), iOS SPM, Expo config plugins, SDK version overrides, and async-storage fallback for other platforms.'
+description: 'Getting started: React Native CLI and Expo installation, native config files, FirebaseApp.configure(), iOS SPM and CocoaPods opt-out, Expo config plugins, native SDK version overrides, Android executor tuning, and initializeApp for web and other platforms.'
 next: /migrating-to-v22
 ---
 
-> React Native Firebase has begun to deprecate the namespaced API (i.e firebase-js-sdk `< v9` chaining API). React Native Firebase will be moving to the modular API (i.e. firebase-js-sdk `>= v9`) in the next major release. See [migration guide](/migrating-to-v22) for more information.
+> The namespaced API (the firebase-js-sdk `< v9` chaining style) was removed in v26 from the packages listed in the [Migrating to v26](/migrating-to-v26) guide. Use the modular API (the firebase-js-sdk `>= v9` style) shown throughout this documentation.
 
 React Native Firebase is the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
 
@@ -28,7 +28,7 @@ Before installing, confirm these version pins. You also need a React Native or E
 {/* prettier-ignore */}
 | Requirement | Version |
 | --- | --- |
-| React Native | New Architecture enabled (`peerDependencies.react-native` is `*`; no numeric floor) |
+| React Native | New Architecture enabled. `@react-native-firebase/app` declares the peer range `>=0.60.0-0` (not a tested floor). Tested on `0.88.0-rc.3` (Expo `58.0.0`) |
 | Expo (when using Expo) | `>= 47.0.0` |
 | Xcode (iOS builds) | `>= 26.2` |
 | Firebase Apple SDK | `12.19.0` (default pin) |
@@ -37,7 +37,7 @@ Before installing, confirm these version pins. You also need a React Native or E
 | iOS deployment target | `15.0` |
 | JDK (Android builds) | `>= 17` |
 
-From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; this release pins firebase-ios-sdk `12.19.0`. Apple's [Upcoming SDK minimum requirements](https://developer.apple.com/news/?id=ueeok6yw) state that App Store Connect uploads from 2026-04-28 must use the platform 26 SDKs.
+From v26, every React Native Firebase package with a native bridge requires New Architecture. firebase-ios-sdk `12.12.0` and newer require Xcode `26.2` or newer; v26 pins firebase-ios-sdk `12.19.0`. Apple's [Upcoming SDK minimum requirements](https://developer.apple.com/news/?id=ueeok6yw) state that App Store Connect uploads from 2026-04-28 must use the platform 26 SDKs.
 
 ## Installation for Expo projects
 
@@ -61,11 +61,11 @@ The recommended approach to configure React Native Firebase is to use [Expo Conf
 
 If you are instead manually adjusting your Android and iOS projects (this is not recommended), follow the same instructions as [React Native CLI projects](/#installation-for-react-native-cli-non-expo-projects).
 
-To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform from your Firebase project. Then provide paths to the downloaded `google-services.json` and `GoogleService-Info.plist` files in the following `app.json` fields: [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile). See the example configuration below.
+To enable Firebase on the native Android and iOS platforms, create and download the Firebase config files for each platform from your Firebase project. Then provide paths to the downloaded `google-services.json` and `GoogleService-Info.plist` files in the following `app.json` fields: [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile). See the example configuration below.
 
 For iOS, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm) on React Native 0.75+. SPM requires dynamic frameworks — configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) with `"useFrameworks": "dynamic"`. See the example configuration below.
 
-The following is an example `app.json` to enable the React Native Firebase modules App, Auth and Crashlytics, that specifies the Service Account files for both mobile platforms, and that sets the application ID to the example value of `com.mycorp.myapp` (change to match your own).
+The following is an example `app.json` to enable the React Native Firebase modules App, Auth and Crashlytics, that specifies the Firebase config files for both mobile platforms, and that sets the application ID to the example value of `com.mycorp.myapp` (change to match your own).
 
 You will need to add a plugin entry for each react-native-firebase module you use that defines an Expo config plugin - these are documented on the specific module install pages.
 
@@ -128,7 +128,7 @@ The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = t
 
 #### CocoaPods / static frameworks (opt-out)
 
-Do **not** combine RNFB's default SPM mode with static frameworks. To use CocoaPods instead of SPM (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), pass `disableSPM: true` to the `@react-native-firebase/app` config plugin and set `"useFrameworks": "static"`. With React Native 0.84+ / Expo 54+ prebuilt core, list every RNFB native module you use in `forceStaticLinking`. See [iOS SPM Support](/ios-spm) for details. Write this into `app.json` / `app.config.js` **before** the next `npx expo prebuild --clean`:
+Do **not** combine RNFB's default SPM mode with static frameworks. To use CocoaPods instead of SPM (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), pass `disableSPM: true` to the `@react-native-firebase/app` config plugin and set `"useFrameworks": "static"`. `forceStaticLinking` is an `expo-build-properties` option that lists CocoaPods to link statically while `useFrameworks` is enabled; it exists for React Native prebuilt binaries that fail to build as dynamic frameworks. List every RNFB native module you use in it (the module names below are examples). The first React Native and Expo releases that need this are not pinned here, so check the Expo documentation for your SDK. See [iOS SPM Support](/ios-spm#static-frameworks-with-cocoapods) for details. Write this into `app.json` / `app.config.js` **before** the next `npx expo prebuild --clean`:
 
 ```json
 // File: app.json (or app.config.js). CocoaPods / static opt-out. Apply before npx expo prebuild --clean.
@@ -207,7 +207,7 @@ On the Firebase console, add a new Android application and enter your projects d
 local projects package name which can be found inside of the `namespace` field in `/android/app/build.gradle`, or in the
 `manifest` tag within the `/android/app/src/main/AndroidManifest.xml` file within your project for projects using android gradle plugin v7 and below
 
-> The debug signing certificate is optional to use Firebase with your app, but is required for Invites and Phone Authentication.
+> The debug signing certificate is optional to use Firebase with your app, but is required for Phone Authentication.
 > To generate a certificate run `cd android && ./gradlew signingReport`. This generates two variant keys.
 > You have to copy **both** 'SHA1' and 'SHA-256' keys that belong to the 'debugAndroidTest' variant key option.
 > Then, you can add those keys to the 'SHA certificate fingerprints' on your app in Firebase console.
@@ -264,21 +264,26 @@ Open `/ios/{projectName}/AppDelegate.swift`. Add `import Firebase` with your oth
 
 ```swift
 // File: ios/{projectName}/AppDelegate.swift (React Native 0.77+).
-// 1) Add `import Firebase` with your other imports.
-// 2) Call FirebaseApp.configure() at the top of didFinishLaunchingWithOptions before other startup work.
+// 1) Add `import Firebase` with your other imports, at file scope above the class.
+// 2) Call FirebaseApp.configure() as the first statement of application(_:didFinishLaunchingWithOptions:) inside your existing AppDelegate class.
+// The class declaration below is an example; your template's superclass, attributes, and other members may differ. Keep your own.
+import UIKit
 import Firebase
 
-func application(
-  _ application: UIApplication,
-  didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-) -> Bool {
-  FirebaseApp.configure()
-  // Keep your existing React Native / app startup code below this line.
-  return true
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    FirebaseApp.configure()
+    // Keep your existing React Native / app startup code below this line.
+    return true
+  }
 }
 ```
 
-Merge the `FirebaseApp.configure()` call into your existing `application` method rather than replacing the whole method if your `AppDelegate` already returns a value from additional setup.
+Merge the `FirebaseApp.configure()` call into your existing `application(_:didFinishLaunchingWithOptions:)` method rather than replacing the whole class or method if your `AppDelegate` already performs additional setup.
 
 #### Configure Firebase with iOS credentials (react-native < 0.77)
 
@@ -306,30 +311,28 @@ Merge the `[FIRApp configure]` call into your existing method rather than replac
 
 Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks. On React Native 0.75+, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm), which **requires dynamic linkage**.
 
-Open the file `./ios/Podfile` and add this line inside your targets (right before the `use_react_native` line in current react-native releases that calls the react native Podfile function to get the native modules config). Do this **before** `pod install`:
+Open the file `./ios/Podfile` and add this line at the top level, after `prepare_react_native_project!` and before your `target` block. Do this **before** `pod install`:
 
 ```ruby
-# File: ios/Podfile. Inside your app target, before use_react_native!. Required for SPM default (RN 0.75+) and for CocoaPods Firebase. Run pod install after editing.
+# File: ios/Podfile. Top level, after prepare_react_native_project! and before the app target block. Required for SPM default (RN 0.75+) and for CocoaPods Firebase. Run pod install after editing.
 use_frameworks! :linkage => :dynamic
 ```
 
 Do **not** combine RNFB's default SPM mode with `use_frameworks! :linkage => :static` — `pod install` rejects that combination. Full requirements, Expo notes, and troubleshooting are in [iOS SPM Support](/ios-spm).
 
-##### CocoaPods / static frameworks (opt-out)
+##### Opting out of SPM in the Podfile (static frameworks)
 
 To opt out of SPM and use CocoaPods for Firebase (for example when you need static linkage, or to share one `FirebaseCore` with another native pod), set `$RNFirebaseDisableSPM = true` **before** any target block, then configure static frameworks. Edit `ios/Podfile` in this order, then run `pod install`:
 
 ```ruby
-# File: ios/Podfile. CocoaPods / static opt-out. 1) Set $RNFirebaseDisableSPM before any target. 2) Inside the app target, before use_react_native!, set static frameworks. 3) pod install.
+# File: ios/Podfile. CocoaPods / static opt-out. 1) Set $RNFirebaseDisableSPM before any target. 2) At top level, before the app target block, set static frameworks. 3) pod install.
 # before any target block:
 $RNFirebaseDisableSPM = true
 
-# inside your app target, before use_react_native!:
+# top level, before the app target block:
 use_frameworks! :linkage => :static
 $RNFirebaseAsStaticFramework = true
 ```
-
-> **Note:** `use_frameworks` is [not compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). Flipper is deprecated in the React Native community; if your Podfile still references `:flipper_configuration`, remove or comment it out.
 
 ### 4. Autolinking & rebuilding
 
@@ -404,17 +407,18 @@ manually overriding these native SDK versions.
 
 #### Android
 
-Within your projects `/android/build.gradle` file, provide your own versions by specifying any of the following options shown below. Edit this file **before** rebuilding with `npx react-native run-android`:
+Within your projects `/android/build.gradle` file, provide your own versions by specifying any of the following options shown below. The defaults in v26 are `minSdk` `23`, `targetSdk` `34`, `compileSdk` `34`, and Firebase Android bill of materials `34.19.0`. Every number in the example differs from those defaults and is only illustrative; set only the keys you need to change. Edit this file **before** rebuilding with `npx react-native run-android`:
 
 ```groovy
 // File: android/build.gradle (project-level). Optional SDK overrides. Apply before the next Android rebuild.
+// Every value below differs from the v26 defaults (minSdk 23, targetSdk 34, compileSdk 34, BoM 34.19.0) and is only illustrative.
 project.ext {
   set('react-native', [
     versions: [
       android : [
-        minSdk    : 23,
+        minSdk    : 24,
         targetSdk : 33,
-        compileSdk: 34,
+        compileSdk: 35,
       ],
 
       firebase: [
@@ -429,16 +433,17 @@ Once changed, rebuild your application with `npx react-native run-android`.
 
 #### iOS
 
-Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file **before** `pod install`:
+Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file **before** `pod install`. The default Firebase Apple SDK in v26 is `12.19.0`; the version in the example is an illustrative override value:
 
 ```ruby
 # File: ios/Podfile (top of file, before target blocks). Optional Firebase iOS SDK override. Run pod install after editing.
+# 12.18.0 is an illustrative override value; the default in v26 is 12.19.0.
 $FirebaseSDKVersion = '12.18.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
-Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=12.18.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=12.18.0 yarn expo prebuild --clean`
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=12.18.0` (or whatever version you need; `12.18.0` is illustrative) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=12.18.0 yarn expo prebuild --clean`
 
 ### Android Performance
 

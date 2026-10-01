@@ -32,7 +32,7 @@ cd ios/ && pod install
 
 ## Add the App Distribution Plugin
 
-> If you're using Expo, make sure to add the `@react-native-firebase/app-distribution` config plugin to your `app.json` or `app.config.js`. It handles the below installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section.
+> If you're using Expo, make sure to add the `@react-native-firebase/app-distribution` config plugin to your `app.json` or `app.config.js`. It handles the below installation steps for you. For instructions on how to do that, view the [Expo](/#installation-for-expo-projects) installation section.
 
 On Android, you need to install the Google App Distribution Gradle plugin so you can upload releases from Gradle. That plugin is a **build/upload** integration. It does not enable the JavaScript alert APIs on Android (those reject at runtime; see Platform support).
 
@@ -63,7 +63,7 @@ apply plugin: 'com.google.firebase.appdistribution'
 
 > **React Native only:** There is no firebase-js-sdk web modular API for App Distribution (`firebase/app-distribution` does not exist). Every export below is React Native Firebase only.
 
-**Platform notes:** App Distribution supports only the **default** Firebase app (`hasMultiAppSupport: false`). Passing a secondary app to `getAppDistribution` throws. There is no App Distribution emulator and no `connect*Emulator` helper; App Distribution is not started by `yarn tests:emulator:start-ci`. On iOS, when the Firebase App Distribution product headers are absent (for example some Mac Catalyst / SPM layouts), native calls reject with an unsupported message.
+**Platform notes:** App Distribution supports only the **default** Firebase app (`hasMultiAppSupport: false`). Passing a secondary app to `getAppDistribution` throws. There is no App Distribution emulator and no `connect*Emulator` helper for this package. On iOS, when the Firebase App Distribution product headers are absent (for example some Mac Catalyst / SPM layouts), native calls reject with an unsupported message.
 
 React Native Firebase exports runtime `getAppDistribution`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, and `SDK_VERSION`, plus the TypeScript types `AppDistribution` and `AppDistributionRelease`. Each runtime export is explained in the section that uses it. The type-only exports are for typing only and are not demonstrated on the Expo screen.
 

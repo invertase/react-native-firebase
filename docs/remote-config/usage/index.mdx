@@ -35,8 +35,7 @@ yarn add @react-native-firebase/remote-config
 cd ios/ && pod install
 ```
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/remote-config/usage/installation/ios) and [Android](/remote-config/usage/installation/android).
+The manual installation pages for [iOS](/remote-config/usage/installation/ios) and [Android](/remote-config/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Platform support and New Architecture
 
@@ -50,7 +49,7 @@ you can follow the manual installation steps for [iOS](/remote-config/usage/inst
 
 React Native Firebase exports `SDK_VERSION`, `getRemoteConfig`, `isSupported`, `ensureInitialized`, `activate`, `fetchConfig`, `fetchAndActivate`, `getValue`, `getBoolean`, `getNumber`, `getString`, `getAll`, `onConfigUpdate`, `setCustomSignals`, `setLogLevel`, `reset`, `setDefaultsFromResource`, and the runtime helpers `LastFetchStatus` and `ValueSource`. Each is explained in the section that uses it.
 
-This page does not cover Firebase console-only workflows (parameter/condition authoring UI, template version history, or the Remote Config REST `downloadDefaults` / `gcloud auth print-access-token` path for bundling web JSON defaults). Those live in the [Firebase Remote Config documentation](https://firebase.google.com/docs/remote-config?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config). There is no Remote Config emulator and no `connect*Emulator` helper; Remote Config is not started by `yarn tests:emulator:start-ci`.
+This page does not cover Firebase console-only workflows (parameter/condition authoring UI, template version history, or the Remote Config REST `downloadDefaults` / `gcloud auth print-access-token` path for bundling web JSON defaults). Those live in the [Firebase Remote Config documentation](https://firebase.google.com/docs/remote-config?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config). There is no Remote Config emulator and no `connect*Emulator` helper for this package.
 
 # What does it do
 
