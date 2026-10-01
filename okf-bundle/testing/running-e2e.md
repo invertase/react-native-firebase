@@ -388,10 +388,12 @@ Metro and emulators must be **running and responsive** — do not assume from a 
 METRO_PORT="${RCT_METRO_PORT:-${RNFB_METRO_PORT:-8081}}"
 FIRESTORE_PORT="${RNFB_ANDROID_EMULATOR_FIRESTORE_PORT:-${RNFB_IOS_EMULATOR_FIRESTORE_PORT:-${RNFB_MACOS_EMULATOR_FIRESTORE_PORT:-8080}}}"
 FUNCTIONS_PORT="${RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT:-${RNFB_IOS_EMULATOR_FUNCTIONS_PORT:-${RNFB_MACOS_EMULATOR_FUNCTIONS_PORT:-5001}}}"
-curl -sf "http://127.0.0.1:${METRO_PORT}/status" >/dev/null
+curl -sf "http://127.0.0.1:${METRO_PORT}/status"
 curl -sf "http://127.0.0.1:${FIRESTORE_PORT}" >/dev/null
 test -n "$(lsof -nP -iTCP:${FUNCTIONS_PORT} -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
+
+**Metro alive or dead (blocking, last check before `:test-cover`).** Run the Metro `curl` again after `:build` and read the body. Do not discard it. **Alive:** body contains `packager-status:running`. **Dead:** `curl` fails, or the body does not contain that string. A port listener with any other HTTP success is dead. If dead, start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) again and require alive. Do not start `:test-cover` while Metro is dead. Metro can pass this check before `:build` and be dead after it. One `tests/` packager per worktree still applies.
 
 If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager via [packager start](#packager-reset-cache-eaddrinuse) — never restart Metro while prepare is still running.
 
