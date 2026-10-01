@@ -54,6 +54,7 @@ NS_SWIFT_NAME(FirebaseApp)
                   options:(nonnull FIROptions *)options NS_SWIFT_NAME(configure(name:options:));
 
 + (void)registerLibrary:(nonnull NSString *)name withVersion:(nonnull NSString *)version;
++ (void)setRegisterLibraryAvailableForTesting:(BOOL)available;
 
 - (void)deleteApp:(void (^_Nonnull)(BOOL success))completion;
 

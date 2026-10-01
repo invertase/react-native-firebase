@@ -99,6 +99,14 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
       end
     end
 
+    def test_classifier_does_not_pipe_multiline_file_output_into_grep_q
+      script = rnfirebase_spm_embed_script
+
+      assert_includes script, 'file_description="$(file -b "${framework}/${binary_name}")"'
+      assert_includes script, '[[ "${file_description}" != *"dynamically linked"* ]]'
+      refute_match(/^\s*file -b .*?\|\s*grep -q/, script)
+    end
+
     def test_leaves_existing_destination_framework_untouched
       Dir.mktmpdir('rnfb-spm-embed-') do |root|
         source_dir = File.join(root, 'source')

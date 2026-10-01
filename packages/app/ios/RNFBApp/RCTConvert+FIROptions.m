@@ -27,69 +27,10 @@
 #error "RNFBApp Swift interface not found"
 #endif
 
-/**
- * Adapts `[[FIROptions alloc] initWithGoogleAppID:GCMSenderID:]` for `RCTConvertFIROptions`.
- */
-@interface RNFBFIROptionsFactoryAdapter : NSObject <RNFBFIROptionsCreating>
-@end
-
-@implementation RNFBFIROptionsFactoryAdapter
-
-- (id<RNFBFIROptionsConfiguring>)createWithGoogleAppID:(NSString *)googleAppID
-                                           gcmSenderID:(NSString *)gcmSenderID {
-  return (id<RNFBFIROptionsConfiguring>)[[FIROptions alloc] initWithGoogleAppID:googleAppID
-                                                                    GCMSenderID:gcmSenderID];
-}
-
-@end
-
-/**
- * Adapts mainBundle CFBundleIdentifier for `RCTConvertFIROptions`.
- */
-@interface RNFBMainBundleIdentifierProvider : NSObject <RNFBBundleIdentifierProviding>
-@end
-
-@implementation RNFBMainBundleIdentifierProvider
-
-- (NSString *)bundleIdentifier {
-  return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-}
-
-@end
-
-/**
- * Empty category: live `FIROptions` already exposes the configuring properties.
- */
-@interface FIROptions (RNFBFIROptionsConfiguring) <RNFBFIROptionsConfiguring>
-@end
-
-@implementation FIROptions (RNFBFIROptionsConfiguring)
-@end
-
-static id<RNFBFIROptionsCreating> RNFBFIROptionsFactory(void) {
-  static RNFBFIROptionsFactoryAdapter *sharedFactory;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedFactory = [[RNFBFIROptionsFactoryAdapter alloc] init];
-  });
-  return sharedFactory;
-}
-
-static id<RNFBBundleIdentifierProviding> RNFBMainBundleIDProvider(void) {
-  static RNFBMainBundleIdentifierProvider *sharedProvider;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedProvider = [[RNFBMainBundleIdentifierProvider alloc] init];
-  });
-  return sharedProvider;
-}
-
 @implementation RCTConvert (FIROptions)
 
 + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
-  return (FIROptions *)[RCTConvertFIROptions convertRawOptions:rawOptions
-                                                optionsFactory:RNFBFIROptionsFactory()
-                                              bundleIDProvider:RNFBMainBundleIDProvider()];
+  return (FIROptions *)[RCTConvertFIROptions convertRawOptions:rawOptions];
 }
 
 RCT_CUSTOM_CONVERTER(FIROptions *, FIROptions, [self convertRawOptions:[self NSDictionary:json]]);

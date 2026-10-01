@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import FirebaseCore
 import Foundation
 import XCTest
 
@@ -116,5 +117,126 @@ final class RCTConvertFIROptionsTests: XCTestCase {
     )
 
     XCTAssertNil(result.bundleID)
+  }
+
+  func testFactoryAdapterCreatesConfiguringAdapterWithAppIDs() {
+    let configured = RNFBFIROptionsFactoryAdapter.shared.create(
+      googleAppID: "app-id",
+      gcmSenderID: "sender-id"
+    )
+    let adapter = configured as! RNFBFIROptionsConfiguringAdapter
+
+    XCTAssertEqual(adapter.options.googleAppID, "app-id")
+    XCTAssertEqual(adapter.options.gcmSenderID, "sender-id")
+  }
+
+  func testFactoryAdapterForwardsNilAppIDs() {
+    let configured = RNFBFIROptionsFactoryAdapter.shared.create(
+      googleAppID: nil,
+      gcmSenderID: nil
+    )
+    let adapter = configured as! RNFBFIROptionsConfiguringAdapter
+
+    XCTAssertNil(adapter.options.googleAppID)
+    XCTAssertNil(adapter.options.gcmSenderID)
+  }
+
+  func testFactoryAdapterBalancesAllocOwnershipWithNilAppIDs() {
+    weak var releasedOptions: FirebaseOptions?
+
+    autoreleasepool {
+      let configured = RNFBFIROptionsFactoryAdapter.shared.create(
+        googleAppID: nil,
+        gcmSenderID: nil
+      )
+      let adapter = configured as! RNFBFIROptionsConfiguringAdapter
+      releasedOptions = adapter.options
+
+      XCTAssertNil(adapter.options.googleAppID)
+      XCTAssertNil(adapter.options.gcmSenderID)
+    }
+
+    XCTAssertNil(releasedOptions)
+  }
+
+  func testConfiguringAdapterRoundTripsMutableFields() {
+    let live = FirebaseOptions(googleAppID: "seed-app", gcmSenderID: "seed-sender")
+    let adapter = RNFBFIROptionsConfiguringAdapter(live)
+
+    adapter.APIKey = "api-key"
+    adapter.projectID = "project-id"
+    adapter.clientID = "client-id"
+    adapter.databaseURL = "https://example.firebaseio.com"
+    adapter.storageBucket = "example.appspot.com"
+    adapter.bundleID = "com.example.app"
+    adapter.appGroupID = "group.com.example"
+
+    XCTAssertEqual(adapter.APIKey, "api-key")
+    XCTAssertEqual(adapter.projectID, "project-id")
+    XCTAssertEqual(adapter.clientID, "client-id")
+    XCTAssertEqual(adapter.databaseURL, "https://example.firebaseio.com")
+    XCTAssertEqual(adapter.storageBucket, "example.appspot.com")
+    XCTAssertEqual(adapter.bundleID, "com.example.app")
+    XCTAssertEqual(adapter.appGroupID, "group.com.example")
+    XCTAssertEqual(live.apiKey, "api-key")
+    XCTAssertEqual(live.appGroupID, "group.com.example")
+  }
+
+  func testConfiguringAdapterNilBundleIDCoalescesToEmptyString() {
+    let live = FirebaseOptions(googleAppID: "seed-app", gcmSenderID: "seed-sender")
+    live.bundleID = "com.example.app"
+    let adapter = RNFBFIROptionsConfiguringAdapter(live)
+
+    adapter.bundleID = nil
+
+    XCTAssertEqual(adapter.bundleID, "")
+    XCTAssertEqual(live.bundleID, "")
+  }
+
+  func testMainBundleIdentifierProviderReadsInfoDictionary() {
+    let expected = Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String
+    XCTAssertEqual(RNFBMainBundleIdentifierProvider.shared.bundleIdentifier, expected)
+  }
+
+  func testProductionConvertRawOptionsReturnsLiveFIROptions() {
+    let raw: NSDictionary = [
+      "appId": "app-id",
+      "messagingSenderId": "sender-id",
+      "apiKey": "api-key",
+      "projectId": "project-id",
+      "clientId": "client-id",
+      "databaseURL": "https://example.firebaseio.com",
+      "storageBucket": "example.appspot.com",
+    ]
+
+    let result = RCTConvertFIROptions.convertRawOptions(raw)
+    let options = result as! FirebaseOptions
+    let expectedBundleID = Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String
+
+    XCTAssertEqual(options.googleAppID, "app-id")
+    XCTAssertEqual(options.gcmSenderID, "sender-id")
+    XCTAssertEqual(options.apiKey, "api-key")
+    XCTAssertEqual(options.projectID, "project-id")
+    XCTAssertEqual(options.clientID, "client-id")
+    XCTAssertEqual(options.databaseURL, "https://example.firebaseio.com")
+    XCTAssertEqual(options.storageBucket, "example.appspot.com")
+    XCTAssertEqual(options.bundleID, expectedBundleID ?? "")
+  }
+
+  func testLiveFIROptionsUnwrapsConfiguringAdapter() {
+    let live = FirebaseOptions(googleAppID: "app-id", gcmSenderID: "sender-id")
+    let adapter = RNFBFIROptionsConfiguringAdapter(live)
+
+    let result = RCTConvertFIROptions.liveFIROptions(from: adapter)
+
+    XCTAssertTrue(result === live)
+  }
+
+  func testLiveFIROptionsReturnsNonAdapterConfiguredAsIs() {
+    let stub = StubFIROptions()
+
+    let result = RCTConvertFIROptions.liveFIROptions(from: stub)
+
+    XCTAssertTrue(result === stub)
   }
 }
