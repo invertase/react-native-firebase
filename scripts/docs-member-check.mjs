@@ -12,8 +12,10 @@
  *      does not fail.
  *
  * Migration guides are not packages and are not checked. `vertexai` has no
- * compare-types config and no screen requirement. Config basename overrides
- * (`perf-config` → docs/perf + perf.tsx) live in PACKAGE_OVERRIDES below.
+ * compare-types config and no screen requirement. `ml` keeps the extraInRN
+ * docs mention, but has no example screen: the package is being removed.
+ * Config basename overrides (`perf-config` → docs/perf + perf.tsx) live in
+ * PACKAGE_OVERRIDES below.
  *
  * Usage: `yarn docs:member:check` (repo root).
  */
@@ -31,6 +33,9 @@ const TEST_EXPO_APP = path.join(REPO_ROOT, 'test-expo', 'app');
  * Default: docs/<name>, test-expo/app/<name>.tsx (or <name>/), imports from
  * `@react-native-firebase/<name>`.
  */
+/** Docs stay; do not require a test-expo screen. */
+const NO_SCREEN = new Set(['ml']);
+
 const PACKAGE_OVERRIDES = {
   'perf-config': {
     docsPkg: 'perf',
@@ -234,6 +239,10 @@ function main() {
           detail: `\`${name}\` from configs/${configName}.ts extraInRN is not mentioned in docs/${docsPkg}/**`,
         });
       }
+    }
+
+    if (NO_SCREEN.has(docsPkg)) {
+      continue;
     }
 
     const taught = extractTaughtRuntimeNames(docsPkg, importSpecifiers);

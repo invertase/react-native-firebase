@@ -17,7 +17,6 @@ const ROUTES = [
   { href: '/installations', label: 'installations' },
   { href: '/in-app-messaging', label: 'in-app-messaging' },
   { href: '/messaging', label: 'messaging' },
-  { href: '/ml', label: 'ml' },
   { href: '/perf', label: 'perf' },
   { href: '/phone-number-verification', label: 'phone-number-verification' },
   { href: '/remote-config', label: 'remote-config' },

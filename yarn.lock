@@ -27205,7 +27205,6 @@ __metadata:
     "@react-native-firebase/in-app-messaging": "npm:26.4.0"
     "@react-native-firebase/installations": "npm:26.4.0"
     "@react-native-firebase/messaging": "npm:26.4.0"
-    "@react-native-firebase/ml": "npm:26.4.0"
     "@react-native-firebase/perf": "npm:26.4.0"
     "@react-native-firebase/phone-number-verification": "npm:26.4.0"
     "@react-native-firebase/remote-config": "npm:26.4.0"
