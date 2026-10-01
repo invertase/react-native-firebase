@@ -59,19 +59,26 @@ function Users() {
   const [users, setUsers] = useState([]); // Initial empty array of users
 
   useEffect(() => {
-    const subscriber = onSnapshot(collection(db, 'Users'), querySnapshot => {
-      const nextUsers = [];
+    const subscriber = onSnapshot(
+      collection(db, 'Users'),
+      querySnapshot => {
+        const nextUsers = [];
 
-      querySnapshot.forEach(documentSnapshot => {
-        nextUsers.push({
-          ...documentSnapshot.data(),
-          key: documentSnapshot.id,
+        querySnapshot.forEach(documentSnapshot => {
+          nextUsers.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
         });
-      });
 
-      setUsers(nextUsers);
-      setLoading(false);
-    });
+        setUsers(nextUsers);
+        setLoading(false);
+      },
+      error => {
+        console.error('Users listener failed:', error.message);
+        setLoading(false);
+      },
+    );
 
     // Unsubscribe from events when no longer in use
     return () => subscriber();
@@ -87,9 +94,11 @@ function Users() {
 export default Users;
 ```
 
+The second callback receives listener errors such as `firestore/permission-denied`. Without it, a rejected listener never calls the first callback and the screen stays on the loading indicator, and a listener registered with a single function receives `null` instead of a snapshot when it fails (see [Realtime changes](/firestore/usage#realtime-changes)).
+
 # Transforming data
 
-Whilst iterating the collection documents, create an array of data a `FlatList` accepts. At a minimum, this is an object with a unique `key` property. For this unique property,
+Whilst iterating the collection documents, create an array of data a `FlatList` accepts. At a minimum, this is an object with a unique `key` property (`FlatList` reads `item.key` by default; pass `keyExtractor` to use another field). For this unique property,
 use the `id` of a document. The `useEffect` example above already maps each document with `key: documentSnapshot.id`.
 
 Once the initial set of documents is returned, update the `users` state with the raw object data and set the `loading`
@@ -111,19 +120,26 @@ function Users() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const subscriber = onSnapshot(collection(db, 'Users'), querySnapshot => {
-      const nextUsers = [];
+    const subscriber = onSnapshot(
+      collection(db, 'Users'),
+      querySnapshot => {
+        const nextUsers = [];
 
-      querySnapshot.forEach(documentSnapshot => {
-        nextUsers.push({
-          ...documentSnapshot.data(),
-          key: documentSnapshot.id,
+        querySnapshot.forEach(documentSnapshot => {
+          nextUsers.push({
+            ...documentSnapshot.data(),
+            key: documentSnapshot.id,
+          });
         });
-      });
 
-      setUsers(nextUsers);
-      setLoading(false);
-    });
+        setUsers(nextUsers);
+        setLoading(false);
+      },
+      error => {
+        console.error('Users listener failed:', error.message);
+        setLoading(false);
+      },
+    );
 
     return () => subscriber();
   }, []);

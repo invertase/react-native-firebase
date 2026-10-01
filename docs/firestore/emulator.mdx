@@ -40,7 +40,6 @@ import '@react-native-firebase/app';
 import { connectFirestoreEmulator, getFirestore } from '@react-native-firebase/firestore';
 
 // Set the host and the port before any read, write, or onSnapshot listener so production data is not affected.
-// Optional mockUserToken accepts EmulatorMockTokenOptions (FirebaseIdToken / FirebaseSignInProvider fields).
 if (__DEV__) {
   const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
   connectFirestoreEmulator(getFirestore(), host, 8080);
@@ -49,6 +48,14 @@ if (__DEV__) {
 const db = getFirestore();
 console.log('Firestore instance ready:', Boolean(db));
 ```
+
+Notes on `connectFirestoreEmulator`:
+
+- It takes a non-empty host and a numeric port, and throws otherwise.
+- On Android, `localhost` and `127.0.0.1` are rewritten to `10.0.2.2` and a message is logged. Set `android_bypass_emulator_url_remap` to `true` in `firebase.json` to keep the host you pass (see [JSON Config](/app/json-config)). Use your machine's IP address when running on a physical device.
+- It applies once per app and database. A second call for the same instance is ignored by the native layer, so choose the host before the first call.
+- The optional fourth `options` argument (`mockUserToken`, typed with `EmulatorMockTokenOptions`) exists for web SDK signature parity and is ignored at runtime. The emulator does not receive a mock user token from this call.
+- After `terminate()` the native instance is discarded together with its emulator registration, so call `connectFirestoreEmulator` again before using Firestore.
 
 # Clear locally stored emulator data
 

@@ -56,6 +56,8 @@ Next, make a function called `LoadData` that fetches data from the `Users` colle
 If `lastDocument` is not assigned (meaning initial load), the function will fetch from the start.
 After a successful fetch from the collection, store the last snapshot via `setLastDocument`.
 
+`startAfter(lastDocument)` takes a `DocumentSnapshot` as the cursor. The snapshot must exist and must contain the field used in `orderBy` (`age` here), and documents without that field never appear in the query. React Native Firebase also sorts by document id after the `orderBy` field for snapshot cursors, so users with the same `age` are not skipped or repeated between pages. An empty page means there is nothing left, so the sample keeps the previous cursor instead of resetting it. See [Start/End](/firestore/usage#startend) for the other cursor constraints (`startAt`, `endAt`, and `endBefore`).
+
 ```jsx
 import React, { useState } from 'react';
 import { Text, View, Button } from 'react-native';
@@ -78,11 +80,11 @@ function App() {
 
   function MakeUserData(docs) {
     const templist = [];
-    docs.forEach((docSnapshot, i) => {
+    docs.forEach(docSnapshot => {
       const data = docSnapshot.data();
       console.log(data);
       templist.push(
-        <View key={i} style={{ margin: 10 }}>
+        <View key={docSnapshot.id} style={{ margin: 10 }}>
           <Text>{data.name}</Text>
           <Text>{data.age}</Text>
         </View>,
@@ -98,10 +100,19 @@ function App() {
         ? query(usersRef, orderBy('age'), startAfter(lastDocument), limit(3))
         : query(usersRef, orderBy('age'), limit(3));
 
-    getDocs(pageQuery).then(querySnapshot => {
-      setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      MakeUserData(querySnapshot.docs);
-    });
+    getDocs(pageQuery)
+      .then(querySnapshot => {
+        if (querySnapshot.empty) {
+          // Keep the previous cursor: clearing it would restart pagination from the first page.
+          console.log('No more pages');
+          return;
+        }
+        setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        MakeUserData(querySnapshot.docs);
+      })
+      .catch(error => {
+        console.error('Loading page failed:', error.code, error.message);
+      });
   }
 
   return (
@@ -156,19 +167,28 @@ function App() {
         ? query(usersRef, orderBy('age'), startAfter(lastDocument), limit(3))
         : query(usersRef, orderBy('age'), limit(3));
 
-    getDocs(pageQuery).then(querySnapshot => {
-      setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-      MakeUserData(querySnapshot.docs);
-    });
+    getDocs(pageQuery)
+      .then(querySnapshot => {
+        if (querySnapshot.empty) {
+          // Keep the previous cursor: clearing it would restart pagination from the first page.
+          console.log('No more pages');
+          return;
+        }
+        setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        MakeUserData(querySnapshot.docs);
+      })
+      .catch(error => {
+        console.error('Loading page failed:', error.code, error.message);
+      });
   }
 
   function MakeUserData(docs) {
     const templist = [];
-    docs.forEach((docSnapshot, i) => {
+    docs.forEach(docSnapshot => {
       const data = docSnapshot.data();
       console.log(data);
       templist.push(
-        <View key={i} style={{ margin: 10 }}>
+        <View key={docSnapshot.id} style={{ margin: 10 }}>
           <Text>{data.name}</Text>
           <Text>{data.age}</Text>
         </View>,

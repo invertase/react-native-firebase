@@ -12,7 +12,7 @@ previous: /firestore/pipelines/current-document
 - A Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).
 - Import expression helpers from `@react-native-firebase/firestore/pipelines`.
 
-`ifNull()` returns a fallback when the first argument evaluates to **null** or is **absent**. Unlike [`ifAbsent()`](/firestore/pipelines), which only substitutes missing fields, `ifNull()` also replaces explicit `null` values stored on the document.
+`ifNull()` returns a fallback when the first argument evaluates to **null** or is **absent**. Unlike `ifAbsent()` (shown [below](#comparison-with-ifabsent)), which only substitutes missing fields, `ifNull()` also replaces explicit `null` values stored on the document.
 
 # Basic example
 
@@ -64,7 +64,31 @@ snapshot.results.forEach(row => {
 | `ifAbsent` | fallback | keeps `null` |
 | `ifNull` | fallback | fallback |
 
-Use `ifNull` when you want one expression to cover both absent and null values.
+Use `ifNull` when you want one expression to cover both absent and null values. `ifAbsent` takes the same arguments (an expression or field name, then a fallback expression or value) and comes from the same entry point. It is typed as a plain `Expression`, which has no `.as()`, so wrap it in another helper such as `toUpper` before aliasing:
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import {
+  execute,
+  field,
+  constant,
+  ifAbsent,
+  toUpper,
+} from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('users')
+    .select(toUpper(ifAbsent(field('nickname'), constant('No nickname'))).as('nickname')),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().nickname);
+});
+```
 
 # Upstream reference
 

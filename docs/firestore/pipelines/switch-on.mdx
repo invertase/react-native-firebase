@@ -11,9 +11,9 @@ previous: /firestore/pipelines/if-null
 - `@react-native-firebase/firestore` installed and rebuilt into the native app.
 - A Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).
 - Import expression helpers from `@react-native-firebase/firestore/pipelines`.
-- On **iOS**, native pipeline runtime support for `switchOn` requires Firebase Apple SDK **12.12.0** or newer. This release pins firebase-ios-sdk **12.19.0**.
+- On **iOS**, native pipeline runtime support for `switchOn` requires Firebase Apple SDK **12.12.0** or newer, which the Firebase iOS SDK version that React Native Firebase pins already satisfies.
 
-`switchOn()` behaves like a `switch` statement: pass alternating **condition / result** pairs, plus an optional default result as the final argument when no condition matches.
+`switchOn()` behaves like a `switch` statement: pass alternating **condition / result** pairs, plus an optional default result as the final argument when no condition matches. Without a default, a row where no condition is true makes the pipeline fail with an error instead of producing `null`, so add a default whenever the conditions are not exhaustive.
 
 # Basic example
 

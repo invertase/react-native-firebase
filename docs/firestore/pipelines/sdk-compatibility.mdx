@@ -8,11 +8,8 @@ previous: /firestore/pipelines/subcollection
 ## Prerequisites
 
 - Working knowledge of [Pipelines overview](/firestore/pipelines) (Enterprise database, cloud execution, `@react-native-firebase/firestore/pipelines` imports).
-- Access to the React Native Firebase repository if you plan to run `yarn compare:types` against the `firestore-pipelines` allowlist.
 
-React Native Firebase aims to be a **drop-in replacement** for the [firebase-js-sdk Firestore pipelines module](https://firebase.google.com/docs/reference/js/firestore_pipelines) on React Native targets. Most expression helpers, stage builders, and types match the JS SDK. This page summarizes deliberate gaps so you can plan migrations from web samples.
-
-CI enforces parity through `yarn compare:types` and the `firestore-pipelines` allowlist in the repository. When a gap closes, the allowlist entry is removed and this page should be updated.
+React Native Firebase aims to be a **drop-in replacement** for the [firebase-js-sdk Firestore pipelines module](https://firebase.google.com/docs/reference/js/firestore_pipelines) on React Native targets. Every pipeline function and type that the firebase-js-sdk pipelines module exports is exported from `@react-native-firebase/firestore/pipelines`, and the signatures match except for the single type difference listed below. This page summarizes the runtime caveats so you can plan migrations from web samples.
 
 # Summary
 
@@ -21,21 +18,24 @@ CI enforces parity through `yarn compare:types` and the `firestore-pipelines` al
 | --- | --- |
 | Core pipeline builder (`pipeline()`, stages, `execute()`) | **Supported** on Android, iOS, and macOS |
 | Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) | **Supported** on Android, iOS, and macOS |
-| firebase-js-sdk pipeline exports tracked in compare-types | **Supported** through compare-types |
+| firebase-js-sdk pipeline exports | **Exported** from `@react-native-firebase/firestore/pipelines` |
+| `execute({ indexMode, rawOptions })` | Applied on Android, rejected on iOS |
 
-# Tracked firebase-js-sdk pipeline exports
+# Runtime caveats
 
-Pipeline exports tracked in the compare-types allowlist are supported. Check release notes when upgrading for firebase-js-sdk pipeline APIs added after the pin you ship.
+Matching exports do not guarantee identical runtime behavior on every target:
 
-## Platform notes
-
-Compare-types parity does not guarantee identical runtime behavior on every target. The `parent()` expression helper may be unavailable on web and on macOS when pipelines execute through the firebase-js-sdk interop path (**P-036**). Pipelines that use the search stage with text matching need a deployed composite search index on the Enterprise `pipelines-e2e` database used in CI (**P-035**); native iOS and Android e2e cover search after that index is deployed. The `geoDistance` helper is covered for types and serialization; dedicated runtime e2e is deferred because native platforms lower it through the generic function path. Maintainer drift IDs and e2e expectations are tracked in [`okf-bundle/packages/firestore/pipeline-platform-parity.md`](https://github.com/invertase/react-native-firebase/blob/main/okf-bundle/packages/firestore/pipeline-platform-parity.md).
+- The `parent()` expression helper may be unavailable on web and on macOS when pipelines execute through the firebase-js-sdk interop path.
+- A pipeline that uses the `search` stage with text matching needs a deployed composite search index on the Enterprise database. Native iOS and Android run search queries once that index exists.
+- The `geoDistance` helper is sent to the native SDKs through the generic function path, not a dedicated typed bridge.
+- `execute` options `indexMode` and `rawOptions` are applied on Android and rejected on iOS.
+- Pipeline APIs added in a later firebase-js-sdk release reach React Native Firebase in a later package release. Check the release notes of both when you port a sample.
 
 If you depend on one of these, follow [Firebase pipeline release notes](https://firebase.google.com/support/release-notes/js) and React Native Firebase changelogs, or open a feature request with your use case.
 
-# Type-shape parity
+# Type-shape differences
 
-The `firestore-pipelines` compare-types config has one `differentShape` entry: `CollectionStageOptions` (RN Firebase types `collection` as `string | Query`; firebase-js-sdk uses `string | CollectionReference`). `StageOptions`, `TimeGranularity`, `isType`, and `timestampDiff` match the firebase-js-sdk declarations, including the lowercase `isoweek` and `isoyear` time granularity literals.
+`CollectionStageOptions` is the one type whose shape differs: React Native Firebase types `collection` as `string | Query`, and the firebase-js-sdk types it as `string | CollectionReference`. `StageOptions`, `TimeGranularity`, `isType`, and `timestampDiff` match the firebase-js-sdk declarations, including the lowercase `isoweek` and `isoyear` time granularity literals.
 
 # Platform execution matrix
 
@@ -52,6 +52,5 @@ All platforms require network access to your Firestore Enterprise database for p
 
 - Upstream API reference: [firebase-js-sdk `firestore/pipelines`](https://firebase.google.com/docs/reference/js/firestore_pipelines)
 - RNFB import path: `@react-native-firebase/firestore/pipelines`
-- Repository parity config: `.github/scripts/compare-types/configs/firestore-pipelines.ts`
 
-When a row in the tables above is resolved in a release, it will be removed from the compare-types allowlist. Check release notes and this page after upgrading `@react-native-firebase/firestore`.
+Check the release notes after upgrading `@react-native-firebase/firestore` for changes to the caveats above.

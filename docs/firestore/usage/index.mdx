@@ -1,6 +1,6 @@
 ---
 title: Cloud Firestore
-description: 'Cloud Firestore: getFirestore/initializeFirestore, emulator, getDoc/getDocs (cache/server), onSnapshot, queries (where/and/or/Filter, collectionGroup, documentId, limitToLast, cursors), writes (setDoc merge, increment, vector), transactions/batches, aggregates, offline (enableNetwork, clearPersistence), cache indexes, bundles, and RN helpers (SDK_VERSION).'
+description: 'Cloud Firestore API guide: getFirestore/initializeFirestore settings, emulator, getDoc/getDocs (cache/server), onSnapshot options and error handling, queries (where/and/or/Filter, collectionGroup, documentId, FieldPath, cursors, limitToLast), writes (setDoc merge, increment, vector), withConverter, transactions/batches, aggregates, offline (enableNetwork, clearPersistence), cache indexes, bundles (LoadBundleTask), error codes, and RN helpers (SDK_VERSION).'
 next: /firestore/emulator
 previous: /auth/multi-factor-auth
 ---
@@ -65,9 +65,11 @@ console.log('Firestore package version:', SDK_VERSION);
 
 ## Emulator
 
-Use `connectFirestoreEmulator` before any Firestore reads, writes, or listeners when talking to the Local Emulator Suite (the Firestore emulator listens on port `8080` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine. See also [Cloud Firestore Emulator](/firestore/emulator).
+Call `connectFirestoreEmulator` before any Firestore reads, writes, or listeners when talking to the Local Emulator Suite (the Firestore emulator listens on port `8080` by default). The call takes a non-empty host and a numeric port. It applies once per app and database: a second call for the same instance is ignored by the native layer, so do not use it to switch hosts at runtime. See also [Cloud Firestore Emulator](/firestore/emulator).
 
-`FirebaseApp` is the React Native Firebase app type re-exported for `getFirestore(app)` / `initializeFirestore(app, settings)`. The optional `mockUserToken` argument on `connectFirestoreEmulator` accepts a string or an `EmulatorMockTokenOptions` object. That options shape is built from the RN helper types `FirebaseIdToken` and `FirebaseSignInProvider` (sign-in provider strings such as `'anonymous'` or `'google.com'`), which firebase-js-sdk does not export from the public Firestore API.
+On Android, `localhost` and `127.0.0.1` are rewritten to `10.0.2.2` (the host machine as seen from the Android emulator) and a message is logged. The rewrite is controlled by the `android_bypass_emulator_url_remap` key in `firebase.json` (see [JSON Config](/app/json-config)). Pass the real IP address when running on a physical device.
+
+`FirebaseApp` is the React Native Firebase app type re-exported for `getFirestore(app)` and `initializeFirestore(app, settings)`. The fourth `options` argument of `connectFirestoreEmulator` is typed as `{ mockUserToken?: EmulatorMockTokenOptions | string }` for signature parity with the web SDK, and that shape is built from the React Native Firebase helper types `FirebaseIdToken` and `FirebaseSignInProvider`. The argument is ignored at runtime, so the emulator never receives a mock user token from this call. Sign in with Firebase Auth against the Auth emulator when your security rules depend on `request.auth`.
 
 ```js
 import { Platform } from 'react-native';
@@ -77,21 +79,13 @@ import { connectFirestoreEmulator, getFirestore } from '@react-native-firebase/f
 const app = getApp();
 const db = getFirestore(app);
 const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
-connectFirestoreEmulator(db, host, 8080, {
-  mockUserToken: {
-    sub: 'emulator-user',
-    email: 'user@example.com',
-    email_verified: true,
-    firebase: {
-      sign_in_provider: 'custom',
-    },
-  },
-});
+connectFirestoreEmulator(db, host, 8080);
+console.log('Firestore emulator configured for', host);
 ```
 
 ## Logging
 
-`setLogLevel` controls Firestore SDK log verbosity. On React Native the supported levels are `debug`, `error`, and `silent` (the native logging bridge does not expose web's `verbose` / `info` / `warn`).
+`setLogLevel` controls Firestore SDK log verbosity. On React Native the supported levels are `debug`, `error`, and `silent` (the native logging bridge does not expose web's `verbose` / `info` / `warn`). Any other value throws.
 
 ```js
 import { setLogLevel } from '@react-native-firebase/firestore';
@@ -142,6 +136,18 @@ console.log('User document path:', userDocument.path, sameUser.path);
 
 The `doc` function returns a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
 
+Calling `doc` on a `CollectionReference` without a path generates a random document id on the client without any network call. `addDoc` uses the same mechanism. To reach a subcollection, pass a `DocumentReference` as the parent of `collection`, or pass every path segment:
+
+```js
+import { collection, doc, getFirestore } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const newUserRef = doc(collection(db, 'Users'));
+const ordersRef = collection(doc(db, 'Users', 'ABC'), 'orders');
+const sameOrdersRef = collection(db, 'Users', 'ABC', 'orders');
+console.log('Generated id:', newUserRef.id, 'Orders path:', ordersRef.path, sameOrdersRef.path);
+```
+
 Use `collectionGroup` to query every collection with the same id (for example every `messages` subcollection under every parent document):
 
 ```js
@@ -159,9 +165,9 @@ console.log('Urgent messages across collection group:', snapshot.size);
 ```
 
 A document can contain different types of data, including scalar values (strings, booleans, numbers), arrays (lists) and
-objects (maps) along with specific Cloud Firestore data such as [Timestamps](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Timestamp.html),
-[GeoPoints](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html), [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string),
-vector fields via [`vector()`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/vector.html), and more.
+objects (maps) along with specific Cloud Firestore data such as `Timestamp`, `GeoPoint`, `Bytes`, and vector fields via `vector()`. The [field values](#field-values) section shows how to write each of them.
+
+Collection and document paths must alternate: a collection path has an odd number of segments (`Users`, `Users/ABC/orders`) and a document path has an even number (`Users/ABC`). `collection()` throws for a path that points to a document, and `doc()` throws for a path that points to a collection. `collectionGroup()` takes a single collection id and throws if it contains `/`.
 
 ## Read Data
 
@@ -216,9 +222,11 @@ console.log(
 );
 ```
 
+The native SDK decides what a cache read returns, and a cache-only read can reject when the requested data is not in the cache, so wrap `getDocFromCache` and `getDocsFromCache` in `try`/`catch` when the data may not have been fetched before.
+
 ### Realtime changes
 
-To setup an active listener to react to any changes to the query, call `onSnapshot` with an event handler callback.
+To setup an active listener to react to any changes to the query, call `onSnapshot` with a success callback and an error callback.
 For example, to watch the entire "Users" collection for when any documents are changed (removed, added, modified):
 
 ```js
@@ -226,16 +234,19 @@ import { collection, getFirestore, onSnapshot } from '@react-native-firebase/fir
 
 const db = getFirestore();
 
-function onResult(QuerySnapshot) {
-  console.log('Got Users collection result. Size:', QuerySnapshot.size);
+function onResult(querySnapshot) {
+  console.log('Got Users collection result. Size:', querySnapshot.size);
 }
 
 function onError(error) {
   console.error(error);
 }
 
-onSnapshot(collection(db, 'Users'), onResult, onError);
+const unsubscribe = onSnapshot(collection(db, 'Users'), onResult, onError);
+unsubscribe();
 ```
+
+Always pass an error callback. When you pass a single function, React Native Firebase calls it as `callback(snapshot, error)` and the first argument is `null` when the listener fails (for example `firestore/permission-denied`), so code that reads `snapshot.data()` directly throws a `TypeError` instead of reporting the real error. With an error callback (or an observer object such as `{ next, error }`), the success callback only receives snapshots. The error passed to the error callback also has a `code` property such as `firestore/permission-denied` (see [Handling errors](#handling-errors)). The optional completion callback and the `complete` observer field are accepted for web SDK signature parity and are never called, because listeners do not complete.
 
 `onSnapshot` also returns a function, allowing you to unsubscribe from events. This can be used within any
 `useEffect` hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
@@ -248,9 +259,15 @@ const db = getFirestore();
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = onSnapshot(doc(collection(db, 'Users'), userId), documentSnapshot => {
-      console.log('User data: ', documentSnapshot.data());
-    });
+    const subscriber = onSnapshot(
+      doc(collection(db, 'Users'), userId),
+      documentSnapshot => {
+        console.log('User data: ', documentSnapshot.data());
+      },
+      error => {
+        console.error('User listener failed:', error.message);
+      },
+    );
 
     // Stop listening for updates when no longer required
     return () => subscriber();
@@ -260,7 +277,19 @@ function User({ userId }) {
 }
 ```
 
-Realtime changes via `onSnapshot` can be applied to both collections and documents.
+Realtime changes via `onSnapshot` can be applied to both collections and documents. Each listener holds a native resource until you call the returned function, so always unsubscribe when the component is removed from the screen.
+
+#### Listener options
+
+Pass an options object as the second argument (before the callbacks) to change what a listener reports:
+
+{/* prettier-ignore */}
+| Option | Values | Effect |
+| --- | --- | --- |
+| `includeMetadataChanges` | `true`, `false` (default) | Also fire when only `snapshot.metadata` changes (for example `fromCache` or `hasPendingWrites`) |
+| `source` | `'default'` (default), `'cache'` | `'cache'` listens to the local cache only and never reads from the server |
+
+Any other `source` value throws, and `includeMetadataChanges` must be a boolean.
 
 #### Metadata changes and document diffs
 
@@ -283,6 +312,31 @@ const unsubscribe = onSnapshot(
     snapshot.docChanges().forEach(change => {
       console.log(change.type, change.doc.id, 'fromCache:', snapshot.metadata.fromCache);
     });
+  },
+  error => {
+    console.error('Users listener failed:', error.message);
+  },
+);
+
+unsubscribe();
+```
+
+`change.type` is `'added'`, `'modified'`, or `'removed'`, and `change.oldIndex` / `change.newIndex` give the position of the document before and after the change. `docChanges()` leaves out changes that only affect metadata; call `snapshot.docChanges({ includeMetadataChanges: true })` to include them. That call throws when the listener itself was not registered with `includeMetadataChanges: true`, and on a snapshot returned by `getDocs` it always returns every change.
+
+Listen to the local cache only with `source: 'cache'`:
+
+```js
+import { collection, getFirestore, onSnapshot } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const unsubscribe = onSnapshot(
+  collection(db, 'Users'),
+  { source: 'cache' },
+  snapshot => {
+    console.log('Cached users:', snapshot.size, 'fromCache:', snapshot.metadata.fromCache);
+  },
+  error => {
+    console.error('Cache listener failed:', error.message);
   },
 );
 
@@ -377,14 +431,44 @@ getDoc(doc(collection(db, 'Users'), 'ABC'))
   });
 ```
 
+`get` also accepts a `FieldPath` (see [Field paths](#field-paths)). `data()` returns `undefined` when the document does not exist, so check `exists()` first; on a `QueryDocumentSnapshot` (the documents inside a `QuerySnapshot`) `data()` always returns an object.
+
+A snapshot of a document with a pending `serverTimestamp()` write reports that field as `null` until the server confirms it. Pass `serverTimestamps` to `data()` or `get()` to choose what a pending timestamp reads as: `'estimate'` (a local estimate), `'previous'` (the previous value of the field), or `'none'` (`null`):
+
+```js
+import { collection, doc, getFirestore, onSnapshot } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const unsubscribe = onSnapshot(
+  doc(collection(db, 'Posts'), 'ABC'),
+  postSnapshot => {
+    const post = postSnapshot.data({ serverTimestamps: 'estimate' });
+    console.log('Created at:', post?.createdAt, 'pending:', postSnapshot.metadata.hasPendingWrites);
+  },
+  error => {
+    console.error(error);
+  },
+);
+
+unsubscribe();
+```
+
+Snapshot properties at a glance:
+
+{/* prettier-ignore */}
+| Snapshot | Members |
+| --- | --- |
+| `DocumentSnapshot` | `id`, `ref`, `metadata`, `exists()`, `data(options)`, `get(fieldPath, options)` |
+| `QuerySnapshot` | `docs`, `size`, `empty`, `metadata`, `query`, `forEach(callback)`, `docChanges(options)` |
+| `SnapshotMetadata` | `fromCache` (data came from the local cache), `hasPendingWrites` (local writes not yet acknowledged by the backend) |
+
 ### Querying
 
 Cloud Firestore offers advanced capabilities for querying collections.
 
 #### Filtering
 
-To filter documents within a collection, pass `where` constraints to `query`. Filtering supports
-equality checks and "in" queries. For example, to filter users where their age is greater or equal than 18 years old:
+To filter documents within a collection, pass `where` constraints to `query`. Supported operators are `==`, `!=`, `<`, `<=`, `>`, `>=`, `array-contains`, `array-contains-any`, `in`, and `not-in`; any other operator string throws. The value cannot be `undefined`, and `null` is only allowed with `==` and `!=`. For example, to filter users where their age is greater or equal than 18 years old:
 
 ```js
 import { collection, getDocs, getFirestore, query, where } from '@react-native-firebase/firestore';
@@ -398,15 +482,14 @@ getDocs(query(collection(db, 'Users'), where('age', '>=', 18))).then(querySnapsh
 });
 ```
 
-Cloud Firestore also supports array membership queries. For example, to filter users who speak both English (en) or
-French (fr), use the `in` filter:
+Use the `in` operator to match documents whose field equals any value in a list. `in`, `not-in`, and `array-contains-any` require a non-empty array with at most 30 elements (React Native Firebase checks this before sending the query). For example, to filter users whose `language` field is English (`en`) or French (`fr`):
 
 ```js
 import { collection, getDocs, getFirestore, query, where } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 
-getDocs(query(collection(db, 'Users'), where('languages', 'in', ['en', 'fr']))).then(
+getDocs(query(collection(db, 'Users'), where('language', 'in', ['en', 'fr']))).then(
   querySnapshot => {
     querySnapshot.forEach(documentSnapshot => {
       console.log(documentSnapshot.id, documentSnapshot.data());
@@ -418,7 +501,7 @@ getDocs(query(collection(db, 'Users'), where('languages', 'in', ['en', 'fr']))).
 To learn more about all of the querying capabilities Cloud Firestore has to offer, view the
 [Firebase documentation](https://firebase.google.com/docs/firestore/query-data/queries).
 
-You can combine multiple filters using `and()` and `or()` composite constraints.
+Passing several `where` constraints to `query` combines them with logical AND. Use the `and()` and `or()` composite constraints to nest AND groups inside OR groups, or the reverse.
 For example:
 
 ```js
@@ -486,18 +569,22 @@ const snapshot = await getDocs(
 console.log('Matched users with or():', snapshot.size);
 ```
 
-`Filter` is an RN-only helper for building field and composite filters (`Filter(...)`, `Filter.and(...)`, `Filter.or(...)`). Prefer modular `where` / `and` / `or` for new code; `Filter` remains when you want the Filter-instance style used by `CollectionReference.where(Filter.and(...))`:
+`Filter` is a React Native Firebase helper for building field and composite filters (`Filter(...)`, `Filter.and(...)`, `Filter.or(...)`) that you pass to the `where` method of a `CollectionReference` or `Query`. The modular `where` constraint is typed for the `(field, operator, value)` form only, so prefer `where` / `and` / `or` with `query`, and use `Filter` when you need the method style:
 
 ```js
 import { Filter, collection, getDocs, getFirestore } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 const adultActive = Filter.and(Filter('age', '>=', 18), Filter('active', '==', true));
-const snapshot = await getDocs(collection(db, 'Users').where(adultActive));
-console.log('Filter helper matches:', snapshot.size);
+const adultOrAdmin = Filter.or(Filter('age', '>=', 18), Filter('role', '==', 'admin'));
+const activeAdults = await getDocs(collection(db, 'Users').where(adultActive));
+const adultsOrAdmins = await getDocs(collection(db, 'Users').where(adultOrAdmin));
+console.log('Filter helper matches:', activeAdults.size, adultsOrAdmins.size);
 ```
 
-Other common `where` operators include `!=`, `array-contains`, `array-contains-any`, `not-in`, and filtering by document id with `documentId()`:
+`Filter.and` and `Filter.or` take between 1 and 10 `Filter` instances, and `Filter.or` throws when one of its arguments already contains an OR.
+
+Other `where` operators include `!=`, `not-in`, `array-contains`, `array-contains-any`, and filtering by document id with `documentId()` (which compares against the document id rather than a stored field):
 
 ```js
 import {
@@ -516,11 +603,28 @@ const byId = await getDocs(
 const withToken = await getDocs(
   query(collection(db, 'Users'), where('fcmTokens', 'array-contains', 'ABCDE123456')),
 );
-console.log('By id:', byId.size, 'With token:', withToken.size);
+const withAnyToken = await getDocs(
+  query(collection(db, 'Users'), where('fcmTokens', 'array-contains-any', ['A1', 'B2'])),
+);
+const notBanned = await getDocs(query(collection(db, 'Users'), where('status', '!=', 'banned')));
+const notGuests = await getDocs(
+  query(collection(db, 'Users'), where('role', 'not-in', ['guest', 'anonymous'])),
+);
+console.log(
+  'By id:',
+  byId.size,
+  'With token:',
+  withToken.size,
+  'With any token:',
+  withAnyToken.size,
+  'Not banned:',
+  notBanned.size,
+  'Not guests:',
+  notGuests.size,
+);
 ```
 
-For an understanding of what queries are possible, please consult the query limitation documentation on the official
-[Firebase Firestore documentation](https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries).
+Queries that combine filters or sort orders on different fields can need a composite index (see the [Firestore index overview](https://firebase.google.com/docs/firestore/query-data/index-overview)). When a required index is missing, the rejection carries the code `firestore/failed-precondition`, and the native message includes a link that opens the index creation page in the Firebase console. See [Handling errors](#handling-errors).
 
 #### Limiting
 
@@ -547,7 +651,7 @@ getDocs(query(collection(db, 'Users'), where('age', '>=', 18), limit(20))).then(
 
 The above example both filters the users by age and limits the documents returned to 20.
 
-`limitToLast` returns the last N results of an ordered query (you must also provide `orderBy`):
+`limit` and `limitToLast` take a positive integer. `limitToLast` returns the last N results of an ordered query. It requires at least one `orderBy`; without one, the query throws when you run it with `getDocs` or `onSnapshot`:
 
 ```js
 import {
@@ -563,7 +667,7 @@ const db = getFirestore();
 const snapshot = await getDocs(
   query(collection(db, 'Users'), orderBy('age', 'asc'), limitToLast(5)),
 );
-console.log('Oldest five by age ascending window:', snapshot.size);
+console.log('Five oldest users:', snapshot.size);
 ```
 
 #### Ordering
@@ -588,12 +692,12 @@ getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'))).then(querySnapsh
 });
 ```
 
-The above example orders all user in the snapshot by age in descending order.
+The above example orders all users in the snapshot by age in descending order. The direction is `'asc'` (default) or `'desc'`; any other value throws. `orderBy` also accepts a `FieldPath`. Documents that do not contain the ordered field are left out of the result, because ordering by a field implies the field exists.
 
 #### Start/End
 
 To start and/or end the query at a specific point within the collection, you can pass either a value to `startAt`,
-`endAt`, `startAfter` or `endBefore`. You must specify an order to use pointers, for example:
+`endAt`, `startAfter` or `endBefore`. You must specify an order to use pointers, and you cannot pass more cursor values than there are `orderBy` clauses (the query throws otherwise). The cursors follow the sort direction, so with a descending order `startAt` takes the larger value and `endAt` the smaller one. For example:
 
 ```js
 import {
@@ -608,7 +712,7 @@ import {
 
 const db = getFirestore();
 
-getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(18), endAt(30))).then(
+getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(30), endAt(18))).then(
   querySnapshot => {
     querySnapshot.forEach(documentSnapshot => {
       console.log(documentSnapshot.id, documentSnapshot.data());
@@ -617,7 +721,7 @@ getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(18), endA
 );
 ```
 
-The above query orders the users by age in descending order, but only returns users whose age is between 18 and 30.
+The above query orders the users by age in descending order, but only returns users whose age is between 30 and 18 (inclusive).
 
 You can further specify a [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) instead of a specific value. For example:
 
@@ -646,7 +750,7 @@ getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(userDocum
 ```
 
 The above query orders the users by age in descending order, however only returns documents whose order starts at the user
-with an ID of `DEF`.
+with an ID of `DEF`. The snapshot must exist and must contain every field used in `orderBy`; otherwise the query throws. React Native Firebase adds the document id as a final tie-breaking sort for snapshot cursors. For pagination built on these cursors, see [Implementing Pagination](/firestore/pagination).
 
 `startAfter` / `endBefore` exclude the boundary document or value:
 
@@ -699,11 +803,49 @@ const snap2 = await getDoc(b);
 console.log('Same snapshot data:', snapshotEqual(snap1, snap2));
 ```
 
+`queryEqual` compares two queries (collection, filters, order, limits), `refEqual` compares two document or collection references, and `snapshotEqual` compares two snapshots (same data, metadata, and reference). Each throws when given a value of the wrong type.
+
+#### Field paths
+
+A string field path uses dots to reach nested map fields (`'info.address.zipcode'`). When a key itself contains a dot, build a `FieldPath` from its segments instead. `FieldPath` is accepted by `where`, `orderBy`, `snapshot.get`, the aggregate helpers (`sum`, `average`), and `mergeFields`. A string path cannot be empty, start or end with `.`, contain `..`, or contain `~`, `*`, `/`, `[`, or `]`, and a `FieldPath` needs at least one non-empty segment:
+
+```js
+import {
+  FieldPath,
+  collection,
+  doc,
+  documentId,
+  getDoc,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const zipPath = new FieldPath('info', 'address', 'zipcode');
+const dottedKey = new FieldPath('settings', 'theme.color');
+
+const inZip = await getDocs(query(collection(db, 'Users'), where(zipPath, '==', 94040)));
+const byId = await getDocs(query(collection(db, 'Users'), orderBy(documentId())));
+const userSnapshot = await getDoc(doc(db, 'Users', 'ABC'));
+console.log('In zip:', inZip.size, 'By id:', byId.size);
+console.log('Zip code:', userSnapshot.get(zipPath), 'Theme color:', userSnapshot.get(dottedKey));
+console.log('Equal paths:', zipPath.isEqual(new FieldPath('info', 'address', 'zipcode')));
+```
+
 #### Query Limitations
 
-Cloud Firestore does not support the following types of queries:
+Cloud Firestore Standard edition applies these limits to queries (see the [official query documentation](https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries) for the full list and for Enterprise edition differences):
 
-- Queries with range filters on different fields, as described in the previous section.
+- `or`, `in`, and `array-contains-any` queries are limited to 30 branches once Firestore expands the filter into a list of alternative AND groups. An `and` of several `or` groups multiplies the count.
+- Each expanded branch can contain at most one `array-contains` clause, and you cannot combine `array-contains` with `array-contains-any` in the same branch.
+- `not-in` cannot be combined with `in`, `array-contains-any`, `or`, or `!=`, and only one `not-in` or `!=` is allowed per query. `not-in` supports up to 10 comparison values.
+- The sum of filters, sort orders, and parent path segments in a query cannot exceed 100.
+- A query with an inequality filter on a field implies ordering by that field and only matches documents where the field exists.
+
+React Native Firebase additionally rejects some invalid combinations before the query reaches the native SDK (more than one `!=`, more than one `array-contains`, `array-contains-any` or `in` together with `not-in`, and `null` with an operator other than `==` or `!=`).
 
 ## Writing Data
 
@@ -745,15 +887,22 @@ setDoc(doc(collection(db, 'Users'), 'ABC'), {
 });
 ```
 
-Pass `{ merge: true }` (or `{ mergeFields: [...] }`) when you want `setDoc` to merge into an existing document instead of overwriting it:
+Pass `{ merge: true }` (or `{ mergeFields: [...] }`) when you want `setDoc` to merge into an existing document instead of overwriting it. `merge` must be a boolean, `mergeFields` is an array of dot-separated field paths or `FieldPath` instances, and passing both in the same call throws:
 
 ```js
 import { doc, getFirestore, setDoc } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 await setDoc(doc(db, 'Users', 'ABC'), { age: 31 }, { merge: true });
+await setDoc(
+  doc(db, 'Users', 'ABC'),
+  { age: 32, name: 'Ignored by mergeFields' },
+  { mergeFields: ['age'] },
+);
 console.log('User merged!');
 ```
+
+Document data cannot contain `undefined` values. Writing one fails with `Unsupported field value: undefined`, which also applies to `addDoc`, `updateDoc`, transactions, and batches. Remove the key, use `deleteField()` with `updateDoc`, or enable `ignoreUndefinedProperties` in [Settings](#settings).
 
 ### Updating documents
 
@@ -772,7 +921,7 @@ updateDoc(doc(collection(db, 'Users'), 'ABC'), {
 });
 ```
 
-The method also provides support for updating deeply nested values via dot-notation:
+`updateDoc` fails with `firestore/not-found` when the document does not exist; use `setDoc` with `{ merge: true }` to create it when it might be missing. Pass a single object of fields to update. The method also provides support for updating deeply nested values via dot-notation:
 
 ```js
 import { collection, doc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
@@ -788,11 +937,10 @@ updateDoc(doc(collection(db, 'Users'), 'ABC'), {
 
 #### Field values
 
-Cloud Firestore supports storing and manipulating values on your database, such as [Timestamps](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Timestamp.html),
-[GeoPoints](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html), [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string) and array management.
+Cloud Firestore supports storing and manipulating values on your database, such as `Timestamp`, `GeoPoint`, `Bytes`, vectors, and array management.
 
-To store [`GeoPoint`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/GeoPoint.html) values, provide the latitude and longitude to an instance of the
-class:
+To store `GeoPoint` values, provide the latitude and longitude to an instance of the
+class. Latitude must be between -90 and 90 and longitude between -180 and 180, otherwise the constructor throws:
 
 ```js
 import { doc, GeoPoint, getFirestore, updateDoc } from '@react-native-firebase/firestore';
@@ -806,8 +954,8 @@ updateDoc(doc(db, 'users', 'ABC'), {
 });
 ```
 
-To store raw [Bytes](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/Bytes.html#frombase64string) (for example of a `Base64` image string), provide the string to the static
-`fromBase64String` method on the class:
+To store raw `Bytes` (for example of a `Base64` image string), provide the string to the static
+`fromBase64String` method on the class (the string must be non-empty), or build the value from a `Uint8Array` with `Bytes.fromUint8Array`. Read it back with `toBase64()` or `toUint8Array()`:
 
 ```js
 import { Bytes, doc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
@@ -816,6 +964,7 @@ const db = getFirestore();
 
 updateDoc(doc(db, 'users', 'ABC'), {
   'info.avatar': Bytes.fromBase64String('iVBORw0KGgo='),
+  'info.thumbnail': Bytes.fromUint8Array(new Uint8Array([1, 2, 3])),
 }).then(() => {
   console.log('Bytes updated!');
 });
@@ -879,7 +1028,7 @@ await updateDoc(doc(db, 'posts', 'ABC'), {
 console.log('likes incremented');
 ```
 
-Use the `Timestamp` class when you need a client-side timestamp value (as opposed to `serverTimestamp()`):
+Use the `Timestamp` class when you need a client-side timestamp value (as opposed to `serverTimestamp()`). Build it with `Timestamp.now()`, `Timestamp.fromDate(date)`, `Timestamp.fromMillis(ms)`, or `new Timestamp(seconds, nanoseconds)`, and convert back with `toDate()` or `toMillis()`. The constructor throws for out-of-range values:
 
 ```js
 import { Timestamp, doc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
@@ -888,6 +1037,7 @@ const db = getFirestore();
 await updateDoc(doc(db, 'users', 'ABC'), {
   lastSeen: Timestamp.now(),
   born: Timestamp.fromDate(new Date('1815-12-10')),
+  checkedAt: Timestamp.fromMillis(Date.now()),
 });
 console.log('Timestamps written');
 ```
@@ -907,7 +1057,7 @@ console.log('Vector embedding written');
 
 ## Removing data
 
-You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/modular/deleteDoc.html):
+You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).:
 
 ```js
 import { deleteDoc, doc, getFirestore } from '@react-native-firebase/firestore';
@@ -918,7 +1068,7 @@ deleteDoc(userDocRef).then(() => {
 });
 ```
 
-At this time, you cannot delete an entire collection without use of a Firebase Admin SDK.
+The client SDK has no function that deletes a whole collection. Delete a small collection by reading its documents and deleting each one in a [batch write](#batch-write), or delete large collections from a trusted environment with a Firebase Admin SDK.
 
 > If a document contains any sub-collections, these will not be deleted from database. You must delete
 > any sub-collections yourself.
@@ -943,6 +1093,62 @@ updateDoc(doc(collection(db, 'Users'), 'ABC'), {
 });
 ```
 
+## Typed data with converters
+
+`withConverter` attaches a converter object to a `CollectionReference`, `DocumentReference`, or `Query`. Writes through that reference (`setDoc`, `addDoc`, and `set` on a batch or transaction) call `toFirestore(model, options)` to turn your model into stored data, and reads call `fromFirestore(snapshot, options)` so `snapshot.data()` returns your model. Both functions are required; `withConverter` throws when either is missing. Inside `fromFirestore`, `snapshot.data()` returns the raw stored map. Pass `null` to remove a converter:
+
+```js
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+  setDoc,
+  where,
+} from '@react-native-firebase/firestore';
+
+class City {
+  constructor(name, population) {
+    this.name = name;
+    this.population = population;
+  }
+
+  describe() {
+    return `${this.name} (${this.population})`;
+  }
+}
+
+const cityConverter = {
+  toFirestore(city) {
+    return { name: city.name, population: city.population };
+  },
+  fromFirestore(snapshot, options) {
+    const data = snapshot.data(options);
+    return new City(data.name, data.population);
+  },
+};
+
+const db = getFirestore();
+const cities = collection(db, 'cities').withConverter(cityConverter);
+
+await setDoc(doc(cities, 'LON'), new City('London', 9000000));
+await addDoc(cities, new City('Paris', 2100000));
+
+const london = (await getDoc(doc(cities, 'LON'))).data();
+console.log('Typed read:', london?.describe());
+
+const large = await getDocs(query(cities, where('population', '>', 1000000)));
+large.forEach(citySnapshot => {
+  console.log('Query result:', citySnapshot.data().describe());
+});
+
+const untyped = collection(db, 'cities').withConverter(null);
+console.log('Converter removed:', untyped.converter === null);
+```
+
 ## Transactions
 
 Transactions are a way to always ensure a write occurs with the information available on the server at commit time. Transactions
@@ -957,6 +1163,11 @@ When using transactions, note that:
 - A function calling a transaction (transaction function) might run more than once if a concurrent edit affects a document that the transaction reads.
 - Transaction functions should not directly modify application state (return a value from the `updateFunction`).
 - Transactions will fail when the client is offline.
+- The `updateFunction` must return a Promise (use an `async` function); otherwise `runTransaction` rejects with an error.
+- `transaction.get` accepts a `DocumentReference` only. Queries cannot be read inside a transaction.
+- `transaction.set`, `transaction.update`, and `transaction.delete` are buffered while your function runs and sent together once it resolves, so they return the transaction for chaining and do not return a Promise.
+- If your function throws or rejects, `runTransaction` rejects with that error and nothing is written.
+- Firestore ends a transaction that runs longer than 270 seconds or sits idle for 60 seconds.
 
 Imagine a scenario whereby an app has the ability to "Like" user posts. Whenever a user presses the "Like" button,
 a "likes" value (number of likes) on a "Posts" collection document increments. Without transactions, we'd first need to read
@@ -999,14 +1210,74 @@ onPostLike('ABC')
   .catch(error => console.error(error));
 ```
 
+Transactions can also `set` (optionally with `{ merge: true }`) and `delete` documents. Pass `{ maxAttempts }` as the third argument to limit how many times the transaction function may run (the minimum is 1; a lower value throws):
+
+```js
+import { doc, getFirestore, runTransaction } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+
+async function transfer(fromId, toId, amount) {
+  const fromRef = doc(db, 'accounts', fromId);
+  const toRef = doc(db, 'accounts', toId);
+  const pendingRef = doc(db, 'pendingTransfers', `${fromId}-${toId}`);
+
+  return runTransaction(
+    db,
+    async transaction => {
+      const fromSnapshot = await transaction.get(fromRef);
+      const toSnapshot = await transaction.get(toRef);
+      const fromBalance = fromSnapshot.data()?.balance ?? 0;
+      const toBalance = toSnapshot.data()?.balance ?? 0;
+
+      if (fromBalance < amount) {
+        throw new Error('Insufficient funds');
+      }
+
+      transaction
+        .update(fromRef, { balance: fromBalance - amount })
+        .set(toRef, { balance: toBalance + amount }, { merge: true })
+        .delete(pendingRef);
+
+      return fromBalance - amount;
+    },
+    { maxAttempts: 3 },
+  );
+}
+
+transfer('alice', 'bob', 10)
+  .then(balance => console.log('New balance:', balance))
+  .catch(error => console.error('Transfer failed:', error));
+```
+
 ## Batch write
 
 If you do not need to read any documents in your operation set, you can execute multiple write operations as a single batch
-that contains any combination of `setDoc`, `updateDoc`, or `deleteDoc` operations. A batch of writes completes atomically and can
-write to multiple documents.
+that contains any combination of `set`, `update`, or `delete` operations. A batch of writes completes atomically and can
+write to multiple documents. Unlike transactions, batches are not retried and they also run while the device is offline (the writes are queued and sent when the connection returns).
 
-First, create a batch instance via `writeBatch`, perform operations on the batch and finally commit it once ready.
-The example below shows how to delete all documents in a collection in a single operation:
+First, create a batch instance via `writeBatch`, perform operations on the batch and finally commit it once ready. `set`, `update`, and `delete` return the batch for chaining, only accept references that belong to the same app as the batch, and throw once `commit()` has been called, so create a new batch for each commit:
+
+```js
+import { doc, getFirestore, serverTimestamp, writeBatch } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+
+async function archiveUser(userId) {
+  const batch = writeBatch(db);
+
+  batch
+    .set(doc(db, 'archivedUsers', userId), { archivedAt: serverTimestamp() }, { merge: true })
+    .update(doc(db, 'Users', userId), { active: false })
+    .delete(doc(db, 'sessions', userId));
+
+  await batch.commit();
+}
+
+archiveUser('ABC').then(() => console.log('User archived in a single batch.'));
+```
+
+The example below deletes every document returned by a query in one batch. A batch with hundreds of documents can exceed the transaction size limit, so split larger sets into several batches:
 
 ```js
 import { collection, getDocs, getFirestore, writeBatch } from '@react-native-firebase/firestore';
@@ -1030,10 +1301,83 @@ async function massDeleteUsers() {
 massDeleteUsers().then(() => console.log('All users deleted in a single batch operation.'));
 ```
 
+## Handling errors
+
+Errors that come from the native Firestore SDK reject with an `Error` whose `code` is `firestore/` followed by the Firestore status code, and whose `message` starts with `[firestore/<code>]`. The codes are `aborted`, `already-exists`, `cancelled`, `data-loss`, `deadline-exceeded`, `failed-precondition`, `internal`, `invalid-argument`, `not-found`, `out-of-range`, `permission-denied`, `resource-exhausted`, `unauthenticated`, `unavailable`, `unimplemented`, and `unknown`. Argument validation errors thrown by React Native Firebase itself (for example an invalid `where` operator) are plain `Error` objects without a `code`.
+
+A query that needs a composite index fails with `firestore/failed-precondition`. For that case the native message is preserved, and it typically contains a link that creates the missing index in the Firebase console:
+
+```js
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+
+async function loadActiveUsersByAge() {
+  try {
+    const snapshot = await getDocs(
+      query(collection(db, 'Users'), where('active', '==', true), orderBy('age', 'desc')),
+    );
+    return snapshot.docs.map(userSnapshot => userSnapshot.data());
+  } catch (error) {
+    if (error.code === 'firestore/failed-precondition') {
+      console.warn('Missing index or precondition failed:', error.message);
+    } else if (error.code === 'firestore/permission-denied') {
+      console.warn('Security rules rejected the read');
+    } else if (error.code === 'firestore/unavailable') {
+      console.warn('Backend unreachable, try again with a backoff');
+    } else {
+      throw error;
+    }
+    return [];
+  }
+}
+
+loadActiveUsersByAge().then(users => console.log('Loaded users:', users.length));
+```
+
+Listeners report the same errors through the error callback of `onSnapshot`, and `runTransaction`, `writeBatch(...).commit()`, and `loadBundle` reject with them as well. A `namedQuery` call itself resolves with a `Query`; running that query fails when the name was never loaded in a bundle (`getDocs` rejects and `onSnapshot` calls its error callback).
+
 ## Secure your data
 
 It is important that you understand how to write rules in your Firebase console to ensure that your data is secure. Please
 follow the Firebase Firestore documentation on [security](https://firebase.google.com/docs/firestore/security/get-started).
+
+## Settings
+
+`initializeFirestore(app, settings, databaseId?)` returns a `Firestore` instance synchronously and applies `settings` through the native bridge in the background. The native layer stores the values and reads them when it creates the native Firestore instance, so call `initializeFirestore` once at startup, before the first read, write, or listener for that app and database. Calling it after Firestore has started does not throw, but the new settings do not apply to the running native instance.
+
+{/* prettier-ignore */}
+| Setting | Type | Notes |
+| --- | --- | --- |
+| `persistence` | `boolean` | `false` disables the local cache. `getPersistentCacheIndexManager` then returns `null` |
+| `cacheSizeBytes` | `number` | At least `1048576` (1 MB), or `CACHE_SIZE_UNLIMITED` to stop the SDK evicting cached documents by size |
+| `host` | `string` | Non-empty host to use instead of the default backend. On Android, `localhost` and `127.0.0.1` are rewritten to `10.0.2.2` |
+| `ssl` | `boolean` | Whether the connection to `host` is encrypted |
+| `ignoreUndefinedProperties` | `boolean` | Defaults to `false`. When `true`, keys whose value is `undefined` are skipped on write instead of failing |
+| `serverTimestampBehavior` | `'estimate'`, `'previous'`, `'none'` | Default for `snapshot.data()` when a document has a pending `serverTimestamp()` write. `'none'` (null) is used when unset |
+
+The web-only keys `localCache`, `experimentalForceLongPolling`, `experimentalAutoDetectLongPolling`, and `experimentalLongPollingOptions` are accepted so web code type-checks, but they are not applied on Android and iOS. Persistence is controlled with `persistence` and `cacheSizeBytes` instead, and `memoryLocalCache()` / `persistentLocalCache()` are not available. Any other key, or a wrong value (for example `persistence: 'yes'`), produces a descriptive error. `initializeFirestore` does not return the promise that carries that error, so you cannot catch it with `try`/`catch`: it surfaces as an unhandled promise rejection and the settings are not applied. A non-boolean `ssl` is the exception and throws from `initializeFirestore` itself. Validate settings before you pass them.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { CACHE_SIZE_UNLIMITED, initializeFirestore } from '@react-native-firebase/firestore';
+
+const db = initializeFirestore(getApp(), {
+  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+  ignoreUndefinedProperties: true,
+  serverTimestampBehavior: 'estimate',
+});
+console.log('Firestore initialized:', Boolean(db));
+```
+
+Pass a database id as the third argument to configure a named database: `initializeFirestore(getApp(), settings, 'ecommerce')`.
 
 ## Offline Capabilities
 
@@ -1042,17 +1386,16 @@ database which synchronizes automatically with the server. Firestore functionali
 automatically handles data migration to the server when they regain connectivity.
 
 This functionality is enabled by default on native platforms, however it can be disabled if you need it to be disabled (e.g. on apps containing
-sensitive information). Call `initializeFirestore` before other Firestore use for that app/database so settings apply. Use `CACHE_SIZE_UNLIMITED` when you do not want the SDK to evict cached documents by size:
+sensitive information) with the `persistence` setting from [Settings](#settings):
 
 ```js
 import { getApp } from '@react-native-firebase/app';
-import { CACHE_SIZE_UNLIMITED, initializeFirestore } from '@react-native-firebase/firestore';
+import { initializeFirestore } from '@react-native-firebase/firestore';
 
 const db = initializeFirestore(getApp(), {
   persistence: false, // disable offline persistence
-  cacheSizeBytes: CACHE_SIZE_UNLIMITED,
 });
-console.log('Firestore initialized:', Boolean(db));
+console.log('Persistence disabled:', Boolean(db));
 ```
 
 ### Disable and enable network
@@ -1077,27 +1420,35 @@ console.log('Network enabled and pending writes flushed');
 
 ### Clear persistence and terminate
 
-`clearPersistence` is the React Native Firebase-specific helper that clears the persistent cache for the Firestore instance (firebase-js-sdk exposes this as `clearIndexedDbPersistence` only). React Native Firebase also exports `clearIndexedDbPersistence` as an alias of `clearPersistence` for naming parity with the web SDK; IndexedDB is a web concept and React Native does not use it. Call either only after the instance is terminated or unused; active listeners can cause the call to fail.
+`clearPersistence` is the React Native Firebase-specific helper that clears the persistent cache for the Firestore instance (firebase-js-sdk exposes this as `clearIndexedDbPersistence` only). React Native Firebase also exports `clearIndexedDbPersistence` for naming parity with the web SDK. Both call the same native clear on iOS and Android; IndexedDB is a web concept and React Native does not use it. `clearPersistence` can fail while the instance is still running, so remove active listeners and call `terminate` first. `terminate` shuts down the native client and evicts it from the native instance cache, including its emulator registration: the next Firestore call creates a fresh native instance, and you need to call `connectFirestoreEmulator` again if you use the emulator.
+
+```js
+import { clearPersistence, getFirestore, terminate } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+await terminate(db);
+await clearPersistence(db);
+console.log('Instance terminated and persistence cleared');
+```
+
+`clearIndexedDbPersistence(db)` is a drop-in replacement for `clearPersistence(db)` when you share code with a web app:
 
 ```js
 import {
   clearIndexedDbPersistence,
-  clearPersistence,
   getFirestore,
   terminate,
 } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
 await terminate(db);
-await clearPersistence(db);
-// clearIndexedDbPersistence is the same function as clearPersistence (web SDK name parity):
-console.log('Alias is same function:', clearIndexedDbPersistence === clearPersistence);
-console.log('Instance terminated and persistence cleared');
+await clearIndexedDbPersistence(db);
+console.log('Persistence cleared through the web-named helper');
 ```
 
 ### Persistent cache indexes
 
-With persistence enabled, `getPersistentCacheIndexManager` returns a manager for automatic local query indexes. These helpers return Promises on React Native Firebase (native IO) even though the web SDK returns `void`:
+With persistence enabled, `getPersistentCacheIndexManager` returns a manager for automatic local query indexes, and it returns `null` after `initializeFirestore` was called with `persistence: false`. These helpers return Promises on React Native Firebase (native IO) even though the web SDK returns `void`:
 
 ```js
 import {
@@ -1148,13 +1499,35 @@ const aggregateSnap = await getAggregateFromServer(users, {
 console.log('Aggregates:', aggregateSnap.data());
 ```
 
+Both functions always query the server, so they fail without a network connection. The `aggregateSpec` must be an object with at least one aggregate field, `sum` and `average` take a field name or a `FieldPath`, and `average` resolves to `null` when there is nothing to average. Use `aggregateFieldEqual` and `aggregateQuerySnapshotEqual` to compare aggregate fields and aggregate snapshots:
+
+```js
+import {
+  aggregateFieldEqual,
+  aggregateQuerySnapshotEqual,
+  collection,
+  count,
+  getAggregateFromServer,
+  getFirestore,
+  sum,
+} from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+console.log('Same field:', aggregateFieldEqual(sum('age'), sum('age')));
+console.log('Different field:', aggregateFieldEqual(sum('age'), count()));
+
+const first = await getAggregateFromServer(collection(db, 'Users'), { total: count() });
+const second = await getAggregateFromServer(collection(db, 'Users'), { total: count() });
+console.log('Same snapshot:', aggregateQuerySnapshotEqual(first, second));
+```
+
 ## Data bundles
 
 Cloud Firestore data bundles are static data files built by you from Cloud Firestore document and query snapshots,
 and published by you on a CDN, hosting service or other solution. Once a bundle is loaded, a client app can query documents
 from the local cache or the backend.
 
-To load and query data bundles, use `loadBundle` and `namedQuery`:
+To load and query data bundles, use `loadBundle` and `namedQuery`. The bundle must be passed as a non-empty string (read it with `response.text()`); the typed `ArrayBuffer` and `ReadableStream` inputs from the web SDK are not supported:
 
 ```js
 import {
@@ -1180,4 +1553,53 @@ if (storiesQuery) {
 }
 ```
 
+`namedQuery` is typed as `Promise<Query | null>` for web SDK parity, but React Native Firebase always returns a `Query` object. The name is looked up natively when the query runs, so a name that was not part of a loaded bundle makes that read reject (or calls the listener's error callback), instead of resolving `null`. Wrap the read in `try`/`catch`.
+
+`loadBundle` returns a `LoadBundleTask`, which you can `await` or observe with `onProgress(next, error, complete)`. `next` receives a `LoadBundleTaskProgress` object with `taskState`, `documentsLoaded`, `totalDocuments`, `bytesLoaded`, and `totalBytes`. Progress is reported once, when the native load finishes (`taskState` `'Success'`); on failure `next` receives `taskState` `'Error'` before the `error` callback runs, and awaiting the task rejects:
+
+```js
+import { getFirestore, loadBundle } from '@react-native-firebase/firestore';
+
+const db = getFirestore();
+const response = await fetch('https://api.example.com/bundles/stories');
+const bundle = await response.text();
+
+const task = loadBundle(db, bundle);
+task.onProgress(
+  progress => {
+    console.log(progress.taskState, progress.documentsLoaded, '/', progress.totalDocuments);
+  },
+  error => {
+    console.error('Bundle failed:', error.message);
+  },
+  () => {
+    console.log('Bundle loaded');
+  },
+);
+
+try {
+  const finalProgress = await task;
+  console.log('Bytes loaded:', finalProgress.bytesLoaded, 'of', finalProgress.totalBytes);
+} catch (error) {
+  console.error('loadBundle rejected:', error);
+}
+```
+
 You can build data bundles with the Admin SDK. For more information about building and serving data bundles, see Firebase Firestore main documentation on [Data bundles](https://firebase.google.com/docs/firestore/bundles) as well as their "[Bundle Solutions](https://firebase.google.com/docs/firestore/solutions/serve-bundles)" page.
+
+## Exported classes and types
+
+The package also exports these classes. You normally receive instances from the functions above rather than constructing them, and you can use them with `instanceof` checks or as TypeScript types:
+
+{/* prettier-ignore */}
+| Export | Returned by or used for |
+| --- | --- |
+| `Firestore` | `getFirestore()` and `initializeFirestore()` |
+| `CollectionReference`, `DocumentReference` | `collection()` and `doc()` |
+| `DocumentSnapshot`, `QueryDocumentSnapshot`, `QuerySnapshot`, `SnapshotMetadata` | Results of `getDoc`, `getDocs`, and `onSnapshot` |
+| `Transaction`, `WriteBatch` | The `runTransaction` callback argument and `writeBatch()` |
+| `LoadBundleTask` | `loadBundle()` |
+| `AggregateField`, `AggregateQuerySnapshot` | `count()`, `sum()`, `average()` and the results of `getCountFromServer` and `getAggregateFromServer` |
+| `FieldValue` | `serverTimestamp()`, `increment()`, `arrayUnion()`, `arrayRemove()`, and `deleteField()` |
+| `VectorValue` | `vector()` |
+| `QueryConstraint`, `QueryFieldFilterConstraint`, `QueryCompositeFilterConstraint`, `QueryOrderByConstraint`, `QueryLimitConstraint`, `QueryStartAtConstraint`, `QueryEndAtConstraint` | `where()`, `and()`, `or()`, `orderBy()`, `limit()`, `limitToLast()`, `startAt()`, `startAfter()`, `endAt()`, and `endBefore()` |
