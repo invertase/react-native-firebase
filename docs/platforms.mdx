@@ -111,19 +111,26 @@ Call `setReactNativeAsyncStorage` before `initializeApp` during app bootstrap on
 Other platforms:
 
 ```js
-// codeblock-ignore: @react-native-async-storage/async-storage is not a root workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: requires the @react-native-async-storage/async-storage package
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp, setReactNativeAsyncStorage } from '@react-native-firebase/app';
 
-setReactNativeAsyncStorage(AsyncStorage);
+async function bootstrapFirebase() {
+  setReactNativeAsyncStorage(AsyncStorage);
 
-await initializeApp({
-  apiKey: 'api-key',
-  authDomain: 'project-id.firebaseapp.com',
-  projectId: 'project-id',
-  appId: 'app-id',
-});
+  return initializeApp({
+    apiKey: 'api-key',
+    authDomain: 'project-id.firebaseapp.com',
+    databaseURL: 'https://project-id.firebaseio.com',
+    messagingSenderId: 'sender-id',
+    projectId: 'project-id',
+    storageBucket: 'project-id.appspot.com',
+    appId: 'app-id',
+  });
+}
 ```
+
+`initializeApp` rejects unless `apiKey`, `appId`, `databaseURL`, `messagingSenderId`, `projectId` and `storageBucket` are all strings, even when you do not use Realtime Database or Cloud Storage. See [Required options](/app/usage#required-options).
 
 In `@react-native-async-storage/async-storage` major version 3 (as of 3.1.1), the default export is a proxy to the legacy version 2 storage and exists mainly as a migration path. The version 3 form is `createAsyncStorage(name)`, a named export that returns a storage instance bound to a database name, for example `setReactNativeAsyncStorage(createAsyncStorage('firebase'))`. That instance also has `getItem`, `setItem`, and `removeItem`. It opens its own database, so data already stored through the default export is not read from it.
 

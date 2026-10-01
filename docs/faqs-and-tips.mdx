@@ -42,10 +42,9 @@ We highly recommend taking the necessary pains to update to a supported major (v
 
 ### My CI build hangs at the "Running script '[CP-User] [RNFB] Core Configuration'" step
 
-This may be fixed by creating a `firebase.json` file at the root of your project if it's not there already. If you don't want to change any of the default React Native Firebase configurations, you can leave the React Native section empty:
+This may be fixed by creating a `firebase.json` file at the root of your project if it's not there already. Create it before the next CI or native build that runs the Core Configuration script. If you don't want to change any of the default React Native Firebase configurations, you can leave the React Native section empty:
 
 ```json
-// File: <project-root>/firebase.json. Create before the next CI/native build that runs the RNFB Core Configuration script.
 {
   "react-native": {}
 }

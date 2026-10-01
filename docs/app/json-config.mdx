@@ -1,6 +1,6 @@
 ---
 title: Firebase JSON Config
-description: 'Configure @react-native-firebase modules via firebase.json in the project root, including schema-driven editor IntelliSense and runtime jsonGetAll().'
+description: 'Configure @react-native-firebase modules via firebase.json in the project root: key reference, file lookup and parse behavior, schema-driven editor IntelliSense, and runtime jsonGetAll().'
 next: /app/utils
 previous: /app/usage
 ---
@@ -14,26 +14,112 @@ You configure installed React Native Firebase modules by creating `firebase.json
 
 Order:
 
-1. Create or edit `<project-root>/firebase.json` (schema snippet below).
+1. Create or edit `<project-root>/firebase.json` (schema snippet below). Apply it before the next native build or Expo prebuild.
 2. Rebuild the native app (or re-run Expo prebuild / EAS Build) so native code picks up the constants.
-
-An example configuration file is available for inspection in the repo test app: [`<repo>/tests/firebase.json`](https://github.com/invertase/react-native-firebase/blob/main/tests/firebase.json).
 
 ## JSON Schema
 
 Add the [Config Schema](https://github.com/invertase/react-native-firebase/blob/main/packages/app/firebase-schema.json) to your `firebase.json` file to enable editor IntelliSense. The `$schema` path is relative to the project root after `@react-native-firebase/app` is installed:
 
 ```json
-// File: <project-root>/firebase.json. Create or update before the next native build / Expo prebuild.
 {
   "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json",
   "react-native": {}
 }
 ```
 
+All keys go inside the `react-native` object. A file without a `react-native` key is treated as an empty configuration and every key keeps its default. The schema file lists each key's type and description.
+
+## Keys
+
+The schema defines 35 keys. Six apply to the app module or to several modules, and are described in the first table. The remaining 29 belong to one module each and are listed by module in the second table.
+
+### App and cross-module keys
+
+{/* prettier-ignore */}
+| Key | Type | Platform | Default | Runtime override |
+| --- | --- | --- | --- | --- |
+| `app_data_collection_default_enabled` | boolean | Android, iOS | `true` when unset | `automaticDataCollectionEnabled` on a `FirebaseApp` and in the `initializeApp` config. Module-specific keys and APIs take precedence for their module. |
+| `app_log_level` | string: `error`, `warn`, `info`, `debug` | iOS only | Not set, so the Firebase iOS SDK default level applies | `setLogLevel` |
+| `android_task_executor_maximum_pool_size` | number | Android only | `1` | None |
+| `android_task_executor_keep_alive_seconds` | number | Android only | `3` | None |
+| `android_background_activity_names` | array of strings | Android only | None | None |
+| `android_bypass_emulator_url_remap` | boolean | Android only | `false` | None |
+
+- `app_data_collection_default_enabled`: whether automatic data collection is on for all products unless a product-specific setting overrides it. Set it to `false` for opt-in-first flows such as GDPR consent, then turn collection on after consent. When the key is `false`, modules whose own collection key is unset start with collection off. It is applied at build time (Android manifest placeholder, iOS `Info.plist` entry `FirebaseDataCollectionDefaultEnabled`).
+- `app_log_level`: read when the app module loads on iOS and ignored on Android. `setLogLevel` and `onLog` have their own scope, described in [Logging](/app/usage#logging).
+- `android_task_executor_maximum_pool_size` and `android_task_executor_keep_alive_seconds`: tune the thread pool that Android uses for module work. See [Android Performance](/#android-performance) for the effect of each value.
+- `android_background_activity_names`: short class names (the value of `getShortClassName()`) of activities that run outside React Native. They are ignored when React Native Firebase decides whether the app is in the foreground before it calls JavaScript background handlers.
+- `android_bypass_emulator_url_remap`: on Android, `useEmulator` for Auth, Database, Firestore, Functions and Storage maps `localhost` and `127.0.0.1` to `10.0.2.2`. Set this key to `true` to keep the host you pass.
+
+### Module keys
+
+{/* prettier-ignore */}
+| Module | Keys |
+| --- | --- |
+| [Analytics](/analytics/usage) | `analytics_auto_collection_enabled`, `analytics_collection_deactivated`, `analytics_idfv_collection_enabled`, `google_analytics_adid_collection_enabled`, `google_analytics_ssaid_collection_enabled`, `google_analytics_automatic_screen_reporting_enabled`, `google_analytics_registration_with_ad_network_enabled`, `analytics_default_allow_analytics_storage`, `analytics_default_allow_ad_storage`, `analytics_default_allow_ad_user_data`, `analytics_default_allow_ad_personalization_signals` |
+| [App Check](/app-check/usage) | `app_check_token_auto_refresh` |
+| [Crashlytics](/crashlytics/usage) | `crashlytics_auto_collection_enabled`, `crashlytics_debug_enabled`, `crashlytics_is_error_generation_on_js_crash_enabled`, `crashlytics_javascript_exception_handler_chaining_enabled`, `crashlytics_ndk_enabled` |
+| [In-App Messaging](/in-app-messaging/usage) | `in_app_messaging_auto_collection_enabled` |
+| [Cloud Messaging](/messaging/usage) | `messaging_auto_init_enabled`, `messaging_android_headless_task_timeout`, `messaging_android_notification_delegation_enabled`, `messaging_android_notification_channel_id`, `messaging_android_notification_delivery_metrics_export_enabled`, `messaging_android_notification_color`, `messaging_ios_auto_register_for_remote_messages`, `messaging_ios_foreground_presentation_options`, `messaging_max_stored_notifications` |
+| [Performance Monitoring](/perf/usage) | `perf_auto_collection_enabled`, `perf_collection_deactivated` |
+
+The schema file holds the type and description of every key. Each module page describes its keys, except the Analytics, Cloud Messaging and Performance Monitoring keys in the next table, which are described only here.
+
+### Module keys described only here
+
+Rebuild the native app after changing any of these keys.
+
+{/* prettier-ignore */}
+| Key | Type | Platform | Default | Effect |
+| --- | --- | --- | --- | --- |
+| `analytics_collection_deactivated` | boolean | Android, iOS | `false` | `true` deactivates Analytics collection permanently in that build. It cannot be changed at runtime. |
+| `analytics_idfv_collection_enabled` | boolean | iOS only | Not set, so the Firebase iOS SDK default applies | `false` stops collection of the Identifier for Vendor. It cannot be changed at runtime. |
+| `google_analytics_adid_collection_enabled` | boolean | Android only | `true` | `false` stops collection of the Advertising ID. It cannot be changed at runtime. |
+| `google_analytics_ssaid_collection_enabled` | boolean | Android only | `true` | `false` stops collection of the Android ID (`Settings.Secure.ANDROID_ID`). It cannot be changed at runtime. |
+| `google_analytics_registration_with_ad_network_enabled` | boolean | iOS only | `true` | `false` stops the SDK registering the app with Apple for ad network attribution. |
+| `analytics_default_allow_analytics_storage` | boolean | Android, iOS | `true` on Android. Not set on iOS. | Default consent for storage related to analytics, such as app identifiers and visit duration. |
+| `analytics_default_allow_ad_storage` | boolean | Android, iOS | `true` on Android. Not set on iOS. | Default consent for storage related to advertising, such as device identifiers. |
+| `analytics_default_allow_ad_user_data` | boolean | Android, iOS | `true` on Android. Not set on iOS. | Default consent for sending user data to Google for advertising purposes. |
+| `analytics_default_allow_ad_personalization_signals` | boolean | Android, iOS | `true` on Android. Not set on iOS. | Whether a user's Analytics data may be used for personalized advertising in other products. |
+| `messaging_android_notification_delivery_metrics_export_enabled` | boolean | Android only | `false` | `true` exports Cloud Messaging message delivery metrics to BigQuery. |
+| `messaging_max_stored_notifications` | number | Android only | `100` | Number of notifications kept on the device for background storage. A value of zero or below disables storage. Values in the app's native React Native Firebase preferences take priority over `firebase.json`, which takes priority over `AndroidManifest.xml` meta-data. |
+| `perf_collection_deactivated` | boolean | Android, iOS | `false` | `true` deactivates Performance Monitoring collection permanently in that build. It cannot be changed at runtime. |
+
+Example `firebase.json` that turns off default data collection, sets the iOS log level and raises the Android executor pool size:
+
+```json
+{
+  "$schema": "./node_modules/@react-native-firebase/app/firebase-schema.json",
+  "react-native": {
+    "app_data_collection_default_enabled": false,
+    "app_log_level": "debug",
+    "android_task_executor_maximum_pool_size": 10
+  }
+}
+```
+
+## File lookup and parsing
+
+Each native build step finds `firebase.json` on its own. A file in the project root is found by all of them:
+
+- Android (Gradle): checks the parent directory of the `android/` folder (the project root), then up to three directories above it.
+- iOS (CocoaPods): checks up to five directories above the `@react-native-firebase/app` package.
+- iOS (Xcode build script): searches the project root first and, only if it finds nothing, the parent of the project root. In each of those two directories it matches a `firebase.json` that sits directly in the directory or directly inside a folder in that directory. The first match found wins, and the order in which those folders are visited is not specified.
+
+Because of the Xcode build script search, keep a single `firebase.json` at the project root. A second `firebase.json` inside a nested folder, for example a Firebase CLI project folder, can be picked instead of the root file.
+
+Keep the file strict JSON: no comments and no trailing commas. A parse failure behaves differently on each step:
+
+- Android: the build logs a warning that `firebase.json` failed to parse and continues with an empty configuration.
+- iOS, `pod install`: prints a warning and continues with defaults.
+- iOS, Xcode build script: if the file cannot be parsed, the build fails with `Failed to parse firebase.json, check for syntax errors.` The script also needs `python3` on the path once the file has a `react-native` key. If the Python step that bakes the config into `Info.plist` fails, the baked config falls back to `{}`. At runtime, iOS also falls back to `{}` when the baked value cannot be decoded.
+
+If no `firebase.json` is found, the iOS build prints a warning and continues with defaults. A CI build that hangs at the Core Configuration step may be fixed by creating the file with an empty `react-native` object, as described in [FAQs and Tips](/faqs-and-tips).
+
 ## Reading config at runtime
 
-After a native rebuild, call `jsonGetAll` to read the constants that were baked in from `firebase.json`. This is a React Native Firebase helper (no firebase-js-sdk modular equivalent):
+After a native rebuild, call `jsonGetAll` to read the constants that were baked in from `firebase.json`. This is a React Native Firebase helper (no firebase-js-sdk modular equivalent). On [Other platforms](/platforms#other-platforms) it resolves to an empty object:
 
 ```js
 import { jsonGetAll } from '@react-native-firebase/app';

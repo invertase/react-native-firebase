@@ -1,5 +1,5 @@
 ---
-title: Core/App
+title: Core / App
 description: 'Core App module: default and secondary Firebase apps, logging, Async Storage wiring, native meta/preferences helpers, platform support, and New Architecture requirements.'
 next: /app/json-config
 previous: /storage/usage
@@ -17,7 +17,7 @@ The App module ships with `@react-native-firebase/app` and provides:
 
 - Creating [Secondary Firebase App Instances](/app/usage#secondary-apps).
 - [Logging](/app/usage#logging) via `setLogLevel` and `onLog`.
-- Wiring [Async Storage](/app/usage#async-storage) for Other/Hermes persistence paths.
+- Wiring [Async Storage](/app/usage#async-storage) for persistence on [Other platforms](/platforms#other-platforms).
 - Reading [native meta and preferences](/app/usage#native-meta-and-preferences).
 - Exposing [Utilities](/app/utils) to aid development.
 - Configuring modules via [`firebase.json`](/app/json-config).
@@ -27,10 +27,10 @@ The App module ships with `@react-native-firebase/app` and provides:
 {/* prettier-ignore */}
 | | |
 | --- | --- |
-| **Platforms** | Android, iOS (native Firebase SDK) |
+| **Platforms** | Android and iOS (native Firebase SDK). Other platforms use the JavaScript fallback described in [Platforms](/platforms#other-platforms). |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `initializeApp` returns a `Promise` on React Native (native bridge). `registerVersion` is **web only** and throws on native platforms. Device file paths and Play Services helpers live on [Utils](/app/utils) (`getUtils`, `FilePath`).
+**Platform notes:** `initializeApp` returns a `Promise` on React Native (native bridge). `registerVersion` is not supported by React Native Firebase and always throws on every platform. Device file paths and Play Services helpers live on [Utils](/app/utils) (`getUtils`, `FilePath`).
 
 # Package version
 
@@ -46,7 +46,7 @@ function logAppPackageVersion() {
 
 # Default app
 
-On Android and iOS the default Firebase app is created from native config during launch. Call `getApp()` with no arguments to use it. `getApp(name)` throws if that named app has not been initialized:
+On Android and iOS the default Firebase app is created from native config during launch. On [Other platforms](/platforms#other-platforms) there is no native config, so `getApp()` throws until you call `initializeApp` with your Firebase web config. Call `getApp()` with no arguments to use the default app. `getApp(name)` throws if that named app has not been initialized:
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -59,7 +59,7 @@ function logDefaultApp() {
 }
 ```
 
-`FirebaseApp.name` and `FirebaseApp.options` are read-only. `automaticDataCollectionEnabled` is settable (GDPR opt-in/out for startup data collection when module-specific overrides are absent):
+`FirebaseApp.name` and `FirebaseApp.options` are read-only. `automaticDataCollectionEnabled` can be read and set:
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -70,12 +70,17 @@ function enableAutomaticDataCollection() {
 }
 ```
 
+Setting the property on a deleted app throws.
+
 # Secondary Apps
 
-You do not need to call [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
-with your default project credentials on Android and iOS. The native Android and iOS SDKs connect to your Firebase project using
-the credentials provided during the [Getting Started](/) installation steps. The app module does provide support
-for manually initializing secondary Firebase app instances (see also [Configure multiple projects](https://firebase.google.com/docs/projects/multiprojects)).
+You do not need to call `initializeApp` with your default project credentials on Android and iOS. The native Android and iOS SDKs connect to your Firebase project using the credentials provided during the [Getting Started](/) installation steps. The app module does provide support for manually initializing secondary Firebase app instances. Firebase's [Configure multiple projects](https://firebase.google.com/docs/projects/multiprojects) guide covers the concept, and the [`@react-native-firebase/app` reference](https://reference.rnfirebase.io/_react-native-firebase/app.html) lists the `initializeApp` signature.
+
+The Firebase guide includes caveats that apply when an app uses runtime configuration:
+
+- On Android and Apple platforms, Analytics events are only logged for the default app.
+- Supply a single Google app ID in each distributed variant of your app. Shipping a release with a different ID than the previous one can cause Analytics data to be dropped.
+- On Apple platforms, Firebase advises against adding `GoogleService-Info.plist` to a project that supplies a different configuration at run time, because the Google app ID can appear to change. A secondary app created with a new name does not replace the default app, which still needs the plist from Getting Started.
 
 The native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
@@ -91,15 +96,13 @@ The native Firebase SDKs only provide functionality for creating secondary apps 
 
 ## Initializing secondary apps
 
-The module exposes an `initializeApp` method which accepts arguments containing the credentials and options for your secondary
-apps. Replace the placeholder credential strings with values from the Firebase console for that secondary project:
+The module exposes an `initializeApp` method which accepts arguments containing the credentials and options for your secondary apps. Replace the placeholder credential strings with values from the Firebase console for that secondary project:
 
 ```js
 import { initializeApp } from '@react-native-firebase/app';
 
 // Secondary Firebase project credentials (replace placeholders).
 const credentials = {
-  clientId: '1234567890-abc.apps.googleusercontent.com',
   appId: '1:1234567890:ios:abcdef123456',
   apiKey: 'AIzaSyExampleApiKeyForSecondaryApp',
   databaseURL: 'https://my-secondary-project.firebaseio.com',
@@ -110,6 +113,7 @@ const credentials = {
 
 const config = {
   name: 'SECONDARY_APP',
+  automaticDataCollectionEnabled: true,
 };
 
 async function createSecondaryApp() {
@@ -117,6 +121,39 @@ async function createSecondaryApp() {
   return secondaryApp;
 }
 ```
+
+### Required options
+
+`initializeApp` rejects before reaching native code unless all six of `apiKey`, `appId`, `databaseURL`, `messagingSenderId`, `projectId` and `storageBucket` are strings. Firebase's multiple projects guide lists only the project ID, app ID and API key as required, so React Native Firebase asks for more. The `FirebaseAppOptions` TypeScript type marks several of these as optional, but the runtime check still applies, even when the app does not use Realtime Database or Cloud Storage.
+
+Each platform reads a different subset of the options. On [Other platforms](/platforms#other-platforms) the options go to the firebase-js-sdk, so the Other column describes what React Native Firebase passes on:
+
+{/* prettier-ignore */}
+| Option | Required by `initializeApp` | Android | iOS | Other |
+| --- | --- | --- | --- | --- |
+| `apiKey`, `appId`, `databaseURL`, `messagingSenderId`, `projectId`, `storageBucket` | Yes. The promise rejects with `Missing or invalid FirebaseOptions property '<name>'.` | Read | Read | Passed on |
+| `measurementId` | No | Read as the Google Analytics tracking ID | Not read | Passed on |
+| `authDomain` | No | Read, used as the custom Auth domain for the app | Read, used as the custom Auth domain for the app | Passed on |
+| `iosBundleId`, `iosClientId`, `appGroupId` | No | Not read | Read | Passed on |
+| `clientId` | No | Not read | Not read | Removed before the options are passed on |
+| `androidClientId`, `deepLinkURLScheme` | No | Not read | Not read | Passed on |
+
+The iOS OAuth client ID for a secondary app goes in `iosClientId`. A `clientId` value is accepted without error, but `initializeApp` does not read it on Android or iOS and strips it on Other platforms. On iOS the default app's `options.clientId` can still be populated from `GoogleService-Info.plist`.
+
+### Config options
+
+The second argument is either the app name as a string, or a config object:
+
+{/* prettier-ignore */}
+| Config key | Object form when omitted | String form | Platform |
+| --- | --- | --- | --- |
+| `name` | `[DEFAULT]` | The string you pass | Android, iOS, Other |
+| `automaticDataCollectionEnabled` | Not set, see below | `true` | Android, iOS, Other |
+| `automaticResourceManagement` | Not set | `false` | Android only. iOS and Other do not read it. |
+
+When you pass a config object and leave out `automaticDataCollectionEnabled`, the JavaScript layer does not fill in a value, and the `automaticDataCollectionEnabled` property on the returned `FirebaseApp` is `false`. That property is taken from the config you passed rather than read back from the platform SDK. Pass `automaticDataCollectionEnabled` explicitly, as the examples on this page do.
+
+Re-initializing a name that already exists rejects with `Firebase App named '<name>' already exists`. Check `getApps()` first when the code can run more than once, because `initializeApp` does not return the existing app.
 
 If you use multiple platforms, select the credentials for the platform that is running:
 
@@ -126,7 +163,6 @@ import { Platform } from 'react-native';
 
 // Secondary Firebase project credentials for Android (replace placeholders).
 const androidCredentials = {
-  clientId: '1234567890-android.apps.googleusercontent.com',
   appId: '1:1234567890:android:abcdef123456',
   apiKey: 'AIzaSyExampleAndroidApiKey',
   databaseURL: 'https://my-secondary-project.firebaseio.com',
@@ -137,7 +173,7 @@ const androidCredentials = {
 
 // Secondary Firebase project credentials for iOS (replace placeholders).
 const iosCredentials = {
-  clientId: '1234567890-ios.apps.googleusercontent.com',
+  iosClientId: '1234567890-ios.apps.googleusercontent.com',
   appId: '1:1234567890:ios:abcdef123456',
   apiKey: 'AIzaSyExampleIosApiKey',
   databaseURL: 'https://my-secondary-project.firebaseio.com',
@@ -148,6 +184,7 @@ const iosCredentials = {
 
 const config = {
   name: 'SECONDARY_APP',
+  automaticDataCollectionEnabled: true,
 };
 
 async function createSecondaryAppForPlatform() {
@@ -178,13 +215,29 @@ function listApps() {
 
 ## Switching app instance
 
-Switch app instances by calling `getApp` with the secondary app name, then pass that app into another module:
+Switch app instances by calling `getApp` with the secondary app name, then pass that app into another module. `getApp` throws until the secondary app exists, so the example creates it first when it is missing:
 
 ```js
-import { getApp } from '@react-native-firebase/app';
+import { getApp, getApps, initializeApp } from '@react-native-firebase/app';
 import { getAuth } from '@react-native-firebase/auth';
 
-function currentUserOnSecondaryApp() {
+async function currentUserOnSecondaryApp() {
+  if (!getApps().some(app => app.name === 'SECONDARY_APP')) {
+    const credentials = {
+      appId: '1:1234567890:ios:abcdef123456',
+      apiKey: 'AIzaSyExampleApiKeyForSecondaryApp',
+      databaseURL: 'https://my-secondary-project.firebaseio.com',
+      storageBucket: 'my-secondary-project.appspot.com',
+      messagingSenderId: '1234567890',
+      projectId: 'my-secondary-project',
+    };
+
+    await initializeApp(credentials, {
+      name: 'SECONDARY_APP',
+      automaticDataCollectionEnabled: true,
+    });
+  }
+
   const secondaryApp = getApp('SECONDARY_APP');
   return getAuth(secondaryApp).currentUser;
 }
@@ -198,7 +251,6 @@ import { getAuth } from '@react-native-firebase/auth';
 
 async function currentUserFromInitializedApp() {
   const credentials = {
-    clientId: '1234567890-abc.apps.googleusercontent.com',
     appId: '1:1234567890:ios:abcdef123456',
     apiKey: 'AIzaSyExampleApiKeyForSecondaryApp',
     databaseURL: 'https://my-secondary-project.firebaseio.com',
@@ -209,6 +261,7 @@ async function currentUserFromInitializedApp() {
 
   const config = {
     name: 'SECONDARY_APP',
+    automaticDataCollectionEnabled: true,
   };
 
   const secondaryApp = await initializeApp(credentials, config);
@@ -221,17 +274,39 @@ async function currentUserFromInitializedApp() {
 Delete a secondary instance with `deleteApp` (or `app.delete()` on the instance):
 
 ```js
-import { deleteApp, getApp } from '@react-native-firebase/app';
+import { deleteApp, getApp, getApps } from '@react-native-firebase/app';
 
 async function deleteSecondaryApp() {
-  const secondaryApp = getApp('SECONDARY_APP');
-  await deleteApp(secondaryApp);
+  const exists = getApps().some(app => app.name === 'SECONDARY_APP');
+  if (!exists) {
+    return;
+  }
+  await deleteApp(getApp('SECONDARY_APP'));
 }
 ```
 
+Deletion has these edge cases:
+
+- The default app created from native config cannot be deleted. The promise rejects with `Unable to delete the default native firebase app instance.`
+- Deleting an app that is already deleted throws synchronously (it does not return a rejected promise) with `Firebase App named '<name>' already deleted`.
+- After deletion, `app.delete()` and the `automaticDataCollectionEnabled` setter throw the same error synchronously.
+- `getApp(name)` throws for a name that was never created or has been deleted.
+
 # Logging
 
-Use `setLogLevel` to control which Firebase SDK log messages are emitted. Accepted levels: `debug`, `verbose`, `info`, `warn`, `error`, `silent`. All levels at or above the current setting are captured (for example, `info` includes `warn` and `error`, but not `debug`):
+`setLogLevel` and `onLog` do not control every Firebase SDK log. Their scope depends on the platform:
+
+{/* prettier-ignore */}
+| API | Effect |
+| --- | --- |
+| `setLogLevel` on the JavaScript logger | Sets the level for the JavaScript logger. Of the React Native Firebase packages, only `@react-native-firebase/ai` writes to it, using the logger name `@firebase/ai`. The default level is `info`. |
+| `setLogLevel` on iOS | Also sets the native Firebase iOS SDK logger. `verbose` maps to `debug`. |
+| `setLogLevel` on Android | No effect on native Android SDK logs. |
+| `setLogLevel` on Other platforms | Also forwarded to the JavaScript fallback implementation. |
+| `onLog` | Receives only messages from the JavaScript logger, which means AI Logic messages. |
+| `app_log_level` in `firebase.json` | Sets the native iOS SDK level at startup. Ignored on Android. See [Firebase JSON Config](/app/json-config). |
+
+Accepted levels are `debug`, `verbose`, `info`, `warn` and `error`. Any other value, including `silent`, throws `LogLevel must be one of "error", "warn", "info", "debug", "verbose"`, even though the TypeScript `LogLevelString` type includes `silent`. All levels at or above the current setting are captured (for example, `info` includes `warn` and `error`, but not `debug`):
 
 ```js
 import { setLogLevel } from '@react-native-firebase/app';
@@ -241,7 +316,7 @@ function enableDebugLogs() {
 }
 ```
 
-Use `onLog` to install a custom log handler. The callback receives a `LogCallbackParams` object (`level`, `message`, `args`, `type`). Optional `LogOptions` can constrain which levels call your handler. Pass `null` to clear the handler:
+Use `onLog` to install a custom log handler. The callback receives a `LogCallbackParams` object (`level`, `message`, `args`, `type`). `type` is the logger name, for example `@firebase/ai`. Without options, the handler follows the level you set with `setLogLevel`. The optional `LogOptions.level` replaces that level for the handler, which then receives messages at that level or above. `'silent'` is accepted here and delivers no messages. Pass `null` to clear the handler:
 
 ```js
 import { onLog } from '@react-native-firebase/app';
@@ -264,29 +339,25 @@ function clearLogHandler() {
 
 # Async Storage
 
-`setReactNativeAsyncStorage` wires an Async Storage implementation into the firebase-js-sdk Other/Hermes persistence path (Auth sessions, Analytics device IDs, and similar). Call it during bootstrap before you rely on that persistence. On Android and iOS native SDKs handle their own storage; this hook matters for Other platforms and shared JS persistence paths.
+`setReactNativeAsyncStorage` supplies the storage that the JavaScript fallback for Auth and Analytics uses for persistence (Auth sessions, Analytics device IDs) on [Other platforms](/platforms#other-platforms), meaning platforms other than Android and iOS. Call it during bootstrap before you rely on that persistence. On Android and iOS the native SDKs handle their own storage, so the hook does not change native persistence. Entries are stored under keys that start with `@react-native-firebase:`.
+
+Pass the storage object from `@react-native-async-storage/async-storage`. Any object that implements `getItem`, `setItem` and `removeItem` also works:
 
 ```js
+// codeblock-ignore: requires the @react-native-async-storage/async-storage package
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { setReactNativeAsyncStorage } from '@react-native-firebase/app';
 
 function configureAsyncStorage() {
-  // Replace with: import AsyncStorage from '@react-native-async-storage/async-storage'
-  // then pass AsyncStorage. The object must implement getItem / setItem / removeItem.
-  const asyncStorage = {
-    getItem: async _key => null,
-    setItem: async (_key, _value) => {},
-    removeItem: async _key => {},
-  };
-
-  setReactNativeAsyncStorage(asyncStorage);
+  setReactNativeAsyncStorage(AsyncStorage);
 }
 ```
 
-If you do not call `setReactNativeAsyncStorage`, an in-memory implementation is used and persisted JS state is lost on restart.
+The call throws if the argument is not an object with all three functions. If you do not call `setReactNativeAsyncStorage`, an in-memory implementation is used and persisted JavaScript state is lost on restart. See [Platforms](/platforms#async-storage) for the storage package versions and the `createAsyncStorage` form.
 
 # Native meta and preferences
 
-These helpers talk to React Native Firebase native stores (Info.plist / AndroidManifest meta, `firebase.json` constants, and shared preferences). They have no firebase-js-sdk modular equivalents.
+These helpers talk to React Native Firebase native stores (Info.plist / AndroidManifest meta, `firebase.json` constants, and shared preferences). They have no firebase-js-sdk modular equivalents. On [Other platforms](/platforms#other-platforms), `metaGetAll` and `jsonGetAll` resolve to an empty object, and the preferences functions use an in-memory store that is lost on restart.
 
 Read native meta (plist / manifest) entries with `metaGetAll`:
 
@@ -329,15 +400,15 @@ async function nativePreferencesExample() {
 }
 ```
 
-# `registerVersion` (web only)
+# `registerVersion` (unsupported)
 
-`registerVersion` exists for API parity with the web SDK. On React Native Firebase it always throws; native SDK version registration is handled by the Firebase iOS and Android SDKs.
+`registerVersion` exists for API parity with the web SDK. React Native Firebase does not support it and it always throws on every platform, because native SDK version registration is handled by the Firebase iOS and Android SDKs.
 
 ```js
 import { registerVersion } from '@react-native-firebase/app';
 
 function tryRegisterVersion() {
-  // This call throws on React Native: "registerVersion is only supported on Web".
+  // This call always throws: "registerVersion is only supported on Web".
   registerVersion('my-library', '1.0.0');
 }
 ```

@@ -9,13 +9,32 @@ previous: /app/json-config
 
 - `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup).
 - Test Lab example below also imports `@react-native-firebase/analytics`. Install that package only if you use Analytics: `npm install --save @react-native-firebase/analytics` or `yarn add @react-native-firebase/analytics`, then rebuild native apps.
-- Play Services helpers below are meaningful on Android. On iOS they resolve as available / no-ops.
+- Play Services helpers below are meaningful on Android. On iOS they resolve as available / no-ops. On Other platforms they throw.
 
 The App module exposes utility helpers for development and device environment checks. Import `getUtils` and `FilePath` from `@react-native-firebase/app`. There is no firebase-js-sdk modular equivalent for these helpers.
 
+# Other platforms
+
+On [Other platforms](/platforms#other-platforms), `getUtils()` has no implementation behind it. It still needs a default app created with `initializeApp`. Behavior there:
+
+- `appVersion` is `undefined`.
+- Every `FilePath` constant is `null`.
+- `isRunningInTestLab` and the four Play Services methods throw an error instead of returning a value or a promise.
+
+Guard those calls with `Platform.OS` when the same code also runs on Other platforms:
+
+```js
+import { Platform } from 'react-native';
+import { getUtils } from '@react-native-firebase/app';
+
+function isRunningInTestLab() {
+  return Platform.OS === 'android' && getUtils().isRunningInTestLab;
+}
+```
+
 # File Paths
 
-When working with modules such as [Cloud Storage](/storage), you may need the device's
+When working with modules such as [Cloud Storage](/storage/usage), you may need the device's
 directory paths. Rather than installing a separate module, the library provides static path
 constants on `FilePath`.
 
@@ -29,6 +48,31 @@ function logPicturesDirectory() {
 }
 ```
 
+`FilePath` has nine constants. Each value is an absolute path without a trailing slash, so join a file name with `/`. A constant is `null` when the platform has no such directory, and every constant is `null` on [Other platforms](/platforms#other-platforms).
+
+{/* prettier-ignore */}
+| Constant | Android | iOS |
+| --- | --- | --- |
+| `MAIN_BUNDLE` | `null` | Path of the application main bundle. |
+| `CACHES_DIRECTORY` | App cache directory. The system can delete files here when disk space is needed. | Caches directory. The system can delete files here when disk space is needed. |
+| `TEMP_DIRECTORY` | App cache directory (same path as `CACHES_DIRECTORY`). | Temporary directory. |
+| `DOCUMENT_DIRECTORY` | App-specific external files directory, falling back to internal storage when external storage is unavailable. The path can differ between runs if the storage environment changes. | Documents directory. |
+| `LIBRARY_DIRECTORY` | App internal files directory. | Library directory. |
+| `EXTERNAL_DIRECTORY` | App-specific external files directory, or `null` when external storage is unavailable (for example removable media was ejected). | `null` |
+| `EXTERNAL_STORAGE_DIRECTORY` | Primary shared external storage directory, or `null` when unavailable. Writing here needs special permission granted by Play Store review, so it is unlikely to be a valid path. | `null` |
+| `PICTURES_DIRECTORY` | Public pictures directory. Needs special permission granted by Play Store review, so it is unlikely to be a valid path. | Pictures directory. |
+| `MOVIES_DIRECTORY` | Public movies directory. Needs special permission granted by Play Store review, so it is unlikely to be a valid path. | Movies directory. |
+
+Build a path inside a directory by joining a file name:
+
+```js
+import { FilePath } from '@react-native-firebase/app';
+
+function cacheFilePath(fileName) {
+  return `${FilePath.CACHES_DIRECTORY}/${fileName}`;
+}
+```
+
 # Test Lab
 
 Firebase [TestLab](https://firebase.google.com/docs/test-lab/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=utils)
@@ -39,7 +83,7 @@ and screenshots) in the Firebase console.
 It is useful to change the app's configuration when it is running in Test Lab, for example disabling Analytics
 data collection, via `getUtils().isRunningInTestLab`.
 
-> Be aware, `isRunningInTestLab` is an Android-only property. On iOS it is always `false`.
+> Be aware, `isRunningInTestLab` is an Android-only property. On iOS it is always `false`. On Other platforms reading it throws.
 
 ```js
 import { getUtils } from '@react-native-firebase/app';
@@ -74,14 +118,24 @@ function logAppVersion() {
 
 # Android - Checking Play Services
 
-It is useful to know if the Android device has Play Services available, and what to do in response to certain cases:
+It is useful to know if the Android device has Play Services available, and what to do in response to certain cases. `getUtils()` provides four Play Services methods, all of which return a `Promise`:
+
+{/* prettier-ignore */}
+| Method | Android behavior | iOS |
+| --- | --- | --- |
+| `getPlayServicesStatus()` | Resolves with `status` and `isAvailable`. When Play Services is not available it also includes `error`, `isUserResolvableError` and `hasResolution`. | Resolves with `status: 0` and `isAvailable: true`. |
+| `promptForPlayServices()` | Shows Google's error dialog when the problem is user-resolvable and an activity is in the foreground. Resolves without doing anything otherwise. | Resolves immediately. |
+| `makePlayServicesAvailable()` | Asks Google Play to install or update Play Services and may show a dialog. Rejects if the user cancels or the update fails. Resolves immediately when Play Services is already available or no activity is in the foreground. | Resolves immediately. |
+| `resolutionForPlayServices()` | Starts the resolution intent for the current problem, which needs user interaction. Resolves without doing anything when there is no resolution or no foreground activity. | Resolves immediately. |
+
+Read the status with `getPlayServicesStatus()` and wait for the promise. The `playServicesAvailability` property is typed as a plain object, but on Android it returns a `Promise`, so reading its fields directly gives `undefined`. Use the awaited result of `getPlayServicesStatus()` instead:
 
 ```js
 import { getUtils } from '@react-native-firebase/app';
 
 async function checkPlayServicesExample() {
   const { status, isAvailable, hasResolution, isUserResolvableError } =
-    getUtils().playServicesAvailability;
+    await getUtils().getPlayServicesStatus();
   // all good and valid
   if (isAvailable) return Promise.resolve();
   // if the user can resolve the issue (for example by updating Play Services)
@@ -110,5 +164,22 @@ async function checkPlayServicesExample() {
   // There's no way to resolve play services on this device
   // probably best to show a dialog / force crash the app
   return Promise.reject(new Error('Unable to find a valid play services version.'));
+}
+```
+
+`makePlayServicesAvailable()` can reject, so catch it when you call it. The rejection is a `NativeFirebaseError` whose `code` is `utils/unknown`, so the code does not say why the update did not complete. If your app needs to tell cases apart, such as the user dismissing the update, read `error.message`:
+
+```js
+import { getUtils } from '@react-native-firebase/app';
+
+async function installPlayServices() {
+  try {
+    await getUtils().makePlayServicesAvailable();
+    return true;
+  } catch (error) {
+    const { code, message } = /** @type {{ code?: string, message?: string }} */ (error);
+    console.log('Play Services update did not complete:', code, message);
+    return false;
+  }
 }
 ```

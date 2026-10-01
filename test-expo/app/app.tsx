@@ -25,6 +25,32 @@ import { ScreenChrome } from '../src/ScreenChrome';
 import { theme } from '../src/theme';
 
 const SECONDARY_APP_NAME = 'EXPO_APP_SECONDARY';
+const DELETE_DEMO_APP_NAME = 'EXPO_APP_DELETE_DEMO';
+
+/** Clones the default app options so a secondary app can be created on demand. */
+function secondaryAppOptions() {
+  const options = getApp().options;
+  return {
+    appId: options.appId,
+    projectId: options.projectId,
+    apiKey: options.apiKey,
+    databaseURL: options.databaseURL,
+    storageBucket: options.storageBucket,
+    messagingSenderId: options.messagingSenderId,
+  };
+}
+
+const FILE_PATH_KEYS = [
+  'MAIN_BUNDLE',
+  'CACHES_DIRECTORY',
+  'TEMP_DIRECTORY',
+  'DOCUMENT_DIRECTORY',
+  'LIBRARY_DIRECTORY',
+  'EXTERNAL_DIRECTORY',
+  'EXTERNAL_STORAGE_DIRECTORY',
+  'PICTURES_DIRECTORY',
+  'MOVIES_DIRECTORY',
+] as const;
 
 /** Minimal Async Storage shape for setReactNativeAsyncStorage demos (in-memory). */
 const memoryStore = new Map<string, string>();
@@ -85,50 +111,79 @@ export default function AppScreen() {
         title="getApps"
         onPress={() => run('getApps', () => getApps().map(app => app.name))}
       />
-      <AppButton
-        title="initializeApp (secondary)"
-        onPress={() =>
-          run('initializeApp', async () => {
-            const existing = getApps().find(app => app.name === SECONDARY_APP_NAME);
-            if (existing) {
-              return { name: existing.name, reused: true };
-            }
-            const options = getApp().options;
-            const secondary = await initializeApp(
-              {
-                appId: options.appId,
-                projectId: options.projectId,
-                apiKey: options.apiKey,
-                databaseURL: options.databaseURL,
-                storageBucket: options.storageBucket,
-                messagingSenderId: options.messagingSenderId,
-                clientId: options.clientId,
-              },
-              { name: SECONDARY_APP_NAME },
-            );
-            return { name: secondary.name, reused: false };
-          })
-        }
-      />
-      <AppButton
-        title="getApp (secondary)"
-        onPress={() =>
-          run('getApp(secondary)', () => {
-            const app = getApp(SECONDARY_APP_NAME);
-            return { name: app.name, projectId: app.options.projectId };
-          })
-        }
-      />
-      <AppButton
-        title="deleteApp (secondary)"
-        onPress={() =>
-          run('deleteApp', async () => {
-            const app = getApp(SECONDARY_APP_NAME);
-            await deleteApp(app);
-            return { deleted: SECONDARY_APP_NAME };
-          })
-        }
-      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="initializeApp (secondary)"
+          onPress={() =>
+            run('initializeApp', async () => {
+              const existing = getApps().find(app => app.name === SECONDARY_APP_NAME);
+              if (existing) {
+                return { name: existing.name, reused: true };
+              }
+              const secondary = await initializeApp(secondaryAppOptions(), {
+                name: SECONDARY_APP_NAME,
+                automaticDataCollectionEnabled: true,
+              });
+              return { name: secondary.name, reused: false };
+            })
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: rejects unless the default app options include all of apiKey, appId, databaseURL,
+          messagingSenderId, projectId and storageBucket.
+        </Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="getApp (secondary)"
+          onPress={() =>
+            run('getApp(secondary)', () => {
+              const app = getApp(SECONDARY_APP_NAME);
+              return { name: app.name, projectId: app.options.projectId };
+            })
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: throws unless the secondary app exists. Run initializeApp (secondary) first.
+        </Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="deleteApp (secondary)"
+          onPress={() =>
+            run('deleteApp', async () => {
+              const app = getApp(SECONDARY_APP_NAME);
+              await deleteApp(app);
+              return { deleted: SECONDARY_APP_NAME };
+            })
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: throws unless the secondary app exists, including after it has been deleted.
+        </Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="app.delete() (separate demo app)"
+          onPress={() =>
+            run('app.delete', async () => {
+              const existing = getApps().find(app => app.name === DELETE_DEMO_APP_NAME);
+              const demoApp =
+                existing ??
+                (await initializeApp(secondaryAppOptions(), {
+                  name: DELETE_DEMO_APP_NAME,
+                  automaticDataCollectionEnabled: true,
+                }));
+              await demoApp.delete();
+              return { deleted: DELETE_DEMO_APP_NAME };
+            })
+          }
+        />
+        <Text style={styles.warnText}>
+          Creates a separate secondary app named {DELETE_DEMO_APP_NAME} on demand, then deletes it
+          with app.delete(). The default app and {SECONDARY_APP_NAME} are not touched.
+        </Text>
+      </View>
       <AppButton
         title="automaticDataCollectionEnabled = true"
         onPress={() =>
@@ -141,6 +196,11 @@ export default function AppScreen() {
       />
 
       <Text style={styles.section}>Logging</Text>
+      <Text style={styles.hint}>
+        setLogLevel sets the JavaScript logger level (only AI Logic writes to it) and the iOS native
+        SDK level. It has no effect on Android native logs. onLog receives JavaScript logger
+        messages only. Levels: debug, verbose, info, warn, error ('silent' throws).
+      </Text>
       <AppButton
         title="setLogLevel (warn)"
         onPress={() => run('setLogLevel', () => setLogLevel('warn'))}
@@ -221,20 +281,75 @@ export default function AppScreen() {
         onPress={() => run('FilePath', () => FilePath.PICTURES_DIRECTORY)}
       />
       <AppButton
-        title="getUtils (appVersion / Test Lab)"
+        title="FilePath (all constants)"
         onPress={() =>
-          run('getUtils', () => {
+          run('FilePath', () => {
+            const paths: Record<string, string | null> = {};
+            for (const key of FILE_PATH_KEYS) {
+              paths[key] = FilePath[key];
+            }
+            return paths;
+          })
+        }
+      />
+      <AppButton
+        title="getUtils (appVersion / Test Lab / Play Services)"
+        onPress={() =>
+          run('getUtils', async () => {
             const utils = getUtils();
+            const playServices = await utils.getPlayServicesStatus();
             return {
               appVersion: utils.appVersion ?? null,
               isRunningInTestLab: utils.isRunningInTestLab,
-              playServicesAvailable: utils.playServicesAvailability.isAvailable,
+              playServicesAvailable: playServices.isAvailable,
             };
           })
         }
       />
+      <AppButton
+        title="getPlayServicesStatus"
+        onPress={() => run('getPlayServicesStatus', () => getUtils().getPlayServicesStatus())}
+      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="promptForPlayServices — Android dialog"
+          variant="secondary"
+          onPress={() => run('promptForPlayServices', () => getUtils().promptForPlayServices())}
+        />
+        <Text style={styles.warnText}>
+          Warning: Android only. May show a Google Play services dialog. Resolves without effect on
+          iOS.
+        </Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="makePlayServicesAvailable — may reject"
+          variant="secondary"
+          onPress={() =>
+            run('makePlayServicesAvailable', () => getUtils().makePlayServicesAvailable())
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: Android only. May show a dialog and can reject with a NativeFirebaseError whose
+          code is utils/unknown. Read error.message to tell cases apart. Resolves without effect on
+          iOS.
+        </Text>
+      </View>
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="resolutionForPlayServices — Android intent"
+          variant="secondary"
+          onPress={() =>
+            run('resolutionForPlayServices', () => getUtils().resolutionForPlayServices())
+          }
+        />
+        <Text style={styles.warnText}>
+          Warning: Android only. May start a system resolution screen. Resolves without effect on
+          iOS.
+        </Text>
+      </View>
 
-      <Text style={styles.section}>Web-only (throws)</Text>
+      <Text style={styles.section}>Unsupported (throws)</Text>
       <View style={styles.warnBlock}>
         <AppButton
           title="registerVersion() — throws"
@@ -246,7 +361,8 @@ export default function AppScreen() {
           }
         />
         <Text style={styles.warnText}>
-          Warning: `registerVersion` always throws on React Native Firebase (web only).
+          Warning: `registerVersion` is not supported by React Native Firebase and always throws on
+          every platform.
         </Text>
       </View>
     </ScreenChrome>

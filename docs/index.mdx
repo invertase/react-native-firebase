@@ -451,7 +451,6 @@ On Android, React Native Firebase uses [thread pool executor](https://developer.
 To increase throughput, you can tune the thread pool executor via `firebase.json` file within the root of your project. Create or edit this file **before** the next native rebuild:
 
 ```json
-// File: <project-root>/firebase.json. Optional Android executor tuning. Apply before the next native rebuild.
 {
   "react-native": {
     "android_task_executor_maximum_pool_size": 10,
