@@ -1,6 +1,6 @@
 ---
 title: Offline Support
-description: 'Realtime Database offline persistence: setPersistenceEnabled(), the database_persistence_enabled firebase.json flag, goOffline()/goOnline(), setPersistenceCacheSizeBytes(), keepSynced(), and getServerTime().'
+description: 'Realtime Database offline persistence: setPersistenceEnabled(), goOffline()/goOnline(), setPersistenceCacheSizeBytes(), keepSynced(), and getServerTime().'
 next: /database/presence-detection
 previous: /database/usage
 ---
@@ -9,16 +9,14 @@ previous: /database/usage
 
 - `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
 - `@react-native-firebase/database` installed: `npm install --save @react-native-firebase/database` or `yarn add @react-native-firebase/database`, then rebuild native apps (`cd ios && pod install` on iOS).
-- Call `setPersistenceEnabled` as early as possible in app startup (before other Database reads/writes in that process), or enable persistence via `firebase.json` as shown on [Realtime Database usage](/database/usage#enabling-persistence).
+- Call `setPersistenceEnabled` as early as possible in app startup, before other Database reads or writes in that process.
 
-The Realtime Database provides support for offline environments. By default, data will be stored locally on your device
-and automatically managed by the Firebase SDKs.
+The Realtime Database provides support for offline environments. While the app is running, the native Firebase SDKs serve
+reads and queue writes from a local cache. Enable disk persistence to keep that data across app restarts.
 
 # Enabling Persistence
 
-Persistence is disabled by default when using Realtime Database, however it
-[can be changed to be enabled by default in the firebase.json](/database/usage#enabling-persistence). You can also enable persistence programmatically by calling `setPersistenceEnabled`
-as early on in your application code as possible. `setPersistenceEnabled` configures the native iOS/Android SDK persistence layer (there is no standalone modular firebase-js-sdk equivalent):
+Persistence is disabled by default when using Realtime Database. Enable it by calling `setPersistenceEnabled` as early on in your application code as possible. `setPersistenceEnabled` configures the native iOS/Android SDK persistence layer (there is no standalone modular firebase-js-sdk equivalent):
 
 ```js
 // index.js
@@ -97,7 +95,7 @@ goOnline(getDatabase());
 
 By default Firebase Database will use up to `10MB` of disk space to cache data. If the cache grows beyond this size,
 Firebase Database will start removing data that hasn't been recently used. If you find that your application caches too
-little or too much data, call `setPersistenceCacheSizeBytes` to update the default cache size. Valid range is 1 MB–100 MB; call it before other database references are used. Like `setPersistenceEnabled`, this is a React Native Firebase helper with no standalone modular firebase-js-sdk equivalent:
+little or too much data, call `setPersistenceCacheSizeBytes` to update the default cache size. Valid range is 1 MB to 100 MB; call it before other database references are used. Like `setPersistenceEnabled`, this is a React Native Firebase helper with no standalone modular firebase-js-sdk equivalent:
 
 ```js
 import { getDatabase, setPersistenceCacheSizeBytes } from '@react-native-firebase/database';

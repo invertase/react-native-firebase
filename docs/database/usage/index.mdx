@@ -496,7 +496,7 @@ writeNewPost('user-1', 'Ada', 'https://example.com/ada.png', 'Hello', 'First pos
 
 ### Pushing data
 
-Currently the examples have only demonstrated working with known reference node keys (e.g. `/users/123`). In some cases,
+The earlier examples address nodes by known reference keys (e.g. `/users/123`). In some cases,
 you may not have a suitable id or may want Firebase to automatically create a node with a generated key. The `push` function
 returns a [`ThenableReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/ThenableReference.html), allowing you to observe a node before it is
 sent to remote Firebase database.
@@ -607,7 +607,7 @@ database and the new [`DataSnapshot`](https://invertase.github.io/react-native-f
 
 # Logging
 
-`setLoggingEnabled` toggles native Realtime Database debug logging for the given database instance. Prefer this over the web-style `enableLogging` helper: on React Native Firebase, `enableLogging()` always throws (`enableLogging() is not implemented`).
+`setLoggingEnabled` toggles native Realtime Database debug logging. On iOS the setting applies to all database instances. On Android the log level is set on each database instance as that instance is configured. Use it instead of the web-style `enableLogging` helper.
 
 ```js
 import { getDatabase, setLoggingEnabled } from '@react-native-firebase/database';
@@ -617,6 +617,37 @@ async function enableNativeDatabaseLogging() {
   console.log('Native database logging enabled.');
 }
 ```
+
+## Functions that always throw
+
+Three functions exported by `@react-native-firebase/database` for web API parity are not implemented. Each throws a plain `Error` every time it is called, so do not call them in application code:
+
+| Function             | Error message                           | Alternative                                       |
+| -------------------- | --------------------------------------- | ------------------------------------------------- |
+| `enableLogging()`    | `enableLogging() is not implemented`    | `setLoggingEnabled(db, enabled)`                  |
+| `forceLongPolling()` | `forceLongPolling() is not implemented` | None on React Native Firebase (native transport). |
+| `forceWebSockets()`  | `forceWebSockets() is not implemented`  | None on React Native Firebase (native transport). |
+
+```js
+// WARNING: forceLongPolling(), forceWebSockets() and enableLogging() always throw on React Native Firebase.
+import { forceLongPolling, forceWebSockets, enableLogging } from '@react-native-firebase/database';
+
+function showThrowingFunctions() {
+  const attempts = [() => forceLongPolling(), () => forceWebSockets(), () => enableLogging(true)];
+
+  for (const attempt of attempts) {
+    try {
+      attempt();
+    } catch (error) {
+      console.log('Expected error:', error instanceof Error ? error.message : error);
+    }
+  }
+}
+
+showThrowingFunctions();
+```
+
+`off()` also always throws. See [Detach listeners](#detach-listeners).
 
 # Securing data
 
@@ -670,20 +701,19 @@ async function connectSecondaryDatabase() {
 }
 ```
 
-# firebase.json
+# Enabling persistence
 
-## Enabling persistence
+Disk persistence is off by default. Call `setPersistenceEnabled` once, before other database references are used in the app process, to let the native SDK cache data for offline use:
 
-The Realtime Database can be set to persist data on the user application to be used by the SDKs for offline usage
-and caching. To enable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
+```js
+import { getDatabase, setPersistenceEnabled } from '@react-native-firebase/database';
 
-```json
-// <project-root>/firebase.json
-{
-  "react-native": {
-    "database_persistence_enabled": true
-  }
+async function enablePersistence() {
+  await setPersistenceEnabled(getDatabase(), true);
+  console.log('Database persistence enabled.');
 }
+
+enablePersistence();
 ```
 
 For more on persistence, view the [Offline Support](/database/offline-support) documentation.

@@ -471,7 +471,7 @@ export default function DatabaseScreen() {
         }
       />
       <AppButton
-        title="off() — throws"
+        title="off() (throws)"
         variant="secondary"
         onPress={() =>
           run('off', () => {
@@ -605,20 +605,32 @@ export default function DatabaseScreen() {
 
       <Text style={styles.section}>Not implemented (throw)</Text>
       <AppButton
-        title="forceLongPolling() — throws"
+        title="forceLongPolling() (throws)"
         variant="secondary"
         onPress={() => run('forceLongPolling', () => forceLongPolling())}
       />
+      <Text style={styles.warning}>
+        Warning: `forceLongPolling() is not implemented`. Pressing the button calls
+        `forceLongPolling()` so you can see the thrown error.
+      </Text>
       <AppButton
-        title="forceWebSockets() — throws"
+        title="forceWebSockets() (throws)"
         variant="secondary"
         onPress={() => run('forceWebSockets', () => forceWebSockets())}
       />
+      <Text style={styles.warning}>
+        Warning: `forceWebSockets() is not implemented`. Pressing the button calls
+        `forceWebSockets()` so you can see the thrown error.
+      </Text>
       <AppButton
-        title="enableLogging() — throws"
+        title="enableLogging() (throws)"
         variant="secondary"
         onPress={() => run('enableLogging', () => enableLogging(true))}
       />
+      <Text style={styles.warning}>
+        Warning: `enableLogging() is not implemented`. Use `setLoggingEnabled()` instead. Pressing
+        the button calls `enableLogging()` so you can see the thrown error.
+      </Text>
     </ScreenChrome>
   );
 }
