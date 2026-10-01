@@ -83,6 +83,7 @@ jest.doMock('react-native', () => {
           addListener: jest.fn(),
           eventsAddListener: jest.fn(),
           eventsNotifyReady: jest.fn(),
+          eventsRemoveListener: jest.fn(),
           removeListeners: jest.fn(),
         },
         NativeRNFBTurboUtils: {
@@ -135,6 +136,7 @@ jest.doMock('react-native', () => {
           addListener: jest.fn(),
           eventsAddListener: jest.fn(),
           eventsNotifyReady: jest.fn(),
+          eventsRemoveListener: jest.fn(),
           removeListeners: jest.fn(),
         },
         NativeRNFBTurboAuth: {

@@ -12,13 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-// RN macOS 0.78 does not export EventEmitter from the public API; vendor path works on 0.78–0.88.
-import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
-import type { ReactNativeFirebaseEventEmitter } from '../types/internal';
+#import <RCTDefaultReactNativeFactoryDelegate.h>
+#import <RCTReactNativeFactory.h>
+#import <UIKit/UIKit.h>
 
-const emitter = new EventEmitter() as ReactNativeFirebaseEventEmitter;
+@interface SceneDelegate : RCTDefaultReactNativeFactoryDelegate <UIWindowSceneDelegate>
 
-export default emitter;
+@property(nonatomic, strong) UIWindow *window;
+@property(nonatomic, strong) RCTReactNativeFactory *reactNativeFactory;
+
+@end

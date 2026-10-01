@@ -2,6 +2,9 @@
   "name": "test-expo",
   "version": "26.4.0",
   "private": true,
+  "engines": {
+    "node": "^22.13.0"
+  },
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -27,21 +30,23 @@
     "@react-native-firebase/phone-number-verification": "26.4.0",
     "@react-native-firebase/remote-config": "26.4.0",
     "@react-native-firebase/storage": "26.4.0",
-    "expo": "57.0.14",
-    "expo-build-properties": "57.0.12",
-    "expo-constants": "57.0.12",
-    "expo-dev-client": "57.0.13",
-    "expo-linking": "57.0.6",
-    "expo-router": "57.0.14",
-    "react": "19.2.3",
-    "react-native": "0.86.2",
-    "react-native-gesture-handler": "2.32.0",
-    "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.26.0"
+    "expo": "58.0.0",
+    "expo-build-properties": "~58.0.9",
+    "expo-constants": "~58.0.9",
+    "expo-dev-client": "~58.0.9",
+    "expo-linking": "~58.0.9",
+    "expo-router": "~58.0.10",
+    "react": "19.3.0",
+    "react-native": "0.88.0-rc.3",
+    "react-native-gesture-handler": "~3.2.1",
+    "react-native-reanimated": "~4.7.0",
+    "react-native-safe-area-context": "~5.9.1",
+    "react-native-screens": "~4.28.0",
+    "react-native-worklets": "0.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
-    "babel-preset-expo": "57.0.6"
+    "babel-preset-expo": "~58.0.6"
   },
   "expo": {
     "autolinking": {

@@ -18,7 +18,7 @@ class MainApplication :
   Application(),
   ReactApplication {
   override val reactNativeHost: ReactNativeHost =
-    object : DefaultReactNativeHost(this) {
+    object : DefaultReactNativeHost(this@MainApplication) {
       override fun getPackages(): List<ReactPackage> =
         // Coverage TurboModule comes from react-native-coverage via autolinking.
         PackageList(this).packages.apply {

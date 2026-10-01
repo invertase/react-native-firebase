@@ -18,6 +18,7 @@
 		984CE3B6B7A7A34D02E2DCD4 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 927D484E6907CC4B1CC53CBB /* FirebaseCore */; };
 		A1B2C3D41E00000100000003 /* RNFBTestingMessagingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41E00000100000004 /* RNFBTestingMessagingModule.m */; };
 		B2C3D4E51F00000100000001 /* RNFBTestingSwiftRuntimeStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E51F00000100000002 /* RNFBTestingSwiftRuntimeStub.swift */; };
+		C1A2B3D40A00000100000001 /* SceneDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3D40A00000100000002 /* SceneDelegate.mm */; };
 		D4E5F6720F00000100000001 /* RNFBTestingTurboModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F6720F00000100000002 /* RNFBTestingTurboModule.mm */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,8 @@
 		A1B2C3D41E00000100000004 /* RNFBTestingMessagingModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNFBTestingMessagingModule.m; path = testing/RNFBTestingMessagingModule.m; sourceTree = "<group>"; };
 		B2C3D4E51F00000100000002 /* RNFBTestingSwiftRuntimeStub.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNFBTestingSwiftRuntimeStub.swift; path = testing/RNFBTestingSwiftRuntimeStub.swift; sourceTree = "<group>"; };
 		B2C3D4E51F00000100000003 /* testing-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "testing-Bridging-Header.h"; path = "testing/testing-Bridging-Header.h"; sourceTree = "<group>"; };
+		C1A2B3D40A00000100000002 /* SceneDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SceneDelegate.mm; path = testing/SceneDelegate.mm; sourceTree = "<group>"; };
+		C1A2B3D40A00000100000003 /* SceneDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneDelegate.h; path = testing/SceneDelegate.h; sourceTree = "<group>"; };
 		D4E5F6720F00000100000002 /* RNFBTestingTurboModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBTestingTurboModule.mm; path = testing/RNFBTestingTurboModule.mm; sourceTree = "<group>"; };
 		D4E5F6720F00000100000003 /* RNFBTestingTurboModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNFBTestingTurboModule.h; path = testing/RNFBTestingTurboModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +100,8 @@
 				271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
+				C1A2B3D40A00000100000003 /* SceneDelegate.h */,
+				C1A2B3D40A00000100000002 /* SceneDelegate.mm */,
 				A1B2C3D41E00000100000004 /* RNFBTestingMessagingModule.m */,
 				D4E5F6720F00000100000002 /* RNFBTestingTurboModule.mm */,
 				D4E5F6720F00000100000003 /* RNFBTestingTurboModule.h */,
@@ -411,7 +416,7 @@
 			name = "[CP-User] [RNFB] Crashlytics Configuration";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} && -f \"${PODS_ROOT}/FirebaseCrashlytics/run\" ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelif [[ -f \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\" ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nelse\n  # SPM: upload-symbols is at a known path in the SourcePackages checkout.\n  # BUILD_DIR is typically DerivedData/Project-hash/Build/Products — strip from /Build onward\n  # to get the DerivedData project root where SourcePackages lives.\n  SPM_CRASHLYTICS_DIR=\"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics\"\n  SPM_UPLOAD_SYMBOLS=\"${SPM_CRASHLYTICS_DIR}/upload-symbols\"\n  if [[ -x \"${SPM_UPLOAD_SYMBOLS}\" ]]; then\n    echo \"info: Exec FirebaseCrashlytics upload-symbols from SPM\"\n    \"${SPM_UPLOAD_SYMBOLS}\" -gsp \"${PROJECT_DIR}/GoogleService-Info.plist\" -p ios \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n  elif [[ -f \"${SPM_UPLOAD_SYMBOLS}\" ]]; then\n    echo \"info: Exec FirebaseCrashlytics upload-symbols from SPM (chmod +x)\"\n    chmod +x \"${SPM_UPLOAD_SYMBOLS}\"\n    \"${SPM_UPLOAD_SYMBOLS}\" -gsp \"${PROJECT_DIR}/GoogleService-Info.plist\" -p ios \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n  else\n    echo \"warning: FirebaseCrashlytics run script not found at CocoaPods, framework, or SPM paths. Skipping dSYM upload.\"\n    echo \"warning: Checked: \\${PODS_ROOT}/FirebaseCrashlytics/run, \\${PROJECT_DIR}/FirebaseCrashlytics.framework/run, ${SPM_UPLOAD_SYMBOLS}\"\n  fi\nfi\n";
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} && -f \"${PODS_ROOT}/FirebaseCrashlytics/run\" ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  if ! \"${PODS_ROOT}/FirebaseCrashlytics/run\"; then\n    echo \"warning: FirebaseCrashlytics run (CocoaPods) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch.\"\n  fi\nelif [[ -f \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\" ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  if ! \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"; then\n    echo \"warning: FirebaseCrashlytics run (framework) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch.\"\n  fi\nelse\n  # SPM: upload-symbols is at a known path in the SourcePackages checkout.\n  # BUILD_DIR is typically DerivedData/Project-hash/Build/Products — strip from /Build onward\n  # to get the DerivedData project root where SourcePackages lives.\n  SPM_CRASHLYTICS_DIR=\"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics\"\n  SPM_UPLOAD_SYMBOLS=\"${SPM_CRASHLYTICS_DIR}/upload-symbols\"\n\n  # GoogleService-Info.plist normally lives in the target folder\n  # (ios/<TargetName>/GoogleService-Info.plist) — that's where both Expo's config\n  # plugin and RNFB's documented manual/CLI setup place it. Fall back to the\n  # PROJECT_DIR root for setups that put it there instead.\n  if [[ -n \"${TARGET_NAME}\" && -f \"${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist\" ]]; then\n    GSP_PATH=\"${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist\"\n  elif [[ -f \"${PROJECT_DIR}/GoogleService-Info.plist\" ]]; then\n    GSP_PATH=\"${PROJECT_DIR}/GoogleService-Info.plist\"\n  else\n    GSP_PATH=\"\"\n  fi\n\n  if [[ -z \"${GSP_PATH}\" ]]; then\n    echo \"warning: GoogleService-Info.plist not found at ${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist or ${PROJECT_DIR}/GoogleService-Info.plist. Skipping dSYM upload.\"\n  elif [[ -x \"${SPM_UPLOAD_SYMBOLS}\" ]]; then\n    echo \"info: Exec FirebaseCrashlytics upload-symbols from SPM\"\n    if ! \"${SPM_UPLOAD_SYMBOLS}\" -gsp \"${GSP_PATH}\" -p ios \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"; then\n      echo \"warning: FirebaseCrashlytics upload-symbols (SPM) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch.\"\n    fi\n  elif [[ -f \"${SPM_UPLOAD_SYMBOLS}\" ]]; then\n    echo \"info: Exec FirebaseCrashlytics upload-symbols from SPM (chmod +x)\"\n    chmod +x \"${SPM_UPLOAD_SYMBOLS}\"\n    if ! \"${SPM_UPLOAD_SYMBOLS}\" -gsp \"${GSP_PATH}\" -p ios \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"; then\n      echo \"warning: FirebaseCrashlytics upload-symbols (SPM) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch.\"\n    fi\n  else\n    echo \"warning: FirebaseCrashlytics run script not found at CocoaPods, framework, or SPM paths. Skipping dSYM upload.\"\n    echo \"warning: Checked: \\${PODS_ROOT}/FirebaseCrashlytics/run, \\${PROJECT_DIR}/FirebaseCrashlytics.framework/run, ${SPM_UPLOAD_SYMBOLS}\"\n  fi\nfi\n";
 		};
 		DAB1A184ED1FB4A446CF5BBC /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -434,6 +439,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				C1A2B3D40A00000100000001 /* SceneDelegate.mm in Sources */,
 				A1B2C3D41E00000100000003 /* RNFBTestingMessagingModule.m in Sources */,
 				D4E5F6720F00000100000001 /* RNFBTestingTurboModule.mm in Sources */,
 				B2C3D4E51F00000100000001 /* RNFBTestingSwiftRuntimeStub.swift in Sources */,
@@ -645,6 +651,14 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-renderercss/React_renderercss.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/textlayoutmanager/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/text/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/textinput/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/switch/iosswitch",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-bridging/React_bridging.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxstableapi/React_cxxstableapi.framework/Headers",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD = "";
@@ -752,6 +766,14 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-renderercss/React_renderercss.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/scrollview/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/textlayoutmanager/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/text/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/textinput/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricComponents/React_FabricComponents.framework/Headers/react/renderer/components/switch/iosswitch",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-bridging/React_bridging.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxstableapi/React_cxxstableapi.framework/Headers",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD = "";

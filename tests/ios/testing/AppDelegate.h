@@ -7,9 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <RCTAppDelegate.h>
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : RCTAppDelegate
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+
+/// Kept for RNFBMessaging + legacy probes; SceneDelegate creates and assigns the window.
+@property(nonatomic, strong) UIWindow *window;
 
 @end

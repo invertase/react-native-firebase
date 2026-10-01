@@ -239,6 +239,7 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     { fixtureName: 'AppDelegate_sdk42.m', language: 'objc' },
     { fixtureName: 'AppDelegate_fallback.m', language: 'objc' },
     { fixtureName: 'AppDelegate_noOpenURL_sdk53.swift', language: 'swift' },
+    { fixtureName: 'AppDelegate_sdk58.swift', language: 'swift' },
   ];
   appDelegateFixturesNoop.forEach(({ fixtureName, language }) => {
     it(`skips AppDelegate without openURL - ${fixtureName}`, async () => {

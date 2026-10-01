@@ -61,10 +61,10 @@ Pod::Spec.new do |s|
 
   # RNFBStorageCommon.m uses PHAsset/PHAssetResource (Photos.framework) for local
   # asset uploads. See RNFBApp.podspec for why this must be declared explicitly
-  # rather than relying on Clang autolinking. iOS/macOS only -- PhotoKit doesn't
-  # exist on tvOS.
+  # rather than relying on Clang autolinking. PhotoKit is available on tvOS 10+.
   s.ios.frameworks = 'Photos'
   s.osx.frameworks = 'Photos'
+  s.tvos.frameworks = 'Photos'
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

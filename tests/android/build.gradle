@@ -1,7 +1,7 @@
 buildscript {
-  ext.buildToolsVersion = "36.1.0"
+  ext.buildToolsVersion = "37.0.0"
   ext.minSdkVersion = 24
-  ext.compileSdkVersion = 36
+  ext.compileSdkVersion = 37
   // Test *app* targetSdk only. Do not set rootProject.ext.targetSdkVersion —
   // invertase applyAndroidVersions() copies it onto RNFB libraries, and
   // Robolectric 4.14.1 DefaultSdkPicker then rejects package targetSdk 36
@@ -10,8 +10,8 @@ buildscript {
 
  ext.ndkVersion = "27.1.12297006"
 
-  // async-storage 3.x ships shared-storage / kotlin-stdlib with metadata 2.2.0 — compiler must be ≥ 2.2
-  ext.kotlinVersion = '2.2.10' // https://kotlinlang.org/releases.html
+  // RN 0.88 template / @react-native/gradle-plugin catalog pin. async-storage 3.x metadata is 2.2.0.
+  ext.kotlinVersion = '2.2.0' // https://kotlinlang.org/releases.html
   ext.supportLibVersion = '1.17.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
   ext.appCompatVersion = '1.7.1' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion
@@ -37,7 +37,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.5.0' // https://developers.google.com/android/guides/google-services-plugin
-    classpath 'com.android.tools.build:gradle:8.13.1' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
+    classpath 'com.android.tools.build:gradle:9.2.1' // RN 0.88 @react-native/gradle-plugin libs.versions.toml agp
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     classpath 'com.google.firebase:perf-plugin:2.0.2'

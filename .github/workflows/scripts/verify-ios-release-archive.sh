@@ -39,9 +39,16 @@ rm -rf "$ARCHIVE_PATH"
 
 log "archiving scheme=${SCHEME} configuration=${CONFIGURATION} destination=generic/platform=iOS (unsigned) -> ${ARCHIVE_PATH}"
 
+# Compile via PATH `clang` so hendrikmuhs/ccache-action wrappers (/usr/local/bin/clang
+# -> ccache) still accelerate ObjC/C++. Do NOT set LD/LDPLUSPLUS at all: under Xcode 27
+# the Swift driver reuses LD for SPM product links (FirebaseSharedSwift) and passes
+# swiftc-style flags (-emit-library, -sdk, -Xclang-linker) that clang rejects.
+RAW_LOG="$(mktemp -t rnfb-ios-archive.XXXXXX)"
+trap 'rm -f "$RAW_LOG"' EXIT
+
 set -o pipefail
-xcodebuild archive \
-  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
+if ! xcodebuild archive \
+  CC=clang CPLUSPLUS=clang++ \
   -workspace "$WORKSPACE" \
   -scheme "$SCHEME" \
   -configuration "$CONFIGURATION" \
@@ -51,8 +58,16 @@ xcodebuild archive \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGNING_ALLOWED=NO \
   CODE_SIGN_ENTITLEMENTS="" \
-  | xcbeautify
-
+  2>&1 | tee "$RAW_LOG" | xcbeautify; then
+  log "ERROR: xcodebuild archive failed; filtered diagnostics:"
+  # shellcheck disable=SC2002
+  grep -E 'error:|fatal error|Undefined symbols|ld: |clang: error|SwiftDriver|ARCHIVE FAILED|The following build commands failed' "$RAW_LOG" \
+    | sed 's/^/[ios-release-archive]   /' \
+    | tail -n 80 || true
+  log "ERROR: last 40 lines of raw xcodebuild output:"
+  tail -n 40 "$RAW_LOG" | sed 's/^/[ios-release-archive]   /'
+  exit 1
+fi
 APP_DIR="$(find "${ARCHIVE_PATH}/Products/Applications" -maxdepth 1 -name '*.app' 2>/dev/null | head -1)"
 if [[ -z "$APP_DIR" || ! -d "$APP_DIR" ]]; then
   log "ERROR: no .app product found under ${ARCHIVE_PATH}/Products/Applications"

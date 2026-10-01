@@ -1,9 +1,7 @@
-name: Test RN CLI prebuilt RNCore iOS build (informational)
+name: Test RN CLI prebuilt RNCore iOS build
 
-# Informational, path-filtered check for the test-rn-bare/ fixture (GitHub #8883).
-# Not wired into branch protection as a required check. It keeps the
-# documented-default RN CLI SPM + dynamic + prebuilt-RNCore compile graph
-# visible on PRs that touch the fixture, without blocking merges on its own.
+# Path-filtered ratchet for test-rn-bare/ (GitHub #8883): documented-default RN CLI SPM +
+# dynamic + prebuilt-RNCore compile graph, plus iOS 27 UIScene launch smoke.
 
 on:
   pull_request:
@@ -11,24 +9,34 @@ on:
       - '**'
     paths:
       - 'test-rn-bare/**'
-      - '.github/workflows/test_rn_bare_ios_build.yml'
-      - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - 'packages/app/RNFBApp.podspec'
       - 'packages/app/ios/**'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
+      - 'packages/app/plugin/**'
+      - 'packages/app/app.plugin.js'
+      - 'scripts/e2e/lib/ios-simulator-helpers.sh'
+      - '.github/workflows/test_rn_bare_ios_build.yml'
+      - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
+      - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
   push:
     branches:
       - main
       - release-v*
     paths:
       - 'test-rn-bare/**'
-      - '.github/workflows/test_rn_bare_ios_build.yml'
-      - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - 'packages/app/RNFBApp.podspec'
       - 'packages/app/ios/**'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
+      - 'packages/app/plugin/**'
+      - 'packages/app/app.plugin.js'
+      - 'scripts/e2e/lib/ios-simulator-helpers.sh'
+      - '.github/workflows/test_rn_bare_ios_build.yml'
+      - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
+      - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
 
 permissions:
   contents: read
@@ -39,12 +47,12 @@ concurrency:
 
 jobs:
   test-rn-bare-ios-build:
-    name: test-rn-bare iOS build
-    # macos-26 + latest-stable matches tests_e2e_ios.yml (firebase-ios-sdk requires Xcode 26.2+)
-    runs-on: macos-26
-    timeout-minutes: 45
+    name: test-rn-bare iOS build + launch smoke
+    runs-on: xcode-27
+    timeout-minutes: 60
     env:
-      XCODE_VERSION: latest-stable
+      XCODE_VERSION: '27.0'
+      RNFB_IOS_SIM_RUNTIME: iOS 27.0
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,8 +67,14 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
 
+      - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
+
       - name: Yarn Install
         run: yarn
 
       - name: test-rn-bare iOS build
         run: yarn test-rn-bare:ios:build
+
+      - name: test-rn-bare iOS launch smoke
+        run: yarn test-rn-bare:ios:launch-smoke
