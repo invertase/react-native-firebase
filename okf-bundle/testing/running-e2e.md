@@ -277,6 +277,8 @@ Skipping this gate causes missing or half-written `dist/module/**` while Metro `
 
 Owner for install/prepare serialization: [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first).
 
+**Stale install after a merge or pull (blocking).** A merge or pull that changes React Native or native dependency versions (or the Apple app lifecycle) leaves `node_modules`, `tests/ios/Pods`, and the native builds on the old version. Symptom: `:test-cover` fails before any Mocha test runs (iOS app killed shortly after launch, `NoSceneLifecycleAdoption` / `AppWillTerminateWithError` / `waitForActive`; Android `No instrumentation runner found` after a cold boot). Treat this as a stale install first, not a host, Simulator, or Metro fault. Re-run the [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn`), then `yarn tests:ios:pod:install` (if it fails on stale Pods or hermes-engine podspec drift, delete the gitignored `tests/ios/Pods` and re-run it), then `yarn tests:ios:build` / `yarn tests:android:build`, then one `:test-cover` per platform.
+
 #### 1. Host clear
 
 No in-flight test run on the target platform:
