@@ -1,6 +1,6 @@
 ---
 title: Social Authentication
-description: 'Federated sign-in with Apple (AppleAuthProvider / OAuthProvider, AppleFullPersonName, revokeToken), Facebook, Google, GitHub, Microsoft and Twitter, plus linking providers and removing a linked provider with unlink().'
+description: 'Federated sign-in with Apple (AppleAuthProvider / OAuthProvider, AppleFullPersonName, revokeToken), Facebook, Google, GitHub, Microsoft and Twitter, signInWithPopup / signInWithRedirect / linkWithPopup / linkWithRedirect / reauthenticateWithPopup / reauthenticateWithRedirect, plus linking providers and removing a linked provider with unlink().'
 next: /auth/phone-auth
 previous: /auth/usage
 ---
@@ -9,7 +9,9 @@ previous: /auth/usage
 
 - `@react-native-firebase/app` and `@react-native-firebase/auth` installed and native config completed per [Authentication usage](/auth/usage) / [Getting Started](/). From v26, New Architecture is required for packages with a native bridge.
 - Enable each social provider you use under [Firebase Console → Authentication → Sign-in method](https://console.firebase.google.com/project/_/authentication/providers).
-- Install and configure the community OAuth library for that provider (Apple, Facebook, Google, GitHub, Twitter). Those packages are not React Native Firebase workspace dependencies; end-to-end fences that import them use `// codeblock-ignore` so `docs:tsc:check` can skip missing types. Firebase-only credential fences type-check without that marker.
+- Install and configure the community OAuth library for that provider (Apple, Facebook, Google, GitHub, Twitter). Fences that import one of those third-party packages show the end-to-end flow; install the package in your app to run them. Fences that only import `@react-native-firebase/auth` show the Firebase side with the provider token as an argument.
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/social.tsx (connects to the Auth emulator).
 
 React Native Firebase supports integrating with social platforms. Obtaining the provider credential is left to your app because OAuth flows differ. After you have a provider token, exchange it with the matching `*AuthProvider.credential()` and `signInWithCredential()` (or Microsoft's redirect helpers).
 
@@ -66,7 +68,7 @@ await signInWithAppleIdentityToken('APPLE_IDENTITY_TOKEN', 'NONCE', {
 End-to-end UI + `react-native-apple-authentication` (install that package in your app):
 
 ```js
-// codeblock-ignore: @invertase/react-native-apple-authentication is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: @invertase/react-native-apple-authentication is a third-party package; install it in your app
 import React from 'react';
 import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication';
 import { OAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
@@ -113,7 +115,7 @@ Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-aut
 Apple also requires that the app revoke the Sign in with Apple token when the user deletes their account. Use `revokeToken`. It is supported on iOS via the native `revokeTokenWithAuthorizationCode` bridge. On Android and Web the bridge resolves without performing revocation (no-op). It is distinct from web-only `revokeAccessToken`, which revokes OAuth access tokens on Web and always throws on React Native Firebase.
 
 ```js
-// codeblock-ignore: @invertase/react-native-apple-authentication is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: @invertase/react-native-apple-authentication is a third-party package; install it in your app
 import { getAuth, revokeToken } from '@react-native-firebase/auth';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 
@@ -150,7 +152,7 @@ await signInWithFacebookAccessToken('FACEBOOK_ACCESS_TOKEN');
 End-to-end classic Facebook Login:
 
 ```js
-// codeblock-ignore: react-native-fbsdk-next is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: react-native-fbsdk-next is a third-party package; install it in your app
 import React from 'react';
 import { Button } from 'react-native';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
@@ -185,7 +187,7 @@ function FacebookSignIn() {
 ### Facebook Limited Login (iOS only)
 
 ```js
-// codeblock-ignore: react-native-fbsdk-next and react-native-sha256 are not workspace dependencies; types unavailable to docs:tsc:check
+// codeblock-ignore: react-native-fbsdk-next and react-native-sha256 are third-party packages; install them in your app
 import { FacebookAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { LoginManager, AuthenticationToken } from 'react-native-fbsdk-next';
 import { sha256 } from 'react-native-sha256';
@@ -258,7 +260,7 @@ Then follow the [installation](https://react-native-nitro-google-sign-in.github.
 #### Using Google Sign-In with Firebase
 
 ```js
-// codeblock-ignore: react-native-nitro-google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: react-native-nitro-google-signin is a third-party package; install it in your app
 import React from 'react';
 import { Button } from 'react-native';
 import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
@@ -307,7 +309,7 @@ function GoogleSignIn() {
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
-If you test on an Android emulator, use an image with **Google APIs** or **Google Play** system images.
+The sample calls `checkPlayServices()` before signing in. If you test on an Android emulator, use an image that includes Google Play services.
 
 Full API details: [react-native-nitro-google-signin documentation](https://react-native-nitro-google-sign-in.github.io/).
 
@@ -331,7 +333,7 @@ For bare React Native projects, most configuration is already in place when usin
 Initialize the Google SDK with any required scopes and the `webClientId` from `android/app/google-services.json` as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Pick the `client_id` with `client_type: 3`.
 
 ```js
-// codeblock-ignore: @react-native-google-signin/google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: @react-native-google-signin/google-signin is a third-party package; install it in your app
 import React from 'react';
 import { Button } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -371,7 +373,7 @@ function GoogleSignIn() {
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
-If you are testing this feature on an Android emulator, ensure the image is either the Google APIs or Google Play flavor.
+The sample calls `hasPlayServices()` before signing in. If you test on an Android emulator, use an image that includes Google Play services.
 
 > If you need Credential Manager on Android without a paid license, use [`react-native-nitro-google-signin`](/auth/social-auth#react-native-nitro-google-signin) instead of upgrading to Universal Sign-In.
 
@@ -432,9 +434,89 @@ function MicrosoftSignIn() {
 }
 ```
 
-`linkWithRedirect` and `linkWithPopup` can link an existing user account with Microsoft the same way after authentication.
-
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
+
+### Popup and redirect helpers
+
+On iOS and Android, `signInWithPopup` and `signInWithRedirect` start the same native provider flow, and `linkWithPopup` and `linkWithRedirect` start it for the signed-in user. All four resolve with a `UserCredential` when the native flow completes. They do not follow the browser redirect contract, so there is no pending result to collect later (`getRedirectResult` throws).
+
+```js
+import {
+  OAuthProvider,
+  getAuth,
+  linkWithPopup,
+  linkWithRedirect,
+  signInWithPopup,
+} from '@react-native-firebase/auth';
+
+function createMicrosoftProvider() {
+  const provider = new OAuthProvider('microsoft.com');
+  provider.addScope('offline_access');
+  // OAuthProvider satisfies AuthProvider at runtime; cast for the docs type harness.
+  return /** @type {any} */ (provider);
+}
+
+async function signInWithMicrosoftPopup() {
+  return signInWithPopup(getAuth(), createMicrosoftProvider());
+}
+
+async function linkMicrosoftToCurrentUser(useRedirect) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  if (useRedirect) {
+    return linkWithRedirect(user, createMicrosoftProvider());
+  }
+  return linkWithPopup(user, createMicrosoftProvider());
+}
+
+await signInWithMicrosoftPopup();
+await linkMicrosoftToCurrentUser(false);
+await linkMicrosoftToCurrentUser(true);
+```
+
+### Re-authenticate with a provider
+
+`reauthenticateWithPopup(user, provider)` and `reauthenticateWithRedirect(user, provider)` run the native provider flow for the signed-in user, as a recent sign-in for sensitive operations. `reauthenticateWithPopup` resolves with a `UserCredential`. `reauthenticateWithRedirect` resolves with `void` once the native flow completes, unlike the firebase-js-sdk signature. Both reject when no user is signed in. Pass an `OAuthProvider` (the native bridge reads its provider ID, scopes and custom parameters).
+
+```js
+import {
+  OAuthProvider,
+  getAuth,
+  reauthenticateWithPopup,
+  reauthenticateWithRedirect,
+} from '@react-native-firebase/auth';
+
+function createMicrosoftProvider() {
+  const provider = new OAuthProvider('microsoft.com');
+  provider.addScope('offline_access');
+  // OAuthProvider satisfies AuthProvider at runtime; cast for the docs type harness.
+  return /** @type {any} */ (provider);
+}
+
+async function reauthenticateWithMicrosoftPopup() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  return reauthenticateWithPopup(user, createMicrosoftProvider());
+}
+
+async function reauthenticateWithMicrosoftRedirect() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  await reauthenticateWithRedirect(user, createMicrosoftProvider());
+}
+
+await reauthenticateWithMicrosoftPopup();
+await reauthenticateWithMicrosoftRedirect();
+```
 
 ## Twitter
 
@@ -521,7 +603,7 @@ await linkGoogleIdTokenToCurrentUser('GOOGLE_ID_TOKEN');
 With [`react-native-nitro-google-signin`](https://www.npmjs.com/package/react-native-nitro-google-signin):
 
 ```js
-// codeblock-ignore: react-native-nitro-google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: react-native-nitro-google-signin is a third-party package; install it in your app
 import { GoogleAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
 import {
   GoogleOneTapSignIn,
@@ -553,7 +635,7 @@ async function onGoogleLinkButtonPress() {
 With the free `@react-native-google-signin/google-signin` (`GoogleSignin`) API:
 
 ```js
-// codeblock-ignore: @react-native-google-signin/google-signin is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: @react-native-google-signin/google-signin is a third-party package; install it in your app
 import { GoogleAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 

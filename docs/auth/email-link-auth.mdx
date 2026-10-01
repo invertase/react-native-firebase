@@ -1,6 +1,6 @@
 ---
 title: Email Link Authentication
-description: 'Passwordless email-link sign-in: Android App Links/iOS Universal Links setup, sendSignInLinkToEmail(), isSignInWithEmailLink(), signInWithEmailLink(), linking/re-authenticating, and email enumeration protection.'
+description: 'Passwordless email-link sign-in: Android App Links/iOS Universal Links setup, ActionCodeSettings, sendSignInLinkToEmail(), isSignInWithEmailLink(), signInWithEmailLink(), EmailAuthProvider.credentialWithLink() for linking/re-authenticating, and email enumeration protection.'
 next: /auth/oidc-auth
 previous: /auth/phone-auth
 ---
@@ -28,6 +28,8 @@ flow. Mobile apps complete sign-in through **Android App Links** and **iOS Unive
 This page focuses on wiring the flow in React Native Firebase. It starts with the same default Hosting-domain path as the
 official Android and Apple guides. Custom domains and branded landing pages are covered later.
 
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/email-link.tsx (connects to the Auth emulator).
+
 # How the pieces fit together
 
 {/* prettier-ignore */}
@@ -49,10 +51,10 @@ If the project previously used Firebase Dynamic Links for email sign-in, run the
 [Android migration guide](https://firebase.google.com/docs/auth/android/email-link-migration) so Auth issues Hosting mobile
 links instead of FDL.
 
-This is a **Node Admin SDK** script (not React Native). Install `firebase-admin` in a Node environment; it is not a React Native Firebase workspace dependency, so the fence is excluded from `docs:tsc:check`:
+This is a **Node Admin SDK** script (not React Native). Install `firebase-admin` in a Node environment; it is not part of a React Native app:
 
 ```js
-// codeblock-ignore: firebase-admin is Node-only and not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: firebase-admin is Node-only; run this script in a Node environment
 import { getAuth } from 'firebase-admin/auth';
 
 await getAuth()
@@ -208,7 +210,7 @@ Expo with React Native Firebase, see our [Expo docs](/#installation-for-expo-pro
 
 ## 1. Send the link
 
-Persist the email locally **before or immediately after** sending — completing sign-in requires
+Persist the email locally **before or immediately after** sending. Completing sign-in requires
 the same address, and you must not put it in the continue URL query string. Production apps typically use
 `@react-native-async-storage/async-storage` (or another durable store). The example below uses an in-memory map so the
 snippet type-checks without that dependency; swap in AsyncStorage in your app.
@@ -240,6 +242,9 @@ async function sendSignInLink(email) {
   memoryStore[EMAIL_KEY] = email;
 }
 ```
+
+See [Email action link settings](/auth/usage#email-action-link-settings) for every `ActionCodeSettings` field, including the
+shapes accepted by `sendEmailVerification`, `sendPasswordResetEmail` and `verifyBeforeUpdateEmail`.
 
 Modular `sendSignInLinkToEmail` **requires** `actionCodeSettings` (unlike the legacy namespaced helper defaults). See
 [Migrating to v25](/migrating-to-v25) / [v26](/migrating-to-v26) for API notes.
@@ -340,9 +345,10 @@ URL handling (App Links / Universal Links + `isSignInWithEmailLink`) is the same
 
 ## 5. Email enumeration protection
 
-Projects created after **2023-09-15** enable [email enumeration protection](https://cloud.google.com/identity-platform/docs/admin/email-enumeration-protection)
-by default. Do **not** rely on `fetchSignInMethodsForEmail` for identifier-first UI when that protection is on — see the note
-on Firebase's [Android](https://firebase.google.com/docs/auth/android/email-link-auth) and
+[Email enumeration protection](https://cloud.google.com/identity-platform/docs/admin/email-enumeration-protection) is a project
+setting in the Firebase Console Authentication settings. Whether it is on depends on your project's configuration. Do **not**
+rely on `fetchSignInMethodsForEmail` for identifier-first UI when that protection is on. See the note on Firebase's
+[Android](https://firebase.google.com/docs/auth/android/email-link-auth) and
 [iOS](https://firebase.google.com/docs/auth/ios/email-link-auth) email-link pages.
 
 # Checklist

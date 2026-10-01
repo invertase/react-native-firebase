@@ -1,6 +1,6 @@
 ---
 title: Multi-factor Auth
-description: 'TOTP and phone multi-factor authentication: enrollment and sign-in flows using multiFactor() (MultiFactor / MultiFactorUser), PhoneAuthProvider, and MultiFactorResolver.'
+description: 'TOTP and phone multi-factor authentication: enrollment and sign-in flows using multiFactor() (MultiFactor / MultiFactorUser), TotpMultiFactorGenerator (generateSecret, assertionForEnrollment, assertionForSignIn), TotpSecret (secretKey, generateQrCodeUrl, openInOtpApp), PhoneAuthProvider, PhoneMultiFactorGenerator, and MultiFactorResolver.'
 next: /firestore/usage
 previous: /auth/oidc-auth
 ---
@@ -11,11 +11,103 @@ previous: /auth/oidc-auth
 - Multi-factor authentication enabled for your project via [Google Cloud Identity Platform](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication) (paid Identity Platform features). Follow the platform guides for iOS and Android app verification.
 - The user must verify their email before enrolling a second factor. Use [`sendEmailVerification`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#sendemailverification) on the signed-in [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html).
 
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/mfa.tsx (connects to the Auth emulator and has controls for the phone and TOTP calls on this page).
+
 # TOTP MFA
 
-The [Firebase web TOTP MFA guide](https://firebase.google.com/docs/auth/web/totp-mfa) covers project prerequisites and the TOTP API. Combine those APIs with the phone MFA flows below when you need both TOTP and SMS factors.
+Time-based one-time password (TOTP) factors work on iOS and Android through the native Firebase Auth SDKs. The [Firebase web TOTP MFA guide](https://firebase.google.com/docs/auth/web/totp-mfa) covers enabling TOTP for the project. A user can enroll TOTP alongside phone factors; the sign-in flow below picks the factor from `resolver.hints`.
 
-For an example screen that exercises MFA enrollment and sign-in resolution, see [auth-mfa-demonstrator.tsx](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-mfa-demonstrator.tsx).
+The API mirrors firebase-js-sdk:
+
+{/* prettier-ignore */}
+| API | Signature | Notes |
+| --- | --- | --- |
+| `TotpMultiFactorGenerator.generateSecret` | `(session, auth?) => Promise<TotpSecret>` | `session` comes from `multiFactor(user).getSession()`. The optional `auth` argument is a React Native Firebase extension for non-default apps; it defaults to `getAuth()`. Rejects when `session` is missing. |
+| `TotpSecret.secretKey` | `string` | Shared secret for manual entry in an authenticator app. Other native secret properties (hashing algorithm, code length, interval, enrollment deadline) are not exposed. |
+| `TotpSecret.generateQrCodeUrl` | `(accountName?, issuer?) => string` | Returns an `otpauth://` URL for a QR code. When omitted, the account name is the signed-in user's email (or `unknownuser`) and the issuer is the Firebase app name. |
+| `TotpSecret.openInOtpApp` | `(qrCodeUrl) => string \| void` | React Native Firebase extension. Asks the device to open the `otpauth://` URL in an authenticator app. An empty string does nothing. |
+| `TotpMultiFactorGenerator.assertionForEnrollment` | `(totpSecret, verificationCode) => TotpMultiFactorAssertion` | Passed to `multiFactor(user).enroll`. |
+| `TotpMultiFactorGenerator.assertionForSignIn` | `(uid, verificationCode) => TotpMultiFactorAssertion` | `uid` is the `uid` of the enrolled factor from `resolver.hints`. Passed to `resolver.resolveSignIn`. |
+| `TotpMultiFactorGenerator.FACTOR_ID` | `'totp'` | Compare with `hint.factorId`. |
+
+`new TotpMultiFactorGenerator()` and `new PhoneMultiFactorGenerator()` throw; call the static methods.
+
+## Enroll a TOTP factor
+
+Generate a secret for the signed-in user, show it to the user (as a QR code built from `generateQrCodeUrl`, as `secretKey` text, or by calling `openInOtpApp`), then finish enrollment with a code from the authenticator app.
+
+```js
+import { TotpMultiFactorGenerator, getAuth, multiFactor } from '@react-native-firebase/auth';
+
+async function startTotpEnrollment() {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const session = await multiFactor(user).getSession();
+  const totpSecret = await TotpMultiFactorGenerator.generateSecret(session, getAuth());
+
+  // Render qrCodeUrl as a QR code, or show totpSecret.secretKey for manual entry.
+  const qrCodeUrl = totpSecret.generateQrCodeUrl(user.email ?? undefined, 'My App');
+  totpSecret.openInOtpApp(qrCodeUrl);
+
+  return totpSecret;
+}
+
+async function finishTotpEnrollment(totpSecret, verificationCode) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const assertion = TotpMultiFactorGenerator.assertionForEnrollment(totpSecret, verificationCode);
+  await multiFactor(user).enroll(assertion, 'Authenticator app');
+}
+
+const totpSecret = await startTotpEnrollment();
+await finishTotpEnrollment(totpSecret, '123456');
+```
+
+The native module keeps each generated secret in memory, keyed by `secretKey`, and looks it up in `generateQrCodeUrl`, `openInOtpApp` and when `enroll` finalizes the enrollment. Generate the secret and finish enrollment in the same app run. `generateQrCodeUrl` throws with the code `invalid-multi-factor-secret` when the native module does not know the key.
+
+## Sign-in flow using TOTP
+
+Call a first-factor sign-in method. When a second factor is required, the promise rejects with `auth/multi-factor-auth-required`. Pick a hint whose `factorId` is `totp`, then resolve with the code from the authenticator app:
+
+```js
+import {
+  TotpMultiFactorGenerator,
+  getAuth,
+  getMultiFactorResolver,
+  signInWithEmailAndPassword,
+} from '@react-native-firebase/auth';
+
+async function signInWithEmailAndTotp(email, password, totpCode) {
+  try {
+    await signInWithEmailAndPassword(getAuth(), email, password);
+    // The user has not enrolled a second factor (or MFA was not required).
+    return;
+  } catch (error) {
+    if (error.code !== 'auth/multi-factor-auth-required') {
+      throw error;
+    }
+
+    const resolver = getMultiFactorResolver(getAuth(), error);
+    const hint = resolver.hints.find(info => info.factorId === TotpMultiFactorGenerator.FACTOR_ID);
+    if (!hint) {
+      throw new Error('The user has no TOTP factor enrolled');
+    }
+
+    const assertion = TotpMultiFactorGenerator.assertionForSignIn(hint.uid, totpCode);
+    await resolver.resolveSignIn(assertion);
+  }
+}
+
+await signInWithEmailAndTotp('jane.doe@example.com', 'SuperSecretPassword!', '123456');
+```
+
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
 
 # Phone MFA
 

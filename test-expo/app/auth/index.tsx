@@ -1,37 +1,54 @@
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
 import {
   SDK_VERSION,
+  ActionCodeOperation,
   EmailAuthProvider,
+  FactorId,
+  OperationType,
+  ProviderId,
+  SignInMethod,
   applyActionCode,
+  beforeAuthStateChanged,
   checkActionCode,
   confirmPasswordReset,
   createUserWithEmailAndPassword,
   deleteUser,
+  fetchSignInMethodsForEmail,
   getAdditionalUserInfo,
   getAuth,
   getCustomAuthDomain,
   getIdToken,
   getIdTokenResult,
+  getRedirectResult,
+  initializeAuth,
   linkWithCredential,
+  linkWithPhoneNumber,
   onAuthStateChanged,
   onIdTokenChanged,
   parseActionCodeURL,
   reauthenticateWithCredential,
+  reauthenticateWithPhoneNumber,
   reload,
+  revokeAccessToken,
   sendEmailVerification,
   sendPasswordResetEmail,
   setLanguageCode,
+  setPersistence,
   signInAnonymously,
   signInWithCustomToken,
   signInWithEmailAndPassword,
   signOut,
   unlink,
+  updateCurrentUser,
   updateEmail,
   updatePassword,
   updateProfile,
+  useDeviceLanguage,
   useUserAccessGroup,
   validatePassword,
+  verifyBeforeUpdateEmail,
   verifyPasswordResetCode,
   type Unsubscribe,
 } from '@react-native-firebase/auth';
@@ -39,6 +56,7 @@ import {
 import { AppButton, LinkButton } from '../../src/AppButton';
 import { ScreenChrome } from '../../src/ScreenChrome';
 import { TextField } from '../../src/TextField';
+import { getExampleActionCodeSettings } from '../../src/authActionCodeSettings';
 import { getAuthErrorMessage } from '../../src/authErrorMessage';
 import { theme } from '../../src/theme';
 import { useAuthUser } from '../../src/useAuthUser';
@@ -50,6 +68,7 @@ ensureAuthEmulator();
 export default function AuthScreen() {
   const { user, initializing } = useAuthUser();
   const [email, setEmail] = useState('expo-auth@example.com');
+  const [newEmail, setNewEmail] = useState('expo-auth-new@example.com');
   const [password, setPassword] = useState('SuperSecretPassword!');
   const [displayName, setDisplayName] = useState('Expo Auth User');
   const [customToken, setCustomToken] = useState('');
@@ -132,6 +151,13 @@ export default function AuthScreen() {
       />
       <TextField placeholder="Display name" value={displayName} onChangeText={setDisplayName} />
       <TextField
+        placeholder="New email (verifyBeforeUpdateEmail)"
+        autoCapitalize="none"
+        keyboardType="email-address"
+        value={newEmail}
+        onChangeText={setNewEmail}
+      />
+      <TextField
         placeholder="Custom token (signInWithCustomToken)"
         autoCapitalize="none"
         value={customToken}
@@ -182,6 +208,30 @@ export default function AuthScreen() {
           })
         }
       />
+      <Text style={styles.warn}>
+        initializeAuth ignores its dependency argument and returns the same instance as getAuth.
+      </Text>
+      <AppButton
+        title="initializeAuth"
+        onPress={() =>
+          run('initializeAuth', () => {
+            const app = getApp();
+            return `same instance as getAuth: ${initializeAuth(app) === getAuth(app)}`;
+          })
+        }
+      />
+      <AppButton
+        title="Constants (ProviderId, SignInMethod, OperationType, FactorId, ActionCodeOperation)"
+        onPress={() =>
+          run('constants', () => ({
+            ProviderId,
+            SignInMethod,
+            OperationType,
+            FactorId,
+            ActionCodeOperation,
+          }))
+        }
+      />
 
       <Text style={styles.section}>Listeners</Text>
       <AppButton
@@ -208,11 +258,62 @@ export default function AuthScreen() {
           })
         }
       />
+      <AppButton
+        title="beforeAuthStateChanged (subscribe once)"
+        onPress={() =>
+          run('beforeAuthStateChanged', () => {
+            const stop = beforeAuthStateChanged(getAuth(), async next => {
+              showResult(`beforeAuthStateChanged → ${next?.uid ?? 'signed out'}`);
+            });
+            unsubscribers.current.push(stop);
+            return 'subscribed (runs before onAuthStateChanged listeners)';
+          })
+        }
+      />
+      <Text style={styles.warn}>
+        The next control registers a callback that throws. onAbort runs and onAuthStateChanged
+        listeners (including the status line above) are not notified of later sign-ins or sign-outs
+        until you unsubscribe.
+      </Text>
+      <AppButton
+        title="beforeAuthStateChanged (callback throws, onAbort)"
+        onPress={() =>
+          run('beforeAuthStateChanged (throws)', () => {
+            const stop = beforeAuthStateChanged(
+              getAuth(),
+              async () => {
+                throw new Error('aborting auth state change');
+              },
+              () => showResult('beforeAuthStateChanged onAbort ran'),
+            );
+            unsubscribers.current.push(stop);
+            return 'subscribed (throws on next auth state change)';
+          })
+        }
+      />
+      <AppButton
+        title="Unsubscribe all listeners"
+        variant="secondary"
+        onPress={() =>
+          run('unsubscribe', () => {
+            for (const stop of unsubscribers.current) {
+              stop();
+            }
+            const count = unsubscribers.current.length;
+            unsubscribers.current = [];
+            return `unsubscribed ${count} listener(s)`;
+          })
+        }
+      />
 
       <Text style={styles.section}>Sign-in</Text>
       <View style={{ gap: 12 }}>
         <LinkButton href="/auth/sign-in" title="Sign in with email (screen)" />
         <LinkButton href="/auth/sign-up" title="Create account with email (screen)" />
+        <LinkButton href="/auth/social" title="Social and OpenID Connect (screen)" />
+        <LinkButton href="/auth/phone" title="Phone (screen)" />
+        <LinkButton href="/auth/email-link" title="Email link (screen)" />
+        <LinkButton href="/auth/mfa" title="Multi-factor: phone and TOTP (screen)" />
       </View>
       <AppButton
         title="signInAnonymously"
@@ -250,6 +351,12 @@ export default function AuthScreen() {
         onPress={() => run('validatePassword', () => validatePassword(getAuth(), password))}
       />
       <AppButton
+        title="fetchSignInMethodsForEmail"
+        onPress={() =>
+          run('fetchSignInMethodsForEmail', () => fetchSignInMethodsForEmail(getAuth(), email))
+        }
+      />
+      <AppButton
         title="linkWithCredential (email/password)"
         onPress={() =>
           run('linkWithCredential', () => {
@@ -276,6 +383,28 @@ export default function AuthScreen() {
         onPress={() => run('sendEmailVerification', () => sendEmailVerification(requireUser()))}
       />
       <AppButton
+        title="sendEmailVerification (ActionCodeSettings)"
+        onPress={() =>
+          run('sendEmailVerification (ActionCodeSettings)', () =>
+            sendEmailVerification(requireUser(), getExampleActionCodeSettings()),
+          )
+        }
+      />
+      <AppButton
+        title="verifyBeforeUpdateEmail"
+        onPress={() =>
+          run('verifyBeforeUpdateEmail', () => verifyBeforeUpdateEmail(requireUser(), newEmail))
+        }
+      />
+      <AppButton
+        title="verifyBeforeUpdateEmail (ActionCodeSettings)"
+        onPress={() =>
+          run('verifyBeforeUpdateEmail (ActionCodeSettings)', () =>
+            verifyBeforeUpdateEmail(requireUser(), newEmail, getExampleActionCodeSettings()),
+          )
+        }
+      />
+      <AppButton
         title="updatePassword"
         onPress={() => run('updatePassword', () => updatePassword(requireUser(), password))}
       />
@@ -285,7 +414,37 @@ export default function AuthScreen() {
           run('sendPasswordResetEmail', () => sendPasswordResetEmail(getAuth(), email))
         }
       />
+      <AppButton
+        title="sendPasswordResetEmail (ActionCodeSettings)"
+        onPress={() =>
+          run('sendPasswordResetEmail (ActionCodeSettings)', () =>
+            sendPasswordResetEmail(getAuth(), email, getExampleActionCodeSettings()),
+          )
+        }
+      />
       <AppButton title="reload" onPress={() => run('reload', () => reload(requireUser()))} />
+      <AppButton
+        title="updateCurrentUser (current user)"
+        onPress={() =>
+          run('updateCurrentUser', async () => {
+            await updateCurrentUser(getAuth(), requireUser());
+            return 'updateCurrentUser: ok';
+          })
+        }
+      />
+      <Text style={styles.warn}>
+        updateCurrentUser with null signs the user out, so you need to sign in again afterwards.
+      </Text>
+      <AppButton
+        title="updateCurrentUser (null, signs out)"
+        variant="secondary"
+        onPress={() =>
+          run('updateCurrentUser(null)', async () => {
+            await updateCurrentUser(getAuth(), null);
+            return 'updateCurrentUser(null): ok';
+          })
+        }
+      />
       <AppButton
         title="reauthenticateWithCredential"
         onPress={() =>
@@ -406,6 +565,50 @@ export default function AuthScreen() {
         title="useUserAccessGroup (may throw)"
         onPress={() =>
           run('useUserAccessGroup', () => useUserAccessGroup(getAuth(), 'group.com.example.shared'))
+        }
+      />
+
+      <Text style={styles.section}>Web-only helpers that throw</Text>
+      <Text style={styles.warn}>
+        These controls are expected to fail on React Native Firebase. Each throws an Error
+        synchronously, and the error message appears above.
+      </Text>
+      <AppButton
+        title="setPersistence (throws)"
+        variant="secondary"
+        onPress={() =>
+          run('setPersistence', () => setPersistence(getAuth(), { type: 'NONE' } as never))
+        }
+      />
+      <AppButton
+        title="getRedirectResult (throws)"
+        variant="secondary"
+        onPress={() => run('getRedirectResult', () => getRedirectResult(getAuth()))}
+      />
+      <AppButton
+        title="revokeAccessToken (throws)"
+        variant="secondary"
+        onPress={() => run('revokeAccessToken', () => revokeAccessToken(getAuth(), 'token'))}
+      />
+      <AppButton
+        title="useDeviceLanguage (throws)"
+        variant="secondary"
+        onPress={() => run('useDeviceLanguage', () => useDeviceLanguage(getAuth()))}
+      />
+      <AppButton
+        title="linkWithPhoneNumber (throws)"
+        variant="secondary"
+        onPress={() =>
+          run('linkWithPhoneNumber', () => linkWithPhoneNumber(requireUser(), '+16505553434'))
+        }
+      />
+      <AppButton
+        title="reauthenticateWithPhoneNumber (throws)"
+        variant="secondary"
+        onPress={() =>
+          run('reauthenticateWithPhoneNumber', () =>
+            reauthenticateWithPhoneNumber(requireUser(), '+16505553434'),
+          )
         }
       />
     </ScreenChrome>

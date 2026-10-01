@@ -12,6 +12,8 @@ previous: /auth/email-link-auth
 - The same provider added under Firebase Console → Authentication → Sign-in method → **OpenID Connect** (Custom providers). Note the Provider ID shown as `oidc.<name>` (for example `oidc.azure_test` when the Name field is `azure_test`).
 - [`react-native-app-auth`](https://github.com/FormidableLabs/react-native-app-auth) installed and its native redirect URL setup completed (or another OpenID Connect client that returns an ID token).
 
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/social.tsx (connects to the Auth emulator; its OpenID Connect controls exchange a token with `OAuthProvider` and `OIDCAuthProvider`).
+
 React Native Firebase supports integrating with OpenID Connect providers. Obtaining the ID token is left to your app because provider flows differ. Prefer `OAuthProvider('oidc.<suffix>')` with `signInWithCredential()`, matching the [Firebase web OpenID Connect guide](https://firebase.google.com/docs/auth/web/openid-connect). `OIDCAuthProvider` / `OIDCProvider` remain as deprecated RN Firebase helpers.
 
 Also handle provider logout / token revocation for your provider when the user signs out of Firebase, if your product requires it.
@@ -72,10 +74,10 @@ async function signInWithOidcIdTokenDeprecated(providerId, idToken) {
 await signInWithOidcIdTokenDeprecated('azure_test', 'PROVIDER_ID_TOKEN');
 ```
 
-End-to-end example with `react-native-app-auth` (install that package in your app; it is not a React Native Firebase workspace dependency, so this fence is excluded from `docs:tsc:check`):
+End-to-end example with `react-native-app-auth` (install that package in your app):
 
 ```js
-// codeblock-ignore: react-native-app-auth is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: react-native-app-auth is a third-party package; install it in your app
 import { OAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { authorize } from 'react-native-app-auth';
 
