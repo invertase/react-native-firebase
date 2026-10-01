@@ -162,15 +162,18 @@ open class SharedUtils {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val taskInfo = activityManager.appTasks
             if (taskInfo.size > 0) {
-              val task = taskInfo[0].taskInfo
+              val task = platform(taskInfo[0].taskInfo)
               currentActivity =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                  if (task.baseActivity != null) platform(task.baseActivity).shortClassName else ""
+                  val baseActivity = task.baseActivity
+                  if (baseActivity != null) platform(baseActivity).shortClassName else ""
                 } else {
-                  if (task.origActivity != null) {
-                    platform(task.origActivity).shortClassName
+                  val origActivity = task.origActivity
+                  if (origActivity != null) {
+                    platform(origActivity).shortClassName
                   } else {
-                    platform(task.baseIntent.component).shortClassName
+                    val component = task.baseIntent.component
+                    platform(component).shortClassName
                   }
                 }
             }
