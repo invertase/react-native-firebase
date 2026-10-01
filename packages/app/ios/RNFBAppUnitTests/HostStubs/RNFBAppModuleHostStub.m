@@ -27,6 +27,8 @@
 #error "RNFBApp Swift interface not found"
 #endif
 
+const NSString *RNFBVersionString = @"unit-test";
+
 @interface RNFBAppModule (Testing)
 + (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName;
 + (void)setCustomDomainForTesting:(NSString *)domain forAppName:(NSString *)appName;
@@ -35,12 +37,25 @@
 
 @implementation RNFBAppModule
 
+- (void)setLogLevel:(NSString *)logLevel {
+  int level = (int)[RNFBAppLogLevelMapper loggerLevelForString:logLevel];
+  [RNFBAppModuleFirebase setLoggerLevel:level];
+}
+
+@end
+
+@implementation RNFBAppModule (CustomAuthDomain)
+
 + (NSString *)getCustomDomain:(NSString *)appName {
   if (appName == nil) {
     return nil;
   }
   return [RNFBAppCustomAuthDomains getCustomDomain:appName];
 }
+
+@end
+
+@implementation RNFBAppModule (Testing)
 
 + (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName {
   if (appName == nil) {
@@ -55,11 +70,6 @@
 
 + (void)resetCustomDomainsForTesting {
   [RNFBAppCustomAuthDomains resetCustomDomainsForTesting];
-}
-
-- (void)setLogLevel:(NSString *)logLevel {
-  int level = (int)[RNFBAppLogLevelMapper loggerLevelForString:logLevel];
-  [[FIRConfiguration sharedInstance] setLoggerLevel:(FIRLoggerLevel)level];
 }
 
 @end

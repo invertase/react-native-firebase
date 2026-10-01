@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
-  # RNFBUtilsModule.mm uses PHAsset (Photos.framework) to resolve local asset paths.
+  # RNFBUtilsModule+PhotoAssets.m uses PHAsset (Photos.framework) to resolve local asset paths.
   # Not declaring this explicitly used to work by luck (CocoaPods normally relies on
   # this declaration -- not Clang autolinking -- to populate OTHER_LDFLAGS), but with
   # use_frameworks! each pod is a standalone dynamic framework that must resolve its

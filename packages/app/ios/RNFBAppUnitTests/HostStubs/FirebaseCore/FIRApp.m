@@ -21,6 +21,8 @@
 
 static FIRApp *_Nullable RNFBStubDefaultApp;
 static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
+static NSString *_Nullable RNFBStubLastLibraryName;
+static NSString *_Nullable RNFBStubLastLibraryVersion;
 
 + (NSMutableDictionary<NSString *, FIRApp *> *)namedAppsRegistry {
   if (RNFBStubNamedApps == nil) {
@@ -47,6 +49,45 @@ static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
   return [self namedAppsRegistry][name];
 }
 
++ (NSDictionary<NSString *, FIRApp *> *)allApps {
+  NSMutableDictionary<NSString *, FIRApp *> *apps = [[NSMutableDictionary alloc] init];
+  if (RNFBStubDefaultApp != nil) {
+    apps[RNFBStubDefaultApp.name] = RNFBStubDefaultApp;
+  }
+  [apps addEntriesFromDictionary:[self namedAppsRegistry]];
+  return apps.count > 0 ? apps : nil;
+}
+
++ (void)configure {
+  FIROptions *options = [[FIROptions alloc] initWithGoogleAppID:@"stub-app-id"
+                                                    GCMSenderID:@"stub-sender"];
+  [self configureWithOptions:options];
+}
+
++ (void)configureWithOptions:(FIROptions *)options {
+  RNFBStubDefaultApp = [[FIRApp alloc] initWithName:@"__FIRAPP_DEFAULT" options:options];
+}
+
++ (void)configureWithName:(NSString *)name options:(FIROptions *)options {
+  FIRApp *app = [[FIRApp alloc] initWithName:name options:options];
+  [self namedAppsRegistry][name] = app;
+}
+
++ (void)registerLibrary:(NSString *)name withVersion:(NSString *)version {
+  RNFBStubLastLibraryName = [name copy];
+  RNFBStubLastLibraryVersion = [version copy];
+}
+
+- (void)deleteApp:(void (^)(BOOL success))completion {
+  if (RNFBStubDefaultApp == self) {
+    RNFBStubDefaultApp = nil;
+  }
+  [[self.class namedAppsRegistry] removeObjectForKey:self.name];
+  if (completion) {
+    completion(YES);
+  }
+}
+
 + (void)setDefaultAppForTesting:(FIRApp *)app {
   RNFBStubDefaultApp = app;
 }
@@ -58,6 +99,16 @@ static NSMutableDictionary<NSString *, FIRApp *> *_Nullable RNFBStubNamedApps;
 + (void)resetRegistryForTesting {
   RNFBStubDefaultApp = nil;
   [RNFBStubNamedApps removeAllObjects];
+  RNFBStubLastLibraryName = nil;
+  RNFBStubLastLibraryVersion = nil;
+}
+
++ (NSString *)lastRegisteredLibraryNameForTesting {
+  return RNFBStubLastLibraryName;
+}
+
++ (NSString *)lastRegisteredLibraryVersionForTesting {
+  return RNFBStubLastLibraryVersion;
 }
 
 @end

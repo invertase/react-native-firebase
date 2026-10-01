@@ -15,23 +15,12 @@
  *
  */
 
-#import <React/RCTUtils.h>
-
-#import "RNFBApp/RNFBSharedUtils.h"
-#import "RNFBAppTurboModules.h"
 #import "RNFBUtilsModule.h"
-
-#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
-#import <RNFBApp/RNFBApp-Swift.h>
-#elif __has_include("RNFBApp-Swift.h")
-#import "RNFBApp-Swift.h"
-#elif __has_include("RNFBHandleMapStorage-Swift.inc")
-#import "RNFBHandleMapStorage-Swift.inc"
-#else
-#error "RNFBApp Swift interface not found"
-#endif
+#import "RNFBAppTurboModules.h"
+#import "RNFBUtilsModuleImplementation.h"
 
 @interface RNFBUtilsModule () <NativeRNFBTurboUtilsSpec>
+
 @end
 
 @implementation RNFBUtilsModule
@@ -52,72 +41,35 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
 #pragma mark -
 #pragma mark Constants
 
-- (NSDictionary *)utilsConstantsDictionary {
-  return [RNFBUtilsHelpers utilsConstantsDictionary];
-}
-
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)constantsToExport {
-  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self utilsConstantsDictionary]];
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:RNFBUtilsModuleConstantsDictionary()];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)getConstants {
-  return [self constantsToExport];
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:RNFBUtilsModuleConstantsDictionary()];
 }
 
 #pragma mark -
-#pragma mark Android-only stubs
+#pragma mark Methods
 
 - (void)androidGetPlayServicesStatus:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
-  resolve(@{
-    @"isAvailable" : @YES,
-    @"status" : @0,
-    @"hasResolution" : @NO,
-    @"isUserResolvableError" : @NO,
-  });
+  RNFBUtilsModuleAndroidGetPlayServicesStatus(resolve, reject);
 }
 
 - (void)androidPromptForPlayServices:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
-  resolve(nil);
+  RNFBUtilsModuleAndroidPromptForPlayServices(resolve, reject);
 }
 
 - (void)androidResolutionForPlayServices:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject {
-  resolve(nil);
+  RNFBUtilsModuleAndroidResolutionForPlayServices(resolve, reject);
 }
 
 - (void)androidMakePlayServicesAvailable:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject {
-  resolve(nil);
-}
-
-#pragma mark -
-#pragma mark Firebase Utils Methods
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
-  PHAsset *asset = nil;
-
-  if ([localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"]) {
-    if ([localFilePath hasPrefix:@"assets-library://"]) {
-      static BOOL hasWarned = NO;
-      if (!hasWarned) {
-        NSLog(@"'assets-library://' & 'ph://' URLs are not supported in Catalyst-based targets "
-              @"or iOS 12 and higher; returning nil (future warnings will be suppressed)");
-        hasWarned = YES;
-      }
-    } else {
-      NSString *assetId = [localFilePath substringFromIndex:@"ph://".length];
-      asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[ assetId ] options:nil] firstObject];
-    }
-  } else {
-    NSURLComponents *components = [NSURLComponents componentsWithString:localFilePath];
-    NSArray *queryItems = components.queryItems;
-    NSString *assetId = [self valueForKey:@"id" fromQueryItems:queryItems];
-    asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[ assetId ] options:nil] firstObject];
-  }
-
-  return asset;
+  RNFBUtilsModuleAndroidMakePlayServicesAvailable(resolve, reject);
 }
 
 @end
