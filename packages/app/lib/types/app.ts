@@ -152,7 +152,10 @@ export namespace ReactNativeFirebase {
     readonly options: FirebaseAppOptions;
 
     /**
-     * The settable config flag for GDPR opt-in/opt-out
+     * The settable config flag for GDPR opt-in/opt-out.
+     *
+     * After `initializeApp` resolves, this reflects the flag the native SDK is using, which can
+     * differ from the value passed in when the key was omitted.
      */
     automaticDataCollectionEnabled: boolean;
 
