@@ -75,5 +75,30 @@ describe('database().ref().update()', function () {
         }),
       );
     });
+
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('removes a child when its value is updated to null (#9339)', async function () {
+      const { getDatabase, ref, set, update, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullChild`);
+
+      await set(dbRef, { a: 1, b: 2 });
+      await update(dbRef, { b: null });
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
+
+    it('removes a nested child when a multi-path update sets it to null (#9339)', async function () {
+      const { getDatabase, ref, set, update, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullMultiPath`);
+
+      await set(dbRef, { a: 1, nested: { c: 2, d: 3 } });
+      await update(dbRef, { a: 4, 'nested/c': null });
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 4, nested: { d: 3 } }));
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
   });
 });

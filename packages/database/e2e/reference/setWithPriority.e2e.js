@@ -68,5 +68,43 @@ describe('database().ref().setWithPriority()', function () {
       snapshot.val().should.eql(value);
       snapshot.getPriority().should.eql(2);
     });
+
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('does not store a child that is set to null (#9339)', async function () {
+      const { getDatabase, ref, set, setWithPriority, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullChild`);
+
+      await set(dbRef, { a: 1, b: 2 });
+      await setWithPriority(dbRef, { a: 1, b: null }, 1);
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      snapshot.getPriority().should.eql(1);
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
+
+    it('leaves nothing behind when the only child is null (#9339)', async function () {
+      const { getDatabase, ref, set, setWithPriority, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullOnlyChild`);
+
+      await set(dbRef, { a: 1, b: 2 });
+      await setWithPriority(dbRef, { b: null }, 1);
+
+      const snapshot = await get(dbRef);
+      snapshot.exists().should.equal(false);
+      should.equal(snapshot.val(), null);
+    });
+
+    it('clears an existing priority when it is set to null (#9339)', async function () {
+      const { getDatabase, ref, setWithPriority, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullPriority`);
+
+      await setWithPriority(dbRef, { a: 1 }, 1);
+      await setWithPriority(dbRef, { a: 1 }, null);
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      should.equal(snapshot.getPriority(), null);
+    });
   });
 });
