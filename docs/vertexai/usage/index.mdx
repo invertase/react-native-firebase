@@ -1,32 +1,72 @@
 ---
 title: VertexAI
-description: 'Deprecated VertexAI package: migrate to @react-native-firebase/ai and its getAI()/getGenerativeModel() APIs.'
+description: 'Deprecated @react-native-firebase/vertexai pointer: getVertexAI() returns an AI instance using VertexAIBackend. Migrate to getAI() with AgentPlatformBackend from @react-native-firebase/ai.'
 next: /migrating-to-v6
 previous: /phone-number-verification/usage
 ---
 
-Vertex AI has been deprecated by Google in favor of the Firebase AI Logic SDK.
+Vertex AI in Firebase has been deprecated by Google in favor of Firebase AI Logic. `@react-native-firebase/vertexai` is a deprecation pointer: use `@react-native-firebase/ai` instead. See [AI Logic usage](/ai/usage) for the full API.
 
-Using the Firebase AI Logic SDK with the Vertex AI Gemini API is still generally available (GA).
+The official [migration guide](https://firebase.google.com/docs/ai-logic/migrate-to-latest-sdk) calls the API behind `@react-native-firebase/vertexai` the Agent Platform Gemini API (formerly Vertex AI). In `@react-native-firebase/ai`, `VertexAIBackend` is deprecated; pass `AgentPlatformBackend` to `getAI()` to keep calling the Agent Platform Gemini API.
 
-To start using the new SDK, import the `@react-native-firebase/ai` package and use the modular method `getAI()` to initialize. See details in the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
+# Migrate to AI Logic
 
-```javascript
-// codeblock-ignore: before/after migration pointer; duplicate bindings are intentional
-// BEFORE - using firebase/vertexai
-import { initializeApp } from 'firebase/app';
-import { getVertexAI, getGenerativeModel } from 'firebase/vertexai'; // Remove this
+Install the replacement package. The `@react-native-firebase/app` module must already be set up; see [Getting Started](/).
 
-// AFTER - using firebase/ai
-import { initializeApp } from 'firebase/app';
-import { getAI, getGenerativeModel } from 'firebase/ai'; // Add this
+```bash
+yarn add @react-native-firebase/ai
 ```
+
+The deprecated form:
+
+```js
+// WARNING: @react-native-firebase/vertexai is deprecated. Use @react-native-firebase/ai.
+import { getApp } from '@react-native-firebase/app';
+import { getVertexAI, getGenerativeModel } from '@react-native-firebase/vertexai';
+
+function createDeprecatedModel() {
+  const vertexAI = getVertexAI(getApp(), { location: 'global' });
+  return getGenerativeModel(vertexAI, { model: 'gemini-3.8-flash' });
+}
+```
+
+The replacement:
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { AgentPlatformBackend, getAI, getGenerativeModel } from '@react-native-firebase/ai';
+
+function createModel() {
+  const ai = getAI(getApp(), { backend: new AgentPlatformBackend() });
+  return getGenerativeModel(ai, { model: 'gemini-3.8-flash' });
+}
+```
+
+`new AgentPlatformBackend()` uses the `global` location. `getVertexAI()` and `new VertexAIBackend()` default to `us-central1`, so the deprecated sample sets `location: 'global'`. Gemini 3.x models such as `gemini-3.8-flash` are not offered in `us-central1`, which only suits older models, so keep `global` for the samples above. Model availability depends on location, and a model that is unavailable in the location you choose returns a 404 error; see the [locations page](https://firebase.google.com/docs/ai-logic/locations?api=vertex).
+
+`getAI()` without a `backend` option uses `GoogleAIBackend` (the Gemini Developer API), not the Agent Platform Gemini API.
+
+After every import uses `@react-native-firebase/ai`, remove `@react-native-firebase/vertexai` from your dependencies.
+
+# Exports of the deprecated package
+
+The package depends on `@react-native-firebase/ai` and re-exports everything from it. It adds these deprecated names:
+
+- `getVertexAI(app?, options?)` returns an `AI` instance that uses `VertexAIBackend`. `options` accepts `location` (default `us-central1`), `appCheck`, and `auth`.
+- `VertexAIModel`, `VertexAIError`, and `VertexAIErrorCode` are aliases of `AIModel`, `AIError`, and `AIErrorCode`.
+- `VertexAI` is a type alias of `AI`, and `VertexAIOptions` is the options type for `getVertexAI()`.
+- `VERTEX_TYPE` is the string constant `'vertexAI'`, kept for compatibility. It has no replacement.
+
+`VertexAIBackend`, `AIModel`, and `AIError` are re-exported from `@react-native-firebase/ai` unchanged.
 
 # Platform support
 
-|                      |                                                                        |
-| -------------------- | ---------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS, Web (firebase-js-sdk interop)                            |
-| **New Architecture** | **Not required** — pure JavaScript package with no native TurboModule. |
+This package is pure JavaScript; New Architecture is not required for `@react-native-firebase/vertexai` alone.
 
-> **Deprecated:** Prefer `@react-native-firebase/ai` — see the [Firebase migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS, and Web (pure JavaScript) |
+| **New Architecture** | **Not required**. Pure JavaScript package with no native TurboModule. |
+
+> **Deprecated:** Use `@react-native-firebase/ai`. See the [Firebase migration guide](https://firebase.google.com/docs/ai-logic/migrate-to-latest-sdk).
