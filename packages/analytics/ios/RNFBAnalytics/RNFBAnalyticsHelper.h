@@ -16,9 +16,16 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
+// Plain Objective-C helper (see docs/ios-spm.mdx and
+// okf-bundle/ios-spm-native-imports.md) that owns every call touching
+// `FIRAnalytics` and the Swift param cleaner / consent mapper /
+// log-transaction types for RNFBAnalyticsModule. This keeps
+// RNFBAnalyticsModule.mm free of Firebase imports and `*-Swift.h`: under
+// SPM an Objective-C++ (.mm) TurboModule cannot `@import` Firebase (or
+// parse a Swift-generated header that uses module imports) when C++
+// modules are disabled (required by React Native's JSI headers).
 @interface RNFBAnalyticsHelper : NSObject
 
 /**
@@ -41,6 +48,64 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSDictionary *_Nullable)decodedUserProperties:(NSDictionary *_Nullable)properties;
 
-@end
++ (void)logEvent:(NSString *)name
+          params:(NSDictionary *)params
+         resolve:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject;
 
-NS_ASSUME_NONNULL_END
++ (void)setAnalyticsCollectionEnabled:(BOOL)enabled
+                              resolve:(RCTPromiseResolveBlock)resolve
+                               reject:(RCTPromiseRejectBlock)reject;
+
++ (void)setUserId:(NSString *)userId
+          resolve:(RCTPromiseResolveBlock)resolve
+           reject:(RCTPromiseRejectBlock)reject;
+
++ (void)setUserProperty:(NSString *)name
+                  value:(NSString *)value
+                resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject;
+
++ (void)setUserProperties:(NSDictionary *)properties
+                  resolve:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject;
+
++ (void)resetAnalyticsData:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+
++ (void)setSessionTimeoutDuration:(double)milliseconds
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject;
+
++ (void)getAppInstanceId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+
++ (void)getSessionId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+
++ (void)setDefaultEventParameters:(NSDictionary *)params
+                          resolve:(RCTPromiseResolveBlock)resolve
+                           reject:(RCTPromiseRejectBlock)reject;
+
++ (void)initiateOnDeviceConversionMeasurementWithEmailAddress:(NSString *)emailAddress
+                                                      resolve:(RCTPromiseResolveBlock)resolve
+                                                       reject:(RCTPromiseRejectBlock)reject;
+
++ (void)initiateOnDeviceConversionMeasurementWithHashedEmailAddress:(NSString *)hashedEmailAddress
+                                                            resolve:(RCTPromiseResolveBlock)resolve
+                                                             reject:(RCTPromiseRejectBlock)reject;
+
++ (void)initiateOnDeviceConversionMeasurementWithPhoneNumber:(NSString *)phoneNumber
+                                                     resolve:(RCTPromiseResolveBlock)resolve
+                                                      reject:(RCTPromiseRejectBlock)reject;
+
++ (void)initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:(NSString *)hashedPhoneNumber
+                                                           resolve:(RCTPromiseResolveBlock)resolve
+                                                            reject:(RCTPromiseRejectBlock)reject;
+
++ (void)logTransaction:(NSString *)transactionId
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject;
+
++ (void)setConsent:(NSDictionary *)consentSettings
+           resolve:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
+
+@end
