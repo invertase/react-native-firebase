@@ -9,7 +9,13 @@
 /* Begin PBXBuildFile section */
 		A1000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* RNFBHandleMap.m */; };
 		A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* RNFBHandleMapTests.m */; };
+		A1000000000000000000002B /* RNFBInitializeAppArguments.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000029 /* RNFBInitializeAppArguments.m */; };
+		A1000000000000000000002C /* RNFBInitializeAppArgumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002A /* RNFBInitializeAppArgumentsTests.m */; };
 		A10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* XCTest.framework */; };
+		A10000000000000000000021 /* RNFBNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000020 /* RNFBNullSentinelDecoder.m */; };
+		A10000000000000000000023 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000022 /* RNFBNullSentinelInterceptor.m */; };
+		A10000000000000000000025 /* RNFBNullSentinelInterceptorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* RNFBNullSentinelInterceptorTests.m */; };
+		A10000000000000000000027 /* RNFBNullSentinelDecoderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* RNFBNullSentinelDecoderTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,7 +23,16 @@
 		A10000000000000000000007 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBHandleMap.h; path = ../RNFBApp/RNFBHandleMap.h; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000009 /* RNFBHandleMapTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMapTests.m; sourceTree = "<group>"; };
+		A10000000000000000000028 /* RNFBInitializeAppArguments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBInitializeAppArguments.h; path = ../RNFBApp/RNFBInitializeAppArguments.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000029 /* RNFBInitializeAppArguments.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBInitializeAppArguments.m; path = ../RNFBApp/RNFBInitializeAppArguments.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000002A /* RNFBInitializeAppArgumentsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBInitializeAppArgumentsTests.m; sourceTree = "<group>"; };
 		A10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		A1000000000000000000001E /* RNFBNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelDecoder.h; path = ../RNFBApp/RNFBNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000020 /* RNFBNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelDecoder.m; path = ../RNFBApp/RNFBNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
+		A1000000000000000000001F /* RNFBNullSentinelInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelInterceptor.h; path = ../RNFBApp/RNFBNullSentinelInterceptor.h; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000022 /* RNFBNullSentinelInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelInterceptor.m; path = ../RNFBApp/RNFBNullSentinelInterceptor.m; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000024 /* RNFBNullSentinelInterceptorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBNullSentinelInterceptorTests.m; sourceTree = "<group>"; };
+		A10000000000000000000026 /* RNFBNullSentinelDecoderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBNullSentinelDecoderTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +69,15 @@
 				A10000000000000000000007 /* RNFBHandleMap.h */,
 				A10000000000000000000008 /* RNFBHandleMap.m */,
 				A10000000000000000000009 /* RNFBHandleMapTests.m */,
+				A10000000000000000000028 /* RNFBInitializeAppArguments.h */,
+				A10000000000000000000029 /* RNFBInitializeAppArguments.m */,
+				A1000000000000000000002A /* RNFBInitializeAppArgumentsTests.m */,
+				A1000000000000000000001E /* RNFBNullSentinelDecoder.h */,
+				A10000000000000000000020 /* RNFBNullSentinelDecoder.m */,
+				A10000000000000000000026 /* RNFBNullSentinelDecoderTests.m */,
+				A1000000000000000000001F /* RNFBNullSentinelInterceptor.h */,
+				A10000000000000000000022 /* RNFBNullSentinelInterceptor.m */,
+				A10000000000000000000024 /* RNFBNullSentinelInterceptorTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -117,6 +141,12 @@
 			files = (
 				A1000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */,
+				A1000000000000000000002B /* RNFBInitializeAppArguments.m in Sources */,
+				A1000000000000000000002C /* RNFBInitializeAppArgumentsTests.m in Sources */,
+				A10000000000000000000021 /* RNFBNullSentinelDecoder.m in Sources */,
+				A10000000000000000000023 /* RNFBNullSentinelInterceptor.m in Sources */,
+				A10000000000000000000025 /* RNFBNullSentinelInterceptorTests.m in Sources */,
+				A10000000000000000000027 /* RNFBNullSentinelDecoderTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
