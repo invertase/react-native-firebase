@@ -21,10 +21,12 @@ on:
       - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
       - '.github/workflows/scripts/check-ios-probe-sdk-pin.js'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
+      - '.github/workflows/scripts/lib/rn-bare-probe-assertions.sh'
       - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
       - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
       - 'packages/app/__tests__/iosProbeSdkPin.test.js'
+      - 'packages/app/__tests__/iosProbeSingleCopyAssertions.test.js'
   push:
     branches:
       - main
@@ -43,10 +45,12 @@ on:
       - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
       - '.github/workflows/scripts/check-ios-probe-sdk-pin.js'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
+      - '.github/workflows/scripts/lib/rn-bare-probe-assertions.sh'
       - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
       - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
       - 'packages/app/__tests__/iosProbeSdkPin.test.js'
+      - 'packages/app/__tests__/iosProbeSingleCopyAssertions.test.js'
 
 permissions:
   contents: read
