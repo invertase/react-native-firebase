@@ -26,6 +26,7 @@
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBConfigHelper.h"
+#import "RNFBConfigNullSentinelDecoder.h"
 #import "RNFBRemoteConfigListenerRegistry.h"
 
 static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
@@ -290,7 +291,8 @@ static FIRApp *firebaseAppForName(NSString *appName) {
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
   FIRApp *firebaseApp = firebaseAppForName(appName);
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaults:defaults];
+  NSDictionary *decodedDefaults = [RNFBConfigNullSentinelDecoder decodedDefaults:defaults];
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaults:decodedDefaults];
   resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
 }
 

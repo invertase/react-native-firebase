@@ -7,27 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A9000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000008 /* RNFBHandleMap.m */; };
-		A9000000000000000000000B /* RNFBRemoteConfigListenerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */; };
-		A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */; };
 		A90000000000000000000030 /* RNFBNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000031 /* RNFBNullSentinelDecoder.m */; };
-		A90000000000000000000032 /* RNFBConfigNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000033 /* RNFBConfigNullSentinelDecoder.m */; };
-		A90000000000000000000038 /* RNFBRemoteConfigNullSentinelDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000039 /* RNFBRemoteConfigNullSentinelDecodeTests.m */; };
+		A90000000000000000000032 /* RNFBAnalyticsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000033 /* RNFBAnalyticsHelper.m */; };
+		A90000000000000000000038 /* RNFBAnalyticsNullSentinelDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000039 /* RNFBAnalyticsNullSentinelDecodeTests.m */; };
 		A90000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A90000000000000000000003 /* RNFBRemoteConfigUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBRemoteConfigUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A90000000000000000000007 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBHandleMap.h; path = ../../../app/ios/RNFBApp/RNFBHandleMap.h; sourceTree = SOURCE_ROOT; };
-		A90000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../../../app/ios/RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
-		A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRemoteConfigListenerRegistryTests.m; sourceTree = "<group>"; };
-		A90000000000000000000016 /* RNFBRemoteConfigListenerRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBRemoteConfigListenerRegistry.h; path = ../RNFBConfig/RNFBRemoteConfigListenerRegistry.h; sourceTree = SOURCE_ROOT; };
-		A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRemoteConfigListenerRegistry.m; path = ../RNFBConfig/RNFBRemoteConfigListenerRegistry.m; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000003 /* RNFBAnalyticsUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBAnalyticsUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A90000000000000000000031 /* RNFBNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelDecoder.m; path = ../../../app/ios/RNFBApp/RNFBNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
 		A9000000000000000000003A /* RNFBNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelDecoder.h; path = ../../../app/ios/RNFBApp/RNFBNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
-		A90000000000000000000033 /* RNFBConfigNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBConfigNullSentinelDecoder.m; path = ../RNFBConfig/RNFBConfigNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
-		A9000000000000000000003B /* RNFBConfigNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBConfigNullSentinelDecoder.h; path = ../RNFBConfig/RNFBConfigNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
-		A90000000000000000000039 /* RNFBRemoteConfigNullSentinelDecodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBRemoteConfigNullSentinelDecodeTests.m; sourceTree = "<group>"; };
+		A90000000000000000000033 /* RNFBAnalyticsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAnalyticsHelper.m; path = ../RNFBAnalytics/RNFBAnalyticsHelper.m; sourceTree = SOURCE_ROOT; };
+		A9000000000000000000003B /* RNFBAnalyticsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAnalyticsHelper.h; path = ../RNFBAnalytics/RNFBAnalyticsHelper.h; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000039 /* RNFBAnalyticsNullSentinelDecodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAnalyticsNullSentinelDecodeTests.m; sourceTree = "<group>"; };
 		A90000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -54,7 +46,7 @@
 		A90000000000000000000005 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A90000000000000000000003 /* RNFBRemoteConfigUnitTests.xctest */,
+				A90000000000000000000003 /* RNFBAnalyticsUnitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -62,16 +54,11 @@
 		A90000000000000000000006 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A90000000000000000000007 /* RNFBHandleMap.h */,
-				A90000000000000000000008 /* RNFBHandleMap.m */,
-				A90000000000000000000016 /* RNFBRemoteConfigListenerRegistry.h */,
-				A90000000000000000000018 /* RNFBRemoteConfigListenerRegistry.m */,
-				A90000000000000000000009 /* RNFBRemoteConfigListenerRegistryTests.m */,
 				A9000000000000000000003A /* RNFBNullSentinelDecoder.h */,
 				A90000000000000000000031 /* RNFBNullSentinelDecoder.m */,
-				A9000000000000000000003B /* RNFBConfigNullSentinelDecoder.h */,
-				A90000000000000000000033 /* RNFBConfigNullSentinelDecoder.m */,
-				A90000000000000000000039 /* RNFBRemoteConfigNullSentinelDecodeTests.m */,
+				A9000000000000000000003B /* RNFBAnalyticsHelper.h */,
+				A90000000000000000000033 /* RNFBAnalyticsHelper.m */,
+				A90000000000000000000039 /* RNFBAnalyticsNullSentinelDecodeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -79,9 +66,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A90000000000000000000002 /* RNFBRemoteConfigUnitTests */ = {
+		A90000000000000000000002 /* RNFBAnalyticsUnitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A90000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBRemoteConfigUnitTests" */;
+			buildConfigurationList = A90000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBAnalyticsUnitTests" */;
 			buildPhases = (
 				A9000000000000000000000E /* Sources */,
 				A9000000000000000000000D /* Frameworks */,
@@ -90,9 +77,9 @@
 			);
 			dependencies = (
 			);
-			name = RNFBRemoteConfigUnitTests;
-			productName = RNFBRemoteConfigUnitTests;
-			productReference = A90000000000000000000003 /* RNFBRemoteConfigUnitTests.xctest */;
+			name = RNFBAnalyticsUnitTests;
+			productName = RNFBAnalyticsUnitTests;
+			productReference = A90000000000000000000003 /* RNFBAnalyticsUnitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -110,7 +97,7 @@
 					};
 				};
 			};
-			buildConfigurationList = A90000000000000000000012 /* Build configuration list for PBXProject "RNFBRemoteConfigUnitTests" */;
+			buildConfigurationList = A90000000000000000000012 /* Build configuration list for PBXProject "RNFBAnalyticsUnitTests" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -123,7 +110,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A90000000000000000000002 /* RNFBRemoteConfigUnitTests */,
+				A90000000000000000000002 /* RNFBAnalyticsUnitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -133,12 +120,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A9000000000000000000000A /* RNFBHandleMap.m in Sources */,
-				A9000000000000000000000B /* RNFBRemoteConfigListenerRegistry.m in Sources */,
-				A9000000000000000000000C /* RNFBRemoteConfigListenerRegistryTests.m in Sources */,
 				A90000000000000000000030 /* RNFBNullSentinelDecoder.m in Sources */,
-				A90000000000000000000032 /* RNFBConfigNullSentinelDecoder.m in Sources */,
-				A90000000000000000000038 /* RNFBRemoteConfigNullSentinelDecodeTests.m in Sources */,
+				A90000000000000000000032 /* RNFBAnalyticsHelper.m in Sources */,
+				A90000000000000000000038 /* RNFBAnalyticsNullSentinelDecodeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,7 +176,7 @@
 					"$(SRCROOT)",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
-					"$(SRCROOT)/../RNFBConfig",
+					"$(SRCROOT)/../RNFBAnalytics",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -207,7 +191,7 @@
 				OTHER_LDFLAGS = (
 					"-fprofile-instr-generate",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBRemoteConfigUnitTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAnalyticsUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
@@ -227,7 +211,7 @@
 					"$(SRCROOT)",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
-					"$(SRCROOT)/../RNFBConfig",
+					"$(SRCROOT)/../RNFBAnalytics",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -235,7 +219,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBRemoteConfigUnitTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAnalyticsUnitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
@@ -245,7 +229,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A90000000000000000000012 /* Build configuration list for PBXProject "RNFBRemoteConfigUnitTests" */ = {
+		A90000000000000000000012 /* Build configuration list for PBXProject "RNFBAnalyticsUnitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A9000000000000000000001A /* Debug */,
@@ -254,7 +238,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		A90000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBRemoteConfigUnitTests" */ = {
+		A90000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBAnalyticsUnitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A90000000000000000000010 /* Debug */,

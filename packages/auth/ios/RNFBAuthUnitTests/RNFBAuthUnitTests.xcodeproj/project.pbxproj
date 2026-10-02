@@ -12,6 +12,9 @@
 		A9000000000000000000000C /* RNFBAuthListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000009 /* RNFBAuthListenerRegistryTests.m */; };
 		A9000000000000000000001E /* RNFBAuthCacheRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000001C /* RNFBAuthCacheRegistry.m */; };
 		A9000000000000000000001F /* RNFBAuthCacheRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A9000000000000000000001D /* RNFBAuthCacheRegistryTests.m */; };
+		A90000000000000000000030 /* RNFBNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000031 /* RNFBNullSentinelDecoder.m */; };
+		A90000000000000000000032 /* RNFBAuthNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000033 /* RNFBAuthNullSentinelDecoder.m */; };
+		A90000000000000000000038 /* RNFBAuthNullSentinelDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A90000000000000000000039 /* RNFBAuthNullSentinelDecodeTests.m */; };
 		A90000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90000000000000000000014 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +28,11 @@
 		A90000000000000000000019 /* RNFBAuthCacheRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAuthCacheRegistry.h; path = ../RNFBAuth/RNFBAuthCacheRegistry.h; sourceTree = SOURCE_ROOT; };
 		A9000000000000000000001C /* RNFBAuthCacheRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAuthCacheRegistry.m; path = ../RNFBAuth/RNFBAuthCacheRegistry.m; sourceTree = SOURCE_ROOT; };
 		A9000000000000000000001D /* RNFBAuthCacheRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAuthCacheRegistryTests.m; sourceTree = "<group>"; };
+		A90000000000000000000031 /* RNFBNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelDecoder.m; path = ../../../app/ios/RNFBApp/RNFBNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
+		A9000000000000000000003A /* RNFBNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelDecoder.h; path = ../../../app/ios/RNFBApp/RNFBNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000033 /* RNFBAuthNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAuthNullSentinelDecoder.m; path = ../RNFBAuth/RNFBAuthNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
+		A9000000000000000000003B /* RNFBAuthNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAuthNullSentinelDecoder.h; path = ../RNFBAuth/RNFBAuthNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
+		A90000000000000000000039 /* RNFBAuthNullSentinelDecodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAuthNullSentinelDecodeTests.m; sourceTree = "<group>"; };
 		A90000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -67,6 +75,11 @@
 				A90000000000000000000019 /* RNFBAuthCacheRegistry.h */,
 				A9000000000000000000001C /* RNFBAuthCacheRegistry.m */,
 				A9000000000000000000001D /* RNFBAuthCacheRegistryTests.m */,
+				A9000000000000000000003A /* RNFBNullSentinelDecoder.h */,
+				A90000000000000000000031 /* RNFBNullSentinelDecoder.m */,
+				A9000000000000000000003B /* RNFBAuthNullSentinelDecoder.h */,
+				A90000000000000000000033 /* RNFBAuthNullSentinelDecoder.m */,
+				A90000000000000000000039 /* RNFBAuthNullSentinelDecodeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -133,6 +146,9 @@
 				A9000000000000000000000C /* RNFBAuthListenerRegistryTests.m in Sources */,
 				A9000000000000000000001E /* RNFBAuthCacheRegistry.m in Sources */,
 				A9000000000000000000001F /* RNFBAuthCacheRegistryTests.m in Sources */,
+				A90000000000000000000030 /* RNFBNullSentinelDecoder.m in Sources */,
+				A90000000000000000000032 /* RNFBAuthNullSentinelDecoder.m in Sources */,
+				A90000000000000000000038 /* RNFBAuthNullSentinelDecodeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,6 +199,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBAuth",
@@ -217,6 +234,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBAuth",

@@ -436,6 +436,23 @@ describe('remoteConfig()', function () {
       });
     });
 
+    describe('setDefaults()', function () {
+      if (Platform.other) {
+        // Not supported on Web.
+        return;
+      }
+
+      it('resolves with defaults including a null value', async function () {
+        const { getRemoteConfig } = remoteConfigModular;
+        // Android setDefaultsAsync NPEs on null values.
+        const defaults = { some_key: 'setDefaults_e2e' };
+        if (Platform.ios) {
+          defaults.null_default = null;
+        }
+        await getRemoteConfig().setDefaults(defaults);
+      });
+    });
+
     describe('reset()', function () {
       it('resets all activated, fetched and default config on supported SDKs', async function () {
         const { getRemoteConfig, getAll, reset } = remoteConfigModular;
