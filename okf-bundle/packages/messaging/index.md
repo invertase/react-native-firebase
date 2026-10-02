@@ -21,7 +21,7 @@ Knowledge for FCM messaging native behavior: the iOS `UNUserNotificationCenter` 
 | **Flag off** | `register` / `unregister` reject and `onRegistered` / `onUnregistered` throw `messaging/installation-id-not-enabled`. Token APIs keep working. |
 | **Flag on** | Token APIs (`getToken`, `deleteToken`, `onTokenRefresh`) reject or throw `messaging/token-api-disabled`. |
 | **Error owners** | [`lib/installationIdMode.ts`](../../../packages/messaging/lib/installationIdMode.ts) (codes, messages) |
-| **Events** | Native emits `messaging_registered` / `messaging_unregistered` with `installationId`; `onRegistered` replays the cached FID to a new subscriber while registered. It subscribes first, then replays; a replay callback that throws is rethrown on `setTimeout(..., 0)` (where a throwing live listener ends up) so the caller still receives a working unsubscribe function |
+| **Events** | Native emits `messaging_registered` / `messaging_unregistered` with `installationId`; `onRegistered` replays the cached FID to a new subscriber while registered. It subscribes first, then replays; a replay callback that throws removes the subscription and the error is rethrown from `onRegistered`, so no unreachable listener is left attached |
 
 `register()` does not perform APNs registration on iOS; `registerDeviceForRemoteMessages` remains separate ([APNs on Simulator](ios-apns-simulator-registration.md)).
 

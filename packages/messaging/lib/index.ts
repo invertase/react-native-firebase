@@ -338,7 +338,7 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       );
     }
 
-    // Subscribe first so a throwing replay callback cannot leave the caller without a subscription.
+    // Subscribe first so an event arriving during the replay is not missed.
     const subscription = this.emitter.addListener(
       'messaging_registered',
       (event: { installationId: string }) => {
@@ -351,11 +351,10 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       try {
         callNextOrObserver(nextOrObserver, cachedInstallationId);
       } catch (error) {
-        // Keep the subscription and the unsubscribe handle valid. Surface the error asynchronously,
-        // the same place a throwing live listener ends up, instead of swallowing it.
-        setTimeout(() => {
-          throw error;
-        }, 0);
+        // The caller never receives an unsubscribe handle when this throws, so remove the
+        // subscription before rethrowing to avoid leaving an unreachable listener attached.
+        subscription.remove();
+        throw error;
       }
     }
 
