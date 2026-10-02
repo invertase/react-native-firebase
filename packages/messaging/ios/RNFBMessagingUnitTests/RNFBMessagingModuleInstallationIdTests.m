@@ -20,6 +20,7 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
+#import "RNFBMessagingHelper.h"
 #import "RNFBMessagingModule.h"
 
 // `register` / `unregister` come from the codegen'd NativeRNFBTurboMessagingSpec protocol, which
@@ -80,7 +81,7 @@
 #pragma mark - register
 
 - (void)testRegister_success_resolvesNull {
-  [self.module register:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper registerWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].registerCallCountForTesting, 1);
   XCTAssertEqual([FIRMessaging messaging].unregisterCallCountForTesting, 0);
@@ -92,7 +93,7 @@
   NSError *error = [NSError errorWithDomain:@"com.google.fcm" code:42 userInfo:nil];
   [FIRMessaging messaging].completionErrorForTesting = error;
 
-  [self.module register:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper registerWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].registerCallCountForTesting, 1);
   XCTAssertEqual(self.resolved.count, 0);
@@ -103,7 +104,7 @@
 #pragma mark - unregister
 
 - (void)testUnregister_success_resolvesNull {
-  [self.module unregister:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper unregisterWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].unregisterCallCountForTesting, 1);
   XCTAssertEqual([FIRMessaging messaging].registerCallCountForTesting, 0);
@@ -115,7 +116,7 @@
   NSError *error = [NSError errorWithDomain:@"com.google.fcm" code:43 userInfo:nil];
   [FIRMessaging messaging].completionErrorForTesting = error;
 
-  [self.module unregister:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper unregisterWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].unregisterCallCountForTesting, 1);
   XCTAssertEqual(self.resolved.count, 0);
@@ -126,15 +127,13 @@
 #pragma mark - constants
 
 - (void)testConstants_installationIdDisabled_byDefault {
-  XCTAssertEqualObjects([self.module messagingConstantsDictionary][@"isInstallationIdEnabled"],
-                        @NO);
+  XCTAssertEqual([RNFBMessagingHelper isInstallationIdEnabled], NO);
 }
 
 - (void)testConstants_installationIdEnabled_whenSdkFlagOn {
   [FIRMessaging messaging].installationIdEnabledForTesting = YES;
 
-  XCTAssertEqualObjects([self.module messagingConstantsDictionary][@"isInstallationIdEnabled"],
-                        @YES);
+  XCTAssertEqual([RNFBMessagingHelper isInstallationIdEnabled], YES);
 }
 
 - (void)testConstants_isRegisteredForRemoteNotifications_reflectsUIApplicationFlag {
