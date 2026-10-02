@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		A1000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* RNFBHandleMap.m */; };
 		A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* RNFBHandleMapTests.m */; };
+		A100000000000000000000B6 /* RNFBNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B5 /* RNFBNullSentinelDecoder.m */; };
+		A100000000000000000000B9 /* RNFBNullSentinelInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B8 /* RNFBNullSentinelInterceptor.m */; };
+		A100000000000000000000BB /* RNFBNullSentinelDecoderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000BA /* RNFBNullSentinelDecoderTests.m */; };
+		A100000000000000000000BD /* RNFBNullSentinelInterceptorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000BC /* RNFBNullSentinelInterceptorTests.m */; };
+		A100000000000000000000C0 /* RNFBInitializeAppArguments.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000BF /* RNFBInitializeAppArguments.m */; };
+		A100000000000000000000C2 /* RNFBInitializeAppArgumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000C1 /* RNFBInitializeAppArgumentsTests.m */; };
 		A10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* XCTest.framework */; };
 		A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* RNFBHandleMapStorage.swift */; };
 		A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */; };
@@ -24,8 +30,6 @@
 		A1000000000000000000002E /* RNFBMetaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002F /* RNFBMetaStorage.swift */; };
 		A10000000000000000000030 /* RNFBMetaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* RNFBMetaTests.m */; };
 		A10000000000000000000032 /* RNFBMetaStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* RNFBMetaStorageTests.swift */; };
-		A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */; };
-		A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */; };
 		A10000000000000000000039 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003D /* RNFBSharedUtils.m */; };
 		A1000000000000000000003A /* RNFBSharedUtilsNullSentinelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */; };
 		A1000000000000000000003B /* RNFBAppModuleHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* RNFBAppModuleHostStub.m */; };
@@ -89,6 +93,15 @@
 		A10000000000000000000007 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBHandleMap.h; path = ../RNFBApp/RNFBHandleMap.h; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000009 /* RNFBHandleMapTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBHandleMapTests.m; sourceTree = "<group>"; };
+		A100000000000000000000B4 /* RNFBNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelDecoder.h; path = ../RNFBApp/RNFBNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000B5 /* RNFBNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelDecoder.m; path = ../RNFBApp/RNFBNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000B7 /* RNFBNullSentinelInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelInterceptor.h; path = ../RNFBApp/RNFBNullSentinelInterceptor.h; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000B8 /* RNFBNullSentinelInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelInterceptor.m; path = ../RNFBApp/RNFBNullSentinelInterceptor.m; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000BA /* RNFBNullSentinelDecoderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBNullSentinelDecoderTests.m; sourceTree = "<group>"; };
+		A100000000000000000000BC /* RNFBNullSentinelInterceptorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBNullSentinelInterceptorTests.m; sourceTree = "<group>"; };
+		A100000000000000000000BE /* RNFBInitializeAppArguments.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBInitializeAppArguments.h; path = ../RNFBApp/RNFBInitializeAppArguments.h; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000BF /* RNFBInitializeAppArguments.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBInitializeAppArguments.m; path = ../RNFBApp/RNFBInitializeAppArguments.m; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000C1 /* RNFBInitializeAppArgumentsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBInitializeAppArgumentsTests.m; sourceTree = "<group>"; };
 		A10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		A10000000000000000000016 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBHandleMapStorageTests.swift; sourceTree = "<group>"; };
@@ -107,8 +120,6 @@
 		A10000000000000000000031 /* RNFBMetaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMetaTests.m; sourceTree = "<group>"; };
 		A10000000000000000000033 /* RNFBMetaStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMetaStorageTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000034 /* RNFBMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMeta.h; path = ../RNFBApp/RNFBMeta.h; sourceTree = SOURCE_ROOT; };
-		A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBNullSentinelDecoding.swift; path = ../RNFBApp/RNFBNullSentinelDecoding.swift; sourceTree = SOURCE_ROOT; };
-		A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBNullSentinelDecodingTests.swift; sourceTree = "<group>"; };
 		A1000000000000000000003D /* RNFBSharedUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtils.m; path = ../RNFBApp/RNFBSharedUtils.m; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000003E /* RNFBSharedUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBSharedUtils.h; path = ../RNFBApp/RNFBSharedUtils.h; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000003F /* RNFBSharedUtilsNullSentinelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBSharedUtilsNullSentinelTests.m; sourceTree = "<group>"; };
@@ -211,6 +222,15 @@
 				A10000000000000000000008 /* RNFBHandleMap.m */,
 				A10000000000000000000016 /* RNFBHandleMapStorage.swift */,
 				A10000000000000000000009 /* RNFBHandleMapTests.m */,
+				A100000000000000000000B4 /* RNFBNullSentinelDecoder.h */,
+				A100000000000000000000B5 /* RNFBNullSentinelDecoder.m */,
+				A100000000000000000000BA /* RNFBNullSentinelDecoderTests.m */,
+				A100000000000000000000B7 /* RNFBNullSentinelInterceptor.h */,
+				A100000000000000000000B8 /* RNFBNullSentinelInterceptor.m */,
+				A100000000000000000000BC /* RNFBNullSentinelInterceptorTests.m */,
+				A100000000000000000000BE /* RNFBInitializeAppArguments.h */,
+				A100000000000000000000BF /* RNFBInitializeAppArguments.m */,
+				A100000000000000000000C1 /* RNFBInitializeAppArgumentsTests.m */,
 				A10000000000000000000018 /* RNFBHandleMapStorageTests.swift */,
 				A10000000000000000000022 /* RNFBPreferences.h */,
 				A1000000000000000000001B /* RNFBPreferences.m */,
@@ -227,8 +247,6 @@
 				A1000000000000000000002F /* RNFBMetaStorage.swift */,
 				A10000000000000000000031 /* RNFBMetaTests.m */,
 				A10000000000000000000033 /* RNFBMetaStorageTests.swift */,
-				A10000000000000000000036 /* RNFBNullSentinelDecoding.swift */,
-				A10000000000000000000038 /* RNFBNullSentinelDecodingTests.swift */,
 				A1000000000000000000003E /* RNFBSharedUtils.h */,
 				A1000000000000000000003D /* RNFBSharedUtils.m */,
 				A10000000000000000000045 /* RNFBSharedUtilsFormatting.swift */,
@@ -356,6 +374,12 @@
 				A1000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				A10000000000000000000017 /* RNFBHandleMapStorage.swift in Sources */,
 				A1000000000000000000000B /* RNFBHandleMapTests.m in Sources */,
+				A100000000000000000000B6 /* RNFBNullSentinelDecoder.m in Sources */,
+				A100000000000000000000BB /* RNFBNullSentinelDecoderTests.m in Sources */,
+				A100000000000000000000B9 /* RNFBNullSentinelInterceptor.m in Sources */,
+				A100000000000000000000BD /* RNFBNullSentinelInterceptorTests.m in Sources */,
+				A100000000000000000000C0 /* RNFBInitializeAppArguments.m in Sources */,
+				A100000000000000000000C2 /* RNFBInitializeAppArgumentsTests.m in Sources */,
 				A10000000000000000000019 /* RNFBHandleMapStorageTests.swift in Sources */,
 				A1000000000000000000001A /* RNFBPreferences.m in Sources */,
 				A1000000000000000000001D /* RNFBPreferencesStorage.swift in Sources */,
@@ -369,8 +393,6 @@
 				A1000000000000000000002E /* RNFBMetaStorage.swift in Sources */,
 				A10000000000000000000030 /* RNFBMetaTests.m in Sources */,
 				A10000000000000000000032 /* RNFBMetaStorageTests.swift in Sources */,
-				A10000000000000000000035 /* RNFBNullSentinelDecoding.swift in Sources */,
-				A10000000000000000000037 /* RNFBNullSentinelDecodingTests.swift in Sources */,
 				A10000000000000000000039 /* RNFBSharedUtils.m in Sources */,
 				A10000000000000000000044 /* RNFBSharedUtilsFormatting.swift in Sources */,
 				A1000000000000000000004A /* RNFBSharedUtilsConfig.swift in Sources */,

@@ -32,15 +32,42 @@
  * This class uses method swizzling on RCTCxxConvert to intercept all TurboModule
  * data conversion methods (JS_*Module_Spec*Data:), decoding sentinels before the
  * data reaches the C++ bridging layer and ultimately your module methods.
+ *
+ * Swizzling is scheduled on the main queue from +load so codegen category methods
+ * on RCTCxxConvert are attached before the method list is copied.
  */
 @interface RNFBNullSentinelInterceptor : NSObject
 
 /**
- * Initializes the null sentinel interceptor.
- * This swizzles RCTCxxConvert (TurboModule converter) to automatically decode null sentinels.
+ * Schedules TurboModule converter swizzling on the main queue.
  * Called automatically when the class is loaded via +load.
  */
-+ (void)initialize;
++ (void)load;
+
+/**
+ * Production entry used by +load. Schedules swizzleRCTConvertMethods on the main
+ * queue behind a process-wide once-token.
+ */
++ (void)scheduleSwizzleOnMainQueue;
+
+/**
+ * Testable schedule path. When turboConvertClass is Nil, behaves like production
+ * (swizzleRCTConvertMethods). When non-Nil, swizzles that class instead so unit
+ * tests can observe deferral without RCTCxxConvert.
+ */
++ (void)scheduleSwizzleOnMainQueueWithOnceToken:(dispatch_once_t *)onceToken
+                              turboConvertClass:(Class)turboConvertClass;
+
+/**
+ * Looks up RCTCxxConvert and swizzles matching TurboModule conversion methods.
+ */
++ (void)swizzleRCTConvertMethods;
+
+/**
+ * Swizzles JS_NativeRNFBTurbo*_Spec* class methods on the given converter class
+ * so decodeNullSentinels runs before the original IMP.
+ */
++ (void)swizzleTurboModuleConversions:(Class)cxxConvertClass;
 
 @end
 
