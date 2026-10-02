@@ -264,8 +264,12 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4
+          # Keyed by build mode: the hermes-engine "Replace Hermes" script phase swaps the
+          # Debug/Release engine inside Pods/ while the build runs. A Debug job that
+          # restores a Pods dir left in the Release state has to swap mid-build, races the
+          # engine consumers, and links without the CDP symbols (undefined facebook::hermes::cdp).
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v5-${{ matrix.buildmode }}-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v5-${{ matrix.buildmode }}-
 
       - name: Configure Dependency Resolution Mode
         run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
@@ -689,8 +693,9 @@ jobs:
         continue-on-error: true
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v4
+          # Same "release" cache the Release e2e jobs use; never shared with Debug jobs (see the ios job).
+          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v5-release-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v5-release-
 
       - name: Configure Dependency Resolution Mode
         run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
