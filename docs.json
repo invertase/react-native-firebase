@@ -225,6 +225,7 @@
       "icon": "//firebase.google.com/static/images/products/icons/run_crashlytics.svg",
       "pages": [
         { "title": "Usage", "href": "/crashlytics/usage" },
+        { "title": "Android Setup", "href": "/crashlytics/android-setup" },
         { "title": "Viewing crash reports", "href": "/crashlytics/crash-reports" }
       ]
     },

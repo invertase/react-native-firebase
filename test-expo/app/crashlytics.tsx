@@ -56,8 +56,13 @@ export default function CrashlyticsScreen() {
   return (
     <ScreenChrome title="crashlytics" result={result} error={error}>
       <Text style={styles.hint}>
-        Controls mirror runtime APIs taught on the Crashlytics usage page. Crashlytics is not in
-        yarn tests:emulator:start-ci, and there is no connect*Emulator helper.
+        Controls mirror runtime APIs taught on the Crashlytics usage page. Crashlytics has no
+        emulator, so every control calls the native SDK directly.
+      </Text>
+      <Text style={styles.hint}>
+        In debug builds, native collection stays disabled unless crashlytics_debug_enabled is true
+        in firebase.json. While it is disabled the native module ignores setUserId, setAttribute,
+        setAttributes and recordError, and crash does nothing.
       </Text>
       <Text style={styles.hint}>
         expo-dev-client custom error overlay catches native crashes such as those from
@@ -122,9 +127,23 @@ export default function CrashlyticsScreen() {
           })
         }
       />
+      <AppButton
+        title="recordError (with jsErrorName)"
+        onPress={() =>
+          run('recordError', () => {
+            recordError(
+              crashlytics,
+              new Error('test-expo example named non-fatal'),
+              'ExampleError',
+            );
+            return 'recorded non-fatal error named ExampleError';
+          })
+        }
+      />
       <Text style={styles.warning}>
-        WARNING: crash() forces a native crash. In expo-dev-client the custom error overlay may
-        catch it so Firebase never receives the report.
+        WARNING: crash() terminates the app when collection is enabled and does nothing when it is
+        disabled. In expo-dev-client the custom error overlay may catch it so Firebase never
+        receives the report.
       </Text>
       <AppButton
         title="crash (can throw / kill process)"

@@ -1,7 +1,7 @@
 ---
 title: Crashlytics
-description: 'Crashlytics: getCrashlytics, log, setUserId/setAttribute(s), recordError, crash, collection toggles, unsent-report helpers, SDK_VERSION, and firebase.json flags for auto-collection, debug mode, NDK reporting and JS exception handling.'
-next: /crashlytics/crash-reports
+description: 'Crashlytics: getCrashlytics, log, setUserId/setAttribute(s), recordError, crash, collection toggles, unsent-report helpers, SDK_VERSION, and firebase.json flags for auto-collection, debug mode and JS exception handling.'
+next: /crashlytics/android-setup
 previous: /app/utils
 ---
 
@@ -48,7 +48,7 @@ The manual installation pages for [iOS](/crashlytics/usage/installation/ios) and
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** Crashlytics is native-only. The firebase-js-sdk does not ship a modular public API for this product, so there is no web parity surface under `firebase/crashlytics`. Crashlytics supports only the default Firebase app. React Native Firebase exports `SDK_VERSION`, `getCrashlytics`, `log`, `setUserId`, `setAttribute`, `setAttributes`, `recordError`, `crash`, `setCrashlyticsCollectionEnabled`, `checkForUnsentReports`, `sendUnsentReports`, `deleteUnsentReports`, `didCrashOnPreviousExecution`, the `Crashlytics` instance type, the legacy namespaced `Statics` type, and a deprecated package-local `FirebaseApp` type alias. Each is explained in the section that uses it.
+**Platform notes:** Crashlytics is native-only. The firebase-js-sdk does not ship a modular public API for this product, so there is no web parity surface under `firebase/crashlytics`. Crashlytics supports only the default Firebase app. React Native Firebase exports `SDK_VERSION`, `getCrashlytics`, `log`, `setUserId`, `setAttribute`, `setAttributes`, `recordError`, `crash`, `setCrashlyticsCollectionEnabled`, `checkForUnsentReports`, `sendUnsentReports`, `deleteUnsentReports`, `didCrashOnPreviousExecution` and the `Crashlytics` instance type. The package type declarations also contain a legacy `Statics` interface and a `FirebaseApp` alias, but the package entry point does not export either. Each export is explained in the section that uses it.
 
 # What does it do
 
@@ -68,7 +68,7 @@ Use the `log` method throughout your app to accumulate extra context for possibl
 
 Crashlytics also supports sending JavaScript stack traces to the Firebase console. This can be used in any situation where an error occurs but is caught by your own code to recover gracefully. To send a stack trace, pass a JavaScript Error to the `recordError` method.
 
-> Crash reporting is disabled by default whilst developing. To enable this, view the [enable debug crash logs](/crashlytics/usage#enable-debug-crash-logs) documentation.
+> In debug builds on Android and iOS, Crashlytics collection is disabled unless `crashlytics_debug_enabled` is `true` in `firebase.json`. While collection is disabled, the native module ignores `setUserId`, `setAttribute`, `setAttributes` and `recordError` calls, and `crash` does nothing. To enable collection in debug builds, view the [enable debug crash logs](/crashlytics/usage#enable-debug-crash-logs) documentation.
 
 ## Package version
 
@@ -80,7 +80,7 @@ import { SDK_VERSION } from '@react-native-firebase/crashlytics';
 console.log('Crashlytics package version:', SDK_VERSION);
 ```
 
-The legacy namespaced `Statics` type describes the old `firebase.crashlytics` statics shape that exposed `SDK_VERSION`. Prefer importing `SDK_VERSION` from the modular entry point.
+The legacy `Statics` interface describes the old `firebase.crashlytics` statics shape that exposed `SDK_VERSION`. The entry point does not export it, so import `SDK_VERSION` from `@react-native-firebase/crashlytics`.
 
 ## Get a Crashlytics instance
 
@@ -101,11 +101,15 @@ function readCrashlyticsInstance() {
 
 `Crashlytics` is the TypeScript type of that instance (methods such as `log` and `recordError` take a `Crashlytics` as their first argument).
 
-The package also exports a deprecated `FirebaseApp` type alias for older namespaced typings. Prefer importing `FirebaseApp` from `@react-native-firebase/app` instead.
+The entry point does not export a `FirebaseApp` type. Import `FirebaseApp` from `@react-native-firebase/app` when you need it.
 
 ## Crash Attributes
 
-There are various methods to set attributes for the crash report, in order to provide analytics for crashes and help you review them. You can use set methods to set predefined attributes, but you can also set your own custom attributes.
+There are various methods to set attributes for the crash report, in order to provide analytics for crashes and help you review them. `setUserId` identifies the user, `setAttribute` and `setAttributes` set custom keys, and `log` adds a message to the report log.
+
+- `setUserId`, `setAttribute` and `setAttributes` return a `Promise`. `log` is synchronous and returns `void`.
+- Attribute values must be strings. `setAttribute` throws if the name or value is not a string, and `setUserId` throws if the user id is not a string. `setAttributes` throws if its argument is not an object. Convert numbers and true or false values with `String()` before passing them.
+- While Crashlytics collection is disabled, the native module ignores `setUserId`, `setAttribute` and `setAttributes`. It also ignores `log` on Android.
 
 ```jsx
 import React, { useEffect } from 'react';
@@ -152,7 +156,7 @@ export default function App() {
           })
         }
       />
-      {/* WARNING: crash() forces a native crash. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
+      {/* WARNING: crash() forces a native crash when collection is enabled and does nothing when it is disabled. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
       <Button title="Test Crash" onPress={() => crash(getCrashlytics())} />
     </View>
   );
@@ -163,6 +167,11 @@ export default function App() {
 
 Even if you catch unexpected errors, in order for your app to recover and behave smoothly you can still report them through
 Crashlytics using the `recordError` method. This will also provide you with the associated stack trace.
+
+- `recordError(crashlytics, error, jsErrorName?)` returns `void`. The optional `jsErrorName` is added to the report as an extra first stack frame (with the name as the file), which can help you tell reports apart in the console.
+- The `error` argument must be an `Error` instance. For anything else, `recordError` logs a console warning and ignores the call.
+- While Crashlytics collection is disabled, the native module ignores the call.
+- Recorded errors are non-fatal events. Crashlytics stores them on the device and sends them with the next fatal event report or when the app restarts.
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -188,7 +197,7 @@ export default function App() {
       setStatus(`Loaded ${users.length} users.`);
     } catch (error) {
       if (error instanceof Error) {
-        recordError(crashlytics, error);
+        recordError(crashlytics, error, 'LoadUsersError');
         setStatus(error.message);
       }
       console.log(error);
@@ -207,7 +216,12 @@ export default function App() {
 ## Opt-out
 
 As Crashlytics will be sending certain information regarding the user, users may want to opt-out of the crash reporting.
-This can be done throughout the app with a simple method call to `setCrashlyticsCollectionEnabled`:
+This can be done throughout the app with a simple method call to `setCrashlyticsCollectionEnabled`.
+
+- `setCrashlyticsCollectionEnabled(crashlytics, enabled)` throws if `enabled` is not a boolean and returns a `Promise`.
+- The module stores the value on the device, so it is used on later launches and takes priority over the `crashlytics_auto_collection_enabled` value in `firebase.json`.
+- `crashlytics.isCrashlyticsCollectionEnabled` is a read-only property that reflects the last value you set, or the startup value if you have not set one.
+- In a debug build without `crashlytics_debug_enabled`, native collection stays disabled even after you call `setCrashlyticsCollectionEnabled(crashlytics, true)`, although the property then reads `true`.
 
 ```jsx
 import React, { useState } from 'react';
@@ -230,9 +244,9 @@ export default function App() {
   return (
     <View>
       <Button title="Toggle Crashlytics" onPress={toggleCrashlytics} />
-      {/* WARNING: crash() forces a native crash. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
+      {/* WARNING: crash() forces a native crash when collection is enabled and does nothing when it is disabled. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
       <Button title="Crash" onPress={() => crash(getCrashlytics())} />
-      <Text>Crashlytics is currently {enabled ? 'enabled' : 'disabled'}</Text>
+      <Text>Crashlytics collection is {enabled ? 'enabled' : 'disabled'}</Text>
     </View>
   );
 }
@@ -240,10 +254,10 @@ export default function App() {
 
 ## Unsent reports and previous crashes
 
-When automatic collection is disabled (via `firebase.json` and/or `setCrashlyticsCollectionEnabled`), Crashlytics can keep reports on device. The React Native Firebase JS helpers gate by the current `isCrashlyticsCollectionEnabled` value:
+When automatic collection is disabled (via `firebase.json` and/or `setCrashlyticsCollectionEnabled`), Crashlytics can keep reports on device. The React Native Firebase JS helpers check the `isCrashlyticsCollectionEnabled` value at the time you call them:
 
-- `checkForUnsentReports` resolves `true` when cached unsent reports exist. It **throws** if collection is currently enabled, because reports are sent automatically in that mode.
-- `sendUnsentReports` calls into native only when collection is currently **enabled**. When collection is disabled it is a silent no-op; it does not enqueue cached reports in that mode.
+- `checkForUnsentReports` resolves `true` when cached unsent reports exist. It **throws** synchronously if collection is enabled, because reports are sent automatically in that mode.
+- `sendUnsentReports` returns `void` and calls into native only when collection is **enabled**. When collection is disabled it is a silent no-op.
 - `deleteUnsentReports` discards cached reports on the device.
 - `didCrashOnPreviousExecution` resolves whether the app crashed during the previous run.
 
@@ -277,13 +291,24 @@ async function reviewQueuedReports() {
 }
 ```
 
+## Automatic JavaScript error reporting
+
+Creating a Crashlytics instance installs two handlers, with no code needed on your side:
+
+- A global JavaScript exception handler records unhandled exceptions with their JavaScript stack trace. See [Crashlytics Javascript stacktrace issue generation](/crashlytics/usage#crashlytics-javascript-stacktrace-issue-generation) and [exception handler chaining](/crashlytics/usage#crashlytics-javascript-exception-handler-chaining) for the `firebase.json` options that change this. If `@react-native-firebase/analytics` is installed, the handler also logs an `app_exception` Analytics event.
+- A promise rejection tracker records unhandled promise rejections as non-fatal errors with a JavaScript stack trace. This only happens when `__DEV__` is `false`, so development builds do not report them.
+
+The native module records nothing while Crashlytics collection is disabled.
+
 # firebase.json
+
+The `firebase.json` options below apply to Android and iOS. See [firebase.json](/app/json-config) for the full list of keys across packages.
 
 ## Disable Auto Collection
 
-Additionally, you can configure whether Crashlytics sends out any reports through the `auto_collection_enabled` option in
+Additionally, you can configure whether Crashlytics sends out any reports through the `crashlytics_auto_collection_enabled` option in
 your `firebase.json` config. If you want users to opt-in, it is recommended that you disable this here and enable it later
-through the method once they opt-in.
+with `setCrashlyticsCollectionEnabled` once they opt-in. When the option is not set, collection is enabled in release builds.
 
 ```json
 // <project-root>/firebase.json
@@ -296,7 +321,7 @@ through the method once they opt-in.
 
 ## Enable debug crash logs
 
-Because you have stack traces readily available while you're debugging your app, Crashlytics is disabled by default in debug mode. You can set Crashlytics to be enabled regardless of debug mode through the `debug_enabled` option in your `firebase.json`.
+Because you have stack traces readily available while you're debugging your app, Crashlytics collection is disabled in debug builds unless you set the `crashlytics_debug_enabled` option to `true` in your `firebase.json`. The option has no effect on release builds, and in a debug build it takes priority over `crashlytics_auto_collection_enabled` and `setCrashlyticsCollectionEnabled`.
 
 ```json
 // <project-root>/firebase.json
@@ -309,25 +334,15 @@ Because you have stack traces readily available while you're debugging your app,
 
 ## Crashlytics NDK
 
-React Native Firebase supports [Crashlytics NDK](https://firebase.google.com/docs/crashlytics/ndk-reports) reporting
-which is enabled by default but will require a change as described in that link to enable symbol upload.
+The React Native Firebase Android module depends on the Crashlytics NDK library, so [Crashlytics NDK](https://firebase.google.com/docs/crashlytics/ndk-reports) reporting is included in your app. It captures crashes in native C and C++ code.
 
-This allows Crashlytics to capture crashes originating from the Yoga layout engine used by React Native.
-
-You can disable Crashlytics NDK in your `firebase.json` config.
-
-```json
-// <project-root>/firebase.json
-{
-  "react-native": {
-    "crashlytics_ndk_enabled": false
-  }
-}
-```
+Symbols for native libraries are not uploaded by default. To get readable native stack traces, enable `nativeSymbolUploadEnabled` as described in step 4 of [Android Setup](/crashlytics/android-setup#4-optional-enable-crashlytics-ndk-reporting) and run the symbol upload task after each build.
 
 ## Crashlytics Javascript stacktrace issue generation
 
-React Native Crashlytics module by default installs a global javascript exception handler, and it records a crash with a javascript stack trace any time an unhandled javascript exception is thrown. Sometimes it is not desirable behavior since it might duplicate issues in combination with the default mode of javascript global exception handler chaining. We recommend leaving JS crashes enabled and turning off exception handler chaining. However, if you have special crash handling requirements, you may disable this behavior by setting the appropriate option to false:
+React Native Crashlytics module by default installs a global javascript exception handler, and it records a crash with a javascript stack trace any time an unhandled javascript exception is thrown. Sometimes it is not desirable behavior since it might duplicate issues in combination with the default mode of javascript global exception handler chaining. We recommend leaving JS crashes enabled and turning off exception handler chaining. However, if you have special crash handling requirements, you may disable this behavior by setting the appropriate option to false.
+
+When this option is `false` and chaining is also `false`, an unhandled javascript exception is neither recorded nor passed on to the previously installed handler.
 
 ```json
 // <project-root>/firebase.json
@@ -340,7 +355,7 @@ React Native Crashlytics module by default installs a global javascript exceptio
 
 ## Crashlytics Javascript exception handler chaining
 
-React Native Crashlytics module's global javascript exception handler by default chains to any previously installed global javascript exception handler after logging the crash with the javascript stack trace. In default react-native setups, this means in development you will then see a "red box" and in release mode you will see a second native crash in the Crashlytics console with no javascript stack trace. These duplicate crash reports are probably not desirable, and the one from the chained handler will not have the javascript stack trace. We recommend disabling this once Crashlytics is integrated in testing. It is enabled by default for easier initial integration testing and to be sure introducing the option was not a breaking change. You may disable exception handler chaining by setting the appropriate option to false:
+React Native Crashlytics module's global javascript exception handler by default chains to any previously installed global javascript exception handler after logging the crash with the javascript stack trace. In default react-native setups, this means in development you will then see a "red box" and in release mode you will see a second native crash in the Crashlytics console with no javascript stack trace. These duplicate crash reports are probably not desirable, and the one from the chained handler will not have the javascript stack trace. We recommend disabling this once Crashlytics is integrated in testing. It is enabled by default, which makes initial integration testing easier. You may disable exception handler chaining by setting the appropriate option to false. With chaining disabled, the module records the error with its javascript stack trace and then terminates the app itself instead of passing the exception on.
 
 ```json
 // <project-root>/firebase.json

@@ -1,6 +1,8 @@
 ---
 title: Crashlytics - Android Setup
 description: 'Additional Android Crashlytics setup: the Gradle plugin dependency and optional NDK crash reporting.'
+next: /crashlytics/crash-reports
+previous: /crashlytics/usage
 ---
 
 ## Prerequisites
@@ -10,6 +12,7 @@ These steps assume:
 - `@react-native-firebase/app` and `@react-native-firebase/crashlytics` are already installed (see [Crashlytics usage](/crashlytics/usage)).
 - You are configuring a React Native CLI Android project. Expo projects should add the `@react-native-firebase/crashlytics` config plugin, which covers steps 2 and 3 below (see the Expo note below and [Expo](/#installation-for-expo-projects)).
 - You can edit `android/build.gradle` and `android/app/build.gradle`, then rebuild Android.
+- Your project meets the minimum versions that the Firebase [Android NDK guide](https://firebase.google.com/docs/crashlytics/ndk-reports) lists as prerequisites: Gradle 8.0, Android Gradle plugin 8.1.0 and Google services Gradle plugin 4.4.1.
 
 > If you're migrating from Fabric, make sure you remove the `fabric.properties` file from your Android project. If you do not do this you will not receive crash reports on the Firebase console.
 
@@ -61,7 +64,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 ## 4. (Optional) Enable Crashlytics NDK reporting
 
-Crashlytics NDK reporting allows you to capture Native Development Kit crashes, for example crashes originating from the Yoga layout engine in React Native.
+Crashlytics NDK reporting allows you to capture Native Development Kit crashes, which are crashes in native C and C++ code. The React Native Firebase Android module already includes the Crashlytics NDK library. This step enables the upload of native symbols, which Crashlytics needs to show readable native stack traces. The Firebase [Android NDK guide](https://firebase.google.com/docs/crashlytics/ndk-reports) covers the details.
 
 Add a `firebaseCrashlytics` block inside the existing `android.buildTypes.release` block of `android/app/build.gradle`:
 
@@ -78,6 +81,8 @@ android {
   }
 }
 ```
+
+With `nativeSymbolUploadEnabled` set to `true`, the Crashlytics Gradle plugin adds an `uploadCrashlyticsSymbolFile<BuildVariant>` task, for example `uploadCrashlyticsSymbolFileRelease`. For method names to appear in native stack traces, run that task after each build of your native libraries, for example `./gradlew app:assembleRelease app:uploadCrashlyticsSymbolFileRelease` from the `android` folder.
 
 ## 5. Rebuild the project
 
