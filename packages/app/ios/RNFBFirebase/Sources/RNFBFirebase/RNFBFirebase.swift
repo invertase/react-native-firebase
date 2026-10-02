@@ -16,16 +16,6 @@
 
 import Foundation
 
-/// Marker type for the local dynamic Firebase probe product (`RNFBFirebase`).
-public enum RNFBFirebaseUmbrella {
-  /// Keeps the installations class linked into this dynamic product.
-  /// The symbol is exported so dead-strip cannot drop the framework dependency.
-  /// Callers outside the probe do not need it; RNFBApp never re-exports the module.
-  public static func firebaseInstallationsLinked() -> Bool {
-    RNFBFirebaseInstallationsLinked().boolValue
-  }
-}
-
 /// Foundation-only snapshot of a live app for RNFBApp mapping code.
 public final class RNFBFirebaseAppSnapshot: NSObject {
   public let name: String
@@ -69,14 +59,6 @@ public enum RNFBFirebaseOptionsClient {
         rnfbRetainedObject(RNFBFirebaseCreateOptions(appID, senderID))
       }
     }
-  }
-
-  public static func googleAppID(_ options: NSObject) -> String? {
-    rnfbString(RNFBFirebaseOptionsGoogleAppID(options))
-  }
-
-  public static func gcmSenderID(_ options: NSObject) -> String? {
-    rnfbString(RNFBFirebaseOptionsGCMSenderID(options))
   }
 
   public static func apiKey(_ options: NSObject) -> String? {
@@ -124,7 +106,7 @@ public enum RNFBFirebaseOptionsClient {
   }
 
   public static func setBundleID(_ value: String?, on options: NSObject) {
-    (value ?? "").withCString { RNFBFirebaseOptionsSetBundleID(options, $0) }
+    rnfbWithCString(value) { RNFBFirebaseOptionsSetBundleID(options, $0) }
   }
 
   public static func appGroupID(_ options: NSObject) -> String? {
@@ -208,12 +190,6 @@ public enum RNFBFirebaseAppClient {
     }
   }
 
-  public static func registerLibraryIfAvailable(name: String, version: String, on target: NSObject.Type) {
-    let selector = NSSelectorFromString("registerLibrary:withVersion:")
-    guard target.responds(to: selector) else { return }
-    target.perform(selector, with: name, with: version)
-  }
-
   private static func snapshotString(_ raw: NSDictionary, _ key: String) -> String? {
     guard let value = raw[key], !(value is NSNull) else { return nil }
     return value as? String
@@ -249,17 +225,11 @@ private func rnfbDictionary(_ pointer: OpaquePointer?) -> NSDictionary? {
   return Unmanaged<NSDictionary>.fromOpaque(UnsafeMutableRawPointer(pointer)).takeUnretainedValue()
 }
 
-@_silgen_name("RNFBFirebaseInstallationsLinked")
-private func RNFBFirebaseInstallationsLinked() -> ObjCBool
 @_silgen_name("RNFBFirebaseCreateOptions")
 private func RNFBFirebaseCreateOptions(
   _ googleAppID: UnsafePointer<CChar>?,
   _ senderID: UnsafePointer<CChar>?
 ) -> OpaquePointer
-@_silgen_name("RNFBFirebaseOptionsGoogleAppID")
-private func RNFBFirebaseOptionsGoogleAppID(_ options: NSObject) -> OpaquePointer?
-@_silgen_name("RNFBFirebaseOptionsGCMSenderID")
-private func RNFBFirebaseOptionsGCMSenderID(_ options: NSObject) -> OpaquePointer?
 @_silgen_name("RNFBFirebaseOptionsAPIKey")
 private func RNFBFirebaseOptionsAPIKey(_ options: NSObject) -> OpaquePointer?
 @_silgen_name("RNFBFirebaseOptionsSetAPIKey")
@@ -283,7 +253,7 @@ private func RNFBFirebaseOptionsSetStorageBucket(_ options: NSObject, _ value: U
 @_silgen_name("RNFBFirebaseOptionsBundleID")
 private func RNFBFirebaseOptionsBundleID(_ options: NSObject) -> OpaquePointer?
 @_silgen_name("RNFBFirebaseOptionsSetBundleID")
-private func RNFBFirebaseOptionsSetBundleID(_ options: NSObject, _ value: UnsafePointer<CChar>)
+private func RNFBFirebaseOptionsSetBundleID(_ options: NSObject, _ value: UnsafePointer<CChar>?)
 @_silgen_name("RNFBFirebaseOptionsAppGroupID")
 private func RNFBFirebaseOptionsAppGroupID(_ options: NSObject) -> OpaquePointer?
 @_silgen_name("RNFBFirebaseOptionsSetAppGroupID")

@@ -297,7 +297,7 @@ public final class RNFBAppModuleFirebase: NSObject {
   public static func configureOrReuseApp(
     options: RNFBFIROptionsConfiguring,
     nameResolution: RNFBAppInitializeNameResolution
-  ) -> AnyObject {
+  ) -> AnyObject? {
     configureOrReuseApp(
       options: options,
       nameResolution: nameResolution,
@@ -310,7 +310,9 @@ public final class RNFBAppModuleFirebase: NSObject {
     options: RNFBFIROptionsConfiguring,
     nameResolution: RNFBAppInitializeNameResolution,
     lifecycle: RNFBFIRAppLifecycle
-  ) -> AnyObject {
+  ) -> AnyObject? {
+    // Pre-port read the app back with `[FIRApp defaultApp]` / `appNamed:` and passed the
+    // result on unchecked, so a nil lookup flowed to the caller rather than trapping.
     // Production factories wrap live `FirebaseOptions` in
     // `RNFBFIROptionsConfiguringAdapter`. Configure needs the underlying SDK object.
     let firOptions: AnyObject
@@ -324,11 +326,11 @@ public final class RNFBAppModuleFirebase: NSObject {
         return existing
       }
       lifecycle.configure(withOptions: firOptions)
-      return lifecycle.defaultApp()!
+      return lifecycle.defaultApp()
     }
     let appName = nameResolution.appName ?? ""
     lifecycle.configure(withName: appName, options: firOptions)
-    return lifecycle.appNamed(appName)!
+    return lifecycle.appNamed(appName)
   }
 
   @objc(setLoggerLevel:)

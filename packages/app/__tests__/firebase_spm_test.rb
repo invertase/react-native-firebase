@@ -1093,6 +1093,27 @@ class FirebaseSpmTest < Minitest::Test
     assert_same target.package_product_dependencies[0], build_files[0].product_ref
   end
 
+  def test_add_core_reuses_existing_local_umbrella_package_reference
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+
+    existing_pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    existing_pkg.relative_path = RNFirebaseSPM.umbrella_path
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target], package_references: [existing_pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal [existing_pkg], user_project.root_object.package_references
+    assert_equal 1, target.package_product_dependencies.length
+    ref = target.package_product_dependencies[0]
+    assert_equal RNFIREBASE_SPM_UMBRELLA_PRODUCT, ref.product_name
+    assert_same existing_pkg, ref.package
+    assert_same ref, target.frameworks_build_phase.files[0].product_ref
+  end
+
   # Regression test for the "already-affected consumer" self-heal gap
   # (#9158 follow-up): a project that already went through a *pre-fix*
   # RNFB version has a `FirebaseCore` product dependency declared on the
@@ -1562,6 +1583,106 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_equal [unrelated_ref], target.package_product_dependencies
     assert_equal [unrelated_pkg], user_project.root_object.package_references
+  end
+
+  def stale_remote_core_link
+    pkg = Xcodeproj::Project::Object::XCRemoteSwiftPackageReference.new
+    pkg.repositoryURL = RNFirebaseSPM.url
+    ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    ref.product_name = 'FirebaseCore'
+    ref.package = pkg
+    [pkg, ref]
+  end
+
+  def stale_local_umbrella_link
+    pkg = Xcodeproj::Project::Object::XCLocalSwiftPackageReference.new
+    pkg.relative_path = RNFirebaseSPM.umbrella_path
+    ref = Xcodeproj::Project::Object::XCSwiftPackageProductDependency.new
+    ref.product_name = RNFIREBASE_SPM_UMBRELLA_PRODUCT
+    ref.package = pkg
+    [pkg, ref]
+  end
+
+  def test_remove_core_drops_superseded_remote_link_when_probe_umbrella_active
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+
+    pkg, ref = stale_remote_core_link
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_empty user_project.root_object.package_references
+    assert_equal 1, user_project.save_count
+    assert(Pod::UI.messages.any? { |m| m.include?('SPM probe umbrella active') })
+  end
+
+  def test_remove_core_drops_leftover_local_umbrella_link_when_remote_spm_active
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+
+    pkg, ref = stale_local_umbrella_link
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty target.package_product_dependencies
+    assert_empty user_project.root_object.package_references
+    assert_equal 1, user_project.save_count
+    assert(Pod::UI.messages.any? { |m| m.include?('SPM remote active') })
+  end
+
+  def test_remove_core_keeps_remote_core_link_when_remote_spm_active
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+
+    pkg, ref = stale_remote_core_link
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_equal [ref], target.package_product_dependencies
+    assert_equal [pkg], user_project.root_object.package_references
+    assert_equal 0, user_project.save_count
+  end
+
+  def test_remove_core_drops_orphaned_local_umbrella_package_without_dependency
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+
+    pkg, = stale_local_umbrella_link
+    pkg.referrers.clear
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_empty user_project.root_object.package_references
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_remove_core_keeps_local_umbrella_link_when_probe_umbrella_active
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+
+    pkg, ref = stale_local_umbrella_link
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'], package_product_dependencies: [ref])
+    user_project = MockUserProject.new([target], package_references: [pkg])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_remove_spm_core_from_app_target(installer)
+
+    assert_equal [ref], target.package_product_dependencies
+    assert_equal [pkg], user_project.root_object.package_references
+    assert_equal 0, user_project.save_count
   end
 
   # ── rnfirebase_fix_spm_archive_signature_collision ──

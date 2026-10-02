@@ -19,6 +19,9 @@ import Foundation
 import RNFBFirebase
 import XCTest
 
+@_silgen_name("RNFBFirebaseInstallationsLinked")
+private func RNFBFirebaseInstallationsLinked() -> ObjCBool
+
 final class RNFBFirebaseAppClientTests: XCTestCase {
   override func tearDown() {
     FirebaseApp.resetRegistryForTesting()
@@ -27,7 +30,7 @@ final class RNFBFirebaseAppClientTests: XCTestCase {
   }
 
   func testInstallationsLinkageAnchorIsDistinctFromNSObject() {
-    XCTAssertTrue(RNFBFirebaseUmbrella.firebaseInstallationsLinked())
+    XCTAssertTrue(RNFBFirebaseInstallationsLinked().boolValue)
   }
 
   func testCreateOptionsPreservesNilIdentifiersAndDeallocates() {
@@ -36,16 +39,17 @@ final class RNFBFirebaseAppClientTests: XCTestCase {
       let created = RNFBFirebaseOptionsClient.create(googleAppID: nil, gcmSenderID: nil)
       let options = created as! FirebaseOptions
       released = options
-      XCTAssertNil(RNFBFirebaseOptionsClient.googleAppID(created))
-      XCTAssertNil(RNFBFirebaseOptionsClient.gcmSenderID(created))
+      XCTAssertNil(options.googleAppID)
+      XCTAssertNil(options.gcmSenderID)
     }
     XCTAssertNil(released)
   }
 
   func testOptionsClientRoundTripsMutableFields() {
     let created = RNFBFirebaseOptionsClient.create(googleAppID: "app-id", gcmSenderID: "sender-id")
-    XCTAssertEqual(RNFBFirebaseOptionsClient.googleAppID(created), "app-id")
-    XCTAssertEqual(RNFBFirebaseOptionsClient.gcmSenderID(created), "sender-id")
+    let createdOptions = created as! FirebaseOptions
+    XCTAssertEqual(createdOptions.googleAppID, "app-id")
+    XCTAssertEqual(createdOptions.gcmSenderID, "sender-id")
 
     RNFBFirebaseOptionsClient.setAPIKey("api-key", on: created)
     RNFBFirebaseOptionsClient.setProjectID("project-id", on: created)
@@ -63,16 +67,12 @@ final class RNFBFirebaseAppClientTests: XCTestCase {
     XCTAssertEqual(RNFBFirebaseOptionsClient.bundleID(created), "com.example.app")
     XCTAssertEqual(RNFBFirebaseOptionsClient.appGroupID(created), "group.com.example")
 
+    // Pre-port `options.bundleID = nil` removed the key. nil must reach the SDK setter.
     RNFBFirebaseOptionsClient.setBundleID(nil, on: created)
     RNFBFirebaseOptionsClient.setAppGroupID(nil, on: created)
-    XCTAssertEqual(RNFBFirebaseOptionsClient.bundleID(created), "")
+    XCTAssertNil(createdOptions.bundleID)
+    XCTAssertNil(RNFBFirebaseOptionsClient.bundleID(created))
     XCTAssertNil(RNFBFirebaseOptionsClient.appGroupID(created))
-  }
-
-  func testDefaultConfigureRegistersTheStubApp() {
-    RNFBFirebaseAppClient.configure()
-    let app = RNFBFirebaseAppClient.defaultApp()
-    XCTAssertEqual(RNFBFirebaseAppClient.snapshot(of: app!).googleAppID, "stub-app-id")
   }
 
   func testAppLookupConfigureSnapshotAndAllApps() {
@@ -115,6 +115,13 @@ final class RNFBFirebaseAppClientTests: XCTestCase {
     XCTAssertTrue(RNFBFirebaseAppClient.snapshot(of: defaultApp!).isDataCollectionDefaultEnabled)
   }
 
+  func testDefaultPlistConfigureCreatesDefaultApp() {
+    // The dynamic probe app (test-rn-bare) calls this overload from its AppDelegate.
+    XCTAssertNil(RNFBFirebaseAppClient.defaultApp())
+    RNFBFirebaseAppClient.configure()
+    XCTAssertNotNil(RNFBFirebaseAppClient.defaultApp())
+  }
+
   func testDeleteAppRejectsNonFirebaseAndRemovesLiveApp() {
     var completionCalled = false
     XCTAssertFalse(
@@ -146,19 +153,11 @@ final class RNFBFirebaseAppClientTests: XCTestCase {
   }
 
   func testRegisterLibrarySkipsMissingSelectorAndRecordsWhenPresent() {
-    RNFBFirebaseAppClient.registerLibraryIfAvailable(name: "skipped", version: "0", on: NSObject.self)
-    XCTAssertNil(FirebaseApp.lastRegisteredLibraryNameForTesting())
-
     FirebaseApp.setRegisterLibraryAvailableForTesting(false)
     RNFBFirebaseAppClient.registerLibrary(name: "skipped-c", version: "0")
     XCTAssertNil(FirebaseApp.lastRegisteredLibraryNameForTesting())
     FirebaseApp.setRegisterLibraryAvailableForTesting(true)
 
-    RNFBFirebaseAppClient.registerLibraryIfAvailable(
-      name: "react-native-firebase",
-      version: "9.9.9",
-      on: FirebaseApp.self
-    )
     RNFBFirebaseAppClient.registerLibrary(name: "react-native-firebase", version: "9.9.9")
     XCTAssertEqual(FirebaseApp.lastRegisteredLibraryNameForTesting(), "react-native-firebase")
     XCTAssertEqual(FirebaseApp.lastRegisteredLibraryVersionForTesting(), "9.9.9")

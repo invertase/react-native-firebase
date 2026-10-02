@@ -32,6 +32,8 @@ private final class StubFIRAppLifecycle: NSObject, RNFBFIRAppLifecycle {
   var lastConfigureOptions: AnyObject?
   var lastConfigureName: String?
   var configureDefaultCalled = false
+  /// When false, configure succeeds without registering an app (SDK read-back returns nil).
+  var registersApps = true
 
   func defaultApp() -> AnyObject? {
     defaultAppValue
@@ -48,6 +50,7 @@ private final class StubFIRAppLifecycle: NSObject, RNFBFIRAppLifecycle {
   func configure(withOptions options: AnyObject) {
     configureDefaultCalled = true
     lastConfigureOptions = options
+    guard registersApps else { return }
     let app = StubFIRAppToken(label: "configured-default")
     defaultAppValue = app
   }
@@ -55,6 +58,7 @@ private final class StubFIRAppLifecycle: NSObject, RNFBFIRAppLifecycle {
   func configure(withName name: String, options: AnyObject) {
     lastConfigureName = name
     lastConfigureOptions = options
+    guard registersApps else { return }
     let app = StubFIRAppToken(label: "configured-\(name)")
     namedApps[name] = app
   }
@@ -181,6 +185,44 @@ final class RNFBAppModuleFirebaseTests: XCTestCase {
     XCTAssertTrue(result === lifecycle.namedApps["secondary"])
   }
 
+  func testConfigureOrReuseDefaultReturnsNilInsteadOfTrappingWhenReadBackIsNil() {
+    let lifecycle = StubFIRAppLifecycle()
+    lifecycle.registersApps = false
+    let names = RNFBAppInitializeNameResolution(
+      appName: nil,
+      jsAppName: "[DEFAULT]",
+      isDefaultApp: true
+    )
+
+    let result = RNFBAppModuleFirebase.configureOrReuseApp(
+      options: ConfiguringOptionsStub(),
+      nameResolution: names,
+      lifecycle: lifecycle
+    )
+
+    XCTAssertTrue(lifecycle.configureDefaultCalled)
+    XCTAssertNil(result)
+  }
+
+  func testConfigureOrReuseNamedReturnsNilInsteadOfTrappingWhenReadBackIsNil() {
+    let lifecycle = StubFIRAppLifecycle()
+    lifecycle.registersApps = false
+    let names = RNFBAppInitializeNameResolution(
+      appName: "secondary",
+      jsAppName: "secondary",
+      isDefaultApp: false
+    )
+
+    let result = RNFBAppModuleFirebase.configureOrReuseApp(
+      options: ConfiguringOptionsStub(),
+      nameResolution: names,
+      lifecycle: lifecycle
+    )
+
+    XCTAssertEqual(lifecycle.lastConfigureName, "secondary")
+    XCTAssertNil(result)
+  }
+
   func testConfigureOrReuseUnwrapsConfiguringAdapterToLiveOptions() {
     let lifecycle = StubFIRAppLifecycle()
     let names = RNFBAppInitializeNameResolution(
@@ -200,7 +242,7 @@ final class RNFBAppModuleFirebaseTests: XCTestCase {
     XCTAssertTrue(lifecycle.lastConfigureOptions === live)
   }
 
-  func testOptionsFactoryBalancesAllocOwnershipAndPreservesNilIdentifiers() {
+  func testOptionsFactoryReleasesOptionsAndPreservesNilIdentifiers() {
     weak var releasedOptions: FirebaseOptions?
 
     autoreleasepool {
