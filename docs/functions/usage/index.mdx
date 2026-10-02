@@ -1,6 +1,6 @@
 ---
 title: Cloud Functions
-description: 'Cloud Functions: getFunctions, connectFunctionsEmulator, httpsCallable, httpsCallableFromUrl, callable.stream(), HttpsError / FunctionsError, HttpsErrorCode, timeout options, and region targeting.'
+description: 'Cloud Functions: getFunctions, connectFunctionsEmulator, httpsCallable with timeout and limitedUseAppCheckTokens options, httpsCallableFromUrl, callable.stream(), HttpsError / FunctionsError, HttpsErrorCode, SDK_VERSION, and region targeting.'
 next: /functions/writing-deploying-functions
 previous: /firestore/pipelines/sdk-compatibility
 ---
@@ -37,9 +37,9 @@ The manual installation pages for [iOS](/functions/usage/installation/ios) and [
 | | |
 | --- | --- |
 | **Platforms** | Android, iOS (native Firebase SDK) |
-| **New Architecture** | **Required** — since v24 for Functions, and for all native modules from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement) and [Migrating to v24 — Cloud Functions](/migrating-to-v24#cloud-functions). |
+| **New Architecture** | **Required** since v24 for Functions, and for all native modules from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement) and [Migrating to v24, Cloud Functions](/migrating-to-v24#cloud-functions). |
 
-**Platform notes:** React Native Firebase exports `SDK_VERSION`, the runtime error class `HttpsError` (also aliased as `FunctionsError`), the `HttpsErrorCode` object, and the `HttpsErrorCodeValue` type for callable error codes without a `functions/` prefix (including RN-specific codes). Deprecated namespaced helpers `FunctionsStatics` and a re-exported `FirebaseApp` type remain for backwards compatibility. Each is explained in the section that uses it.
+**Platform notes:** React Native Firebase exports `SDK_VERSION`, the runtime error class `HttpsError` (also aliased as `FunctionsError`), the `HttpsErrorCode` object, and the `HttpsErrorCodeValue` type for callable error codes without a `functions/` prefix (including RN-specific codes). The package type declarations also contain a legacy `FunctionsStatics` interface and a `FirebaseApp` alias, but the package entry point does not export either. Each export is explained in the section that uses it.
 
 # What does it do
 
@@ -75,7 +75,9 @@ console.log('Functions package version:', SDK_VERSION);
 
 ## Emulator
 
-Use `connectFunctionsEmulator` before any callable or stream calls when talking to the Local Emulator Suite (the Functions emulator listens on port `5001` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine.
+Use `connectFunctionsEmulator` before any callable or stream calls when talking to the Local Emulator Suite (the Functions emulator listens on port `5001` by default). It throws if `port` is not a number.
+
+On Android, `connectFunctionsEmulator` rewrites a host that starts with `localhost` or `127.0.0.1` to `10.0.2.2` (the host machine as seen from the Android emulator) and logs a message. Set `android_bypass_emulator_url_remap` to `true` in `firebase.json` to keep the host you pass (see [JSON Config](/app/json-config)). Use your machine's IP address when running on a physical device. The example below passes `10.0.2.2` explicitly on Android.
 
 ```js
 import { Platform } from 'react-native';
@@ -92,10 +94,10 @@ If your functions are deployed on a different region, pass that region to `getFu
 Prefer `connectFunctionsEmulator`. The instance method `useFunctionsEmulator(origin)` is deprecated and expects a full origin string such as `http://127.0.0.1:5001`. Invalid origins throw.
 
 ```js
+// WARNING: useFunctionsEmulator is deprecated; prefer connectFunctionsEmulator(functions, host, port). Invalid origins throw.
 import { getFunctions } from '@react-native-firebase/functions';
 
 const functions = getFunctions();
-// WARNING: deprecated; prefer connectFunctionsEmulator(functions, host, port). Invalid origins throw.
 functions.useFunctionsEmulator('http://127.0.0.1:5001');
 ```
 
@@ -113,7 +115,7 @@ console.log('Default region instance app:', functions.app.name);
 console.log('Europe instance app:', europe.app.name);
 ```
 
-`FirebaseApp` is also re-exported from `@react-native-firebase/functions` for older namespaced type imports. That re-export is deprecated; prefer importing `FirebaseApp` from `@react-native-firebase/app`.
+The `@react-native-firebase/functions` entry point does not export a `FirebaseApp` type. Import `FirebaseApp` from `@react-native-firebase/app`.
 
 ## Calling an endpoint
 
@@ -168,7 +170,7 @@ function ProductList() {
 }
 ```
 
-Optional `HttpsCallableOptions` let you set a millisecond `timeout` and `limitedUseAppCheckTokens` (required when the callable enforces App Check replay protection):
+Optional `HttpsCallableOptions` let you set a millisecond `timeout` (a non-numeric `timeout` throws) and `limitedUseAppCheckTokens`. Set `limitedUseAppCheckTokens` to `true` when the callable consumes App Check tokens for replay protection (see [Enable App Check enforcement for Cloud Functions](https://firebase.google.com/docs/app-check/cloud-functions)):
 
 ```js
 import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
@@ -205,7 +207,7 @@ async function callByUrl() {
 
 ## Streaming results
 
-Callable references expose `.stream()`. It returns `{ stream, data }`: iterate `stream` for chunks as the backend calls `sendChunk`, then await `data` for the final payload.
+Callable references returned by `httpsCallable` and `httpsCallableFromUrl` expose `.stream()`. It returns `{ stream, data }`: iterate `stream` for chunks as the backend calls `response.sendChunk()`, then await `data` for the final payload. If the function fails, iterating `stream` throws an `HttpsError` and `data` rejects with an `HttpsError`. The backend must be a callable that checks `request.acceptsStreaming` and calls `response.sendChunk()` (see [Writing & Deploying Functions](/functions/writing-deploying-functions#streaming-results)).
 
 ```js
 import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
@@ -227,11 +229,11 @@ async function listenToForecast() {
 
 ## Handle errors
 
-When a callable throws an HTTPS error on the server, the client rejects with an `HttpsError` instance (`code`, `message`, and optional `details`). React Native Firebase exports that class as `HttpsError` and aliases it as `FunctionsError` (same constructor). Under consumer TypeScript types, `FunctionsError` is not a valid `instanceof` right-hand side; use `error instanceof HttpsError`, and assert the alias with `FunctionsError === HttpsError`.
+When a callable throws an `HttpsError` on the server, the client rejects with an `HttpsError` instance (`code`, `message`, and optional `details`). If the server throws any other error, the client receives the code `internal`. React Native Firebase exports the client class as `HttpsError` and aliases it as `FunctionsError` (same constructor, so `FunctionsError === HttpsError`).
 
-`HttpsErrorCode` is a React Native Firebase object of callable error code strings (uppercase keys and lowercase hyphenated keys). The firebase-js-sdk does not export this helper from the modular `@firebase/functions` entry point. Runtime `code` values on `HttpsError` are strings without a `functions/` prefix, typed as `HttpsErrorCodeValue` (core codes plus RN-specific `unsupported-type` and `failed-to-parse-wrapped-number`).
+`HttpsErrorCode` is a React Native Firebase object of callable error code strings (uppercase keys such as `HttpsErrorCode.CANCELLED` and lowercase hyphenated keys such as `HttpsErrorCode['invalid-argument']`). The firebase-js-sdk does not export this helper from the modular `@firebase/functions` entry point. Runtime `code` values on `HttpsError` are lowercase strings without a `functions/` prefix, such as `invalid-argument`. The exported `HttpsErrorCodeValue` type lists the possible values (the standard codes plus `unsupported-type` and `failed-to-parse-wrapped-number`), although `error.code` itself is typed as `string` on the `HttpsError` class. A native code that is not recognized becomes `unknown`. The iOS-only codes `unsupported-type` and `failed-to-parse-wrapped-number` are reported when native iOS serialization rejects the request or response data.
 
-Deprecated namespaced type `FunctionsStatics` describes the old `firebase.functions` statics shape that exposed `HttpsErrorCode`; prefer importing `HttpsErrorCode` from the modular entry point.
+The legacy `FunctionsStatics` interface describes the old `firebase.functions` statics shape that exposed `HttpsErrorCode`. The entry point does not export it, so import `HttpsErrorCode` from `@react-native-firebase/functions`.
 
 ```js
 import {

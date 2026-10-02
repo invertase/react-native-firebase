@@ -16,12 +16,12 @@ import { AppButton } from '../src/AppButton';
 import { ScreenChrome } from '../src/ScreenChrome';
 import { theme } from '../src/theme';
 
-/** Same host mapping as `packages/app/e2e/helpers.js` `getE2eEmulatorHost`. */
+/** Android emulators reach the host machine at 10.0.2.2; iOS simulators use 127.0.0.1. */
 function getFunctionsEmulatorHost(): string {
   return Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
 }
 
-/** Default Functions port from `.github/workflows/scripts/firebase.emulator.template.json`. */
+/** Default Functions emulator port. */
 const FUNCTIONS_EMULATOR_PORT = 5001;
 
 const DEFAULT_CALLABLE = 'testFunctionDefaultRegionV2';
@@ -89,8 +89,9 @@ export default function FunctionsScreen() {
     <ScreenChrome title="functions" result={result} error={error}>
       <Text style={styles.hint}>
         Connects to the Functions emulator at {getFunctionsEmulatorHost()}:{FUNCTIONS_EMULATOR_PORT}{' '}
-        at module load (same host mapping as the e2e helpers; CI default port 5001). Controls mirror
-        runtime APIs taught on the Functions usage page.
+        at module load (default emulator port 5001). The callables {DEFAULT_CALLABLE} and{' '}
+        {STREAM_CALLABLE} must exist on that emulator. Controls mirror runtime APIs taught on the
+        Functions usage page.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -163,6 +164,26 @@ export default function FunctionsScreen() {
               type: 'number',
               asError: false,
               inputData: 1234,
+            });
+            return response.data;
+          })
+        }
+      />
+      <Text style={styles.warning}>
+        WARNING: limitedUseAppCheckTokens requests a limited-use App Check token. The call can
+        reject depending on the App Check setup of the app and the callable.
+      </Text>
+      <AppButton
+        title="httpsCallable (limitedUseAppCheckTokens option; can throw)"
+        onPress={() =>
+          run('httpsCallable(limitedUseAppCheckTokens)', async () => {
+            const callable = httpsCallable(functions, DEFAULT_CALLABLE, {
+              limitedUseAppCheckTokens: true,
+            });
+            const response = await callable({
+              type: 'string',
+              asError: false,
+              inputData: 'acde',
             });
             return response.data;
           })
