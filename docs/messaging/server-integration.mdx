@@ -185,7 +185,6 @@ function App() {
   useEffect(() => {
     const messaging = getMessaging();
     const unsubscribe = onMessage(messaging, async remoteMessage => {
-      const owner = JSON.parse(String(remoteMessage.data?.owner));
       const user = JSON.parse(String(remoteMessage.data?.user));
       const picture = JSON.parse(String(remoteMessage.data?.picture));
 
