@@ -2,8 +2,11 @@ import { useMemo, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { getApp } from '@react-native-firebase/app';
 import {
+  AIError,
+  AIErrorCode,
   AgentPlatformBackend,
   BackendType,
+  FunctionCallingMode,
   GoogleAIBackend,
   HarmBlockMethod,
   HarmBlockThreshold,
@@ -32,6 +35,9 @@ import { theme } from '../src/theme';
 
 const TINY_PNG_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=';
+
+// 324 zero bytes of 16-bit PCM audio (silence), base64 encoded.
+const SILENT_PCM_BASE64 = 'A'.repeat(432);
 
 // initializeAppCheck must only be called once per app; reuse across presses.
 let appCheckInstance: AppCheck | undefined;
@@ -87,9 +93,8 @@ export default function AiScreen() {
   return (
     <ScreenChrome title="ai" result={result} error={error}>
       <Text style={styles.hint}>
-        Controls mirror runtime APIs taught on the AI Logic usage page. AI is not in yarn
-        tests:emulator:start-ci, and there is no connect*Emulator helper. Live model calls need a
-        configured Firebase project and network access.
+        Controls mirror runtime APIs taught on the AI Logic usage page. There is no AI emulator.
+        Model calls need a configured Firebase project and network access.
       </Text>
 
       <Text style={styles.section}>Instance and backends</Text>
@@ -144,10 +149,7 @@ export default function AiScreen() {
           run('AgentPlatformBackend', () => {
             const backend = new AgentPlatformBackend('global');
             const instance = getAI(getApp(), { backend });
-            return {
-              backendType: instance.backend.backendType,
-              location: instance.location,
-            };
+            return { backendType: instance.backend.backendType };
           })
         }
       />
@@ -160,10 +162,7 @@ export default function AiScreen() {
           run('VertexAIBackend', () => {
             const backend = new VertexAIBackend('us-central1');
             const instance = getAI(getApp(), { backend });
-            return {
-              backendType: instance.backend.backendType,
-              location: instance.location,
-            };
+            return { backendType: instance.backend.backendType };
           })
         }
       />
@@ -213,6 +212,18 @@ export default function AiScreen() {
             });
             return schema.toJSON();
           })
+        }
+      />
+      <AppButton
+        title="Schema helpers"
+        onPress={() =>
+          run('Schema helpers', () => ({
+            array: Schema.array({ items: Schema.integer() }).toJSON(),
+            enumString: Schema.enumString({ enum: ['red', 'green'] }).toJSON(),
+            boolean: Schema.boolean().toJSON(),
+            number: Schema.number().toJSON(),
+            anyOf: Schema.anyOf({ anyOf: [Schema.string(), Schema.number()] }).toJSON(),
+          }))
         }
       />
       <AppButton
@@ -358,11 +369,77 @@ export default function AiScreen() {
         }
       />
       <AppButton
+        title="FunctionCallingMode.ANY"
+        onPress={() =>
+          run('FunctionCallingMode.ANY', async () => {
+            const model = getGenerativeModel(ai, {
+              model: 'gemini-3.1-flash-lite',
+              tools: [
+                {
+                  functionDeclarations: [
+                    {
+                      name: 'fetchWeather',
+                      description: 'Get the weather conditions for a city',
+                      parameters: Schema.object({
+                        properties: { city: Schema.string({ description: 'The city name.' }) },
+                      }),
+                    },
+                  ],
+                },
+              ],
+              toolConfig: {
+                functionCallingConfig: {
+                  mode: FunctionCallingMode.ANY,
+                  allowedFunctionNames: ['fetchWeather'],
+                },
+              },
+            });
+            const response = await model.generateContent('How is the weather in Boston?');
+            return { functionCalls: response.response.functionCalls() ?? [] };
+          })
+        }
+      />
+      <AppButton
+        title="functionReference (automatic function calling)"
+        onPress={() =>
+          run('functionReference', async () => {
+            const model = getGenerativeModel(
+              ai,
+              {
+                model: 'gemini-3.1-flash-lite',
+                tools: [
+                  {
+                    functionDeclarations: [
+                      {
+                        name: 'fetchWeather',
+                        description: 'Get the weather conditions for a city',
+                        parameters: Schema.object({
+                          properties: { city: Schema.string({ description: 'The city name.' }) },
+                        }),
+                        functionReference: async () => ({
+                          temperature: 38,
+                          cloudConditions: 'partlyCloudy',
+                        }),
+                      },
+                    ],
+                  },
+                ],
+              },
+              { maxSequentialFunctionCalls: 5 },
+            );
+            const response = await model.generateContent('How is the weather in Boston?');
+            return response.response.text();
+          })
+        }
+      />
+      <AppButton
         title="countTokens"
         onPress={() =>
           run('countTokens', async () => {
             const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
-            return model.countTokens('Count these tokens for test-expo.');
+            const count = await model.countTokens('Count these tokens for test-expo.');
+            const generated = await model.generateContent('Write one short sentence.');
+            return { count, usageMetadata: generated.response.usageMetadata };
           })
         }
       />
@@ -435,7 +512,10 @@ export default function AiScreen() {
               },
             });
             const response = await model.generateContent('What is 3 + 4?');
-            return response.response.text();
+            return {
+              thoughtSummary: response.response.thoughtSummary() ?? null,
+              text: response.response.text(),
+            };
           })
         }
       />
@@ -448,7 +528,12 @@ export default function AiScreen() {
               tools: [{ googleSearch: {} }],
             });
             const response = await model.generateContent('Name one recent science headline.');
-            return response.response.text();
+            const metadata = response.response.candidates?.[0]?.groundingMetadata;
+            return {
+              text: response.response.text(),
+              suggestionsHtml: metadata?.searchEntryPoint?.renderedContent,
+              sources: (metadata?.groundingChunks ?? []).map(chunk => chunk.web),
+            };
           })
         }
       />
@@ -526,6 +611,54 @@ export default function AiScreen() {
         }
       />
 
+      <AppButton
+        title="RequestOptions + AbortSignal"
+        onPress={() =>
+          run('RequestOptions + AbortSignal', async () => {
+            const model = getGenerativeModel(
+              ai,
+              { model: 'gemini-3.1-flash-lite' },
+              { timeout: 60000 },
+            );
+            const controller = new AbortController();
+            const abortTimer = setTimeout(() => controller.abort(), 10000);
+            try {
+              const response = await model.generateContent('Write a haiku about the sea.', {
+                signal: controller.signal,
+              });
+              return response.response.text();
+            } finally {
+              clearTimeout(abortTimer);
+            }
+          })
+        }
+      />
+      <Text style={styles.warning}>
+        WARNING: the AIError control calls getGenerativeModel without a model on purpose, so it
+        always hits the NO_MODEL error and reports the code.
+      </Text>
+      <AppButton
+        title="AIError + AIErrorCode (NO_MODEL)"
+        onPress={() =>
+          run('AIError', () => {
+            try {
+              // @ts-expect-error intentional missing model for throw demo
+              getGenerativeModel(ai, {});
+            } catch (e) {
+              if (e instanceof AIError) {
+                return {
+                  isAIError: true,
+                  code: e.code,
+                  isNoModel: e.code === AIErrorCode.NO_MODEL,
+                };
+              }
+              throw e;
+            }
+            return { isAIError: false };
+          })
+        }
+      />
+
       <Text style={styles.section}>Live and templates</Text>
       <AppButton
         title="getLiveGenerativeModel"
@@ -556,11 +689,67 @@ export default function AiScreen() {
           run('LiveSession.connect', async () => {
             const liveModel = getLiveGenerativeModel(ai, {
               model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+              generationConfig: {
+                responseModalities: [ResponseModality.AUDIO],
+                outputAudioTranscription: {},
+              },
             });
             const session = await liveModel.connect();
             await session.sendTextRealtime('ping from test-expo');
             await session.close();
             return { closed: session.isClosed };
+          })
+        }
+      />
+      <AppButton
+        title="LiveSession send + audio + video + function responses"
+        onPress={() =>
+          run('LiveSession inputs', async () => {
+            const liveModel = getLiveGenerativeModel(ai, {
+              model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+              generationConfig: {
+                responseModalities: [ResponseModality.AUDIO],
+                outputAudioTranscription: {},
+              },
+              tools: [
+                {
+                  functionDeclarations: [
+                    {
+                      name: 'fetchWeather',
+                      description: 'Get the weather conditions for a city',
+                      parameters: Schema.object({
+                        properties: { city: Schema.string({ description: 'The city name.' }) },
+                      }),
+                    },
+                  ],
+                },
+              ],
+            });
+            const session = await liveModel.connect();
+            await session.sendAudioRealtime({ mimeType: 'audio/pcm', data: SILENT_PCM_BASE64 });
+            await session.sendVideoRealtime({ mimeType: 'image/png', data: TINY_PNG_BASE64 });
+            await session.send('What is the weather in Boston? Use the fetchWeather tool.');
+            let toolCalls = 0;
+            let transcript = '';
+            for await (const message of session.receive()) {
+              if (message.type === 'toolCall') {
+                toolCalls += message.functionCalls.length;
+                await session.sendFunctionResponses(
+                  message.functionCalls.map(call => ({
+                    id: call.id,
+                    name: call.name,
+                    response: { temperature: 38, cloudConditions: 'partlyCloudy' },
+                  })),
+                );
+              } else if (message.type === 'serverContent') {
+                transcript += message.outputTranscription?.text ?? '';
+                if (message.turnComplete) {
+                  break;
+                }
+              }
+            }
+            await session.close();
+            return { toolCalls, transcript };
           })
         }
       />
@@ -637,6 +826,41 @@ export default function AiScreen() {
                 },
               },
             );
+            return response.response.text();
+          })
+        }
+      />
+      <Text style={styles.warning}>
+        WARNING: the template controls need a server prompt template with this ID in your Firebase
+        project, otherwise the request fails.
+      </Text>
+      <AppButton
+        title="TemplateGenerativeModel.generateContentStream"
+        onPress={() =>
+          run('TemplateGenerativeModel.generateContentStream', async () => {
+            const templateModel = getTemplateGenerativeModel(ai);
+            const streamResult = await templateModel.generateContentStream(
+              'weather-assistant-template',
+              { city: 'Boston' },
+            );
+            let text = '';
+            for await (const chunk of streamResult.stream) {
+              text += chunk.text();
+            }
+            return text;
+          })
+        }
+      />
+      <AppButton
+        title="TemplateGenerativeModel.startChat"
+        onPress={() =>
+          run('TemplateGenerativeModel.startChat', async () => {
+            const templateModel = getTemplateGenerativeModel(ai);
+            const chat = templateModel.startChat({
+              templateId: 'weather-assistant-template',
+              templateVariables: { city: 'Boston' },
+            });
+            const response = await chat.sendMessage('What should I wear?');
             return response.response.text();
           })
         }
