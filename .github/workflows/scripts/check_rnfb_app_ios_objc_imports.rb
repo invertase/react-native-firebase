@@ -1,9 +1,18 @@
 # frozen_string_literal: true
 
-# Fail closed when an Objective-C++ source in packages/app/ios reaches through
-# the Swift-owned Firebase boundary. Translation-phase line splices are applied
-# before comments and literals are recognized so directives are inspected as
-# the compiler sees them.
+# Fail closed when an Objective-C, Objective-C++, C or C++ source or header in
+# packages/app/ios reaches through the Swift-owned Firebase boundary.
+# Translation-phase line splices are applied before comments and literals are
+# recognized so directives are inspected as the compiler sees them.
+#
+# Rules per file type:
+# - Every scanned file: no Firebase headers (prefixed, such as
+#   <FirebaseCore/FirebaseCore.h>, or unprefixed, such as "FIRApp.h" and
+#   "FirebaseCore.h") and no `@import Firebase*;`.
+# - Everything except `.m`: no generated Swift interface header. The `.m`
+#   adapters are the one place that bridges into the Swift implementation.
+# Directories that legitimately import Firebase (the dynamic ObjC bridge
+# target and the macOS unit-test host stubs) are not scanned.
 module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
   module_function
 
@@ -14,6 +23,10 @@ module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
   /x
   ANGLE_HEADER_IMPORT = /\G(?<header><[^>\n]+>)/
   QUOTED_HEADER_IMPORT = /\G(?<header>"[^"\n]+")/
+  DEFAULT_ROOT = File.expand_path('../../../packages/app/ios', __dir__)
+  SOURCE_EXTENSIONS = %w[.h .hpp .m .mm .c .cpp].freeze
+  GENERATED_SWIFT_HEADER_EXTENSIONS = %w[.m].freeze
+  UNSCANNED_DIRECTORIES = %w[RNFBFirebase RNFBFirebaseUnitTests RNFBAppUnitTests build].freeze
   MODULE_IMPORT = /
     \A#{HORIZONTAL_WHITESPACE}@#{HORIZONTAL_WHITESPACE}
     import[ \t\f\v]+(?<module>Firebase[A-Za-z0-9_.]*)
@@ -50,6 +63,8 @@ module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
         elsif char == '"'
           output << char
           state = :string
+        elsif char == "'" && digit_separator?(source, index)
+          output << ' '
         elsif char == "'"
           output << ' '
           state = :character
@@ -110,6 +125,20 @@ module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
     char == "\n" ? "\n" : ' '
   end
 
+  # C++14 digit separators (`1'000'000`, `0xFF'FF`) reuse the character-literal
+  # quote. A quote inside a preprocessing number, which starts with a digit (or
+  # `.` plus a digit), is a separator and must not open a character literal.
+  # Literal prefixes (`u8'a'`, `L'a'`) belong to identifiers, so they are not.
+  def digit_separator?(source, index)
+    return false unless index.positive?
+    return false unless source[index - 1].match?(/[0-9A-Za-z]/)
+    return false unless source[index + 1]&.match?(/[0-9A-Fa-f]/)
+
+    token_start = index
+    token_start -= 1 while token_start.positive? && source[token_start - 1].match?(/[0-9A-Za-z_.']/)
+    source[token_start, 2].match?(/\A(?:[0-9]|\.[0-9])/)
+  end
+
   # rubocop:disable-next Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def raw_string_start(source, index)
     prefix = source[index..]&.match(/\A(?:u8|u|U|L)?R"/)&.[](0)
@@ -152,10 +181,21 @@ module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
     [output, logical_line_starts]
   end
 
-  def forbidden_header?(header)
+  def forbidden_header?(header, allow_generated_swift: false)
     normalized = header[1..-2].strip
-    normalized.match?(%r{\AFirebase[A-Za-z0-9_]*(?:/|\.h\z)}) ||
-      normalized.match?(%r{(?:\A|/)[^/]+-Swift\.(?:h|inc)\z})
+    return true if normalized.match?(%r{\AFirebase[A-Za-z0-9_]*(?:/|\.h\z)})
+    return true if normalized.match?(%r{(?:\A|/)FIR[A-Za-z0-9_]*\.h\z})
+
+    !allow_generated_swift && normalized.match?(%r{(?:\A|/)[^/]+-Swift\.(?:h|inc)\z})
+  end
+
+  def scanned_sources(root)
+    Dir.glob(File.join(root, '**', '*')).select do |path|
+      next false unless SOURCE_EXTENSIONS.include?(File.extname(path)) && File.file?(path)
+
+      relative_parts = path.delete_prefix("#{root}#{File::SEPARATOR}").split(File::SEPARATOR)
+      !relative_parts.intersect?(UNSCANNED_DIRECTORIES)
+    end
   end
 
   def imported_header(masked_line)
@@ -171,7 +211,8 @@ module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
 
   # rubocop:disable-next Metrics/AbcSize, Metrics/MethodLength
   def violations(root)
-    Dir.glob(File.join(root, '**', '*.mm')).flat_map do |path|
+    scanned_sources(root).flat_map do |path|
+      allow_generated_swift = GENERATED_SWIFT_HEADER_EXTENSIONS.include?(File.extname(path))
       source = File.read(path)
       spliced_source, physical_line_starts = splice_physical_lines(source)
       masked_lines = mask_comments_and_raw_literals(spliced_source).lines
@@ -179,22 +220,26 @@ module RNFBAppIOSObjCImportGuard # rubocop:disable Metrics/ModuleLength
         masked_line = masked_lines.fetch(index)
         header = imported_header(masked_line)
         module_match = MODULE_IMPORT.match(masked_line)
-        next unless module_match || (header && forbidden_header?(header))
+        next unless module_match || (header && forbidden_header?(header, allow_generated_swift: allow_generated_swift))
 
         "#{path}:#{physical_line_starts.fetch(index)}:#{line.strip}"
       end
     end
   end
-end
 
-if $PROGRAM_NAME == __FILE__
-  root = ARGV.fetch(0, File.expand_path('../../../packages/app/ios', __dir__))
-  violations = RNFBAppIOSObjCImportGuard.violations(root)
-  unless violations.empty?
-    warn 'Forbidden Firebase or generated Swift import in packages/app iOS Objective-C++ source:'
-    violations.each { |violation| warn violation }
-    exit 1
+  # CLI entry point. Returns the process exit status.
+  def run(argv, out: $stdout, err: $stderr)
+    root = argv.fetch(0, DEFAULT_ROOT)
+    found = violations(root)
+    unless found.empty?
+      err.puts 'Forbidden Firebase or generated Swift import in packages/app iOS native source:'
+      found.each { |violation| err.puts violation }
+      return 1
+    end
+
+    out.puts "Checked #{root}: native source Firebase/Swift import boundary is clean"
+    0
   end
-
-  puts "Checked #{root}: Objective-C++ Firebase/Swift import boundary is clean"
 end
+
+exit(RNFBAppIOSObjCImportGuard.run(ARGV)) if $PROGRAM_NAME == __FILE__

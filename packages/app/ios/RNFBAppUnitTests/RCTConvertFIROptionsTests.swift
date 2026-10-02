@@ -141,7 +141,7 @@ final class RCTConvertFIROptionsTests: XCTestCase {
     XCTAssertNil(adapter.options.gcmSenderID)
   }
 
-  func testFactoryAdapterBalancesAllocOwnershipWithNilAppIDs() {
+  func testFactoryAdapterReleasesOptionsWithNilAppIDs() {
     weak var releasedOptions: FirebaseOptions?
 
     autoreleasepool {
@@ -182,15 +182,16 @@ final class RCTConvertFIROptionsTests: XCTestCase {
     XCTAssertEqual(live.appGroupID, "group.com.example")
   }
 
-  func testConfiguringAdapterNilBundleIDCoalescesToEmptyString() {
+  func testConfiguringAdapterForwardsNilBundleIDToSDKSetter() {
     let live = FirebaseOptions(googleAppID: "seed-app", gcmSenderID: "seed-sender")
     live.bundleID = "com.example.app"
     let adapter = RNFBFIROptionsConfiguringAdapter(live)
 
     adapter.bundleID = nil
 
-    XCTAssertEqual(adapter.bundleID, "")
-    XCTAssertEqual(live.bundleID, "")
+    // Pre-port `options.bundleID = nil` removed the key instead of storing "".
+    XCTAssertNil(adapter.bundleID)
+    XCTAssertNil(live.bundleID)
   }
 
   func testMainBundleIdentifierProviderReadsInfoDictionary() {
@@ -220,7 +221,7 @@ final class RCTConvertFIROptionsTests: XCTestCase {
     XCTAssertEqual(options.clientID, "client-id")
     XCTAssertEqual(options.databaseURL, "https://example.firebaseio.com")
     XCTAssertEqual(options.storageBucket, "example.appspot.com")
-    XCTAssertEqual(options.bundleID, expectedBundleID ?? "")
+    XCTAssertEqual(options.bundleID, expectedBundleID)
   }
 
   func testLiveFIROptionsUnwrapsConfiguringAdapter() {
