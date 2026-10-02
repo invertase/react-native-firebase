@@ -84,8 +84,8 @@ const config: PackageConfig = {
     {
       name: 'initializeAppCheck',
       reason:
-        'firebase-js-sdk allows `app` to be `FirebaseApp | undefined` (default app fallback). ' +
-        'RN Firebase requires an explicit `FirebaseApp` argument at the modular entry point.',
+        'firebase-js-sdk declares `app` as `FirebaseApp | undefined` and `options` as required. ' +
+        'RN Firebase declares both parameters optional in the type signature, but throws when `options` is not an object.',
     },
     {
       name: 'AppCheckOptions',

@@ -1,35 +1,45 @@
 ---
 title: iOS Installation
-description: Manually integrate Performance Monitoring into your iOS application.
+description: 'Legacy manual iOS linking for @react-native-firebase/perf on React Native 0.59 and earlier: add the RNFBPerf CocoaPods pod and run pod install --repo-update. Not supported by v26; use autolinking.'
 ---
 
-# iOS Manual Installation
+# iOS Manual Installation (legacy)
 
-The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> **Legacy, not supported in v26 and later.** Manual linking only applied to React Native **0.59 and earlier**. `@react-native-firebase/app` v26 declares the peer range `react-native` `>=0.60.0-0` and requires React Native's New Architecture, so those versions cannot run it. Follow [Getting Started](/) for the supported iOS setup (autolinking), and see [Performance Monitoring usage](/perf/usage) for the standard install path. The steps below are kept only for projects still pinned to an older major version.
+
+## Prerequisites
+
+These steps assume:
+
+- `@react-native-firebase/app` is already installed and linked (follow [Getting Started](/) for the supported setup).
+- `@react-native-firebase/perf` is already listed in your app `package.json` (install with `npm install --save @react-native-firebase/perf` or `yarn add @react-native-firebase/perf`).
+- CocoaPods is installed and you can run `pod` from a shell.
+
+Apply the two steps below **in order**, then rebuild.
 
 ## 1. Add the Pod
 
-Add the `RNFBPerf` Pod to your projects `/ios/Podfile`:
+File: `/ios/Podfile`. Add the `RNFBPerf` pod inside your app `target` block before running `pod install`.
 
 ```ruby
+# Legacy (React Native 0.59 and earlier only): not needed or supported with autolinking. See Getting Started.
+# File: ios/Podfile. Step 1 of 2 (before pod install). Add inside your app target block.
 target 'app' do
-  # ...
   pod 'RNFBPerf', :path => '../node_modules/@react-native-firebase/perf'
 end
 ```
 
-## 2. Update Pods & rebuild the project
+Replace `'app'` with your real Xcode target name if it differs.
 
-You may need to update your local Pods in order for the `RNFBPerf` Pod to be installed in your project:
+## 2. Update Pods and rebuild the project
 
-```bash
-$ cd ios/
-$ pod install --repo-update
-```
-
-Once the Pods have installed locally, rebuild your iOS project:
+From the project root, install pods then rebuild iOS. Do this only after the Podfile change in step 1.
 
 ```bash
+# Legacy (React Native 0.59 and earlier only): rebuild after the manual linking step above.
+# Project root. Step 2 of 2 (after ios/Podfile RNFBPerf pod entry).
+cd ios/
+pod install --repo-update
+cd ..
 npx react-native run-ios
 ```

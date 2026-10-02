@@ -1,9 +1,16 @@
 ---
 title: Presence Detection
-description: Show a realtime list of online users with Realtime Database.
+description: 'Build a presence detection system with Realtime Database: .info/connected, onDisconnect() (including cancel()), serverTimestamp() last-online stamps, .info/serverTimeOffset, and a multi-device presence sample.'
 next: /in-app-messaging/usage
 previous: /database/offline-support
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- `@react-native-firebase/database` installed: `npm install --save @react-native-firebase/database` or `yarn add @react-native-firebase/database`, then rebuild native apps (`cd ios && pod install` on iOS).
+- `@react-native-firebase/auth` installed and a signed-in user available (`getAuth().currentUser`), because the examples below key presence by `uid`. Install Auth with `npm install --save @react-native-firebase/auth` or `yarn add @react-native-firebase/auth`, then rebuild native apps.
+- Enable Realtime Database in the [Firebase Console](https://console.firebase.google.com/) and allow authenticated clients to write the `/online/{uid}` path in your security rules.
 
 Realtime Database provides the ability to trigger events on the Firebase servers whenever a device is disconnected. This
 could be whenever a user has no access to a network or when they quit the app.
@@ -21,20 +28,29 @@ To keep things simple we'll assume the user is authenticated (e.g. with [Firebas
 Whenever the application opens, [write a new value](/database/usage#writing-data) on a reference node (e.g. `/online/:userId`):
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getAuth } from '@react-native-firebase/auth';
 import { getDatabase, ref, set } from '@react-native-firebase/database';
 
 function App() {
   useEffect(() => {
-    // Assuming user is logged in
-    const userId = getAuth().currentUser.uid;
+    const user = getAuth().currentUser;
+    if (!user) {
+      console.log('No user is signed in; skip presence write');
+      return undefined;
+    }
+
+    const userId = user.uid;
     const db = getDatabase();
     const reference = ref(db, `/online/${userId}`);
 
-    // Set the /users/:userId value to true
+    // Set the /online/:userId value to true
     set(reference, true).then(() => console.log('Online presence set'));
+
+    return undefined;
   }, []);
+
+  return null;
 }
 ```
 
@@ -54,26 +70,138 @@ provides functionality to remove or set data whenever a client disconnects. Usin
 [`remove`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/OnDisconnect.html#remove) method we can remove the node on the database if the client disconnects:
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getAuth } from '@react-native-firebase/auth';
 import { getDatabase, ref, set, onDisconnect } from '@react-native-firebase/database';
 
 function App() {
   useEffect(() => {
-    // Assuming user is logged in
-    const userId = getAuth().currentUser.uid;
+    const user = getAuth().currentUser;
+    if (!user) {
+      console.log('No user is signed in; skip presence and onDisconnect setup');
+      return undefined;
+    }
+
+    const userId = user.uid;
     const db = getDatabase();
     const reference = ref(db, `/online/${userId}`);
 
-    // Set the /users/:userId value to true
+    // Set the /online/:userId value to true
     set(reference, true).then(() => console.log('Online presence set'));
 
     // Remove the node whenever the client disconnects
     onDisconnect(reference)
       .remove()
       .then(() => console.log('On disconnect function configured.'));
+
+    return undefined;
   }, []);
+
+  return null;
 }
 ```
 
 The above code demonstrates a very simple but powerful way to track which users are currently online.
+
+## Cancel On Disconnect
+
+Call `cancel()` on an `OnDisconnect` instance to clear queued disconnect writes for that location (and its children) before they run:
+
+```js
+import { getDatabase, ref, onDisconnect } from '@react-native-firebase/database';
+
+async function queueThenCancelDisconnect() {
+  const presenceRef = ref(getDatabase(), 'disconnectmessage');
+  const disconnect = onDisconnect(presenceRef);
+  await disconnect.set('I disconnected');
+  await disconnect.cancel();
+  console.log('onDisconnect cancelled.');
+}
+```
+
+# Connection state
+
+Listen to `/.info/connected` to know when this client is connected to the Realtime Database backend:
+
+```js
+import { getDatabase, ref, onValue } from '@react-native-firebase/database';
+
+const connectedRef = ref(getDatabase(), '.info/connected');
+const unsubscribe = onValue(connectedRef, snapshot => {
+  console.log(snapshot.val() === true ? 'connected' : 'not connected');
+});
+
+console.log('Connection listener attached:', typeof unsubscribe);
+```
+
+# Last online with server timestamps
+
+Combine `onDisconnect` with `serverTimestamp()` to record when a client was last seen:
+
+```js
+import { getDatabase, ref, onDisconnect, serverTimestamp } from '@react-native-firebase/database';
+
+async function trackLastOnline(userId) {
+  const lastOnlineRef = ref(getDatabase(), `/users/${userId}/lastOnline`);
+  await onDisconnect(lastOnlineRef).set(serverTimestamp());
+  console.log('onDisconnect lastOnline stamp configured.');
+}
+```
+
+# Server time offset
+
+Listen to `/.info/serverTimeOffset` to read the millisecond skew the client adds to local time when estimating server time. Prefer `serverTimestamp()` for writes; use this offset mainly to detect large clock drift. For the React Native Firebase `getServerTime()` helper that wraps the same offset, see [Offline Support](/database/offline-support#server-time).
+
+```js
+import { getDatabase, ref, onValue } from '@react-native-firebase/database';
+
+const offsetRef = ref(getDatabase(), '.info/serverTimeOffset');
+const unsubscribe = onValue(offsetRef, snapshot => {
+  const offset = snapshot.val();
+  const estimatedServerTimeMs = Date.now() + offset;
+  console.log('Estimated server time (ms):', estimatedServerTimeMs);
+});
+
+console.log('serverTimeOffset listener attached:', typeof unsubscribe);
+```
+
+# Sample presence app
+
+Combine `/.info/connected`, per-device connection keys, `onDisconnect`, and `serverTimestamp()` into a multi-device presence system. Queue disconnect handlers before marking the connection online so a drop mid-setup cannot leave a stale "online" row:
+
+```js
+import {
+  getDatabase,
+  ref,
+  onValue,
+  push,
+  onDisconnect,
+  set,
+  serverTimestamp,
+} from '@react-native-firebase/database';
+
+function attachPresence(userId) {
+  const db = getDatabase();
+  const myConnectionsRef = ref(db, `users/${userId}/connections`);
+  const lastOnlineRef = ref(db, `users/${userId}/lastOnline`);
+  const connectedRef = ref(db, '.info/connected');
+
+  const unsubscribe = onValue(connectedRef, snapshot => {
+    if (snapshot.val() !== true) {
+      return;
+    }
+
+    const con = push(myConnectionsRef);
+    onDisconnect(con).remove();
+    set(con, true);
+    onDisconnect(lastOnlineRef).set(serverTimestamp());
+  });
+
+  return unsubscribe;
+}
+
+const stopPresence = attachPresence('joe');
+console.log('Presence listener attached:', typeof stopPresence);
+```
+
+When `users/{userId}/connections` has no children, that user has no active clients.

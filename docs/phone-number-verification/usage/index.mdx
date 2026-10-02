@@ -1,14 +1,23 @@
 ---
 title: Phone Number Verification
-description: Installation and getting started with Phone Number Verification.
+description: 'Android-only carrier phone verification without SMS: enableTestSession, getVerificationSupportInfo, getVerifiedPhoneNumber, Digital Credential helpers, PnvErrorCode, and related types.'
 next: /vertexai/usage
 previous: /perf/ky-integration
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- **Android only.** This module wraps the Firebase Phone Number Verification Android SDK and has no iOS implementation. Calling any exported function when `Platform.OS !== 'android'` throws an `Error` synchronously (the call does not return a rejected promise) with the message `Firebase Phone Number Verification is only supported on Android.`
+- Install Phone Number Verification: `npm install --save @react-native-firebase/phone-number-verification` or `yarn add @react-native-firebase/phone-number-verification`, then rebuild the Android app.
+- Enable Phone Number Verification in the [Firebase console](https://console.firebase.google.com/) (Security > Phone Verification). Production use needs billing, SHA-256, and OAuth brand verification as described in the official Android guides linked below.
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/phone-number-verification.tsx
+
 # Installation
 
-This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
-[Getting Started](/) documentation.
+This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app"
+module, view the [Getting Started](/) documentation.
 
 ```bash
 # Install & setup the app module
@@ -18,81 +27,88 @@ yarn add @react-native-firebase/app
 yarn add @react-native-firebase/phone-number-verification
 ```
 
-> **Android only** - This module is only available on Android. The Firebase Phone Number Verification SDK does not support iOS or web platforms. Calling any method on a non-Android platform will throw an error.
+> **Android only.** Rebuild the Android app after installing. There is no iOS pod step for this package.
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | **Android only**                                                                               |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | **Android only** (native Firebase Phone Number Verification SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
+
+**Platform notes:** The firebase-js-sdk does not ship a modular public API for Phone Number Verification (`firebase/phone-number-verification` does not exist). Every export below is React Native Firebase only. On non-Android platforms, each runtime function throws before reaching native code. There is no Phone Number Verification emulator and no `connect*Emulator` helper for this package.
+
+React Native Firebase exports `enableTestSession`, `getVerificationSupportInfo`, `getVerifiedPhoneNumber`, `getDigitalCredentialPayload`, `exchangeCredentialResponseForPhoneNumber`, and the runtime `PnvErrorCode` object, plus the TypeScript types `VerificationSupportStatus`, `VerificationSupportResult`, `VerifiedPhoneNumberTokenResult`, and `PnvError`. Each is explained in the section that uses it.
+
+This page covers the client modular API for Android. Firebase console onboarding (billing, API keys, OAuth brand verification, production upgrade), server-side JWT verification samples, Android Credential Manager Kotlin glue, Firebase Authentication custom-token exchange with a Phone Number Verification token, carrier pricing tables, and the Android step-by-step tutorial are out of scope here. Those live in the [Firebase Phone Number Verification documentation](https://firebase.google.com/docs/phone-number-verification?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=phone-number-verification).
 
 # What does it do
 
-Firebase Phone Number Verification provides carrier-level phone number verification on Android devices without requiring SMS codes. It verifies the user's phone number directly through the device's SIM card and carrier network, providing a seamless and secure verification experience.
-
-To learn more, visit the [Firebase Phone Number Verification documentation](https://firebase.google.com/docs/phone-number-verification).
+Firebase Phone Number Verification provides carrier-level phone number verification on Android without SMS codes. It reads the phone number assigned to the device SIM from the carrier after user consent, then returns a signed JWT your backend can validate.
 
 Key capabilities:
 
-- **Carrier-level verification**: Verifies phone numbers directly with the mobile carrier, without SMS.
-- **Support detection**: Check whether the device and carrier support phone number verification before attempting it. This does not require user consent.
-- **Verified phone number**: Retrieve the device's verified phone number as a JWT token containing the phone number, timestamps, nonce, and claims. This will present a consent dialog to the user.
-- **Digital Credential API**: Supports the Android Digital Credential API for custom verification flows.
+- **Carrier-level verification**: Verifies phone numbers with the mobile carrier, without SMS.
+- **Support detection**: `getVerificationSupportInfo` checks device and carrier support without user consent.
+- **Verified phone number**: `getVerifiedPhoneNumber` runs consent and returns a `VerifiedPhoneNumberTokenResult` (phone number, JWT, timestamps, nonce, claims).
+- **Digital Credential API**: `getDigitalCredentialPayload` and `exchangeCredentialResponseForPhoneNumber` support a custom flow when you drive Android Credential Manager yourself.
 
-## Region & carrier limitations
+## Region and carrier limitations
 
-Phone Number Verification depends on carrier cooperation. Not all carriers or regions are supported. Before relying on Phone Number Verification, always call `getVerificationSupportInfo()` to check support. If a SIM slot returns `reason: 'INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED'`, that carrier does not participate in Phone Number Verification and you should fall back to another verification method (e.g. Firebase Auth SMS).
+Phone Number Verification depends on carrier cooperation. Not all carriers or regions participate. Before relying on it, call `getVerificationSupportInfo()`. If a SIM slot returns `reason: 'INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED'`, fall back to another method (for example Firebase Auth SMS).
 
-Common reasons verification may be unsupported:
+The `reason` field of a `VerificationSupportResult` is one of these `VerificationSupportStatus` strings:
 
-| Reason                                 | Meaning                                                        |
-| -------------------------------------- | -------------------------------------------------------------- |
-| `CAPABLE`                              | The SIM's carrier supports Phone Number Verification.          |
-| `INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED` | The carrier does not participate in Phone Number Verification. |
-| `INCAPABLE_DUE_TO_ANDROID_VERSION`     | The device's Android version is too old.                       |
-| `INCAPABLE_DUE_TO_SIM_STATE`           | No SIM inserted, or SIM is in an unusable state.               |
-| `CAPABILITY_STATUS_UNSPECIFIED`        | The SDK could not determine the status.                        |
+{/* prettier-ignore */}
+| Reason | Meaning |
+| --- | --- |
+| `CAPABLE` | The SIM's carrier supports Phone Number Verification. |
+| `INCAPABLE_DUE_TO_CARRIER_UNSUPPORTED` | The carrier does not participate. |
+| `INCAPABLE_DUE_TO_ANDROID_VERSION` | The device Android version does not support it. |
+| `INCAPABLE_DUE_TO_SIM_STATE` | The SIM card is not ready. |
+| `CAPABILITY_STATUS_UNSPECIFIED` | The capability status is unspecified. |
 
 # Usage
 
 ## Check verification support
 
-Before attempting verification, check if the device's SIM card(s) support phone number verification. This call does not require user consent and can be called freely:
+`getVerificationSupportInfo(simSlot?)` is a React Native Firebase export (no firebase-js-sdk modular equivalent). It returns one `VerificationSupportResult` per SIM slot (or for the optional 0-based `simSlot`). It does not require user consent. While a test session from `enableTestSession` is active, the Android SDK returns a single entry for the test token instead of one entry per SIM. Calling it on app launch to decide between the Phone Number Verification flow and an alternative such as SMS is the recommended pattern.
 
 ```js
 import { getVerificationSupportInfo } from '@react-native-firebase/phone-number-verification';
 
-const supportInfo = await getVerificationSupportInfo();
+async function readVerificationSupport() {
+  const supportInfo = await getVerificationSupportInfo();
 
-for (const info of supportInfo) {
-  console.log(`SIM slot ${info.simSlot}:`);
-  console.log('  Supported:', info.isSupported);
-  console.log('  Carrier ID:', info.carrierId);
-  console.log('  Reason:', info.reason);
+  for (const info of supportInfo) {
+    console.log('SIM slot:', info.simSlot);
+    console.log('Supported:', info.isSupported);
+    console.log('Carrier ID:', info.carrierId);
+    console.log('Reason:', info.reason);
+  }
+
+  return supportInfo;
 }
 ```
 
-The method returns an array with one entry per SIM slot. Each entry includes:
-
-- `isSupported` — whether Phone Number Verification is available for this SIM.
-- `simSlot` — the SIM slot index (0-based).
-- `carrierId` — the carrier identifier string.
-- `reason` — a `VerificationSupportStatus` string explaining why the SIM is or isn't supported.
-
 ### Query a specific SIM slot
 
-On dual-SIM devices, you can query a specific SIM slot by passing the slot index:
+On dual-SIM devices, pass a slot index:
 
 ```js
 import { getVerificationSupportInfo } from '@react-native-firebase/phone-number-verification';
 
-const supportInfo = await getVerificationSupportInfo(0); // SIM slot 0
+async function readSupportForSlotZero() {
+  const supportInfo = await getVerificationSupportInfo(0);
+  console.log('Slot 0 results:', supportInfo);
+  return supportInfo;
+}
 ```
 
 ### Fallback when unsupported
 
-If Phone Number Verification is not supported, fall back to an alternative verification method:
+Guard Android, check support, then call verification or fall back:
 
 ```js
 import { Platform } from 'react-native';
@@ -101,39 +117,30 @@ import {
   getVerifiedPhoneNumber,
 } from '@react-native-firebase/phone-number-verification';
 
-async function verifyPhoneNumber() {
+async function verifyWithSmsFallback() {
   if (Platform.OS !== 'android') {
-    // Use SMS-based verification on non-Android platforms
-    return verifySms();
+    throw new Error('Use SMS or another method on non-Android platforms.');
   }
 
   const supportInfo = await getVerificationSupportInfo();
   const supported = supportInfo.some(info => info.isSupported);
 
-  if (supported) {
-    try {
-      return await getVerifiedPhoneNumber();
-    } catch (error) {
-      // Fall back to SMS on failure
-      return verifySms();
-    }
+  if (!supported) {
+    throw new Error('Phone Number Verification unsupported; use SMS or another method.');
   }
 
-  // Carrier or device doesn't support Phone Number Verification
-  return verifySms();
+  return await getVerifiedPhoneNumber();
 }
 ```
 
 ## Verify a phone number
 
-To initiate the full verification flow, call `getVerifiedPhoneNumber()`. This will present a consent dialog to the user asking permission to share their phone number. Your app should prepare the user for this consent screen before calling the method — for example, by explaining why their phone number is needed.
-
-For guidance on handling user consent, see the [Firebase Phone Number Verification getting started guide](https://firebase.google.com/docs/phone-number-verification/android/get-started).
+`getVerifiedPhoneNumber()` is a React Native Firebase export (no firebase-js-sdk modular equivalent). It presents the Android consent UI, then returns a `VerifiedPhoneNumberTokenResult`. Prepare the user with a short in-app explanation of why the phone number is needed before calling it. Official guidance: [Get started on Android](https://firebase.google.com/docs/phone-number-verification/android/get-started?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=phone-number-verification).
 
 ```js
 import { getVerifiedPhoneNumber } from '@react-native-firebase/phone-number-verification';
 
-try {
+async function verifyPhoneNumber() {
   const result = await getVerifiedPhoneNumber();
   console.log('Phone number:', result.phoneNumber);
   console.log('Token:', result.token);
@@ -141,91 +148,110 @@ try {
   console.log('Issued at:', new Date(result.issuedAtTimestamp * 1000));
   console.log('Nonce:', result.nonce);
   console.log('Claims:', result.claims);
-} catch (error) {
-  console.error('Verification failed:', error.code, error.message);
+  return result;
 }
 ```
 
-The returned result includes:
+The returned `VerifiedPhoneNumberTokenResult` includes:
 
-- `phoneNumber` — the verified phone number in E.164 format.
-- `token` — the raw JWT token string for server-side validation.
-- `expirationTimestamp` — token expiration as Unix epoch seconds.
-- `issuedAtTimestamp` — token issued-at time as Unix epoch seconds.
-- `nonce` — the nonce from the JWT payload, or `null`.
-- `claims` — all JWT claims as a key-value map, or `null`.
+- `phoneNumber`: verified phone number in E.164 format.
+- `token`: raw JWT string for server-side validation.
+- `expirationTimestamp`: expiration as Unix epoch seconds.
+- `issuedAtTimestamp`: issued-at as Unix epoch seconds.
+- `nonce`: nonce from the JWT payload, or `null`.
+- `claims`: all JWT claims as a key-value map, or `null`.
+
+Send the token (not only the phone number) to your backend and verify it there. Backend JWT verification is covered in [Verify Firebase Phone Number Verification tokens](https://firebase.google.com/docs/phone-number-verification/verify-tokens?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=phone-number-verification); this page does not embed server samples.
 
 ## Custom verification with Digital Credentials
 
-For advanced use cases, you can use the Digital Credential API flow:
+`getDigitalCredentialPayload(nonce)` and `exchangeCredentialResponseForPhoneNumber(dcApiResponse)` are React Native Firebase exports (no firebase-js-sdk modular equivalent). Use them when you need finer control over Android Credential Manager than the single-call `getVerifiedPhoneNumber()` flow. Official overview: [Customize the flow on Android](https://firebase.google.com/docs/phone-number-verification/android/custom-flow?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=phone-number-verification).
+
+Between the two calls you own the Credential Manager request (Kotlin or other native code). That middle step is outside this JavaScript module. The React Native helpers take a `nonce` string and a Credential Manager response JWT string only (no privacy-policy URL argument on the React Native Firebase surface).
+
+The flow has three parts:
+
+1. Call `getDigitalCredentialPayload(nonce)` with a nonce your server generated. The returned string is the server-signed request payload.
+2. In your own native code, wrap that payload in a Digital Credential request that uses the same nonce, call Android Credential Manager, and extract the Firebase JWT string from the response (in the credential JSON, `data.vp_token.firebase` is an array, and the [official custom flow guide](https://firebase.google.com/docs/phone-number-verification/android/custom-flow?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=phone-number-verification) reads the string at index 0 as the Firebase JWT).
+3. Pass that JWT string to `exchangeCredentialResponseForPhoneNumber(dcApiResponse)`, which resolves with a `VerifiedPhoneNumberTokenResult`. In a production app, billing happens when this exchange succeeds.
 
 ```js
 import {
-  getDigitalCredentialPayload,
   exchangeCredentialResponseForPhoneNumber,
+  getDigitalCredentialPayload,
 } from '@react-native-firebase/phone-number-verification';
 
-// Step 1: Get the credential payload
-const payload = await getDigitalCredentialPayload('your-unique-nonce');
+async function runCustomDigitalCredentialFlow(credentialManagerResponseJwt) {
+  const nonce = 'your-unique-nonce-from-your-server';
+  const payload = await getDigitalCredentialPayload(nonce);
+  console.log('Digital credential payload for Credential Manager:', payload);
 
-// Step 2: Use the payload with Android Credential Manager
-// ... (pass payload to CredentialManager API)
-
-// Step 3: Exchange the response for a verified phone number
-const result = await exchangeCredentialResponseForPhoneNumber(credentialResponse);
-console.log('Phone number:', result.phoneNumber);
-console.log('Expires at:', new Date(result.expirationTimestamp * 1000));
+  const result = await exchangeCredentialResponseForPhoneNumber(credentialManagerResponseJwt);
+  console.log('Phone number:', result.phoneNumber);
+  console.log('Expires at:', new Date(result.expirationTimestamp * 1000));
+  return result;
+}
 ```
 
 ## Error handling
 
-All methods reject with structured error codes from the Firebase Phone Number Verification SDK. The `error.code` property contains one of these values:
+Failed calls reject with a native Firebase error. TypeScript callers can narrow with the `PnvError` interface (`code` is a `PnvErrorCode` string). `PnvErrorCode` is a runtime object of string constants exported from `@react-native-firebase/phone-number-verification` (no firebase-js-sdk modular equivalent).
 
-| Error Code                                | Meaning                                                         |
-| ----------------------------------------- | --------------------------------------------------------------- |
-| `pnv/carrier-not-supported`               | The SIM's carrier does not support Phone Number Verification.   |
-| `pnv/invalid-digital-credential-response` | The Digital Credential API response was invalid.                |
-| `pnv/integrity-check-failed`              | Device integrity check failed.                                  |
-| `pnv/preflight-check-failed`              | Server-side preflight check failed.                             |
-| `pnv/unsupported-operation`               | The API call is not supported with the given parameters.        |
-| `pnv/credential-manager-error`            | Android Credential Manager failed unexpectedly.                 |
-| `pnv/invalid-test-number-id`              | Test number IDs are empty, expired, or duplicated.              |
-| `pnv/test-session-already-enabled`        | `enableTestSession` was called more than once.                  |
-| `pnv/activity-context-required`           | An Activity context is required (app may be in the background). |
+{/* prettier-ignore */}
+| Error code | Meaning |
+| --- | --- |
+| `pnv/carrier-not-supported` | The SIM's carrier does not support Phone Number Verification. |
+| `pnv/invalid-digital-credential-response` | The Digital Credential API response was invalid. |
+| `pnv/integrity-check-failed` | The integrity check failed. |
+| `pnv/preflight-check-failed` | The preflight check failed. |
+| `pnv/unsupported-operation` | The API is not supported. |
+| `pnv/credential-manager-error` | Android Credential Manager threw an error. |
+| `pnv/invalid-test-number-id` | The test number ID is invalid, expired, or not found. |
+| `pnv/test-session-already-enabled` | `enableTestSession` was called more than once. |
+| `pnv/activity-context-required` | No foreground Activity is available (for example, the app is in the background). |
+| `pnv/unknown` | Any native failure that does not map to one of the codes above. |
 
-```ts
+```js
 import {
-  getVerifiedPhoneNumber,
   PnvErrorCode,
-  type PnvError,
+  getVerifiedPhoneNumber,
 } from '@react-native-firebase/phone-number-verification';
 
-try {
-  const result = await getVerifiedPhoneNumber();
-} catch (error) {
-  const pnvError = error as PnvError;
+async function verifyWithStructuredErrors() {
+  try {
+    const result = await getVerifiedPhoneNumber();
+    console.log('Phone number:', result.phoneNumber);
+    return result;
+  } catch (error) {
+    const code =
+      error && typeof error === 'object' && 'code' in error ? String(error.code) : undefined;
 
-  switch (pnvError.code) {
-    case PnvErrorCode.CARRIER_NOT_SUPPORTED:
-      // Fall back to SMS verification
-      break;
-    case PnvErrorCode.ACTIVITY_CONTEXT_REQUIRED:
-      // Retry when app is in foreground
-      break;
-    default:
-      console.error('Phone Number Verification error:', pnvError.code, pnvError.message);
+    switch (code) {
+      case PnvErrorCode.CARRIER_NOT_SUPPORTED:
+        console.log('Fall back to SMS verification.');
+        break;
+      case PnvErrorCode.ACTIVITY_CONTEXT_REQUIRED:
+        console.log('Retry when the app is in the foreground.');
+        break;
+      default:
+        console.error('Phone Number Verification error:', code, error);
+    }
+
+    throw error;
   }
 }
 ```
 
-## Testing
+## Testing with a console test token
 
-To test without a real SIM card and carrier, use Firebase's test mode. This requires setup in the Firebase Console:
+`enableTestSession(token)` is a React Native Firebase export (no firebase-js-sdk modular equivalent). It enables test mode without a physical SIM, using a console-generated test token (7-day lifetime). Call it once per app instance before other verification calls. A second call rejects with `pnv/test-session-already-enabled`, and an invalid, expired, or unknown token rejects with `pnv/invalid-test-number-id`. Test tokens work on physical devices and emulators.
 
-1. **Generate a test token**: In the Firebase Console, navigate to Phone Number Verification and generate a test token. Test tokens have a 7-day Time-To-Live.
-2. **Identity and Access Management permissions**: Ensure the service account has the required `firebasepnv.testSessions.create` permission.
-3. **Google system services beta**: On the test device, enroll the Google system services app into the beta channel via Google Play.
-4. **Call `enableTestSession` once**: Pass the token before any verification calls. This must be called only once per app instance — calling it again will reject with `pnv/test-session-already-enabled`.
+Setup summary from the official Android get-started guide:
+
+1. Generate a test token in the Firebase console (Security > Phone Verification > Testing).
+2. Grant the Firebase Phone Number Verification Admin role needed to create test sessions if you are not the project owner.
+3. Enroll the test device in the Google system services public beta when required for test mode.
+4. Call `enableTestSession` once with that token.
 
 ```js
 import {
@@ -233,25 +259,33 @@ import {
   getVerifiedPhoneNumber,
 } from '@react-native-firebase/phone-number-verification';
 
-// Call once at app startup for testing
-await enableTestSession('your-test-token-from-firebase-console');
+async function verifyInTestSession(testTokenFromConsole) {
+  await enableTestSession(testTokenFromConsole);
 
-// Now verification calls return test data
-// Phone numbers in test mode follow the format: valid country code + all zeros
-const result = await getVerifiedPhoneNumber();
-console.log('Test phone number:', result.phoneNumber);
+  const result = await getVerifiedPhoneNumber();
+  console.log('Test phone number:', result.phoneNumber);
+  return result;
+}
 ```
+
+In test mode, phone numbers use a valid country code followed by all zeros. Remove `enableTestSession` from production builds; production also requires the console production-upgrade steps on the [production mode](https://firebase.google.com/docs/phone-number-verification/android/production-mode?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=phone-number-verification) page.
 
 ## Platform handling
 
-This module is Android-only. On non-Android platforms, all methods throw an error with the message "Firebase Phone Number Verification is only supported on Android." You can guard against this using `Platform.OS`:
+Every exported runtime function throws an `Error` synchronously on non-Android platforms (it does not return a rejected promise) with the message `Firebase Phone Number Verification is only supported on Android.` Guard call sites when you ship a multi-platform app:
 
 ```js
 import { Platform } from 'react-native';
 import { getVerificationSupportInfo } from '@react-native-firebase/phone-number-verification';
 
-if (Platform.OS === 'android') {
+async function readSupportOnAndroidOnly() {
+  if (Platform.OS !== 'android') {
+    console.log('Phone Number Verification is Android only.');
+    return [];
+  }
+
   const supportInfo = await getVerificationSupportInfo();
-  // ...
+  console.log('Support info:', supportInfo);
+  return supportInfo;
 }
 ```

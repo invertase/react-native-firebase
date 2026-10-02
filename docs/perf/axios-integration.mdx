@@ -1,9 +1,14 @@
 ---
 title: Performance Monitoring with Axios
-description: Monitor HTTP request performance with Firebase Performance Monitoring and Axios.
+description: "Wire Axios request/response interceptors to Firebase Performance Monitoring's httpMetric(): start the metric on request, then set the response code/content-type and stop it on success or error."
 next: /perf/ky-integration
 previous: /perf/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/perf` installed per [Performance Monitoring usage](/perf/usage) (native config, rebuild, and Android Performance Monitoring Gradle plugin or Expo config plugin).
+- [Axios](https://github.com/axios/axios) installed in your app (`npm install axios` or `yarn add axios`).
 
 # Axios
 
@@ -11,10 +16,12 @@ The [Axios library](https://github.com/axios/axios) allows you to easily send HT
 React Native application. Axios provides functionality allowing all requests & responses to be intercepted, exposing
 metadata which can be hooked into the Performance Monitoring library.
 
+`httpMetric` constructs an `HttpMetric` for the request URL and HTTP method. `HttpMethod` is the string union of allowed verbs. See [HTTP Request Tracing](/perf/usage#http-request-tracing) for the full metric helpers.
+
 ## Request Interceptor
 
 Before HTTP requests are sent out of the React Native environment, a callback can be attached to the `request`
-property on the axios instance. At this point, a new HTTP metric can be defined on the Performance Monitoring library:
+property on the axios instance. At this point, an HTTP metric can be created with the Performance Monitoring library:
 
 ```js
 import axios from 'axios';
@@ -22,15 +29,15 @@ import { getPerformance, httpMetric } from '@react-native-firebase/perf';
 
 axios.interceptors.request.use(async function (config) {
   try {
-    const httpMetricInstance = httpMetric(
-      getPerformance(),
-      config.url,
-      config.method.toUpperCase(),
+    const method = /** @type {import('@react-native-firebase/perf').HttpMethod} */ (
+      String(config.method || 'GET').toUpperCase()
     );
-    config.metadata = { httpMetric: httpMetricInstance };
+    const httpMetricInstance = httpMetric(getPerformance(), config.url, method);
+    /** @type {any} */
+    const requestConfig = config;
+    requestConfig.metadata = { httpMetric: httpMetricInstance };
 
-    // add any extra metric attributes, if required
-    // httpMetricInstance.putAttribute('userId', '12345678');
+    httpMetricInstance.putAttribute('client', 'axios');
 
     httpMetricInstance.start();
   } finally {
@@ -40,47 +47,60 @@ axios.interceptors.request.use(async function (config) {
 ```
 
 This callback attaches the HTTP metric returned onto the request metadata, which can later be used on an
-incoming response.
+incoming response. `httpMetric` throws if `config.url` is not a string, and the `try` / `finally` block returns the request config either way, so the request is still sent without a metric.
 
 ## Response Interceptor
 
 Similar to the request interceptor, we can also hook into all responses from the HTTP calls. The response
-interceptor can accept two callbacks, one for successful responses and one requests which failed:
+interceptor can accept two callbacks, one for successful responses and one for requests which failed:
 
 ```js
 import axios from 'axios';
+import { getPerformance, httpMetric } from '@react-native-firebase/perf';
+
+axios.interceptors.request.use(async function (config) {
+  try {
+    const method = /** @type {import('@react-native-firebase/perf').HttpMethod} */ (
+      String(config.method || 'GET').toUpperCase()
+    );
+    const httpMetricInstance = httpMetric(getPerformance(), config.url, method);
+    /** @type {any} */
+    const requestConfig = config;
+    requestConfig.metadata = { httpMetric: httpMetricInstance };
+    httpMetricInstance.start();
+  } finally {
+    return config;
+  }
+});
 
 axios.interceptors.response.use(
   async function (response) {
     try {
-      // Request was successful, e.g. HTTP code 200
+      /** @type {any} */
+      const requestConfig = response.config;
+      const metric = requestConfig.metadata.httpMetric;
 
-      const { httpMetric } = response.config.metadata;
-
-      // add any extra metric attributes if needed
-      // httpMetric.putAttribute('userId', '12345678');
-
-      httpMetric.setHttpResponseCode(response.status);
-      httpMetric.setResponseContentType(response.headers['content-type']);
-      httpMetric.stop();
+      metric.setHttpResponseCode(response.status);
+      // setResponseContentType throws for undefined, so fall back to null.
+      metric.setResponseContentType(response.headers['content-type'] ?? null);
+      metric.stop();
     } finally {
       return response;
     }
   },
   async function (error) {
     try {
-      // Request failed, e.g. HTTP code 500
+      /** @type {any} */
+      const requestConfig = error.config;
+      const metric = requestConfig.metadata.httpMetric;
 
-      const { httpMetric } = error.config.metadata;
-
-      // add any extra metric attributes if needed
-      // httpMetric.putAttribute('userId', '12345678');
-
-      httpMetric.setHttpResponseCode(error.response.status);
-      httpMetric.setResponseContentType(error.response.headers['content-type']);
-      httpMetric.stop();
+      // Network / timeout errors have no response; still stop() so the metric finishes.
+      if (error.response) {
+        metric.setHttpResponseCode(error.response.status);
+        metric.setResponseContentType(error.response.headers['content-type'] ?? null);
+      }
+      metric.stop();
     } finally {
-      // Ensure failed requests throw after interception
       return Promise.reject(error);
     }
   },

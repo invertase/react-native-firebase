@@ -1,6 +1,6 @@
 ---
 title: Migrating to v6
-description: Migrate to React Native Firebase v6
+description: 'Migrate from react-native-firebase v5 to v6: install the scoped @react-native-firebase/app plus per-service packages, with breaking changes for AdMob, Analytics, Crashlytics, Firestore, Dynamic Links, Functions, In-App Messaging, Instance ID, Messaging, Performance Monitoring, Realtime Database, Remote Config, Storage and ML.'
 previous: /vertexai/usage
 ---
 
@@ -277,6 +277,7 @@ In versions prior to 6, accessing the React Native Firebase package was carried 
 module, for example:
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 import firebase from 'react-native-firebase';
 
 // App code...
@@ -287,6 +288,7 @@ Although it is possible to access specific module functionality from the package
 following usage may seem daunting for a large project:
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 import auth from '@react-native-firebase/auth';
 
 // App code...
@@ -306,6 +308,7 @@ We now need to import additional packages inside of an entry point file of our p
 to import the Authentication module, add the following to your projects `/App.js` file (or entry file):
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/auth';
 

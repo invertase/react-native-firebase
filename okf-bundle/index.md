@@ -40,4 +40,5 @@ okf_version: '0.1'
 - [App Check](/packages/app-check/index.md) — iOS provider-factory init (pending + fail-closed), ADRs + work queue for #9116
 - [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
 - [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage
+- [Functions](/packages/functions/index.md) — callables; `FunctionsError` not usable as `instanceof` under consumer types
 - [Messaging](/packages/messaging/index.md) — iOS `UNUserNotificationCenter` delegate forwarding, `completionHandler` contract

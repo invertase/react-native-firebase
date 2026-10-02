@@ -48,7 +48,7 @@ const config: PackageConfig = {
     {
       name: 'setReactNativeAsyncStorage',
       reason:
-        'RN Firebase-specific hook to wire `@react-native-async-storage/async-storage` into the firebase-js-sdk Other/Hermes persistence path.',
+        'RN Firebase-specific hook to wire `@react-native-async-storage/async-storage` into the persistence used by the firebase-js-sdk fallback on platforms other than Android and iOS.',
     },
     {
       name: 'metaGetAll',
@@ -93,17 +93,17 @@ const config: PackageConfig = {
     {
       name: 'LogCallbackParams',
       reason:
-        'RN Firebase log-handler callback payload type exported for modular `setLogLevel` wiring.',
+        'RN Firebase log-handler callback payload type exported for typing `onLog` handlers.',
     },
     {
       name: 'LogCallback',
       reason:
-        'RN Firebase log-handler callback type exported for modular logging configuration.',
+        'RN Firebase log-handler callback type exported for typing `onLog` handlers.',
     },
     {
       name: 'LogOptions',
       reason:
-        'RN Firebase log-handler options type exported for modular logging configuration.',
+        'RN Firebase log-handler options type exported for the optional second argument of `onLog`.',
     },
   ],
 
@@ -111,7 +111,7 @@ const config: PackageConfig = {
     {
       name: 'deleteApp',
       reason:
-        'Parameter type is `ReactNativeFirebase.FirebaseApp` instead of firebase-js-sdk `FirebaseApp`. Runtime behavior matches.',
+        'Parameter type is `ReactNativeFirebase.FirebaseApp` instead of firebase-js-sdk `FirebaseApp`. Runtime behavior differs on React Native: it crosses the native bridge, rejects for the default app created from native config, and throws synchronously for an app that is already deleted.',
     },
     {
       name: 'getApp',
@@ -126,12 +126,12 @@ const config: PackageConfig = {
     {
       name: 'initializeApp',
       reason:
-        'Returns `Promise<ReactNativeFirebase.FirebaseApp>` because initialization crosses the native bridge. Accepts `ReactNativeFirebase.FirebaseAppOptions` and optional `ReactNativeFirebase.FirebaseAppConfig` (name / auth domain) instead of firebase-js-sdk `(FirebaseOptions, string)` only.',
+        'Returns `Promise<ReactNativeFirebase.FirebaseApp>` because initialization crosses the native bridge. Accepts `ReactNativeFirebase.FirebaseAppOptions` and optional `ReactNativeFirebase.FirebaseAppConfig` (`name`, `automaticDataCollectionEnabled`, `automaticResourceManagement`) instead of firebase-js-sdk `(FirebaseOptions, string)` only. `authDomain` is passed in the options object, not the config.',
     },
     {
       name: 'setLogLevel',
       reason:
-        'Parameter type is `ReactNativeFirebase.LogLevelString` instead of firebase-js-sdk `LogLevelString`. Accepted values match (`debug`, `verbose`, `info`, `warn`, `error`, `silent`).',
+        'Parameter type is `ReactNativeFirebase.LogLevelString` instead of firebase-js-sdk `LogLevelString`. The type includes `silent`, but the runtime accepts only `debug`, `verbose`, `info`, `warn` and `error`, and throws for any other value.',
     },
     {
       name: 'FirebaseApp',
