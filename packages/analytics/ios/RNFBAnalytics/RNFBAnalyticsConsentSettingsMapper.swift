@@ -28,7 +28,8 @@ import Foundation
  *
  * Consent type/status strings match Firebase Analytics `FIRConsentType*` /
  * `FIRConsentStatus*` values (Foundation-only so unit tests do not link
- * the Analytics SDK). `[FIRAnalytics setConsent:]` stays on Module.mm.
+ * the Analytics SDK). `[FIRAnalytics setConsent:]` stays on
+ * `RNFBAnalyticsHelper.m`.
  */
 @objc(RNFBAnalyticsConsentSettingsMapper)
 public final class RNFBAnalyticsConsentSettingsMapper: NSObject {
