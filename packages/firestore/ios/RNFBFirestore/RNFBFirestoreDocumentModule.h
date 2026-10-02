@@ -15,21 +15,13 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseFirestore/FirebaseFirestore.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseFirestore/FirebaseFirestore.h>
-#else
-@import FirebaseCore;
-@import FirebaseFirestore;
-#endif
 #import <Foundation/Foundation.h>
-#import <RNFBApp/RNFBSharedUtils.h>
-#import <React/RCTBridgeModule.h>
-#import "RNFBFirestoreCommon.h"
-#import "RNFBFirestoreSerialize.h"
 
+#import <React/RCTBridgeModule.h>
+
+// This header is imported by RNFBFirestoreDocumentModule.mm and must stay
+// Firebase-free (see RNFBFirestoreDocumentModuleHelper /
+// okf-bundle/ios-spm-native-imports.md).
 @interface RNFBFirestoreDocumentModule : NSObject <RCTBridgeModule>
 
 @end
