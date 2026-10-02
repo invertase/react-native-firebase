@@ -22,6 +22,10 @@
 		B9000000000000000000002B /* RNFBPerfHttpMetricStopApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000002C /* RNFBPerfHttpMetricStopApplier.swift */; };
 		B9000000000000000000002D /* RNFBPerfHttpMetricStopApplierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9000000000000000000002E /* RNFBPerfHttpMetricStopApplierTests.swift */; };
 		B9000000000000000000002F /* RNFBPerfHttpMetricStopApplierFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B90000000000000000000030 /* RNFBPerfHttpMetricStopApplierFacadeTests.m */; };
+		PF1000000000000000000020 /* RNFBPerfHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = PF1000000000000000000021 /* RNFBPerfHelper.m */; };
+		PF1000000000000000000022 /* RNFBPerfHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = PF1000000000000000000023 /* RNFBPerfHelperHostStubTests.m */; };
+		PF1000000000000000000024 /* FIRPerformanceHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = PF1000000000000000000025 /* FIRPerformanceHostStub.m */; };
+		PF1000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = PF1000000000000000000027 /* RNFBSharedUtilsHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +47,11 @@
 		B9000000000000000000002C /* RNFBPerfHttpMetricStopApplier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMetricStopApplier.swift; path = ../RNFBPerf/RNFBPerfHttpMetricStopApplier.swift; sourceTree = SOURCE_ROOT; };
 		B9000000000000000000002E /* RNFBPerfHttpMetricStopApplierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBPerfHttpMetricStopApplierTests.swift; sourceTree = "<group>"; };
 		B90000000000000000000030 /* RNFBPerfHttpMetricStopApplierFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPerfHttpMetricStopApplierFacadeTests.m; sourceTree = "<group>"; };
+		PF1000000000000000000021 /* RNFBPerfHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPerfHelper.m; path = ../RNFBPerf/RNFBPerfHelper.m; sourceTree = SOURCE_ROOT; };
+		PF1000000000000000000028 /* RNFBPerfHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPerfHelper.h; path = ../RNFBPerf/RNFBPerfHelper.h; sourceTree = SOURCE_ROOT; };
+		PF1000000000000000000023 /* RNFBPerfHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPerfHelperHostStubTests.m; sourceTree = "<group>"; };
+		PF1000000000000000000025 /* FIRPerformanceHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRPerformanceHostStub.m; path = HostStubs/Firebase/FIRPerformanceHostStub.m; sourceTree = "<group>"; };
+		PF1000000000000000000027 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +101,11 @@
 				B9000000000000000000002A /* RNFBPerfTraceStopApplierFacadeTests.m */,
 				B9000000000000000000002E /* RNFBPerfHttpMetricStopApplierTests.swift */,
 				B90000000000000000000030 /* RNFBPerfHttpMetricStopApplierFacadeTests.m */,
+				PF1000000000000000000028 /* RNFBPerfHelper.h */,
+				PF1000000000000000000021 /* RNFBPerfHelper.m */,
+				PF1000000000000000000023 /* RNFBPerfHelperHostStubTests.m */,
+				PF1000000000000000000025 /* FIRPerformanceHostStub.m */,
+				PF1000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -167,6 +181,10 @@
 				B90000000000000000000029 /* RNFBPerfTraceStopApplierFacadeTests.m in Sources */,
 				B9000000000000000000002D /* RNFBPerfHttpMetricStopApplierTests.swift in Sources */,
 				B9000000000000000000002F /* RNFBPerfHttpMetricStopApplierFacadeTests.m in Sources */,
+				PF1000000000000000000020 /* RNFBPerfHelper.m in Sources */,
+				PF1000000000000000000024 /* FIRPerformanceHostStub.m in Sources */,
+				PF1000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */,
+				PF1000000000000000000022 /* RNFBPerfHelperHostStubTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +236,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBPerf",
@@ -255,6 +274,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBPerf",
