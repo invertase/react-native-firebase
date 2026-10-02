@@ -219,7 +219,13 @@ function readFileOrThrow(filePath: string): string {
   return fs.readFileSync(filePath, 'utf8');
 }
 
-function findSingleMatch(rootDir: string, pattern: RegExp, label: string): string {
+/**
+ * Unit-test host stub trees (e.g. `ios/RNFBAppUnitTests/HostStubs`) can contain look-alike files
+ * such as `RNFBAppTurboModules.h`. They are not codegen output and must not count as matches.
+ */
+const IGNORED_DIRECTORY_NAMES = new Set(['HostStubs']);
+
+export function findSingleMatch(rootDir: string, pattern: RegExp, label: string): string {
   const matches: string[] = [];
 
   function walk(dir: string): void {
@@ -229,7 +235,9 @@ function findSingleMatch(rootDir: string, pattern: RegExp, label: string): strin
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
-        walk(fullPath);
+        if (!IGNORED_DIRECTORY_NAMES.has(entry.name)) {
+          walk(fullPath);
+        }
       } else if (pattern.test(entry.name)) {
         matches.push(fullPath);
       }
