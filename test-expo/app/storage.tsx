@@ -26,6 +26,8 @@ import {
   uploadBytesResumable,
   uploadString,
   writeToFile,
+  type Subscribe,
+  type TaskSnapshot,
 } from '@react-native-firebase/storage';
 
 import { AppButton } from '../src/AppButton';
@@ -127,7 +129,10 @@ export default function StorageScreen() {
               throw new Error('getApp().options.storageBucket is missing');
             }
             const secondary = getStorage(getApp(), `gs://${bucket}`);
-            return { appName: secondary.app.name, customUrlOrRegion: String(secondary) };
+            return {
+              appName: secondary.app.name,
+              referenceBucket: ref(secondary, DEMO_OBJECT).bucket,
+            };
           })
         }
       />
@@ -140,7 +145,24 @@ export default function StorageScreen() {
             bucket: demoRef.bucket,
             parent: demoRef.parent?.fullPath ?? null,
             root: demoRef.root.fullPath,
+            rootParent: demoRef.root.parent,
           }))
+        }
+      />
+      <AppButton
+        title="ref (root, child, sibling)"
+        onPress={() =>
+          run('ref(root/child)', () => {
+            const rootRef = ref(storage);
+            const childRef = ref(ref(storage, DEMO_PREFIX), 'child.txt');
+            const parentRef = childRef.parent;
+            const siblingRef = parentRef ? ref(parentRef, 'sibling.txt') : null;
+            return {
+              root: rootRef.fullPath,
+              child: childRef.fullPath,
+              sibling: siblingRef?.fullPath ?? null,
+            };
+          })
         }
       />
       <AppButton
@@ -156,8 +178,29 @@ export default function StorageScreen() {
           })
         }
       />
+      <AppButton
+        title="ref (https:// URL)"
+        onPress={() =>
+          run('ref(https://)', () => {
+            const bucket = getApp().options.storageBucket;
+            if (!bucket) {
+              throw new Error('getApp().options.storageBucket is missing');
+            }
+            const encodedPath = encodeURIComponent(DEMO_OBJECT);
+            const fromUrl = ref(
+              storage,
+              `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`,
+            );
+            return fromUrl.fullPath;
+          })
+        }
+      />
 
       <Text style={styles.section}>Retry helpers</Text>
+      <Text style={styles.warning}>
+        Warning: the retry helpers are Android and iOS helpers. They change the retry limits of the
+        default Storage instance.
+      </Text>
       <AppButton
         title="setMaxOperationRetryTime (10s)"
         onPress={() =>
@@ -202,8 +245,13 @@ export default function StorageScreen() {
           })
         }
       />
+      <Text style={styles.warning}>
+        Warning: `putFile` and `writeToFile` are native-only file-path APIs (they reject on the web
+        interop platform). `putFile` first downloads the demo object to a local file so that the
+        file exists.
+      </Text>
       <AppButton
-        title="putFile"
+        title="putFile (native only)"
         onPress={() =>
           run('putFile', async () => {
             // Seed a remote object, download it locally, then re-upload via putFile.
@@ -237,6 +285,7 @@ export default function StorageScreen() {
                 error => reject(error),
                 () => resolve(),
               );
+              task.catch(error => reject(error));
             });
             return TaskEvent.STATE_CHANGED;
           })
@@ -256,23 +305,85 @@ export default function StorageScreen() {
         }
       />
       <AppButton
-        title="task.pause / resume / cancel"
+        title="task.on (Subscribe form)"
         onPress={() =>
-          run('task.pause/resume/cancel', async () => {
-            const task = uploadBytesResumable(
-              ref(storage, `${DEMO_PREFIX}/pause-demo.bin`),
-              new Uint8Array(256).fill(7),
-            );
-            const paused = task.pause();
-            const resumed = task.resume();
-            const canceled = task.cancel();
-            try {
-              await task;
-            } catch {
-              // cancel rejects the task; that is expected here.
-            }
-            return { paused, resumed, canceled };
+          run('task.on(event)', async () => {
+            const task = uploadString(demoRef, `subscribe demo ${Date.now()}`, StringFormat.RAW);
+            // With only the event name, `task.on` returns the Subscribe helper at runtime.
+            const subscribe = task.on(TaskEvent.STATE_CHANGED) as Subscribe<TaskSnapshot>;
+            const states: string[] = [];
+            await new Promise<void>((resolve, reject) => {
+              subscribe(
+                (snapshot: TaskSnapshot) => {
+                  states.push(snapshot.state);
+                },
+                error => reject(error),
+                () => resolve(),
+              );
+              task.catch(error => reject(error));
+            });
+            return { states };
           })
+        }
+      />
+      <Text style={styles.warning}>
+        Warning: this control cancels a 2 MB upload while it runs. Cancelling fails the task with
+        the error code storage/cancelled, which the control reports. The booleans are false when the
+        transfer finished before the call could take effect.
+      </Text>
+      <AppButton
+        title="task.pause / resume / cancel (cancels the upload)"
+        variant="secondary"
+        onPress={() =>
+          run(
+            'task.pause/resume/cancel',
+            () =>
+              new Promise<unknown>((resolve, reject) => {
+                const task = uploadBytesResumable(
+                  ref(storage, `${DEMO_PREFIX}/pause-demo.bin`),
+                  new Uint8Array(2 * 1024 * 1024).fill(7),
+                );
+                const outcome: {
+                  paused: boolean | null;
+                  resumed: boolean | null;
+                  canceled: boolean | null;
+                  finalCode: string | null;
+                } = { paused: null, resumed: null, canceled: null, finalCode: null };
+
+                const timer = setTimeout(
+                  () => reject(new Error('task did not settle within 30s')),
+                  30_000,
+                );
+                const finish = () => {
+                  clearTimeout(timer);
+                  resolve(outcome);
+                };
+
+                task.on(
+                  TaskEvent.STATE_CHANGED,
+                  snapshot => {
+                    if (snapshot.state === TaskState.RUNNING && outcome.paused === null) {
+                      outcome.paused = task.pause();
+                    } else if (snapshot.state === TaskState.PAUSED && outcome.resumed === null) {
+                      outcome.resumed = task.resume();
+                    } else if (snapshot.state === TaskState.RUNNING && outcome.resumed !== null) {
+                      if (outcome.canceled === null) {
+                        outcome.canceled = task.cancel();
+                      }
+                    }
+                  },
+                  error => {
+                    outcome.finalCode = error.code;
+                    finish();
+                  },
+                  finish,
+                );
+                task.catch(error => {
+                  outcome.finalCode = error.code;
+                  finish();
+                });
+              }),
+          )
         }
       />
 
@@ -282,7 +393,7 @@ export default function StorageScreen() {
         onPress={() => run('getDownloadURL', () => getDownloadURL(demoRef))}
       />
       <AppButton
-        title="writeToFile"
+        title="writeToFile (native only)"
         onPress={() =>
           run('writeToFile', async () => {
             await uploadString(demoRef, `writeToFile seed ${Date.now()}`, StringFormat.RAW);
@@ -305,8 +416,12 @@ export default function StorageScreen() {
           })
         }
       />
+      <Text style={styles.warning}>
+        Warning: `updateMetadata` changes the stored metadata of the demo object, and `deleteObject`
+        removes it (both against the emulator).
+      </Text>
       <AppButton
-        title="updateMetadata"
+        title="updateMetadata (modifies the object)"
         onPress={() =>
           run('updateMetadata', async () => {
             const metadata = await updateMetadata(demoRef, {
@@ -331,6 +446,23 @@ export default function StorageScreen() {
         }
       />
       <AppButton
+        title="list (paginate, maxResults 1)"
+        onPress={() =>
+          run('list(paginate)', async () => {
+            const folder = ref(storage, DEMO_PREFIX);
+            const firstPage = await list(folder, { maxResults: 1 });
+            const secondPage = firstPage.nextPageToken
+              ? await list(folder, { maxResults: 1, pageToken: firstPage.nextPageToken })
+              : null;
+            return {
+              firstPage: firstPage.items.map(item => item.fullPath),
+              hasNextPage: Boolean(firstPage.nextPageToken),
+              secondPage: secondPage ? secondPage.items.map(item => item.fullPath) : null,
+            };
+          })
+        }
+      />
+      <AppButton
         title="listAll"
         onPress={() =>
           run('listAll', async () => {
@@ -343,7 +475,7 @@ export default function StorageScreen() {
         }
       />
       <AppButton
-        title="deleteObject"
+        title="deleteObject (removes the object)"
         onPress={() =>
           run('deleteObject', async () => {
             await uploadString(demoRef, `delete me ${Date.now()}`, StringFormat.RAW);
@@ -355,12 +487,12 @@ export default function StorageScreen() {
 
       <Text style={styles.section}>Not implemented (throw)</Text>
       <Text style={styles.warning}>
-        Warning: `uploadBytes`, `getBlob`, `getBytes`, and `getStream` always throw on React Native
-        Firebase (`not implemented`). Prefer `uploadBytesResumable` / `uploadString` / `putFile` and
-        `getDownloadURL` / `writeToFile`.
+        Warning: `uploadBytes`, `getBlob`, `getBytes`, and `getStream` always fail on React Native
+        Firebase (`not implemented`): `uploadBytes` rejects and the other three throw. Prefer
+        `uploadBytesResumable` / `uploadString` / `putFile` and `getDownloadURL` / `writeToFile`.
       </Text>
       <AppButton
-        title="uploadBytes() — throws"
+        title="uploadBytes() (rejects)"
         variant="secondary"
         onPress={() =>
           run('uploadBytes', () => {
@@ -370,7 +502,7 @@ export default function StorageScreen() {
         }
       />
       <AppButton
-        title="getBlob() — throws"
+        title="getBlob() (throws)"
         variant="secondary"
         onPress={() =>
           run('getBlob', () => {
@@ -380,7 +512,7 @@ export default function StorageScreen() {
         }
       />
       <AppButton
-        title="getBytes() — throws"
+        title="getBytes() (throws)"
         variant="secondary"
         onPress={() =>
           run('getBytes', () => {
@@ -390,7 +522,7 @@ export default function StorageScreen() {
         }
       />
       <AppButton
-        title="getStream() — throws"
+        title="getStream() (throws)"
         variant="secondary"
         onPress={() =>
           run('getStream', () => {

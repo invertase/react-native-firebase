@@ -1,6 +1,6 @@
 ---
 title: Cloud Storage
-description: 'Cloud Storage: getStorage/ref, connectStorageEmulator, uploadString/uploadBytesResumable/putFile, Task progress, getDownloadURL/writeToFile, getMetadata/updateMetadata, list/listAll, deleteObject, retry helpers, and RN types (Task, TaskSnapshot, NativeFirebaseError).'
+description: 'Cloud Storage: getStorage/ref, connectStorageEmulator, uploadString/uploadBytesResumable/putFile, Task progress with pause/resume/cancel and TaskState, getDownloadURL/writeToFile, getMetadata/updateMetadata, list/listAll, deleteObject, retry helpers, storage/* error codes, and RN types (Task, TaskSnapshot, NativeFirebaseError).'
 next: /app/usage
 previous: /messaging/server-integration
 ---
@@ -9,7 +9,8 @@ previous: /messaging/server-integration
 
 - `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
 - Install Storage: `npm install --save @react-native-firebase/storage` or `yarn add @react-native-firebase/storage`, then rebuild native apps (`cd ios && pod install` on iOS).
-- Enable Cloud Storage in the [Firebase Console](https://console.firebase.google.com/) for your project and deploy security rules appropriate for your app (List APIs need Rules version 2).
+- Enable Cloud Storage in the [Firebase Console](https://console.firebase.google.com/) for your project. Cloud Storage for Firebase requires the pay-as-you-go Blaze pricing plan. The default bucket is named `PROJECT_ID.firebasestorage.app` (buckets created before September 2024 are named `PROJECT_ID.appspot.com`).
+- Deploy security rules appropriate for your app. By default only authenticated users can read and write. List APIs need Rules version 2.
 
 Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/storage.tsx
 
@@ -36,10 +37,10 @@ The manual installation pages for [iOS](/storage/usage/installation/ios) and [An
 {/* prettier-ignore */}
 | | |
 | --- | --- |
-| **Platforms** | Android, iOS (native Firebase SDK) |
+| **Platforms** | Android, iOS (native Firebase SDK); macOS via firebase-js-sdk web interop |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Use `FilePath` from `@react-native-firebase/app` for device paths. `uploadBytes`, `getBlob`, `getBytes`, and `getStream` are exported for API surface parity but always throw (`not implemented`) on React Native Firebase. Prefer `uploadBytesResumable` / `uploadString` / `putFile` for uploads and `getDownloadURL` / `writeToFile` for downloads. React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime`, plus types `Task`, `TaskSnapshot`, `TaskResult`, `TaskSnapshotObserver`, `Subscribe`, and `NativeFirebaseError`. Each is explained in the section that uses it.
+**Platform notes:** `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Use `FilePath` from `@react-native-firebase/app` for device paths. On the web interop platform they reject because the helper is not supported there. `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime` are Android and iOS helpers (see [Retry times](#retry-times)). `uploadBytes`, `getBlob`, `getBytes`, and `getStream` are exported for API surface parity but always fail with a `not implemented` error on React Native Firebase (`uploadBytes` returns a rejected promise; the other three throw synchronously). Prefer `uploadBytesResumable` / `uploadString` / `putFile` for uploads and `getDownloadURL` / `writeToFile` for downloads. React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime`, plus types `Task`, `TaskSnapshot`, `TaskResult`, `TaskSnapshotObserver`, `Subscribe`, and `NativeFirebaseError`. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -83,16 +84,20 @@ const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
 connectStorageEmulator(getStorage(), host, 9199);
 ```
 
+On Android, `connectStorageEmulator` rewrites `localhost` and `127.0.0.1` to `10.0.2.2` and logs a message. Set `android_bypass_emulator_url_remap` to `true` in `firebase.json` to keep the host you pass (see [JSON Config](/app/json-config)). Use your machine's IP address when running on a physical device. The call throws if `host` is empty or `port` is not a number.
+
 ## Creating a reference
 
 A reference is a local pointer to some file on your bucket. This can either be a file which already exists, or one
-which does not exist yet. To create a reference, use the `ref` method:
+which does not exist yet. To create a reference, use the `ref` method. Calling `ref(storage)` with no path returns a reference to the root of the bucket, and passing a path as the second argument points lower in the tree:
 
 ```js
 import { getStorage, ref } from '@react-native-firebase/storage';
 
 const storage = getStorage();
+const rootRef = ref(storage);
 const reference = ref(storage, 'black-t-shirt-sm.png');
+console.log('Root path:', rootRef.fullPath);
 console.log('Reference path:', reference.fullPath);
 ```
 
@@ -121,7 +126,7 @@ console.log('https:// reference path:', httpsRef.fullPath);
 
 ### Navigate with references
 
-Use `parent` and `root` on a reference to walk up the hierarchy. `parent` moves one level up; `root` returns the bucket root. The `parent` of `root` is `null`.
+Use `parent` and `root` on a reference to walk up the hierarchy. `parent` moves one level up; `root` returns the bucket root. The `parent` of `root` is `null`. References can be chained: pass `parent` back into `ref` to create a sibling.
 
 ```js
 import { getStorage, ref } from '@react-native-firebase/storage';
@@ -133,6 +138,11 @@ const rootRef = spaceRef.root;
 console.log('Parent path:', imagesRef ? imagesRef.fullPath : null);
 console.log('Root path:', rootRef.fullPath);
 console.log('Parent of root:', rootRef.parent);
+
+if (imagesRef) {
+  const earthRef = ref(imagesRef, 'earth.jpg');
+  console.log('Sibling path:', earthRef.fullPath);
+}
 ```
 
 ### Reference properties
@@ -149,12 +159,12 @@ console.log('name:', spaceRef.name);
 console.log('bucket:', spaceRef.bucket);
 ```
 
-Reference paths and names can contain valid Unicode characters, with these limits: `fullPath` must be 1–1024 bytes when `UTF-8` encoded, must not contain carriage return or line feed, and should avoid `#`, `[`, `]`, `*`, and `?` (those characters interact poorly with other tools).
+Reference paths and names can contain valid Unicode characters, with these limits: `fullPath` must be between 1 and 1024 bytes when `UTF-8` encoded, must not contain carriage return or line feed, and should avoid `#`, `[`, `]`, `*`, and `?` (those characters interact poorly with other tools).
 
 ## Upload a file from a device path
 
 To upload a file directly from the users device, the `putFile` method accepts a string path to the file
-on the users device. `putFile` is React Native Firebase-specific (no firebase-js-sdk equivalent) and is **native only**. Prefer `FilePath` from `@react-native-firebase/app` for portable device directories:
+on the users device. `putFile` is React Native Firebase-specific (no firebase-js-sdk equivalent) and is **native only**. Prefer `FilePath` from `@react-native-firebase/app` for portable device directories. The file must already exist at that path; otherwise the upload fails with the error code `storage/file-not-found`. When you do not pass a `contentType`, `putFile` derives one from the file.
 
 ```jsx
 import React from 'react';
@@ -171,7 +181,7 @@ function UploadShirtButton() {
       <Button
         title="Upload"
         onPress={async () => {
-          const pathToFile = `${FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
+          const pathToFile = `${FilePath.DOCUMENT_DIRECTORY}/black-t-shirt-sm.png`;
           await putFile(reference, pathToFile);
           console.log('Uploaded via putFile');
         }}
@@ -183,7 +193,11 @@ function UploadShirtButton() {
 
 ### Tasks
 
-`putFile`, `uploadBytesResumable`, `uploadString`, and `writeToFile` return a `Task` (React Native Firebase type alias for `UploadTask`, kept for consistency with the native task system). Hook into upload progress with `task.on`. The snapshot type is `TaskSnapshot`, which extends `UploadTaskSnapshot` with an optional `error` field typed as `NativeFirebaseError` for native task error state. When you call `task.on(event)` with only the event name, the return type is `Subscribe` (an RN helper for attaching observers later). You can also pass a `TaskSnapshotObserver` (`StorageObserver<TaskSnapshot>`) as the second argument:
+`putFile`, `uploadBytesResumable`, and `uploadString` return an upload `Task`, and `writeToFile` returns a download `Task`. `Task` is a React Native Firebase type alias for `UploadTask`, kept for consistency with the native task system. The snapshot type is `TaskSnapshot`, which extends `UploadTaskSnapshot` with an optional `error` field typed as `NativeFirebaseError` for native task error state. The `Task` methods are declared with `UploadTaskSnapshot`, so TypeScript code reads failure details from the error callback instead of `snapshot.error`.
+
+A task starts the first time you call `task.then`, `task.catch`, `task.on`, or `await` it. Creating a task and not touching it does not start the transfer, and `pause`, `resume`, and `cancel` return `false` for a task that has not started.
+
+Hook into progress with `task.on(TaskEvent.STATE_CHANGED, observer)`. `TaskEvent.STATE_CHANGED` (`'state_changed'`) is the only supported event name; any other value throws. The observer receives a `TaskSnapshot` every time the task reports progress, pauses, resumes, completes, or fails:
 
 ```js
 import { FilePath } from '@react-native-firebase/app';
@@ -191,7 +205,7 @@ import { getStorage, ref, putFile, TaskEvent } from '@react-native-firebase/stor
 
 const storage = getStorage();
 const reference = ref(storage, 'black-t-shirt-sm.png');
-const pathToFile = `${FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
+const pathToFile = `${FilePath.DOCUMENT_DIRECTORY}/black-t-shirt-sm.png`;
 const task = putFile(reference, pathToFile);
 
 task.on(TaskEvent.STATE_CHANGED, taskSnapshot => {
@@ -203,27 +217,195 @@ task.then(taskSnapshot => {
 });
 ```
 
-A task also provides pause, resume, and cancel:
+On successful completion, `task.then` / `await task` resolves with the final snapshot. `TaskResult` is a separate type alias for `UploadResult`, the typed return of `uploadBytes` (which always fails on React Native Firebase); it is not the `Task` fulfillment value. `task.snapshot` holds the most recent snapshot.
+
+Each `TaskSnapshot` has these properties:
+
+{/* prettier-ignore */}
+| Property | Type | Description |
+| --- | --- | --- |
+| `bytesTransferred` | number | Bytes transferred when the snapshot was taken. |
+| `totalBytes` | number | Total bytes expected. |
+| `state` | `TaskState` string | Current state of the task. |
+| `metadata` | `FullMetadata` | Metadata sent to the server before completion, metadata returned by the server after. |
+| `task` | `Task` | The task the snapshot belongs to. |
+| `ref` | `StorageReference` | The reference the task came from. |
+| `error` | `NativeFirebaseError` (optional) | Set when the task failed. |
+
+### Task states
+
+`TaskState` is a runtime export with the constants `RUNNING` (`'running'`), `PAUSED` (`'paused'`), `SUCCESS` (`'success'`), and `ERROR` (`'error'`). Compare `snapshot.state` with these constants to react to a task starting, pausing, resuming, or finishing. `TaskState` also exports `CANCELED` and `CANCELLED`; detect cancellation through the `storage/cancelled` error code (see [Handle errors](#handle-errors)) instead of comparing `snapshot.state`.
 
 ```js
 import { FilePath } from '@react-native-firebase/app';
-import { getStorage, ref, putFile } from '@react-native-firebase/storage';
+import { getStorage, ref, putFile, TaskEvent, TaskState } from '@react-native-firebase/storage';
 
 const storage = getStorage();
 const reference = ref(storage, 'black-t-shirt-sm.png');
-const pathToFile = `${FilePath.PICTURES_DIRECTORY}/black-t-shirt-sm.png`;
+const pathToFile = `${FilePath.DOCUMENT_DIRECTORY}/black-t-shirt-sm.png`;
 const task = putFile(reference, pathToFile);
 
-task.pause();
-task.resume();
-task.cancel();
+task.on(TaskEvent.STATE_CHANGED, snapshot => {
+  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  console.log(`Upload is ${progress}% done`);
+
+  switch (snapshot.state) {
+    case TaskState.PAUSED:
+      console.log('Upload is paused');
+      break;
+    case TaskState.RUNNING:
+      console.log('Upload is running');
+      break;
+    case TaskState.SUCCESS:
+      console.log('Upload finished');
+      break;
+    case TaskState.ERROR:
+      console.log('Upload failed');
+      break;
+  }
+});
+
+task.catch(error => {
+  console.log('Upload rejected with', error.code);
+});
 ```
 
-On successful completion, `task.then` / `await task` resolves with a `TaskSnapshot` (the same snapshot type used by `task.on`). `TaskResult` is a separate type alias for `UploadResult`, the typed return of `uploadBytes` (which always throws on React Native Firebase); it is not the `Task` fulfillment value.
+### Pause, resume, and cancel
+
+`pause()`, `resume()`, and `cancel()` return a boolean synchronously. They return `true` when the call took effect and `false` when it was ignored (for example `pause()` on a task that is already paused or finished, `resume()` on a task that is not paused, or any of them before the task has started). Calling `cancel()` on a running or paused task makes it fail with the error code `storage/cancelled`: the error callback of `task.on` is called and the task promise rejects.
+
+Call these once the task is transferring. This example pauses on the first running snapshot, resumes when the paused snapshot arrives, and cancels the second time the task is running:
+
+```js
+import { FilePath } from '@react-native-firebase/app';
+import { getStorage, ref, putFile, TaskEvent, TaskState } from '@react-native-firebase/storage';
+
+const storage = getStorage();
+const reference = ref(storage, 'black-t-shirt-sm.png');
+const pathToFile = `${FilePath.DOCUMENT_DIRECTORY}/black-t-shirt-sm.png`;
+const task = putFile(reference, pathToFile);
+
+let pausedOnce = false;
+let resumedOnce = false;
+
+task.on(
+  TaskEvent.STATE_CHANGED,
+  snapshot => {
+    if (snapshot.state === TaskState.RUNNING && !pausedOnce) {
+      pausedOnce = true;
+      console.log('pause() took effect:', task.pause());
+    } else if (snapshot.state === TaskState.PAUSED && !resumedOnce) {
+      resumedOnce = true;
+      console.log('resume() took effect:', task.resume());
+    } else if (snapshot.state === TaskState.RUNNING && resumedOnce) {
+      console.log('cancel() took effect:', task.cancel());
+    }
+  },
+  error => {
+    console.log('Task ended with', error.code);
+  },
+);
+
+task.catch(() => {
+  console.log('Task promise rejected');
+});
+```
+
+### Task errors and completion
+
+Pass an error callback and a completion callback as the third and fourth arguments to `task.on`, or pass a `TaskSnapshotObserver` (`StorageObserver<TaskSnapshot>`, an object with `next`, `error`, and `complete`) as the second argument. `task.on` starts the task but does not attach a rejection handler to the task promise, so also call `task.catch` (or `await` the task in a `try` block) to avoid an unhandled rejection.
+
+```js
+import { FilePath } from '@react-native-firebase/app';
+import {
+  getStorage,
+  ref,
+  putFile,
+  getDownloadURL,
+  TaskEvent,
+  TaskState,
+} from '@react-native-firebase/storage';
+
+const storage = getStorage();
+const reference = ref(storage, 'images/mountains.jpg');
+const pathToFile = `${FilePath.DOCUMENT_DIRECTORY}/mountains.jpg`;
+const task = putFile(reference, pathToFile, { contentType: 'image/jpeg' });
+
+task.on(
+  TaskEvent.STATE_CHANGED,
+  snapshot => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log(`Upload is ${progress}% done`);
+    if (snapshot.state === TaskState.PAUSED) {
+      console.log('Upload is paused');
+    }
+  },
+  error => {
+    switch (error.code) {
+      case 'storage/file-not-found':
+        console.log('The local file does not exist');
+        break;
+      case 'storage/unauthorized':
+        console.log('User is not authorized to upload the file');
+        break;
+      case 'storage/cancelled':
+        console.log('Upload was cancelled');
+        break;
+      default:
+        console.log('Upload failed', error.code, error.message);
+    }
+  },
+  async () => {
+    const downloadURL = await getDownloadURL(reference);
+    console.log('File available at', downloadURL);
+  },
+);
+
+task.catch(() => {
+  console.log('Task promise rejected');
+});
+```
+
+The observers are removed after the task fails, and after it succeeds when you passed a completion callback. The function that `task.on` returns removes them earlier. When you call `task.on(event)` with only the event name, the runtime returns a `Subscribe` function (an RN helper type) that attaches the observers later and returns the unsubscribe function. The declared return type of `task.on` is a union, so TypeScript code casts it to `Subscribe<TaskSnapshot>` before calling it:
+
+```ts
+import { FilePath } from '@react-native-firebase/app';
+import {
+  getStorage,
+  ref,
+  putFile,
+  TaskEvent,
+  type Subscribe,
+  type TaskSnapshot,
+} from '@react-native-firebase/storage';
+
+const storage = getStorage();
+const reference = ref(storage, 'black-t-shirt-sm.png');
+const pathToFile = `${FilePath.DOCUMENT_DIRECTORY}/black-t-shirt-sm.png`;
+const task = putFile(reference, pathToFile);
+
+const subscribe = task.on(TaskEvent.STATE_CHANGED) as Subscribe<TaskSnapshot>;
+const unsubscribe = subscribe(
+  (snapshot: TaskSnapshot) => {
+    console.log('state:', snapshot.state);
+  },
+  error => {
+    console.log('error:', error.code);
+  },
+  () => {
+    console.log('complete');
+  },
+);
+
+task.catch(() => {
+  console.log('Task promise rejected');
+  unsubscribe();
+});
+```
 
 ## Upload bytes and strings
 
-Prefer `uploadBytesResumable` for in-memory `Uint8Array` / `ArrayBuffer` uploads (pause and resume via the same `Task` API). `uploadBytes` is exported for firebase-js-sdk surface parity but **always throws** (`uploadBytes() is not implemented`) on React Native Firebase.
+Prefer `uploadBytesResumable` for in-memory `Uint8Array`, `ArrayBuffer`, or `Blob` uploads (pause and resume via the same `Task` API). Data is handed to the native module as an encoded string, so use `putFile` for large files. `uploadBytes` is exported for firebase-js-sdk surface parity but **always fails** (`uploadBytes() is not implemented`) on React Native Firebase.
 
 ```js
 import { getStorage, ref, uploadBytesResumable } from '@react-native-firebase/storage';
@@ -242,7 +424,7 @@ await task;
 console.log('Uploaded bytes');
 ```
 
-Upload a raw, `base64`, `base64url`, or `data_url` string with `uploadString` (returns a `Task` on React Native Firebase, not a bare `Promise`):
+Upload a raw, `base64`, `base64url`, or `data_url` string with `uploadString` (returns a `Task` on React Native Firebase, not a bare `Promise`). The default format is raw. A `data_url` string supplies the `contentType` from its media type when you do not pass one:
 
 ```js
 import { getStorage, ref, uploadString, StringFormat } from '@react-native-firebase/storage';
@@ -252,11 +434,13 @@ const storageRef = ref(storage, 'expo/message.txt');
 
 await uploadString(storageRef, 'This is my message.', StringFormat.RAW);
 await uploadString(storageRef, 'SGVsbG8=', StringFormat.BASE64);
+await uploadString(storageRef, 'SGVsbG8', StringFormat.BASE64URL);
+await uploadString(storageRef, 'data:text/plain;base64,SGVsbG8=', StringFormat.DATA_URL);
 
 console.log('Uploaded strings');
 ```
 
-You can attach metadata (for example `contentType`) on upload:
+You can attach metadata (for example `contentType`) on upload. `uploadString`, `uploadBytesResumable`, and `putFile` all take the metadata object as their last argument:
 
 ```js
 import { getStorage, ref, uploadString } from '@react-native-firebase/storage';
@@ -272,7 +456,7 @@ console.log('Uploaded with metadata');
 ## Download URLs
 
 A common use-case for Cloud Storage is to use it as a global Content Delivery Network (CDN) for your images. When uploading
-files to a bucket, they are not automatically available for consumption via a HTTP URL. To generate a new Download URL, you
+files to a bucket, they are not automatically available for consumption via a HTTP URL. To generate a Download URL, you
 need to call the `getDownloadURL` method on a reference:
 
 ```js
@@ -287,16 +471,20 @@ console.log('Download URL:', url);
 
 ## Download to a device path
 
-`writeToFile` downloads a Cloud Storage object to a local device path. It is React Native Firebase-specific (no firebase-js-sdk equivalent), returns a `Task`, and is **native only**. Use it instead of the web `getBlob` / `getBytes` / `getStream` helpers: those three are exported for surface parity but **always throw** (`not implemented`) on React Native Firebase.
+`writeToFile` downloads a Cloud Storage object to a local device path. It is React Native Firebase-specific (no firebase-js-sdk equivalent), returns a `Task`, and is **native only**. The returned task supports `task.on`, `pause`, `resume`, and `cancel` like an upload task. Use it instead of the web `getBlob` / `getBytes` / `getStream` helpers: those three are exported for surface parity but **always throw** (`not implemented`) on React Native Firebase.
 
 ```js
 import { FilePath } from '@react-native-firebase/app';
-import { getStorage, ref, writeToFile } from '@react-native-firebase/storage';
+import { getStorage, ref, writeToFile, TaskEvent } from '@react-native-firebase/storage';
 
 const storage = getStorage();
 const reference = ref(storage, 'images/profile-1.png');
 const localPath = `${FilePath.DOCUMENT_DIRECTORY}/profile-1.png`;
 const task = writeToFile(reference, localPath);
+
+task.on(TaskEvent.STATE_CHANGED, snapshot => {
+  console.log(`${snapshot.bytesTransferred} downloaded out of ${snapshot.totalBytes}`);
+});
 
 await task;
 console.log('Downloaded to', localPath);
@@ -304,7 +492,7 @@ console.log('Downloaded to', localPath);
 
 ## File metadata
 
-Read object metadata with `getMetadata`, and change writable fields with `updateMetadata`. Only the properties you pass are updated. Set a writable property to `null` to clear it. Custom metadata is a string-to-string map under `customMetadata`.
+Read object metadata with `getMetadata`, and change writable fields with `updateMetadata`. Set a writable property to `null` to remove it. Custom metadata is a string-to-string map under `customMetadata`; set a key inside it to `null` to remove that key.
 
 ```js
 import { getStorage, ref, getMetadata, updateMetadata } from '@react-native-firebase/storage';
@@ -329,6 +517,8 @@ await updateMetadata(forestRef, { contentType: null });
 console.log('Cleared contentType');
 ```
 
+`updateMetadata` throws if the metadata object has an unknown property, a value that is not a string or `null`, or `md5Hash`, which can only be set on upload.
+
 {/* prettier-ignore */}
 | Property | Type | Writable |
 | --- | --- | --- |
@@ -350,7 +540,7 @@ console.log('Cleared contentType');
 
 ## Listing files and directories
 
-Projects that use the List API require Cloud Storage for Firebase Rules version 2. Use `list` for paginated results, or `listAll` for small directories (all results are buffered in memory).
+Projects that use the List API require Cloud Storage for Firebase Rules version 2. Use `list` for paginated results, or `listAll` for small directories (all results are buffered in memory). `list` takes `maxResults` (an integer from 1 to 1000, default 1000) and `pageToken`; the result has `items`, `prefixes`, and a `nextPageToken` when more results exist. Folders are implicit: a prefix is a path segment shared by objects, and you can call `list` or `listAll` on a prefix reference.
 
 ```js
 import { getStorage, ref, list, listAll } from '@react-native-firebase/storage';
@@ -382,7 +572,7 @@ console.log('listAll item count:', all.items.length);
 
 ## Delete a file
 
-Delete an object with `deleteObject`:
+Delete an object with `deleteObject`. The call fails with `storage/object-not-found` when the object does not exist:
 
 ```js
 import { getStorage, ref, deleteObject } from '@react-native-firebase/storage';
@@ -396,7 +586,7 @@ console.log('File deleted');
 
 ## Retry times
 
-On Android and iOS, set maximum retry times with React Native Firebase modular helpers. The firebase-js-sdk exposes upload/operation retry times as writable properties on `FirebaseStorage`; React Native Firebase uses dedicated functions instead. `setMaxDownloadRetryTime` has no direct firebase-js-sdk equivalent.
+On Android and iOS, set maximum retry times (in milliseconds) with React Native Firebase modular helpers. The firebase-js-sdk exposes upload/operation retry times as writable properties on `FirebaseStorage`; React Native Firebase uses dedicated functions instead. `setMaxDownloadRetryTime` has no direct firebase-js-sdk equivalent. Each helper throws if `time` is not a number. On the web interop platform `setMaxDownloadRetryTime` does nothing except log a warning in development builds.
 
 ```js
 import {
@@ -419,7 +609,7 @@ console.log('maxDownloadRetryTime:', storage.maxDownloadRetryTime);
 
 ## Handle errors
 
-Storage operations reject with errors whose `code` strings match the Firebase Storage error codes (for example `storage/object-not-found`, `storage/unauthorized`, `storage/canceled`). On React Native Firebase, those errors are `NativeFirebaseError` instances from the native bridge (re-exported from `@react-native-firebase/storage`) rather than the firebase-js-sdk `StorageError` / `StorageErrorCode` enum.
+Storage operations reject with errors whose `code` is `storage/` followed by the error name (for example `storage/object-not-found`, `storage/unauthorized`, `storage/cancelled`). On React Native Firebase, those errors are `NativeFirebaseError` instances from the native bridge (re-exported from `@react-native-firebase/storage`) rather than the firebase-js-sdk `StorageError` / `StorageErrorCode` enum. Upload and download task failures reach the error callback of `task.on` and reject the task promise.
 
 ```js
 import { getStorage, ref, getDownloadURL } from '@react-native-firebase/storage';
@@ -439,8 +629,8 @@ try {
     case 'storage/unauthorized':
       console.log('User is not authorized');
       break;
-    case 'storage/canceled':
-      console.log('User canceled the operation');
+    case 'storage/cancelled':
+      console.log('User cancelled the operation');
       break;
     case 'storage/unknown':
       console.log('Unknown error', error);
@@ -451,7 +641,26 @@ try {
 }
 ```
 
-Common codes include `storage/unknown`, `storage/object-not-found`, `storage/bucket-not-found`, `storage/project-not-found`, `storage/quota-exceeded`, `storage/unauthenticated`, `storage/unauthorized`, `storage/retry-limit-exceeded`, `storage/invalid-checksum`, `storage/canceled`, `storage/invalid-event-name`, `storage/invalid-url`, `storage/invalid-argument`, `storage/no-default-bucket`, `storage/cannot-slice-blob`, and `storage/server-file-wrong-size`. See the [Firebase web handle-errors guide](https://firebase.google.com/docs/storage/web/handle-errors) for the full table.
+The native modules produce these codes:
+
+{/* prettier-ignore */}
+| Code | Reason |
+| --- | --- |
+| `storage/unknown` | An unknown error occurred. |
+| `storage/object-not-found` | No object exists at the reference. |
+| `storage/bucket-not-found` | No bucket is configured for Cloud Storage. |
+| `storage/project-not-found` | No project is configured for Cloud Storage. |
+| `storage/quota-exceeded` | The quota on the bucket has been exceeded. |
+| `storage/unauthenticated` | The user is unauthenticated. |
+| `storage/unauthorized` | The user is not authorized to perform the action; check your security rules. |
+| `storage/retry-limit-exceeded` | The maximum time limit on an operation (upload, download, delete, and so on) has been exceeded. |
+| `storage/non-matching-checksum` | The file on the client does not match the checksum of the file received by the server. |
+| `storage/cancelled` | The task was stopped with `task.cancel()`. |
+| `storage/file-not-found` | The local file passed to `putFile` does not exist. |
+| `storage/invalid-device-file-path` | iOS only: the device file path is invalid or restricted. |
+| `storage/download-size-exceeded` | iOS only: the downloaded file exceeds the memory allocated for the download. |
+
+Invalid arguments, such as an unknown metadata property, an unsupported string `format`, a `maxResults` outside 1 to 1000, or a bucket URL that does not start with `gs://`, throw a plain `Error` synchronously and carry no `storage/` code. See the [Firebase web handle-errors guide](https://firebase.google.com/docs/storage/web/handle-errors) for the firebase-js-sdk error list; the web names `storage/canceled` and `storage/invalid-checksum` are `storage/cancelled` and `storage/non-matching-checksum` on React Native Firebase.
 
 ## Security
 
