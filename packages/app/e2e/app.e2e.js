@@ -247,6 +247,84 @@ describe('modular', function () {
       }
     });
 
+    // The JS getter must reflect the flag the native SDK resolved, not the input config. A sibling
+    // app initialized natively with the same omitted config provides the expected native value
+    // (a fresh name has no persisted flag, so both resolve to the Info.plist default).
+    it('reflects the native data collection flag when the key is omitted on iOS', async function () {
+      if (!Platform.ios) return;
+
+      const { initializeApp, deleteApp } = modular;
+      const name = `autodatajsomitted${FirebaseHelpers.id}`;
+      const probeName = `autodatajsprobe${FirebaseHelpers.id}`;
+      const config = FirebaseHelpers.app.config();
+      let app;
+
+      try {
+        const probe = await APP_MODULE.initializeApp({ ...config }, { name: probeName });
+        const nativeFlag = probe.appConfig.automaticDataCollectionEnabled;
+        nativeFlag.should.be.a.Boolean();
+
+        app = await initializeApp({ ...config }, { name });
+        should.equal(app.automaticDataCollectionEnabled, nativeFlag);
+      } finally {
+        if (app) await deleteApp(app);
+        await APP_MODULE.deleteApp(probeName);
+      }
+    });
+
+    // JS does not validate automaticDataCollectionEnabled. A non-boolean truthy value is ignored
+    // natively (SDK default stays) but was cached as `!!input` === true in JS. The getter must follow
+    // the native result instead. This only discriminates when the native default is false, which is
+    // the case for the test app build (tests/firebase.json app_data_collection_default_enabled).
+    it('reflects the native data collection flag when the input is a non-boolean on iOS', async function () {
+      if (!Platform.ios) return;
+
+      const { initializeApp, deleteApp } = modular;
+      const name = `autodatajsnonbool${FirebaseHelpers.id}`;
+      const probeName = `autodatajsnonboolprobe${FirebaseHelpers.id}`;
+      const config = FirebaseHelpers.app.config();
+      let app;
+
+      try {
+        const probe = await APP_MODULE.initializeApp({ ...config }, { name: probeName });
+        const nativeFlag = probe.appConfig.automaticDataCollectionEnabled;
+
+        app = await initializeApp({ ...config }, { name, automaticDataCollectionEnabled: 'yes' });
+        should.equal(app.automaticDataCollectionEnabled, nativeFlag);
+        should.equal(app.automaticDataCollectionEnabled, false);
+      } finally {
+        if (app) await deleteApp(app);
+        await APP_MODULE.deleteApp(probeName);
+      }
+    });
+
+    it('reflects an explicit data collection flag from native on iOS', async function () {
+      if (!Platform.ios) return;
+
+      const { initializeApp, deleteApp } = modular;
+      const enabledName = `autodatajstrue${FirebaseHelpers.id}`;
+      const disabledName = `autodatajsfalse${FirebaseHelpers.id}`;
+      const config = FirebaseHelpers.app.config();
+      let enabled;
+      let disabled;
+
+      try {
+        enabled = await initializeApp(
+          { ...config },
+          { name: enabledName, automaticDataCollectionEnabled: true },
+        );
+        disabled = await initializeApp(
+          { ...config },
+          { name: disabledName, automaticDataCollectionEnabled: false },
+        );
+        should.equal(enabled.automaticDataCollectionEnabled, true);
+        should.equal(disabled.automaticDataCollectionEnabled, false);
+      } finally {
+        if (enabled) await deleteApp(enabled);
+        if (disabled) await deleteApp(disabled);
+      }
+    });
+
     // Non-vacuous check: the default app already exists, so initializeApp reuses it and its flag is
     // the value persisted by the last explicit set. Persist true (different from the build's
     // Info.plist default of false), then omit the key. If native forced NO the result would be

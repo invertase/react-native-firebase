@@ -67,6 +67,16 @@ export default class FirebaseApp implements ReactNativeFirebase.FirebaseAppBase 
     this._automaticDataCollectionEnabled = enabled;
   }
 
+  /**
+   * Package-internal: seeds the cached flag from the value the native SDK resolved at
+   * initialization, without calling back into native (unlike the public setter).
+   *
+   * @internal
+   */
+  _setAutomaticDataCollectionEnabledFromNative(enabled: boolean): void {
+    this._automaticDataCollectionEnabled = enabled;
+  }
+
   private _checkDestroyed(): void {
     if (this._deleted) {
       throw new Error(`Firebase App named '${this._name}' already deleted`);
