@@ -54,6 +54,9 @@ fail() {
   exit 1
 }
 
+# shellcheck source=lib/rn-bare-probe-assertions.sh
+source ".github/workflows/scripts/lib/rn-bare-probe-assertions.sh"
+
 assert_podfile_fail_closed() {
   log "--- Podfile fail-closed checks ---"
   local podfile_code
@@ -163,10 +166,14 @@ assert_dynamic_firebase_probe_graph() {
   local umbrella_binary
   local app_binary
   local framework_binary
-  local defined_symbols
 
   log "--- dynamic RNFBFirebase probe graph checks ---"
 
+  # The `find ... -print -quit` lookups below pick the first copy of each
+  # binary only (the otool -L link checks need one representative). Duplicate
+  # copies (PackageFrameworks/ vs testrnbare.app/Frameworks/) are covered by
+  # the nm sweep in rnfb_probe_assert_single_firebase_copy, which scans every
+  # framework binary under the products dir.
   umbrella_binary="$(find "$products_dir" -type f -path '*/RNFBFirebase.framework/RNFBFirebase' -print -quit)"
   [[ -n "$umbrella_binary" ]] || fail "RNFBFirebase dynamic framework binary was not produced"
   # Capture tool output before grep. `set -o pipefail` plus `grep -q` treats
@@ -187,22 +194,14 @@ assert_dynamic_firebase_probe_graph() {
   framework_links="$(otool -L "$framework_binary")"
   grep -Fq '@rpath/RNFBFirebase.framework/RNFBFirebase' <<<"$framework_links" ||
     fail "RNFBApp does not link the RNFBFirebase probe package"
-  # Match the ObjC class symbol for Firebase's FIRApp only — not Swift mangled
-  # names that happen to contain "FIRApp" (RNFBFIRAppLifecycle, RCTConvertFIRApp, …).
-  if ! defined_symbols="$(nm -gU "$framework_binary" 2>&1)"; then
-    log "nm failed while reading RNFBApp.framework:"
-    printf '%s\n' "$defined_symbols"
-    fail "could not validate RNFBApp.framework symbols with nm"
-  fi
-  if [[ -z "$defined_symbols" ]]; then
-    fail "nm returned no global defined symbols for RNFBApp.framework; refusing to treat the graph as clean"
-  fi
-  if grep -E -q '[[:space:]]_OBJC_CLASS_\$_FIRApp$|[[:space:]]_OBJC_METACLASS_\$_FIRApp$' <<<"$defined_symbols"; then
-    log "RNFBApp still defines FIRApp class symbols:"
-    grep -E '[[:space:]]_OBJC_CLASS_\$_FIRApp$|[[:space:]]_OBJC_METACLASS_\$_FIRApp$' <<<"$defined_symbols"
-    fail "nm found FIRApp defined inside RNFBApp.framework"
-  fi
-  log "nm: no _OBJC_CLASS_\$_FIRApp in RNFBApp.framework; RNFBFirebase linked"
+  # Single-copy claim: RNFBApp does not define FIRApp, RNFBFirebase does, and
+  # no standalone FirebaseCore framework ships beside it, and no other framework
+  # binary or the app executable (app_binary, the testrnbare.app/testrnbare
+  # found above) defines it. Checks live in the sourced helper so tests can run
+  # them against fixture products dirs.
+  rnfb_probe_assert_single_firebase_copy \
+    "$PROBE_DYNAMIC_FIREBASE" "$products_dir" "$umbrella_binary" "$framework_binary" "$app_binary"
+  log "nm: FIRApp single-copy holds (RNFBApp none, RNFBFirebase defines it, no standalone FirebaseCore framework, no other framework binary or app executable defines it); RNFBFirebase linked"
 }
 
 assert_podfile_fail_closed
@@ -368,7 +367,7 @@ fi
 
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   assert_dynamic_firebase_probe_graph
-  log "PASS: probe links App through local dynamic RNFBFirebase (FirebaseCore + FirebaseInstallations), nm clean"
+  log "PASS: probe links App through local dynamic RNFBFirebase (FirebaseCore + FirebaseInstallations), nm single-copy FirebaseCore (frameworks and app executable)"
 else
   log "PASS: vanilla RN CLI documented path compiles with prebuilt RNCore on, no RNFB static pre_install, SPM + dynamic, without #8883 compile signatures"
 fi
