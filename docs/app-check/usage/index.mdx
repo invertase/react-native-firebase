@@ -33,6 +33,14 @@ cd ios/ && pod install
 
 > If you're using Expo, add the `@react-native-firebase/app-check` config plugin to your `app.json` or `app.config.js`. The plugin registers the native App Check module before `FirebaseApp.configure()` (Firebase requires that order). You still call `initializeAppCheck` from JavaScript. For plugin setup, see the [Expo](/#installation-for-expo-projects) installation section.
 
+```json
+{
+  "expo": {
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/app-check"]
+  }
+}
+```
+
 # Platform support and New Architecture
 
 {/* prettier-ignore */}
@@ -62,10 +70,10 @@ This package has built-in support for:
 
 - DeviceCheck on Apple platforms
 - App Attest on Apple platforms (`appAttest`, or `appAttestWithDeviceCheckFallback`)
-- Play Integrity on Android (Play Store distribution is typically required for production tokens)
+- Play Integrity on Android (supports apps published on Google Play, outside Google Play, or both; see the [Play Integrity provider guide](https://firebase.google.com/docs/app-check/android/play-integrity-provider?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-check))
 - Debug providers on both platforms
 
-App Check currently works with Firebase products such as Realtime Database, Cloud Firestore, Cloud Storage, and Cloud Functions (callable functions). For the full product list and quotas, see the [official Firebase App Check documentation](https://firebase.google.com/docs/app-check?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-check).
+App Check works with Firebase products such as Realtime Database, Cloud Firestore, Cloud Storage, and Cloud Functions (callable functions). For the full product list and quotas, see the [official Firebase App Check documentation](https://firebase.google.com/docs/app-check?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-check).
 
 # Usage
 
@@ -87,6 +95,8 @@ Before App Check can issue production tokens, register each Android and Apple ap
 - [App Attest on Apple platforms](https://firebase.google.com/docs/app-check/ios/app-attest-provider#project-setup)
 - [Play Integrity on Android](https://firebase.google.com/docs/app-check/android/play-integrity-provider#project-setup)
 
+For App Attest, also add the App Attest capability to the app target in Xcode and set the App Attest environment to `production` in the `.entitlements` file (see the [App Attest on Apple platforms](https://firebase.google.com/docs/app-check/ios/app-attest-provider) guide, step 2). With `appAttestWithDeviceCheckFallback`, the native provider uses App Attest on iOS 14 and later and DeviceCheck on earlier iOS versions.
+
 ## iOS application delegate setup
 
 Firebase requires the App Check provider factory to be registered **before** `FirebaseApp.configure()`. Until `initializeAppCheck` configures a real provider, the native facade stays pending and token APIs fail closed with `appCheck/provider-not-ready` (they do not fall back to the debug provider).
@@ -99,18 +109,9 @@ The App Check pod does not expose a Swift-importable module surface, so do not `
 #import "RNFBAppCheckModule.h"
 ```
 
-### react-native 0.79+
+### react-native 0.77 and later (Swift application entry)
 
 Call these two lines at the top of `application(_:didFinishLaunchingWithOptions:)` in your iOS application entry Swift file, before any other Firebase setup in that method. Import `FirebaseCore` if the file does not already import it.
-
-```swift
-RNFBAppCheckModule.sharedInstance()
-FirebaseApp.configure()
-```
-
-### react-native >= 0.77 and < 0.79
-
-Same two calls at the top of `application(_:didFinishLaunchingWithOptions:)`:
 
 ```swift
 RNFBAppCheckModule.sharedInstance()
@@ -134,9 +135,9 @@ Add the App Check import, then call `sharedInstance` before `[FIRApp configure]`
 
 `ReactNativeFirebaseAppCheckProviderOptions` is the shared base options shape (`debugToken`). Platform shapes extend it:
 
-- `ReactNativeFirebaseAppCheckProviderAndroidOptions` — `provider`: `debug` | `playIntegrity`
-- `ReactNativeFirebaseAppCheckProviderAppleOptions` — `provider`: `debug` | `deviceCheck` | `appAttest` | `appAttestWithDeviceCheckFallback`
-- `ReactNativeFirebaseAppCheckProviderWebOptions` — `provider`: `debug` | `reCaptchaV3` | `reCaptchaEnterprise`, plus optional `siteKey` for web or other-platform options
+- `ReactNativeFirebaseAppCheckProviderAndroidOptions`: `provider` is `debug` or `playIntegrity`
+- `ReactNativeFirebaseAppCheckProviderAppleOptions`: `provider` is `debug`, `deviceCheck`, `appAttest`, or `appAttestWithDeviceCheckFallback`
+- `ReactNativeFirebaseAppCheckProviderWebOptions`: `provider` is `debug`, `reCaptchaV3`, or `reCaptchaEnterprise`, plus optional `siteKey` for web or other-platform options
 
 `ReactNativeFirebaseAppCheckProviderOptionsMap` is the cross-platform map passed to `configure()` (`android`, `apple`, `web`). Invalid Android or Apple provider name strings throw synchronously from `initializeAppCheck` validation (`Invalid App Check provider "..."`).
 
@@ -154,7 +155,7 @@ function createRnfbAppCheckProvider() {
     apple: {
       provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',
     },
-    // other/web only — omit on native RN; no reCAPTCHA site key required for iOS/Android
+    // other/web only: omit on native RN; no reCAPTCHA site key required for iOS/Android
     web: {
       provider: 'reCaptchaV3',
       siteKey: 'your-recaptcha-site-key',
@@ -164,7 +165,25 @@ function createRnfbAppCheckProvider() {
 }
 ```
 
-`ReactNativeFirebaseAppCheckProvider.getToken()` exists to satisfy the `AppCheckProvider` interface. Calling it from JavaScript throws (`getToken() must be called after configure() and is handled by native modules`). Use modular `getToken(appCheckInstance)` after `initializeAppCheck` instead.
+`ReactNativeFirebaseAppCheckProvider.getToken()` exists to satisfy the `AppCheckProvider` interface. Calling it from JavaScript returns a rejected Promise (`getToken() must be called after configure() and is handled by native modules`). Use modular `getToken(appCheckInstance)` after `initializeAppCheck` instead.
+
+```js
+import { ReactNativeFirebaseAppCheckProvider } from '@react-native-firebase/app-check';
+
+async function callProviderGetToken() {
+  // WARNING: this always rejects. Use getToken(appCheck) from the modular API instead.
+  const provider = new ReactNativeFirebaseAppCheckProvider();
+  provider.configure({
+    android: { provider: 'debug' },
+    apple: { provider: 'debug' },
+  });
+  try {
+    await provider.getToken();
+  } catch (error) {
+    console.log('Provider getToken rejected:', error.message);
+  }
+}
+```
 
 ## Initialize App Check
 
@@ -317,6 +336,8 @@ function toggleTokenAutoRefresh(enabled) {
 
 On **Android**, the listener receives `{ token }` updates and returns an unsubscribe function. On **iOS**, native listening is not implemented: subscribing logs a warning (`onTokenChanged is not implemented on IOS, only for Android`) and returns a no-op unsubscribe. On iOS, call `getToken` when you need a current token, or rely on automatic refresh.
 
+Instead of a function, you can pass an observer object with a `next` method. The `onError` and `onCompletion` callbacks are accepted for firebase-js-sdk signature parity but are never called.
+
 ```js
 import { getApp } from '@react-native-firebase/app';
 import { initializeAppCheck, onTokenChanged, getToken } from '@react-native-firebase/app-check';
@@ -357,7 +378,7 @@ async function refreshTokenOnDemand() {
 
 ## CustomProvider on other platforms
 
-`CustomProvider` wraps a `getToken()` function for custom attestation on **other/web** platforms. On iOS and Android, pass `ReactNativeFirebaseAppCheckProvider` or `ReactNativeFirebaseAppCheckProviderConfig` instead. Constructing `CustomProvider` without a `getToken` function throws synchronously (`Invalid configuration: no getToken function defined.`).
+`CustomProvider` wraps a `getToken()` function for custom attestation on **other/web** platforms. On iOS and Android, pass `ReactNativeFirebaseAppCheckProvider` or `ReactNativeFirebaseAppCheckProviderConfig` instead. Constructing `CustomProvider` without a `getToken` function throws synchronously (`Invalid configuration: no getToken function defined.`). The App Check SDK caches tokens, so your `getToken` should return a newly issued token each time it is called (see the official [custom provider guide](https://firebase.google.com/docs/app-check/web/custom-provider)). The server side of a custom provider is described in [Implement a custom App Check provider](https://firebase.google.com/docs/app-check/custom-provider).
 
 ```js
 import { CustomProvider } from '@react-native-firebase/app-check';
@@ -381,7 +402,7 @@ function createOtherPlatformCustomProvider() {
 
 ## Token auto-refresh before JS runs
 
-Set `app_check_token_auto_refresh` when you need a default before the JavaScript bundle runs (for example GDPR opt-in flows). If unset, App Check defers to `app_data_collection_default_enabled`, then to `true`.
+Set `app_check_token_auto_refresh` in `firebase.json` when you need a default before the JavaScript bundle runs (for example GDPR opt-in flows). Rebuild the native app after changing it. When `isTokenAutoRefreshEnabled` is omitted from `initializeAppCheck`, the JavaScript layer resolves the value in the order listed under [Token auto-refresh](/app-check/usage#token-auto-refresh). The key is also listed in the [firebase.json reference](/app/json-config).
 
 ```json
 {
@@ -426,24 +447,26 @@ function prepareDebugAppCheck(debugToken) {
 
 ### Android: read a temporary secret from device logs
 
-1. Start a debug build that uses `provider: 'debug'` (without necessarily setting `debugToken`).
+1. Start a debug build that uses `provider: 'debug'` (without setting `debugToken`).
 2. Run the following and copy the logged secret:
 
 ```bash
 adb logcat | grep DebugAppCheckProvider
 ```
 
-3. In Firebase console **Project Settings > App Check**, open **Manage debug tokens** for the Android app and register that secret.
+3. In Firebase console **Security > App Check > Apps**, open **Manage debug tokens** for the Android app and register that secret.
 
-### Android: `FIREBASE_APP_CHECK_DEBUG_TOKEN` at build time
+### iOS: read a temporary secret from the Xcode console
 
-For CI or an Android emulator, register a debug token in the Firebase console, then pass it into the process that builds or runs the Android app:
+1. Start a debug build that uses `provider: 'debug'` (without setting `debugToken`).
+2. Open the Xcode console and copy the logged App Check debug token.
+3. In Firebase console **Security > App Check > Apps**, open **Manage debug tokens** for the Apple app and register that token.
 
-```bash
-FIREBASE_APP_CHECK_DEBUG_TOKEN="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" npx react-native run-android
-```
+See the official [Android](https://firebase.google.com/docs/app-check/android/debug-provider) and [Apple platforms](https://firebase.google.com/docs/app-check/ios/debug-provider) debug provider guides for the exact log output. On Apple platforms, to get a new debug token after deleting one in the console, uninstall and reinstall the app so a fresh token is generated.
 
-For Expo development clients, put the same variable in an EAS development profile `env` block and rebuild the client. After a device has successfully passed App Check with a debug token, uninstall and reinstall if you need a full reset of App Check state on that install.
+### CI: pass a registered token from your secret store
+
+Create a debug token in the Firebase console, store it in your CI secret store, and read it into your JavaScript at build or run time (for example from an environment variable you inject into your app config). Pass it as `debugToken` as shown in [Pass a console-registered debug token from JavaScript](/app-check/usage#pass-a-console-registered-debug-token-from-javascript).
 
 # Troubleshooting
 
@@ -451,9 +474,13 @@ For Expo development clients, put the same variable in an EAS development profil
 
 On **iOS**, if `getToken` / `getLimitedUseToken` rejects with `appCheck/provider-not-ready`, App Check has not been configured yet for that app (pending native facade / nil delegate provider). Call `initializeAppCheck` with a valid native provider before requesting tokens or calling App Check-protected Firebase services. Also confirm the iOS application delegate registers `RNFBAppCheckModule.sharedInstance()` before `FirebaseApp.configure()` (or that the Expo config plugin did).
 
-This fail-closed behavior replaces an older iOS path that could install the debug provider before JavaScript ran, including in release builds, which showed up as unexplained `exchangeDebugToken` 403/429 traffic. If you still see those exchanges, look for a code path that requests a token before `initializeAppCheck` completes and move it after.
+Until `initializeAppCheck` configures a provider, the iOS native module does not install the debug provider and does not send token requests to Firebase. If you see unexpected `exchangeDebugToken` requests, look for a code path that requests a token before `initializeAppCheck` completes and move it after.
 
 **Android does not emit `provider-not-ready`.** When App Check is not configured on Android, token APIs reject as `appCheck/token-error` (for example when the provider factory reports that `ReactNativeFirebaseAppCheckProvider` is not configured for the app). Catch `token-error` / inspect the message on Android; do not rely on `provider-not-ready` there.
+
+## Other token error codes
+
+`getToken` and `getLimitedUseToken` reject with `appCheck/token-error` when the native Firebase SDK fails to produce a token (the message is the native error message). On **iOS** they reject with `appCheck/token-null` when the native SDK returns neither a token nor an error.
 
 ## Missing `providerOptions` (synchronous throw)
 

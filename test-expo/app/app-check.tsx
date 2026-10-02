@@ -18,9 +18,8 @@ import { AppButton } from '../src/AppButton';
 import { ScreenChrome } from '../src/ScreenChrome';
 import { theme } from '../src/theme';
 
-// initializeAppCheck must only be called once per app; module-level memoization
-// so re-running this screen after the first press reuses the same instance
-// instead of re-initializing on every press.
+// Module-level memoization so every control reuses one instance instead of calling
+// initializeAppCheck again on each press.
 let appCheckInstance: AppCheck | undefined;
 
 function getOrInitializeAppCheck(): AppCheck {
@@ -72,8 +71,9 @@ export default function AppCheckScreen() {
   return (
     <ScreenChrome title="app-check" result={result} error={error}>
       <Text style={styles.hint}>
-        Controls mirror runtime APIs taught on the App Check usage page. App Check is not in yarn
-        tests:emulator:start-ci, and there is no connect*Emulator helper.
+        Controls mirror runtime APIs taught on the App Check usage page. There is no App Check
+        emulator and no connect*Emulator helper. This screen uses the debug provider, so token
+        controls only succeed after the debug token is registered in the Firebase console.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -91,6 +91,28 @@ export default function AppCheckScreen() {
               androidProvider: provider.providerOptions?.android?.provider,
               appleProvider: provider.providerOptions?.apple?.provider,
             };
+          })
+        }
+      />
+      <Text style={styles.warning}>
+        WARNING: ReactNativeFirebaseAppCheckProvider.getToken() always rejects. Use the modular
+        getToken(appCheck) instead.
+      </Text>
+      <AppButton
+        title="ReactNativeFirebaseAppCheckProvider.getToken (rejects)"
+        onPress={() =>
+          run('ReactNativeFirebaseAppCheckProvider.getToken', async () => {
+            const provider = new ReactNativeFirebaseAppCheckProvider();
+            provider.configure({
+              android: { provider: 'debug' },
+              apple: { provider: 'debug' },
+            });
+            try {
+              await provider.getToken();
+              return { rejected: false };
+            } catch (e) {
+              return { rejected: true, message: errorMessage(e) };
+            }
           })
         }
       />
