@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBAppCheckModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAppCheckModule.mm */; };
 		RNFBAC000000000000000001 /* RNFBAppCheckRejectCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAC000000000000000002 /* RNFBAppCheckRejectCodeMapper.swift */; };
+		RNFBAC000000000000000003 /* RNFBAppCheckHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAC000000000000000005 /* RNFBAppCheckHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,8 @@
 		2744B98421F45429004F8E3F /* RNFBAppCheckModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppCheckModule.h; path = RNFBAppCheck/RNFBAppCheckModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBAppCheckModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAppCheckModule.mm; path = RNFBAppCheck/RNFBAppCheckModule.mm; sourceTree = SOURCE_ROOT; };
 		RNFBAC000000000000000002 /* RNFBAppCheckRejectCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppCheckRejectCodeMapper.swift; path = RNFBAppCheck/RNFBAppCheckRejectCodeMapper.swift; sourceTree = SOURCE_ROOT; };
+		RNFBAC000000000000000004 /* RNFBAppCheckHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppCheckHelper.h; path = RNFBAppCheck/RNFBAppCheckHelper.h; sourceTree = SOURCE_ROOT; };
+		RNFBAC000000000000000005 /* RNFBAppCheckHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppCheckHelper.m; path = RNFBAppCheck/RNFBAppCheckHelper.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +59,8 @@
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBAppCheckModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAppCheckModule.mm */,
+				RNFBAC000000000000000004 /* RNFBAppCheckHelper.h */,
+				RNFBAC000000000000000005 /* RNFBAppCheckHelper.m */,
 				RNFBAC000000000000000002 /* RNFBAppCheckRejectCodeMapper.swift */,
 			);
 			path = RNFBAppCheck;
@@ -128,6 +133,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2744B98621F45429004F8E3F /* RNFBAppCheckModule.mm in Sources */,
+				RNFBAC000000000000000003 /* RNFBAppCheckHelper.m in Sources */,
 				RNFBAC000000000000000001 /* RNFBAppCheckRejectCodeMapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
