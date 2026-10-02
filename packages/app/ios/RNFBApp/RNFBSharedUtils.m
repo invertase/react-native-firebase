@@ -191,7 +191,7 @@ static id<RNFBJSEventSending> RNFBSharedUtilsJSEventSender(void) {
  * @return The decoded value with sentinels replaced by NSNull
  */
 + (id)decodeNullSentinels:(id)value {
-  return [RNFBNullSentinelDecoder decode:value];
+  return [RNFBNullSentinelDecoder decodeNullSentinels:value];
 }
 
 @end

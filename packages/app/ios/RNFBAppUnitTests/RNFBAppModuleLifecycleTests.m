@@ -112,7 +112,7 @@
   XCTAssertFalse(app.isDataCollectionDefaultEnabled);
 }
 
-- (void)testCompleteInitializeAppTreatsMissingOrNonNumericValueAsDisabled {
+- (void)testCompleteInitializeAppLeavesSDKDefaultWhenKeyMissingOrNonNumeric {
   FIRApp *missing = [self registeredAppNamed:@"missing" dataCollection:YES];
   FIRApp *null = [self registeredAppNamed:@"null" dataCollection:YES];
 
@@ -124,8 +124,9 @@
                                      ^(id result){
                                      });
 
-  XCTAssertFalse(missing.isDataCollectionDefaultEnabled);
-  XCTAssertFalse(null.isDataCollectionDefaultEnabled);
+  // Omitted / non-NSNumber keys must not force-disable; SDK / Info.plist default remains.
+  XCTAssertTrue(missing.isDataCollectionDefaultEnabled);
+  XCTAssertTrue(null.isDataCollectionDefaultEnabled);
 }
 
 - (void)testCompleteInitializeAppMapsNumericBooleansByTheirValue {
@@ -143,14 +144,14 @@
   XCTAssertFalse(zero.isDataCollectionDefaultEnabled);
 }
 
-- (void)testCompleteInitializeAppWithNilConfigDisablesDataCollection {
+- (void)testCompleteInitializeAppWithNilConfigLeavesSDKDefault {
   FIRApp *app = [self registeredAppNamed:@"nilconfig" dataCollection:YES];
 
   RNFBAppModuleCompleteInitializeApp(app, nil, @"nilconfig", nil,
                                      ^(id result){
                                      });
 
-  XCTAssertFalse(app.isDataCollectionDefaultEnabled);
+  XCTAssertTrue(app.isDataCollectionDefaultEnabled);
 }
 
 - (void)testInitializeAppliesTheConfiguredAppLogLevel {

@@ -17,6 +17,7 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBAppModuleImplementation.h"
+#import "RNFBInitializeAppArguments.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
@@ -122,13 +123,20 @@ void RNFBAppModuleRemoveListeners(double count) { (void)count; }
 
 void RNFBAppModuleInitializeApp(NSDictionary *options, NSDictionary *appConfig,
                                 RCTPromiseResolveBlock resolve, RCTPromiseRejectBlock reject) {
+  // New Architecture delivers these as plain NSDictionary (no RCTCxxConvert), so JS null
+  // properties are still {__rnfbNull: true} sentinels. Null optional keys are dropped so they
+  // read as absent; a null automaticDataCollectionEnabled becomes @NO.
+  // Coalesce nil (root sentinel / missing args) so Swift mappers always receive a dictionary.
+  NSDictionary *normalizedOptions = [RNFBInitializeAppArguments normalizedOptions:options] ?: @{};
+  NSDictionary *normalizedAppConfig =
+      [RNFBInitializeAppArguments normalizedAppConfig:appConfig] ?: @{};
   RCTUnsafeExecuteOnMainQueueSync(^{
     id firApp;
     RNFBAppInitializeNameResolution *names =
-        [RNFBAppInitializeOptionsMapper resolveNameFromAppConfig:appConfig];
-    NSString *authDomain = [RNFBAppInitializeOptionsMapper authDomainFromOptions:options];
+        [RNFBAppInitializeOptionsMapper resolveNameFromAppConfig:normalizedAppConfig];
+    NSString *authDomain = [RNFBAppInitializeOptionsMapper authDomainFromOptions:normalizedOptions];
     id firOptions =
-        [RNFBAppInitializeOptionsMapper buildOptionsFrom:options
+        [RNFBAppInitializeOptionsMapper buildOptionsFrom:normalizedOptions
                                           optionsFactory:[RNFBAppModuleFirebase optionsFactory]];
 
     // The catch only records the exception. A `return` inside it makes clang attribute zero
@@ -145,7 +153,8 @@ void RNFBAppModuleInitializeApp(NSDictionary *options, NSDictionary *appConfig,
       return;
     }
 
-    RNFBAppModuleCompleteInitializeApp(firApp, authDomain, names.jsAppName, appConfig, resolve);
+    RNFBAppModuleCompleteInitializeApp(firApp, authDomain, names.jsAppName, normalizedAppConfig,
+                                       resolve);
   });
 }
 
@@ -158,14 +167,15 @@ void RNFBAppModuleCompleteInitializeApp(id firApp, NSString *authDomain, NSStrin
     return;
   }
 
-  // Intentionally differs from the pre-port pointer cast, which made any non-nil value
-  // (including JS `false` as @NO) enable collection. The boolean value is read now, so
-  // @NO / @0 / NSNull / absent disable it. Pinned by RNFBAppModuleLifecycleTests for
-  // @YES, @NO, @1, @0, NSNull and nil / absent.
-  id dataCollection = [appConfig valueForKey:@"automaticDataCollectionEnabled"];
-  BOOL dataCollectionEnabled =
-      [dataCollection respondsToSelector:@selector(boolValue)] && [dataCollection boolValue];
-  [RNFBAppModuleFirebase setDataCollectionDefaultEnabled:dataCollectionEnabled forApp:firApp];
+  // Only apply when provided, so an omitted key keeps the SDK / Info.plist default (as Android).
+  // Pass normalizedAppConfig so a null sentinel has already become @NO. Pinned by
+  // RNFBInitializeAppArgumentsTests + RNFBAppModuleLifecycleTests.
+  NSNumber *automaticDataCollectionEnabled = [RNFBInitializeAppArguments
+      automaticDataCollectionEnabledFromAppConfig:appConfig];
+  if (automaticDataCollectionEnabled != nil) {
+    [RNFBAppModuleFirebase setDataCollectionDefaultEnabled:[automaticDataCollectionEnabled boolValue]
+                                                    forApp:firApp];
+  }
   resolve([RNFBSharedUtils firAppToDictionary:firApp]);
 }
 
