@@ -13,6 +13,11 @@
 		M1000000000000000000000E /* RNFBMessagingSerializerFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = M1000000000000000000000F /* RNFBMessagingSerializerFacadeTests.m */; };
 		M10000000000000000000010 /* UNNotificationHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000011 /* UNNotificationHostStub.m */; };
 		M10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = M10000000000000000000014 /* XCTest.framework */; };
+		M10000000000000000000020 /* RNFBMessagingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000021 /* RNFBMessagingHelper.m */; };
+		M10000000000000000000022 /* RNFBMessagingHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000023 /* RNFBMessagingHelperHostStubTests.m */; };
+		M10000000000000000000024 /* FIRMessagingHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000025 /* FIRMessagingHostStub.m */; };
+		M10000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */; };
+		M10000000000000000000028 /* RCTConvertHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000029 /* RCTConvertHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,11 @@
 		M1000000000000000000000F /* RNFBMessagingSerializerFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingSerializerFacadeTests.m; sourceTree = "<group>"; };
 		M10000000000000000000011 /* UNNotificationHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UNNotificationHostStub.m; path = HostStubs/UserNotifications/UNNotificationHostStub.m; sourceTree = "<group>"; };
 		M10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		M10000000000000000000021 /* RNFBMessagingHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingHelper.m; path = ../RNFBMessaging/RNFBMessagingHelper.m; sourceTree = SOURCE_ROOT; };
+		M10000000000000000000023 /* RNFBMessagingHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingHelperHostStubTests.m; sourceTree = "<group>"; };
+		M10000000000000000000025 /* FIRMessagingHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRMessagingHostStub.m; path = HostStubs/Firebase/FIRMessagingHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000029 /* RCTConvertHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTConvertHostStub.m; path = HostStubs/React/RCTConvertHostStub.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,9 +70,14 @@
 				M10000000000000000000007 /* RNFBMessagingSerializer.h */,
 				M10000000000000000000008 /* RNFBMessagingSerializer.m */,
 				M10000000000000000000009 /* RNFBMessagingSerializerStorage.swift */,
+				M10000000000000000000021 /* RNFBMessagingHelper.m */,
 				M1000000000000000000000D /* RNFBMessagingSerializerStorageTests.swift */,
 				M1000000000000000000000F /* RNFBMessagingSerializerFacadeTests.m */,
+				M10000000000000000000023 /* RNFBMessagingHelperHostStubTests.m */,
 				M10000000000000000000011 /* UNNotificationHostStub.m */,
+				M10000000000000000000025 /* FIRMessagingHostStub.m */,
+				M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
+				M10000000000000000000029 /* RCTConvertHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -126,9 +141,14 @@
 			files = (
 				M1000000000000000000000B /* RNFBMessagingSerializerStorage.swift in Sources */,
 				M1000000000000000000000A /* RNFBMessagingSerializer.m in Sources */,
+				M10000000000000000000020 /* RNFBMessagingHelper.m in Sources */,
 				M10000000000000000000010 /* UNNotificationHostStub.m in Sources */,
+				M10000000000000000000024 /* FIRMessagingHostStub.m in Sources */,
+				M10000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */,
+				M10000000000000000000028 /* RCTConvertHostStub.m in Sources */,
 				M1000000000000000000000C /* RNFBMessagingSerializerStorageTests.swift in Sources */,
 				M1000000000000000000000E /* RNFBMessagingSerializerFacadeTests.m in Sources */,
+				M10000000000000000000022 /* RNFBMessagingHelperHostStubTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
