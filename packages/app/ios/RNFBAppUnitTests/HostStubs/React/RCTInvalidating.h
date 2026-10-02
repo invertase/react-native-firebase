@@ -12,25 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
-#import "RNFBUtilsModule.h"
 
 /**
- * Host stub for unit tests: provides the `RNFBUtilsModule` class so
- * `RNFBUtilsModule+Foundation` category forwards can link without compiling TurboModule `.mm`.
- * PhotoKit behavior stays production-only in `RNFBUtilsModule+PhotoAssets.m`.
+ * Host-only stub for macOS XCTest (IosTest-AD-1). Not shipped in the production pod.
  */
-@implementation RNFBUtilsModule
+#import <Foundation/Foundation.h>
 
-@end
-
-@implementation RNFBUtilsModule (PhotoAssets)
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
-  (void)localFilePath;
-  return nil;
-}
-
+@protocol RCTInvalidating <NSObject>
+- (void)invalidate;
 @end

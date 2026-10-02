@@ -35,26 +35,6 @@ const NSString *RNFBVersionString = @"unit-test";
 + (void)resetCustomDomainsForTesting;
 @end
 
-@implementation RNFBAppModule
-
-- (void)setLogLevel:(NSString *)logLevel {
-  int level = (int)[RNFBAppLogLevelMapper loggerLevelForString:logLevel];
-  [RNFBAppModuleFirebase setLoggerLevel:level];
-}
-
-@end
-
-@implementation RNFBAppModule (CustomAuthDomain)
-
-+ (NSString *)getCustomDomain:(NSString *)appName {
-  if (appName == nil) {
-    return nil;
-  }
-  return [RNFBAppCustomAuthDomains getCustomDomain:appName];
-}
-
-@end
-
 @implementation RNFBAppModule (Testing)
 
 + (void)setCustomDomain:(nullable NSString *)authDomain forAppName:(NSString *)appName {
