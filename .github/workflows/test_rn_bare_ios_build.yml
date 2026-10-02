@@ -19,10 +19,12 @@ on:
       - 'scripts/e2e/lib/ios-simulator-helpers.sh'
       - '.github/workflows/test_rn_bare_ios_build.yml'
       - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
+      - '.github/workflows/scripts/check-ios-probe-sdk-pin.js'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
       - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
+      - 'packages/app/__tests__/iosProbeSdkPin.test.js'
   push:
     branches:
       - main
@@ -39,10 +41,12 @@ on:
       - 'scripts/e2e/lib/ios-simulator-helpers.sh'
       - '.github/workflows/test_rn_bare_ios_build.yml'
       - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
+      - '.github/workflows/scripts/check-ios-probe-sdk-pin.js'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
       - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
+      - 'packages/app/__tests__/iosProbeSdkPin.test.js'
 
 permissions:
   contents: read
@@ -106,6 +110,9 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 22
+
+      - name: Check probe SDK pin matches app SDK version
+        run: node .github/workflows/scripts/check-ios-probe-sdk-pin.js
 
       # https://github.com/maxim-lobanov/setup-xcode/releases
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0

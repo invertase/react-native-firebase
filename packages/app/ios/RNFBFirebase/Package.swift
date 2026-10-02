@@ -2,7 +2,7 @@
 //
 // CI probe only (RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE=1). Shipped podspecs keep
 // spm_dependency on firebase-ios-sdk. Exact pin tracks packages/app/package.json
-// sdkVersions.ios.firebase.
+// sdkVersions.ios.firebase (checked by .github/workflows/scripts/check-ios-probe-sdk-pin.js).
 //
 // This package resolver rejects mixed Swift and Objective-C sources in one
 // target. SDK calls live in RNFBFirebaseBridge. The dynamic product links that
