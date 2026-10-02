@@ -26,6 +26,7 @@ export interface NativeRNFBTurboMessaging {
     isDeliveryMetricsExportToBigQueryEnabled?: boolean;
     isRegisteredForRemoteNotifications?: boolean;
     isNotificationDelegationEnabled?: boolean;
+    isInstallationIdEnabled?: boolean;
   };
   isAutoInitEnabled?: boolean;
   isDeliveryMetricsExportToBigQueryEnabled?: boolean;
@@ -36,6 +37,8 @@ export interface NativeRNFBTurboMessaging {
   getIsHeadless(): Promise<boolean>;
   getToken(appName: string, senderId: string): Promise<string>;
   deleteToken(appName: string, senderId: string): Promise<void>;
+  register(): Promise<void>;
+  unregister(): Promise<void>;
   requestPermission(permissions: IOSPermissions): Promise<number>;
   registerForRemoteNotifications(): Promise<void>;
   unregisterForRemoteNotifications(): Promise<void>;

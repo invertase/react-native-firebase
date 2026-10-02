@@ -3,9 +3,13 @@ import {
   getMessaging,
   deleteToken,
   getToken,
+  register,
+  unregister,
   onMessage,
   onNotificationOpenedApp,
   onTokenRefresh,
+  onRegistered,
+  onUnregistered,
   requestPermission,
   isAutoInitEnabled,
   setAutoInitEnabled,
@@ -37,6 +41,10 @@ import {
   type Messaging,
   type RemoteMessage,
   type SendErrorEvent,
+  type RegisterOptions,
+  type NextFn,
+  type Observer,
+  type Unsubscribe,
 } from '.';
 import type { AuthorizationStatus as MessagingAuthStatus } from './lib/types/messaging';
 
@@ -102,6 +110,45 @@ const modularUnsubscribeOnTokenRefresh = onTokenRefresh(modularMessaging1, (toke
   console.log(token);
 });
 modularUnsubscribeOnTokenRefresh();
+
+const registerOptions: RegisterOptions = { vapidKey: 'web-only' };
+register(modularMessaging1, registerOptions).then(() => {
+  console.log('Modular registered');
+});
+
+unregister(modularMessaging1).then(() => {
+  console.log('Modular unregistered');
+});
+
+const onRegisteredNext: NextFn<string> = (installationId: string) => {
+  console.log(installationId);
+};
+const modularUnsubscribeOnRegistered: Unsubscribe = onRegistered(
+  modularMessaging1,
+  onRegisteredNext,
+);
+modularUnsubscribeOnRegistered();
+
+const onRegisteredObserver: Observer<string> = {
+  next: (installationId: string) => {
+    console.log(installationId);
+  },
+  error: () => undefined,
+  complete: () => undefined,
+};
+const modularUnsubscribeOnRegisteredObserver = onRegistered(
+  modularMessaging1,
+  onRegisteredObserver,
+);
+modularUnsubscribeOnRegisteredObserver();
+
+const modularUnsubscribeOnUnregistered = onUnregistered(
+  modularMessaging1,
+  (installationId: string) => {
+    console.log(installationId);
+  },
+);
+modularUnsubscribeOnUnregistered();
 
 requestPermission(modularMessaging1).then((status: MessagingAuthStatus) => {
   console.log(status);

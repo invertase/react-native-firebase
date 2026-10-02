@@ -3,7 +3,7 @@ type: Reference
 title: Coverage design
 description: Goals and implementation details for unit and e2e test coverage across platforms.
 tags: [testing, coverage, codecov, e2e, jest]
-timestamp: 2026-06-17T00:00:00Z
+timestamp: 2026-10-01T00:00:00Z
 ---
 
 # Goals
@@ -15,7 +15,7 @@ Coverage shows exercised **TS library sources** (`packages/*/lib/**`), **native 
 | **Unit (Jest)** | Package logic with mocks | Fast feedback on `lib/**` |
 | **Unit (iOS Ruby)** | CocoaPods/SPM helper logic (`firebase_spm.rb`, etc.) via Minitest + SimpleCov | Fast feedback on `packages/app/**/*.rb`; LCOV `coverage/ios-ruby/lcov.info` |
 | **Unit (Android JVM)** | Java state-machine / bridge logic — [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1) | Fast feedback on `packages/*/android/**`; Jacoco `*.exec` |
-| **Unit (iOS XCTest)** | Foundation/UIKit-free native logic — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1) | Fast feedback on `packages/*/ios/**`; LCOV merged into `coverage/ios-native/lcov.info` |
+| **Unit (iOS XCTest)** | Native logic on macOS: Foundation-only projects, or real `.m`/`.mm` files compiled against stub headers and test doubles for React/Firebase/UIKit — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1) | Fast feedback on `packages/*/ios/**`; LCOV merged into `coverage/ios-native/lcov.info` |
 | **E2e (Jet / Detox)** | Real app behaviour against Firebase emulators and cloud APIs | TS + native bridge integration |
 
 Codecov merges CI uploads. Project-level % can be noise; **file-level changed-source coverage** is signal. macOS e2e uses firebase-js-sdk only; no RNFB native coverage.
@@ -218,6 +218,7 @@ yarn tests:ios:unit
 
 - Host/macOS-first in-package xcodeproj — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1).
 - Discovers `packages/*/ios/*UnitTests/*.xcodeproj`; LLVM export → `coverage/ios-unit/lcov.info`.
+- Discovery finds one project per package that ships one. Stub-header projects ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1-stub-headers)) report hits on the real production files they compile.
 - **Merges into** `coverage/ios-native/lcov.info` (create or max-hits merge per `SF:`/`DA:`). After e2e, `rn-coverage-ios-export.js` merges the same unit file so e2e export does not drop XCTest hits.
 - **Counts toward** the 100% touched-line bar when allowlisted unit tests exercise those lines.
 - Not a substitute for e2e on platforms where the module loads ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking)).
