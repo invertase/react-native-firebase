@@ -116,6 +116,31 @@ public class RNFBStorageTaskRegistryTest {
   }
 
   @Test
+  public void takeIf_whenPredicateTrue_removesAndReturns() throws Exception {
+    RNFBStorageTaskRegistry registry = new RNFBStorageTaskRegistry();
+    FakeHandle handle = new FakeHandle();
+    registry.put(8, handle);
+    assertSame(handle, registry.takeIf(8, h -> h == handle));
+    assertNull(registry.get(8));
+  }
+
+  @Test
+  public void takeIf_whenPredicateFalse_leavesMapping() throws Exception {
+    RNFBStorageTaskRegistry registry = new RNFBStorageTaskRegistry();
+    FakeHandle handle = new FakeHandle();
+    FakeHandle other = new FakeHandle();
+    registry.put(9, handle);
+    assertNull(registry.takeIf(9, h -> h == other));
+    assertSame(handle, registry.get(9));
+  }
+
+  @Test
+  public void takeIf_whenMissing_returnsNull() {
+    RNFBStorageTaskRegistry registry = new RNFBStorageTaskRegistry();
+    assertNull(registry.takeIf(99, h -> true));
+  }
+
+  @Test
   public void takeAndCancel_cancelsAfterTake() throws Exception {
     RNFBStorageTaskRegistry registry = new RNFBStorageTaskRegistry();
     FakeHandle handle = new FakeHandle();

@@ -11,6 +11,17 @@
 		E7000000000000000000000B /* RNFBStorageTaskRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000018 /* RNFBStorageTaskRegistry.m */; };
 		E7000000000000000000000C /* RNFBStorageTaskRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */; };
 		E70000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E70000000000000000000014 /* XCTest.framework */; };
+		E70000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000001C /* RNFBHandleMapStorage.swift */; };
+		E7000000000000000000001D /* RNFBStorageTaskRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000001E /* RNFBStorageTaskRegistryStorage.swift */; };
+		E7000000000000000000001F /* RNFBStorageTaskRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000020 /* RNFBStorageTaskRegistryStorageTests.swift */; };
+		E70000000000000000000021 /* RNFBStorageTaskStatusMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000022 /* RNFBStorageTaskStatusMapper.swift */; };
+		E70000000000000000000023 /* RNFBStorageTaskStatusMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000024 /* RNFBStorageTaskStatusMapperTests.swift */; };
+		E70000000000000000000025 /* RNFBStorageTaskStatusMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000026 /* RNFBStorageTaskStatusMapperFacadeTests.m */; };
+		E70000000000000000000027 /* RNFBStorageErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */; };
+		E70000000000000000000029 /* RNFBStorageErrorCodeMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */; };
+		E7000000000000000000002B /* RNFBStorageErrorCodeMapperFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */; };
+		E7000000000000000000002D /* RNFBStorageErrorSnapshotDictBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7000000000000000000002E /* RNFBStorageErrorSnapshotDictBuilder.swift */; };
+		E7000000000000000000002F /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E70000000000000000000030 /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +32,17 @@
 		E70000000000000000000016 /* RNFBStorageTaskRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBStorageTaskRegistry.h; path = ../RNFBStorage/RNFBStorageTaskRegistry.h; sourceTree = SOURCE_ROOT; };
 		E70000000000000000000018 /* RNFBStorageTaskRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBStorageTaskRegistry.m; path = ../RNFBStorage/RNFBStorageTaskRegistry.m; sourceTree = SOURCE_ROOT; };
 		E70000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		E7000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		E7000000000000000000001E /* RNFBStorageTaskRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskRegistryStorage.swift; path = ../RNFBStorage/RNFBStorageTaskRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000020 /* RNFBStorageTaskRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageTaskRegistryStorageTests.swift; sourceTree = "<group>"; };
+		E70000000000000000000022 /* RNFBStorageTaskStatusMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageTaskStatusMapper.swift; path = ../RNFBStorage/RNFBStorageTaskStatusMapper.swift; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000024 /* RNFBStorageTaskStatusMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageTaskStatusMapperTests.swift; sourceTree = "<group>"; };
+		E70000000000000000000026 /* RNFBStorageTaskStatusMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageTaskStatusMapperFacadeTests.m; sourceTree = "<group>"; };
+		E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageErrorCodeMapper.swift; path = ../RNFBStorage/RNFBStorageErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
+		E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBStorageErrorCodeMapperTests.swift; sourceTree = "<group>"; };
+		E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageErrorCodeMapperFacadeTests.m; sourceTree = "<group>"; };
+		E7000000000000000000002E /* RNFBStorageErrorSnapshotDictBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBStorageErrorSnapshotDictBuilder.swift; path = ../RNFBStorage/RNFBStorageErrorSnapshotDictBuilder.swift; sourceTree = SOURCE_ROOT; };
+		E70000000000000000000030 /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBStorageErrorSnapshotDictBuilderFacadeTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,9 +78,20 @@
 			children = (
 				E70000000000000000000007 /* RNFBHandleMap.h */,
 				E70000000000000000000008 /* RNFBHandleMap.m */,
+				E7000000000000000000001C /* RNFBHandleMapStorage.swift */,
 				E70000000000000000000016 /* RNFBStorageTaskRegistry.h */,
 				E70000000000000000000018 /* RNFBStorageTaskRegistry.m */,
+				E7000000000000000000001E /* RNFBStorageTaskRegistryStorage.swift */,
 				E70000000000000000000009 /* RNFBStorageTaskRegistryTests.m */,
+				E70000000000000000000020 /* RNFBStorageTaskRegistryStorageTests.swift */,
+				E70000000000000000000022 /* RNFBStorageTaskStatusMapper.swift */,
+				E70000000000000000000024 /* RNFBStorageTaskStatusMapperTests.swift */,
+				E70000000000000000000026 /* RNFBStorageTaskStatusMapperFacadeTests.m */,
+				E70000000000000000000028 /* RNFBStorageErrorCodeMapper.swift */,
+				E7000000000000000000002A /* RNFBStorageErrorCodeMapperTests.swift */,
+				E7000000000000000000002C /* RNFBStorageErrorCodeMapperFacadeTests.m */,
+				E7000000000000000000002E /* RNFBStorageErrorSnapshotDictBuilder.swift */,
+				E70000000000000000000030 /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -121,8 +154,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				E70000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */,
+				E7000000000000000000001D /* RNFBStorageTaskRegistryStorage.swift in Sources */,
 				E7000000000000000000000B /* RNFBStorageTaskRegistry.m in Sources */,
 				E7000000000000000000000C /* RNFBStorageTaskRegistryTests.m in Sources */,
+				E7000000000000000000001F /* RNFBStorageTaskRegistryStorageTests.swift in Sources */,
+				E70000000000000000000021 /* RNFBStorageTaskStatusMapper.swift in Sources */,
+				E70000000000000000000023 /* RNFBStorageTaskStatusMapperTests.swift in Sources */,
+				E70000000000000000000025 /* RNFBStorageTaskStatusMapperFacadeTests.m in Sources */,
+				E70000000000000000000027 /* RNFBStorageErrorCodeMapper.swift in Sources */,
+				E70000000000000000000029 /* RNFBStorageErrorCodeMapperTests.swift in Sources */,
+				E7000000000000000000002B /* RNFBStorageErrorCodeMapperFacadeTests.m in Sources */,
+				E7000000000000000000002D /* RNFBStorageErrorSnapshotDictBuilder.swift in Sources */,
+				E7000000000000000000002F /* RNFBStorageErrorSnapshotDictBuilderFacadeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -171,6 +215,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -194,6 +239,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -205,6 +252,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -221,6 +269,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};

@@ -1,5 +1,9 @@
 import UIKit
+#if canImport(RNFBFirebase)
+import RNFBFirebase
+#else
 import Firebase
+#endif
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -10,7 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+#if canImport(RNFBFirebase)
+    RNFBFirebaseAppClient.configure()
+#else
     FirebaseApp.configure()
+#endif
     return true
   }
 }

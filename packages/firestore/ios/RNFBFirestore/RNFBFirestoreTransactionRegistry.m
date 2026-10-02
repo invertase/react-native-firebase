@@ -24,8 +24,18 @@
 #import "RNFBApp/RNFBHandleMap.h"
 #endif
 
+#if __has_include(<RNFBFirestore/RNFBFirestore-Swift.h>)
+#import <RNFBFirestore/RNFBFirestore-Swift.h>
+#elif __has_include("RNFBFirestore-Swift.h")
+#import "RNFBFirestore-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBFirestoreTransactionRegistryStorage Swift interface not found"
+#endif
+
 @interface RNFBFirestoreTransactionRegistry ()
-@property(nonatomic, strong) RNFBHandleMap *map;
+@property(nonatomic, strong) RNFBFirestoreTransactionRegistryStorage *storage;
 @end
 
 @implementation RNFBFirestoreTransactionRegistry
@@ -33,7 +43,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [[RNFBHandleMap alloc] init];
+    _storage = [[RNFBFirestoreTransactionRegistryStorage alloc] init];
   }
   return self;
 }
@@ -46,24 +56,33 @@
 }
 
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
-  return [self.map put:key value:value error:error];
+  if (![self.storage putIfAbsent:key value:value]) {
+    if (error != nil) {
+      NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
+      *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
+                                   code:RNFBHandleMapErrorCollision
+                               userInfo:@{NSLocalizedDescriptionKey : message}];
+    }
+    return NO;
+  }
+  return YES;
 }
 
 - (BOOL)putOrSkip:(id)key value:(id)value {
   // Single HandleMap lock: store if absent, or YES when existing == value.
-  return [self.map putIfAbsentOrSame:key value:value];
+  return [self.storage putIfAbsentOrSame:key value:value];
 }
 
 - (id)get:(id)key {
-  return [self.map get:key];
+  return [self.storage get:key];
 }
 
 - (id)take:(id)key {
-  return [self.map take:key];
+  return [self.storage take:key];
 }
 
 - (void)abortAll {
-  NSArray *remaining = [self.map takeAll];
+  NSArray *remaining = [self.storage takeAll];
   for (id state in remaining) {
     [self rnfb_abortState:state];
   }

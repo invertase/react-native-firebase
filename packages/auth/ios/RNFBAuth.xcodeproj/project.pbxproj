@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBAuthModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAuthModule.mm */; };
+		RNFBAUTH0000000000000001 /* RNFBAuthCacheRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH0000000000000002 /* RNFBAuthCacheRegistry.m */; };
+		RNFBAUTH0000000000000003 /* RNFBAuthCacheRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH0000000000000004 /* RNFBAuthCacheRegistryStorage.swift */; };
+		RNFBAUTH0000000000000008 /* RNFBAuthListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH0000000000000009 /* RNFBAuthListenerRegistryStorage.swift */; };
+		RNFBAUTH000000000000000A /* RNFBAuthErrorCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBAUTH000000000000000B /* RNFBAuthErrorCodeMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +30,11 @@
 		2744B98221F45429004F8E3F /* libRNFBAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBAuthModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAuthModule.h; path = RNFBAuth/RNFBAuthModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBAuthModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAuthModule.mm; path = RNFBAuth/RNFBAuthModule.mm; sourceTree = SOURCE_ROOT; };
+		RNFBAUTH0000000000000005 /* RNFBAuthCacheRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAuthCacheRegistry.h; path = RNFBAuth/RNFBAuthCacheRegistry.h; sourceTree = SOURCE_ROOT; };
+		RNFBAUTH0000000000000002 /* RNFBAuthCacheRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAuthCacheRegistry.m; path = RNFBAuth/RNFBAuthCacheRegistry.m; sourceTree = SOURCE_ROOT; };
+		RNFBAUTH0000000000000004 /* RNFBAuthCacheRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthCacheRegistryStorage.swift; path = RNFBAuth/RNFBAuthCacheRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBAUTH0000000000000009 /* RNFBAuthListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthListenerRegistryStorage.swift; path = RNFBAuth/RNFBAuthListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBAUTH000000000000000B /* RNFBAuthErrorCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAuthErrorCodeMapper.swift; path = RNFBAuth/RNFBAuthErrorCodeMapper.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +61,11 @@
 			children = (
 				2744B9A121F48736004F8E3F /* converters */,
 				2744B98C21F45C64004F8E3F /* common */,
+				RNFBAUTH0000000000000005 /* RNFBAuthCacheRegistry.h */,
+				RNFBAUTH0000000000000002 /* RNFBAuthCacheRegistry.m */,
+				RNFBAUTH0000000000000004 /* RNFBAuthCacheRegistryStorage.swift */,
+				RNFBAUTH0000000000000009 /* RNFBAuthListenerRegistryStorage.swift */,
+				RNFBAUTH000000000000000B /* RNFBAuthErrorCodeMapper.swift */,
 				2744B98421F45429004F8E3F /* RNFBAuthModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAuthModule.mm */,
 			);
@@ -124,6 +138,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				RNFBAUTH0000000000000003 /* RNFBAuthCacheRegistryStorage.swift in Sources */,
+				RNFBAUTH0000000000000001 /* RNFBAuthCacheRegistry.m in Sources */,
+				RNFBAUTH0000000000000008 /* RNFBAuthListenerRegistryStorage.swift in Sources */,
+				RNFBAUTH000000000000000A /* RNFBAuthErrorCodeMapper.swift in Sources */,
 				2744B98621F45429004F8E3F /* RNFBAuthModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -150,6 +168,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -166,6 +185,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -189,6 +209,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -200,6 +221,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.10;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

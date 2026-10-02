@@ -15,13 +15,12 @@
  *
  */
 
-#import <React/RCTUtils.h>
-
-#import "RNFBApp/RNFBSharedUtils.h"
-#import "RNFBAppTurboModules.h"
 #import "RNFBUtilsModule.h"
+#import "RNFBAppTurboModules.h"
+#import "RNFBUtilsModuleImplementation.h"
 
 @interface RNFBUtilsModule () <NativeRNFBTurboUtilsSpec>
+
 @end
 
 @implementation RNFBUtilsModule
@@ -42,109 +41,35 @@ RCT_EXPORT_MODULE(NativeRNFBTurboUtils)
 #pragma mark -
 #pragma mark Constants
 
-- (NSString *)getPathForDirectory:(int)directory {
-  NSArray *paths =
-      NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory)directory, NSUserDomainMask, YES);
-  return [paths firstObject];
-}
-
-- (NSDictionary *)utilsConstantsDictionary {
-  NSMutableDictionary *constants = [@{
-    @"isRunningInTestLab" : @NO,
-    @"MAIN_BUNDLE" : [[NSBundle mainBundle] bundlePath],
-    @"CACHES_DIRECTORY" : [self getPathForDirectory:NSCachesDirectory],
-    @"DOCUMENT_DIRECTORY" : [self getPathForDirectory:NSDocumentDirectory],
-    @"PICTURES_DIRECTORY" : [self getPathForDirectory:NSPicturesDirectory],
-    @"MOVIES_DIRECTORY" : [self getPathForDirectory:NSMoviesDirectory],
-    @"TEMP_DIRECTORY" : NSTemporaryDirectory(),
-    @"LIBRARY_DIRECTORY" : [self getPathForDirectory:NSLibraryDirectory],
-  } mutableCopy];
-
-  NSString *appVersion =
-      [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-  if ([appVersion isKindOfClass:[NSString class]] && appVersion.length > 0) {
-    constants[@"appVersion"] = appVersion;
-  }
-
-  return [constants copy];
-}
-
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)constantsToExport {
-  return [_RCTTypedModuleConstants newWithUnsafeDictionary:[self utilsConstantsDictionary]];
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:RNFBUtilsModuleConstantsDictionary()];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboUtils::Constants>)getConstants {
-  return [self constantsToExport];
+  return [_RCTTypedModuleConstants newWithUnsafeDictionary:RNFBUtilsModuleConstantsDictionary()];
 }
 
 #pragma mark -
-#pragma mark Android-only stubs
+#pragma mark Methods
 
 - (void)androidGetPlayServicesStatus:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
-  resolve(@{
-    @"isAvailable" : @YES,
-    @"status" : @0,
-    @"hasResolution" : @NO,
-    @"isUserResolvableError" : @NO,
-  });
+  RNFBUtilsModuleAndroidGetPlayServicesStatus(resolve, reject);
 }
 
 - (void)androidPromptForPlayServices:(RCTPromiseResolveBlock)resolve
                               reject:(RCTPromiseRejectBlock)reject {
-  resolve(nil);
+  RNFBUtilsModuleAndroidPromptForPlayServices(resolve, reject);
 }
 
 - (void)androidResolutionForPlayServices:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject {
-  resolve(nil);
+  RNFBUtilsModuleAndroidResolutionForPlayServices(resolve, reject);
 }
 
 - (void)androidMakePlayServicesAvailable:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject {
-  resolve(nil);
-}
-
-#pragma mark -
-#pragma mark Firebase Utils Methods
-
-+ (BOOL)isRemoteAsset:(NSString *)localFilePath {
-  return [localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"];
-}
-
-+ (BOOL)unused_isHeic:(NSString *)localFilePath {
-  return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
-}
-
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-  NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
-  return queryItem.value;
-}
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
-  PHAsset *asset = nil;
-
-  if ([localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"]) {
-    if ([localFilePath hasPrefix:@"assets-library://"]) {
-      static BOOL hasWarned = NO;
-      if (!hasWarned) {
-        NSLog(@"'assets-library://' & 'ph://' URLs are not supported in Catalyst-based targets "
-              @"or iOS 12 and higher; returning nil (future warnings will be suppressed)");
-        hasWarned = YES;
-      }
-    } else {
-      NSString *assetId = [localFilePath substringFromIndex:@"ph://".length];
-      asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[ assetId ] options:nil] firstObject];
-    }
-  } else {
-    NSURLComponents *components = [NSURLComponents componentsWithString:localFilePath];
-    NSArray *queryItems = components.queryItems;
-    NSString *assetId = [self valueForKey:@"id" fromQueryItems:queryItems];
-    asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[ assetId ] options:nil] firstObject];
-  }
-
-  return asset;
+  RNFBUtilsModuleAndroidMakePlayServicesAvailable(resolve, reject);
 }
 
 @end

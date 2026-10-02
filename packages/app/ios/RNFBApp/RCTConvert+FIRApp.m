@@ -16,15 +16,20 @@
  */
 
 #import "RCTConvert+FIRApp.h"
-#import "RNFBSharedUtils.h"
+
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
 
 @implementation RCTConvert (FIRApp)
 + (FIRApp *)firAppFromString:(NSString *)appName {
-  if ([appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
-    return [FIRApp defaultApp];
-  }
-
-  return [FIRApp appNamed:appName];
+  return (FIRApp *)[RCTConvertFIRApp firAppFromString:appName];
 }
 
 RCT_CUSTOM_CONVERTER(FIRApp *, FIRApp, [self firAppFromString:[self NSString:json]]);

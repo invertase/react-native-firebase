@@ -1,0 +1,277 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC100000000000000000000B /* RNFBAppCheckRejectCodeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000009 /* RNFBAppCheckRejectCodeMapper.swift */; };
+		AC100000000000000000000C /* RNFBAppCheckRejectCodeMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC100000000000000000000D /* RNFBAppCheckRejectCodeMapperTests.swift */; };
+		AC1000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000014 /* XCTest.framework */; };
+		AC1000000000000000000020 /* RNFBAppCheckHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000021 /* RNFBAppCheckHelper.m */; };
+		AC1000000000000000000022 /* RNFBAppCheckProviderFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000023 /* RNFBAppCheckProviderFactory.m */; };
+		AC1000000000000000000024 /* RNFBAppCheckHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000025 /* RNFBAppCheckHelperHostStubTests.m */; };
+		AC1000000000000000000026 /* FIRAppCheckHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000027 /* FIRAppCheckHostStub.m */; };
+		AC1000000000000000000028 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = AC1000000000000000000029 /* RNFBSharedUtilsHostStub.m */; };
+		AC100000000000000000002A /* RCTConvert+FIRAppHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = AC100000000000000000002B /* RCTConvert+FIRAppHostStub.m */; };
+		AC100000000000000000002C /* RNFBAppCheckProviderHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = AC100000000000000000002D /* RNFBAppCheckProviderHostStub.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AC1000000000000000000003 /* RNFBAppCheckUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBAppCheckUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC1000000000000000000009 /* RNFBAppCheckRejectCodeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAppCheckRejectCodeMapper.swift; path = ../RNFBAppCheck/RNFBAppCheckRejectCodeMapper.swift; sourceTree = SOURCE_ROOT; };
+		AC100000000000000000000D /* RNFBAppCheckRejectCodeMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAppCheckRejectCodeMapperTests.swift; sourceTree = "<group>"; };
+		AC1000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		AC1000000000000000000021 /* RNFBAppCheckHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppCheckHelper.m; path = ../RNFBAppCheck/RNFBAppCheckHelper.m; sourceTree = SOURCE_ROOT; };
+		AC1000000000000000000023 /* RNFBAppCheckProviderFactory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppCheckProviderFactory.m; path = ../RNFBAppCheck/RNFBAppCheckProviderFactory.m; sourceTree = SOURCE_ROOT; };
+		AC1000000000000000000025 /* RNFBAppCheckHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppCheckHelperHostStubTests.m; sourceTree = "<group>"; };
+		AC1000000000000000000027 /* FIRAppCheckHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRAppCheckHostStub.m; path = HostStubs/Firebase/FIRAppCheckHostStub.m; sourceTree = "<group>"; };
+		AC1000000000000000000029 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
+		AC100000000000000000002B /* RCTConvert+FIRAppHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIRAppHostStub.m"; path = "HostStubs/RNFBApp/RCTConvert+FIRAppHostStub.m"; sourceTree = "<group>"; };
+		AC100000000000000000002D /* RNFBAppCheckProviderHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppCheckProviderHostStub.m; path = HostStubs/RNFBAppCheck/RNFBAppCheckProviderHostStub.m; sourceTree = "<group>"; };
+		AC100000000000000000002E /* RNFBAppCheckHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppCheckHelper.h; path = ../RNFBAppCheck/RNFBAppCheckHelper.h; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AC1000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC1000000000000000000015 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AC1000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				AC1000000000000000000006 /* Sources */,
+				AC1000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC1000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC1000000000000000000003 /* RNFBAppCheckUnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC1000000000000000000006 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				AC1000000000000000000009 /* RNFBAppCheckRejectCodeMapper.swift */,
+				AC100000000000000000000D /* RNFBAppCheckRejectCodeMapperTests.swift */,
+				AC100000000000000000002E /* RNFBAppCheckHelper.h */,
+				AC1000000000000000000021 /* RNFBAppCheckHelper.m */,
+				AC1000000000000000000023 /* RNFBAppCheckProviderFactory.m */,
+				AC1000000000000000000025 /* RNFBAppCheckHelperHostStubTests.m */,
+				AC1000000000000000000027 /* FIRAppCheckHostStub.m */,
+				AC1000000000000000000029 /* RNFBSharedUtilsHostStub.m */,
+				AC100000000000000000002B /* RCTConvert+FIRAppHostStub.m */,
+				AC100000000000000000002D /* RNFBAppCheckProviderHostStub.m */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC1000000000000000000002 /* RNFBAppCheckUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC1000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBAppCheckUnitTests" */;
+			buildPhases = (
+				AC1000000000000000000016 /* Sources */,
+				AC1000000000000000000012 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFBAppCheckUnitTests;
+			productName = RNFBAppCheckUnitTests;
+			productReference = AC1000000000000000000003 /* RNFBAppCheckUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AC1000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					AC1000000000000000000002 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = AC1000000000000000000017 /* Build configuration list for PBXProject "RNFBAppCheckUnitTests" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AC1000000000000000000004;
+			productRefGroup = AC1000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AC1000000000000000000002 /* RNFBAppCheckUnitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC1000000000000000000016 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC100000000000000000000B /* RNFBAppCheckRejectCodeMapper.swift in Sources */,
+				AC100000000000000000000C /* RNFBAppCheckRejectCodeMapperTests.swift in Sources */,
+				AC1000000000000000000020 /* RNFBAppCheckHelper.m in Sources */,
+				AC1000000000000000000022 /* RNFBAppCheckProviderFactory.m in Sources */,
+				AC100000000000000000002C /* RNFBAppCheckProviderHostStub.m in Sources */,
+				AC1000000000000000000026 /* FIRAppCheckHostStub.m in Sources */,
+				AC1000000000000000000028 /* RNFBSharedUtilsHostStub.m in Sources */,
+				AC100000000000000000002A /* RCTConvert+FIRAppHostStub.m in Sources */,
+				AC1000000000000000000024 /* RNFBAppCheckHelperHostStubTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AC1000000000000000000018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		AC1000000000000000000019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		AC100000000000000000001A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBAppCheck",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fprofile-instr-generate",
+					"-fcoverage-mapping",
+				);
+				OTHER_LDFLAGS = (
+					"-fprofile-instr-generate",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppCheckUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBAppCheckRejectCodeMapper-Swift.inc";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		AC100000000000000000001B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBAppCheck",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBAppCheckUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBAppCheckRejectCodeMapper-Swift.inc";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC1000000000000000000017 /* Build configuration list for PBXProject "RNFBAppCheckUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC1000000000000000000018 /* Debug */,
+				AC1000000000000000000019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AC1000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBAppCheckUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC100000000000000000001A /* Debug */,
+				AC100000000000000000001B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AC1000000000000000000001 /* Project object */;
+}

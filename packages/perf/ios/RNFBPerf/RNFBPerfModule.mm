@@ -15,28 +15,14 @@
  *
  */
 
-#import <React/RCTConvert.h>
-#import <React/RCTUtils.h>
-
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#define RNFB_PERF_SDK_AVAILABLE 1
-#elif __has_include(<FirebasePerformance/FirebasePerformance.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebasePerformance/FirebasePerformance.h>
-#define RNFB_PERF_SDK_AVAILABLE 1
-#else
-// Product headers absent (typical Mac Catalyst + SPM). Upstream Package.swift
-// omits .macCatalyst from FirebasePerformanceTarget; CocoaPods historically
-// masked this via the Firebase umbrella. Temporary stubs pending
-// https://github.com/firebase/firebase-ios-sdk/pull/16468 (or permanent if
-// upstream declines). Never fall through to @import in this .mm — that
-// requires -fcxx-modules and breaks RN C++/JSI.
-#define RNFB_PERF_SDK_AVAILABLE 0
-#endif
-#import "RNFBApp/RNFBSharedUtils.h"
-#import "RNFBPerfHandleRegistry.h"
+// This module intentionally has no Firebase imports and no `*-Swift.h` —
+// see RNFBPerfHelper.h. Every Firebase Performance touch (and the Swift
+// stop appliers / HTTP method mapper) is routed through the plain
+// Objective-C RNFBPerfHelper class instead, which can safely import Firebase
+// and the generated Swift interface because it compiles as ObjC, not ObjC++.
 #import "RNFBPerfModule.h"
+#import "RNFBPerfHandleRegistry.h"
+#import "RNFBPerfHelper.h"
 
 static RNFBPerfHandleRegistry *traces;
 static RNFBPerfHandleRegistry *httpMetrics;
@@ -66,29 +52,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
   [httpMetrics takeAll];
 }
 
-#if !RNFB_PERF_SDK_AVAILABLE
-- (void)rejectUnavailable:(RCTPromiseRejectBlock)reject {
-  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                    userInfo:(NSMutableDictionary *)@{
-                                      @"code" : @"unsupported",
-                                      @"message" : @"Firebase Performance is not available on "
-                                                   @"this platform or dependency configuration.",
-                                    }];
-}
-#endif
-
 - (NSDictionary *)perfConstantsDictionary {
-  NSMutableDictionary *constants = [NSMutableDictionary new];
-#if RNFB_PERF_SDK_AVAILABLE
-  constants[@"isPerformanceCollectionEnabled"] =
-      @([RCTConvert BOOL:@([FIRPerformance sharedInstance].dataCollectionEnabled)]);
-  constants[@"isInstrumentationEnabled"] =
-      @([RCTConvert BOOL:@([FIRPerformance sharedInstance].instrumentationEnabled)]);
-#else
-  constants[@"isPerformanceCollectionEnabled"] = @(NO);
-  constants[@"isInstrumentationEnabled"] = @(NO);
-#endif
-  return constants;
+  return [RNFBPerfHelper constantsDictionary];
 }
 
 - (facebook::react::ModuleConstants<JS::NativeRNFBTurboPerf::Constants>)constantsToExport {
@@ -107,76 +72,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 - (void)setPerformanceCollectionEnabled:(BOOL)enabled
                                 resolve:(RCTPromiseResolveBlock)resolve
                                  reject:(RCTPromiseRejectBlock)reject {
-#if RNFB_PERF_SDK_AVAILABLE
-  [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
-  resolve([NSNull null]);
-#else
-  (void)enabled;
-  (void)resolve;
-  [self rejectUnavailable:reject];
-#endif
+  [RNFBPerfHelper setPerformanceCollectionEnabled:enabled resolve:resolve reject:reject];
 }
 
 - (void)instrumentationEnabled:(BOOL)enabled
                        resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject {
-#if RNFB_PERF_SDK_AVAILABLE
-  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
-  resolve([NSNull null]);
-#else
-  (void)enabled;
-  (void)resolve;
-  [self rejectUnavailable:reject];
-#endif
+  [RNFBPerfHelper setInstrumentationEnabled:enabled resolve:resolve reject:reject];
 }
 
 - (void)startTrace:(double)id identifier:(NSString *)identifier {
-#if RNFB_PERF_SDK_AVAILABLE
-  FIRTrace *trace = [[FIRPerformance sharedInstance] traceWithName:identifier];
-  [trace start];
-
-  FIRTrace *displaced = [traces putReplacing:@((int)id) value:trace];
-  if (displaced != nil) {
-    [displaced stop];
-  }
-#else
-  (void)id;
-  (void)identifier;
-#endif
+  [RNFBPerfHelper startTraceWithId:@((int)id) identifier:identifier inRegistry:traces];
 }
 
 - (void)stopTrace:(double)id traceData:(JS::NativeRNFBTurboPerf::TraceData &)traceData {
-#if RNFB_PERF_SDK_AVAILABLE
-  NSNumber *traceId = @((int)id);
-  FIRTrace *trace = [traces get:traceId];
-  if (trace == nil) {
-    return;
-  }
-
   NSDictionary *metrics = (NSDictionary *)traceData.metrics();
   NSDictionary *attributes = (NSDictionary *)traceData.attributes();
-
-  [metrics enumerateKeysAndObjectsUsingBlock:^(NSString *metricName, NSNumber *value, BOOL *stop) {
-    [trace setIntValue:[value longLongValue] forMetric:metricName];
-  }];
-
-  [attributes
-      enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *value, BOOL *stop) {
-        [trace setValue:value forAttribute:attributeName];
-      }];
-
-  FIRTrace *expected = trace;
-  trace = [traces takeIf:traceId
-                    when:^BOOL(NSObject *value) {
-                      return value == expected;
-                    }];
-  if (trace != nil) {
-    [trace stop];
-  }
-#else
-  (void)id;
-  (void)traceData;
-#endif
+  [RNFBPerfHelper stopTraceWithId:@((int)id)
+                          metrics:metrics
+                       attributes:attributes
+                       inRegistry:traces];
 }
 
 - (void)startScreenTrace:(double)id identifier:(NSString *)identifier {
@@ -191,82 +106,30 @@ RCT_EXPORT_MODULE(NativeRNFBTurboPerf)
 }
 
 - (void)startHttpMetric:(double)id url:(NSString *)url httpMethod:(NSString *)httpMethod {
-#if RNFB_PERF_SDK_AVAILABLE
-  FIRHTTPMethod method = FIRHTTPMethodGET;
-  NSURL *toNSURL = [NSURL URLWithString:url];
-  if ([httpMethod compare:@"put" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPUT;
-  if ([httpMethod compare:@"post" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPOST;
-  if ([httpMethod compare:@"head" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodHEAD;
-  if ([httpMethod compare:@"trace" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodTRACE;
-  if ([httpMethod compare:@"patch" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodPATCH;
-  if ([httpMethod compare:@"delete" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodDELETE;
-  if ([httpMethod compare:@"options" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodOPTIONS;
-  if ([httpMethod compare:@"connect" options:NSCaseInsensitiveSearch] == NSOrderedSame)
-    method = FIRHTTPMethodCONNECT;
-
-  FIRHTTPMetric *httpMetric = [[FIRHTTPMetric alloc] initWithURL:toNSURL HTTPMethod:method];
-  [httpMetric start];
-
-  FIRHTTPMetric *displaced = [httpMetrics putReplacing:@((int)id) value:httpMetric];
-  if (displaced != nil) {
-    [displaced stop];
-  }
-#else
-  (void)id;
-  (void)url;
-  (void)httpMethod;
-#endif
+  [RNFBPerfHelper startHttpMetricWithId:@((int)id)
+                                    url:url
+                             httpMethod:httpMethod
+                             inRegistry:httpMetrics];
 }
 
 - (void)stopHttpMetric:(double)id metricData:(JS::NativeRNFBTurboPerf::HttpMetricData &)metricData {
-#if RNFB_PERF_SDK_AVAILABLE
-  NSNumber *metricId = @((int)id);
-  FIRHTTPMetric *httpMetric = [httpMetrics get:metricId];
-  if (httpMetric == nil) {
-    return;
-  }
-
   NSDictionary *attributes = (NSDictionary *)metricData.attributes();
-  [attributes
-      enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSString *value, BOOL *stop) {
-        [httpMetric setValue:value forAttribute:attributeName];
-      }];
-
-  if (metricData.httpResponseCode().has_value()) {
-    [httpMetric setResponseCode:(NSInteger)metricData.httpResponseCode().value()];
-  }
-
-  if (metricData.requestPayloadSize().has_value()) {
-    [httpMetric setRequestPayloadSize:(NSInteger)metricData.requestPayloadSize().value()];
-  }
-
-  if (metricData.responsePayloadSize().has_value()) {
-    [httpMetric setResponsePayloadSize:(NSInteger)metricData.responsePayloadSize().value()];
-  }
-
-  if (metricData.responseContentType() != nil) {
-    [httpMetric setResponseContentType:metricData.responseContentType()];
-  }
-
-  FIRHTTPMetric *expected = httpMetric;
-  httpMetric = [httpMetrics takeIf:metricId
-                              when:^BOOL(NSObject *value) {
-                                return value == expected;
-                              }];
-  if (httpMetric != nil) {
-    [httpMetric stop];
-  }
-#else
-  (void)id;
-  (void)metricData;
-#endif
+  NSNumber *httpResponseCode = metricData.httpResponseCode().has_value()
+                                   ? @((NSInteger)metricData.httpResponseCode().value())
+                                   : nil;
+  NSNumber *requestPayloadSize = metricData.requestPayloadSize().has_value()
+                                     ? @((NSInteger)metricData.requestPayloadSize().value())
+                                     : nil;
+  NSNumber *responsePayloadSize = metricData.responsePayloadSize().has_value()
+                                      ? @((NSInteger)metricData.responsePayloadSize().value())
+                                      : nil;
+  [RNFBPerfHelper stopHttpMetricWithId:@((int)id)
+                            attributes:attributes
+                      httpResponseCode:httpResponseCode
+                    requestPayloadSize:requestPayloadSize
+                   responsePayloadSize:responsePayloadSize
+                   responseContentType:metricData.responseContentType()
+                            inRegistry:httpMetrics];
 }
 
 @end

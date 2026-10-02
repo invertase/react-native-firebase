@@ -15,12 +15,9 @@
  *
  */
 
-#if __has_include(<FirebaseCore/FirebaseCore.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#else
-@import FirebaseCore;
-#endif
 #import <React/RCTConvert.h>
+
+@class FIROptions;
 
 @interface RCTConvert (FIROptions)
 + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions;

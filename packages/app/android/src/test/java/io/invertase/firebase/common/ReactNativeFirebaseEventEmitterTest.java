@@ -1418,21 +1418,28 @@ public class ReactNativeFirebaseEventEmitterTest {
   public void emit_returnsFalse_whenEmitContextNull() throws Exception {
     when(reactHost.getCurrentReactContext()).thenReturn(null);
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.notifyJsReady(true);
-    emitter.addListener(EVENT);
-    ShadowLooper.idleMainLooper();
+    Context previous = ReactNativeFirebaseApp.getApplicationContext();
+    try {
+      // Force brownfield null host resolution: no ReactApplication fallback.
+      ReactNativeFirebaseApp.setApplicationContext(null);
+      emitter.notifyJsReady(true);
+      emitter.addListener(EVENT);
+      ShadowLooper.idleMainLooper();
 
-    emitter.sendEvent(event(EVENT, eventBody));
-    ShadowLooper.idleMainLooper();
+      emitter.sendEvent(event(EVENT, eventBody));
+      ShadowLooper.idleMainLooper();
 
-    verify(liveJsEmitter, never()).emit(anyString(), eq(eventBody));
-    verify(staleJsEmitter, never()).emit(anyString(), eq(eventBody));
+      verify(liveJsEmitter, never()).emit(anyString(), eq(eventBody));
+      verify(staleJsEmitter, never()).emit(anyString(), eq(eventBody));
 
-    Field queued = ReactNativeFirebaseEventEmitter.class.getDeclaredField("queuedEvents");
-    queued.setAccessible(true);
-    @SuppressWarnings("unchecked")
-    java.util.List<NativeEvent> remaining = (java.util.List<NativeEvent>) queued.get(emitter);
-    assertEquals(1, remaining.size());
+      Field queued = ReactNativeFirebaseEventEmitter.class.getDeclaredField("queuedEvents");
+      queued.setAccessible(true);
+      @SuppressWarnings("unchecked")
+      java.util.List<NativeEvent> remaining = (java.util.List<NativeEvent>) queued.get(emitter);
+      assertEquals(1, remaining.size());
+    } finally {
+      ReactNativeFirebaseApp.setApplicationContext(previous);
+    }
   }
 
   /** With no pending and a null attached pointer, emit prefers the non-null host current. */
@@ -1709,6 +1716,130 @@ public class ReactNativeFirebaseEventEmitterTest {
       verify(eventsMap).putInt(EVENT, 1);
       verify(writableMap).putMap("events", eventsMap);
     }
+  }
+
+  /** getListenersMap reports currentContextHash 0 when the host cannot name a current context. */
+  @Test
+  public void getListenersMap_reportsZeroCurrentHash_whenHostCurrentNull() {
+    when(reactHost.getCurrentReactContext()).thenReturn(liveContext);
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    emitter.attachReactContext(liveContext);
+    ShadowLooper.idleMainLooper();
+    emitter.notifyJsReady(true);
+    emitter.addListener(EVENT);
+    ShadowLooper.idleMainLooper();
+
+    when(reactHost.getCurrentReactContext()).thenReturn(null);
+
+    WritableMap writableMap = mock(WritableMap.class);
+    WritableMap eventsMap = mock(WritableMap.class);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      arguments.when(Arguments::createMap).thenReturn(writableMap, eventsMap);
+      emitter.getListenersMap();
+      verify(writableMap).putInt("currentContextHash", 0);
+      verify(writableMap).putInt("attachedContextHash", System.identityHashCode(liveContext));
+    }
+  }
+
+  /** The first NativeEvent dereference must occur while holding the exact jsListeners monitor. */
+  @Test
+  public void sendEvent_readsEventNameFirstInsideJsListenersMonitor() throws Exception {
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    Field field = ReactNativeFirebaseEventEmitter.class.getDeclaredField("jsListeners");
+    field.setAccessible(true);
+    Object monitor = field.get(emitter);
+
+    NativeEvent nativeEvent = mock(NativeEvent.class);
+    when(nativeEvent.getEventName())
+        .thenAnswer(
+            invocation -> {
+              assertTrue("getEventName must execute under jsListeners", Thread.holdsLock(monitor));
+              return EVENT;
+            });
+
+    emitter.sendEvent(nativeEvent);
+    ShadowLooper.idleMainLooper();
+
+    verify(nativeEvent).getEventName();
+    assertEquals(1, queuedCount(emitter));
+  }
+
+  /**
+   * A null NativeEvent is accepted by the public call and fails only when the posted runnable first
+   * dereferences it under jsListeners. The erased generic helper proves there is no parameter cast.
+   */
+  @Test
+  public void sendEvent_nullFailsInsidePostedRunnable_withoutPreMonitorCheck() throws Exception {
+    Method platformHelper =
+        ReactNativeFirebaseEventEmitter.class.getDeclaredMethod(
+            "nullableAsPlatformType", Object.class);
+    assertEquals(Object.class, platformHelper.getReturnType());
+
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    emitter.sendEvent(null);
+    try {
+      ShadowLooper.idleMainLooper();
+      org.junit.Assert.fail("expected posted getEventName NullPointerException");
+    } catch (NullPointerException expected) {
+      // The public sendEvent call returned; failure occurred in the posted runnable.
+    }
+  }
+
+  /** Nullable Java listener keys flow unchanged into WritableMap.putInt. */
+  @Test
+  public void getListenersMap_passesNullListenerKeyToWritableMap() {
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    emitter.addListener(null);
+    ShadowLooper.idleMainLooper();
+
+    WritableMap writableMap = mock(WritableMap.class);
+    WritableMap eventsMap = mock(WritableMap.class);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      arguments.when(Arguments::createMap).thenReturn(writableMap, eventsMap);
+
+      emitter.getListenersMap();
+
+      verify(eventsMap).putInt(eq((String) null), eq(1));
+    }
+  }
+
+  /** ReactHost LinkageError is swallowed the same as RuntimeException. */
+  @Test
+  public void hostResolution_swallowsReactHostLinkageError() throws Exception {
+    Application reactApp =
+        mock(
+            Application.class,
+            org.mockito.Mockito.withSettings().extraInterfaces(ReactApplication.class));
+    ReactApplication asReactApplication = (ReactApplication) reactApp;
+    when(reactApp.getApplicationContext()).thenReturn(reactApp);
+    when(asReactApplication.getReactHost()).thenThrow(new LinkageError("reactHost linkage"));
+    when(asReactApplication.getReactNativeHost())
+        .thenThrow(new RuntimeException("bridgeless-only test host"));
+
+    ReactContext hint = mock(ReactContext.class);
+    when(hint.getApplicationContext()).thenReturn(reactApp);
+
+    Method resolve =
+        ReactNativeFirebaseEventEmitter.class.getDeclaredMethod(
+            "getCurrentReactContextFromHost", ReactContext.class);
+    resolve.setAccessible(true);
+    assertNull(resolve.invoke(null, hint));
+  }
+
+  /** ReactNativeHost LinkageError is swallowed when ReactHost is absent. */
+  @Test
+  public void hostResolution_swallowsReactNativeHostLinkageError_whenReactHostAbsent()
+      throws Exception {
+    application.reactHost = null;
+    ReactNativeHost rnHost = mock(ReactNativeHost.class);
+    application.reactNativeHost = rnHost;
+    when(rnHost.hasInstance()).thenThrow(new LinkageError("native host linkage"));
+
+    Method resolve =
+        ReactNativeFirebaseEventEmitter.class.getDeclaredMethod(
+            "getCurrentReactContextFromHost", ReactContext.class);
+    resolve.setAccessible(true);
+    assertNull(resolve.invoke(null, liveContext));
   }
 
   private static NativeEvent event(String name, WritableMap body) {

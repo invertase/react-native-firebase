@@ -30,7 +30,7 @@ class MockPhase
 end
 
 class MockTarget
-  attr_reader :shell_script_build_phases, :build_configurations
+  attr_reader :shell_script_build_phases, :build_configurations, :dependencies
   attr_accessor :package_product_dependencies, :name
 
   def initialize(phase_names = [], package_product_dependencies: [], build_config_names: %w[Debug Release],
@@ -38,7 +38,13 @@ class MockTarget
     @shell_script_build_phases = phase_names.map { |phase_name| MockPhase.new(phase_name) }
     @package_product_dependencies = package_product_dependencies
     @build_configurations = build_config_names.map { |config_name| MockBuildConfig.new(config_name) }
+    @dependencies = []
     @name = name
+  end
+
+  # Mirrors `PBXNativeTarget#add_dependency` for the probe order aggregate.
+  def add_dependency(other)
+    @dependencies << MockTargetDependency.new(other, nil)
   end
 
   def new_shell_script_build_phase(name)
@@ -147,6 +153,10 @@ module Xcodeproj
         end
       end
 
+      class XCLocalSwiftPackageReference < XCRemoteSwiftPackageReference
+        attr_accessor :relative_path
+      end
+
       class XCSwiftPackageProductDependency
         attr_reader :package
         attr_accessor :product_name
@@ -173,6 +183,10 @@ module Xcodeproj
       class PBXBuildFile
         attr_accessor :product_ref, :file_ref
       end
+
+      class PBXTargetDependency
+        attr_accessor :product_ref, :target, :name, :target_proxy
+      end
     end
   end
 end
@@ -182,6 +196,16 @@ end
 # (for `target.build_settings(config.name)`) and a mutable `build_settings`
 # hash (for `rnfirebase_apply_spm_build_settings`, which reads
 # `config.build_settings` directly).
+# Target dependency that records either a same-project target or a package productRef.
+class MockTargetDependency
+  attr_accessor :target, :product_ref
+
+  def initialize(target, product_ref)
+    @target = target
+    @product_ref = product_ref
+  end
+end
+
 class MockBuildConfig
   attr_reader :name, :build_settings
 
@@ -355,6 +379,16 @@ class MockPodsProject
   def save
     @save_count += 1
   end
+
+  def new(klass)
+    klass.new
+  end
+
+  def new_aggregate_target(name)
+    target = MockTarget.new([], name: name)
+    @targets << target
+    target
+  end
 end
 
 # Stands in for an `Xcodeproj::Project::Object` entry in `objects_by_uuid` --
@@ -380,6 +414,7 @@ class FirebaseSpmTest < Minitest::Test
     # than relying on `defined?` alone) is exactly the behavior rnfirebase_spm_disabled?
     # is meant to guard against, so tests below assert on it explicitly.
     $RNFirebaseDisableSPM = nil
+    ENV.delete('RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE')
     # `RNFirebaseSPM` gives us a real, deliberate reset primitive for the SPM
     # active/version/url state instead of relying on that same one-way-`defined?`
     # workaround -- unlike a bare global, `reset!` can put it back to a genuinely
@@ -509,6 +544,125 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal ['FirebaseCrashlytics'], spm_calls[0][:products]
   end
 
+  def test_probe_dynamic_firebase_leaves_local_umbrella_owned_by_app_target
+    spm_calls = []
+    Object.define_method(:spm_dependency) do |spec, **kwargs|
+      spm_calls << { spec: spec, **kwargs }
+    end
+
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+    load_firebase_spm
+
+    spec = MockSpec.new
+    firebase_dependency(spec, '12.10.0', %w[FirebaseCore FirebaseInstallations], 'Firebase/CoreOnly')
+
+    assert_empty spec.dependencies
+    assert RNFirebaseSPM.active?
+    assert RNFirebaseSPM.umbrella?
+    assert_empty spm_calls,
+                 'RNFBApp must not get a direct package-product dependency; ' \
+                 'it exposes transitive Firebase headers to Objective-C++'
+  end
+
+  def test_probe_dynamic_firebase_flag_off_keeps_remote_products
+    spm_calls = []
+    Object.define_method(:spm_dependency) do |spec, **kwargs|
+      spm_calls << { spec: spec, **kwargs }
+    end
+
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '0'
+    load_firebase_spm
+
+    spec = MockSpec.new
+    firebase_dependency(spec, '12.10.0', %w[FirebaseCore FirebaseInstallations], 'Firebase/CoreOnly')
+
+    assert_equal 1, spm_calls.length
+    assert_equal RNFirebaseSPM.url, spm_calls[0][:url]
+    assert_equal %w[FirebaseCore FirebaseInstallations], spm_calls[0][:products]
+    refute RNFirebaseSPM.umbrella?
+  end
+
+  def test_add_core_links_local_umbrella_when_probe_active
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+
+    assert_equal 1, target.package_product_dependencies.length
+    ref = target.package_product_dependencies[0]
+    assert_equal RNFIREBASE_SPM_UMBRELLA_PRODUCT, ref.product_name
+    assert_equal RNFirebaseSPM.umbrella_path, ref.package.relative_path
+    assert_equal 1, target.frameworks_build_phase.files.length
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_probe_graph_keeps_umbrella_product_on_app_and_injects_only_artifact_paths_into_pod
+    spm_calls = []
+    Object.define_method(:spm_dependency) do |spec, **kwargs|
+      spm_calls << { spec: spec, **kwargs }
+    end
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+    load_firebase_spm
+    firebase_dependency(
+      MockSpec.new,
+      '12.10.0',
+      %w[FirebaseCore FirebaseInstallations],
+      'Firebase/CoreOnly'
+    )
+
+    app_target = MockTarget.new(['[CP] Embed Pods Frameworks'], name: 'testing')
+    user_project = MockUserProject.new([app_target])
+    rnfb_app_pod = MockTarget.new([], name: 'RNFBApp')
+    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [rnfb_app_pod])
+    pods_project.root_object = MockRootObject.new
+    installer = MockInstaller.new(
+      [MockAggregateTarget.new(user_project)],
+      pods_project: pods_project
+    )
+
+    rnfirebase_add_spm_core_to_app_target(installer)
+    rnfirebase_apply_spm_build_settings(installer)
+
+    assert_empty spm_calls, 'firebase_dependency must not attach RNFBFirebase to the pod'
+    assert_equal [RNFIREBASE_SPM_UMBRELLA_PRODUCT],
+                 app_target.package_product_dependencies.map(&:product_name)
+    assert_empty rnfb_app_pod.package_product_dependencies
+    app_ref = app_target.package_product_dependencies.fetch(0)
+    assert_same app_ref, app_target.frameworks_build_phase.files.fetch(0).product_ref
+
+    rnfb_app_pod.build_configurations.each do |config|
+      settings = config.build_settings
+      assert_equal [
+        '$(inherited)',
+        '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}',
+        '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/RNFBFirebase.swiftmodule'
+      ], rnfirebase_build_setting_list(settings['SWIFT_INCLUDE_PATHS'])
+      assert_equal [
+        '$(inherited)',
+        '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/PackageFrameworks'
+      ], rnfirebase_build_setting_list(settings['FRAMEWORK_SEARCH_PATHS'])
+      assert_equal [
+        '$(inherited)',
+        '-ObjC',
+        '-framework',
+        RNFIREBASE_SPM_UMBRELLA_PRODUCT
+      ], rnfirebase_build_setting_list(settings['OTHER_LDFLAGS'])
+    end
+    order_target = pods_project.targets.find { |candidate| candidate.name == RNFIREBASE_SPM_PROBE_ORDER_TARGET }
+    refute_nil order_target
+    assert_empty order_target.package_product_dependencies
+    assert_equal(
+      [RNFIREBASE_SPM_UMBRELLA_PRODUCT],
+      order_target.dependencies.map { |dep| dep.product_ref.product_name }
+    )
+    assert_equal [order_target], rnfb_app_pod.dependencies.map(&:target)
+    assert_empty(rnfb_app_pod.dependencies.select(&:product_ref))
+  end
+
   # ── $RNFirebaseDisableSPM semantics (must check truthiness, not defined?) ──
 
   def test_disable_spm_true_forces_cocoapods
@@ -564,6 +718,15 @@ class FirebaseSpmTest < Minitest::Test
     load_firebase_spm
 
     assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', RNFirebaseSPM.url
+  end
+
+  def test_local_umbrella_package_exact_version_matches_package_json_sdk_pin
+    app_package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+    expected_version = app_package.dig('sdkVersions', 'ios', 'firebase')
+    manifest = File.read(File.join(__dir__, '..', 'ios', 'RNFBFirebase', 'Package.swift'))
+    exact_versions = manifest.scan(/exact:\s*"([^"]+)"/).flatten
+
+    assert_equal [expected_version], exact_versions
   end
 
   # ── RNFirebaseSPM.active? tracking (replaces reflecting into RN's `SPM`
@@ -805,6 +968,74 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, user_project.save_count
   end
 
+  def test_stable_object_uuid_depends_only_on_the_object_role
+    load_firebase_spm
+
+    remote = rnfirebase_stable_object_uuid('remote-package:https://github.com/firebase/firebase-ios-sdk.git')
+    product = rnfirebase_stable_object_uuid('product-dependency:testrnbare:FirebaseCore')
+    build_file = rnfirebase_stable_object_uuid('build-file:testrnbare:FirebaseCore')
+
+    assert_equal remote, rnfirebase_stable_object_uuid('remote-package:https://github.com/firebase/firebase-ios-sdk.git')
+    assert_match(/\A[0-9A-F]{24}\z/, remote)
+    assert_match(/\A[0-9A-F]{24}\z/, product)
+    assert_match(/\A[0-9A-F]{24}\z/, build_file)
+    refute_equal remote, product
+    refute_equal product, build_file
+    refute_equal(
+      rnfirebase_stable_package_uuid_key(false),
+      rnfirebase_stable_package_uuid_key(true)
+    )
+  end
+
+  def test_assign_stable_uuid_rekeys_and_is_idempotent
+    load_firebase_spm
+
+    object = Object.new
+    object.instance_variable_set(:@uuid, 'RANDOM')
+    object.define_singleton_method(:uuid) { @uuid }
+    objects = { 'RANDOM' => object }
+    project = Object.new
+    project.define_singleton_method(:objects_by_uuid) { objects }
+
+    key = 'build-file:testrnbare:FirebaseCore'
+    rnfirebase_assign_stable_uuid!(project, object, key)
+    stable = rnfirebase_stable_object_uuid(key)
+
+    assert_equal stable, object.uuid
+    refute objects.key?('RANDOM')
+    assert_same object, objects[stable]
+
+    rnfirebase_assign_stable_uuid!(project, object, key)
+    assert_equal stable, object.uuid
+    assert_equal 1, objects.length
+  end
+
+  def test_assign_stable_uuid_does_not_steal_an_unrelated_object
+    load_firebase_spm
+
+    key = 'remote-package:https://github.com/firebase/firebase-ios-sdk.git'
+    stable = rnfirebase_stable_object_uuid(key)
+    occupant = Object.new
+    object = Object.new
+    object.instance_variable_set(:@uuid, 'RANDOM')
+    object.define_singleton_method(:uuid) { @uuid }
+    objects = { 'RANDOM' => object, stable => occupant }
+    project = Object.new
+    project.define_singleton_method(:objects_by_uuid) { objects }
+
+    rnfirebase_assign_stable_uuid!(project, object, key)
+
+    assert_equal 'RANDOM', object.uuid
+    assert_same occupant, objects[stable]
+    assert_same object, objects['RANDOM']
+  end
+
+  def test_assign_stable_uuid_ignores_objects_without_a_project_uuid_map
+    load_firebase_spm
+
+    rnfirebase_assign_stable_uuid!(Object.new, Object.new, 'build-file:testrnbare:FirebaseCore')
+  end
+
   def test_add_core_handles_swift_include_paths_already_set_as_a_string
     load_firebase_spm
     RNFirebaseSPM.activate!('12.10.0')
@@ -1012,19 +1243,25 @@ class FirebaseSpmTest < Minitest::Test
     rnfirebase_apply_spm_build_settings(installer)
   end
 
-  def test_apply_spm_build_settings_sets_objc_flag_and_disables_explicit_modules
+  def test_apply_spm_build_settings_normal_mode_preserves_rnfb_app_pod_probe_settings
     load_firebase_spm
-    RNFirebaseSPM.activate!('12.10.0')
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+    ENV.delete('RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE')
 
     user_target = MockTarget.new(['[CP] Embed Pods Frameworks'])
     user_project = MockUserProject.new([user_target])
+    app_pod = MockTarget.new([], name: 'RNFBApp')
+    app_pod.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) EXISTING=1'
+      config.build_settings['CLANG_ENABLE_MODULES'] = 'NO'
+    end
     analytics_pod = MockTarget.new([])
     analytics_pod.name = 'RNFBAnalytics'
     other_pod = MockTarget.new([])
     other_pod.name = 'React-Core'
     pods_project = MockPodsProject.new(
       uuid_prefix: 'ABCDEF',
-      targets: [analytics_pod, other_pod]
+      targets: [app_pod, analytics_pod, other_pod]
     )
     installer = MockInstaller.new(
       [MockAggregateTarget.new(user_project)],
@@ -1037,6 +1274,16 @@ class FirebaseSpmTest < Minitest::Test
       assert_includes config.build_settings['OTHER_LDFLAGS'], '-ObjC'
       assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
       assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
+    end
+    app_pod.build_configurations.each do |config|
+      assert_includes config.build_settings['OTHER_LDFLAGS'], '-ObjC'
+      refute_includes config.build_settings['OTHER_LDFLAGS'], RNFIREBASE_SPM_UMBRELLA_PRODUCT
+      assert_equal 'NO', config.build_settings['SWIFT_ENABLE_EXPLICIT_MODULES']
+      assert_equal 'NO', config.build_settings['CLANG_ENABLE_EXPLICIT_MODULES']
+      assert_equal '$(inherited) EXISTING=1', config.build_settings['GCC_PREPROCESSOR_DEFINITIONS']
+      assert_equal 'NO', config.build_settings['CLANG_ENABLE_MODULES']
+      assert_nil config.build_settings['SWIFT_INCLUDE_PATHS']
+      assert_nil config.build_settings['FRAMEWORK_SEARCH_PATHS']
     end
     analytics_pod.build_configurations.each do |config|
       assert_includes config.build_settings['OTHER_LDFLAGS'], '-ObjC'
@@ -1114,6 +1361,82 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes user_target.build_settings('Debug')['OTHER_LDFLAGS'], '-ObjC'
   end
 
+  def test_apply_spm_build_settings_injects_dynamic_probe_compile_assertions_only_into_rnfb_app
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    app = MockTarget.new([], name: 'RNFBApp')
+    app.build_configurations.each do |config|
+      config.build_settings['SWIFT_INCLUDE_PATHS'] = '$(inherited) $(SRCROOT)/ExistingSwiftModules'
+      config.build_settings['FRAMEWORK_SEARCH_PATHS'] = '$(inherited) $(SRCROOT)/ExistingFrameworks'
+      config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -framework ExistingFramework'
+    end
+    analytics = MockTarget.new([], name: 'RNFBAnalytics')
+    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [app, analytics])
+    pods_project.root_object = MockRootObject.new
+    installer = MockInstaller.new([], pods_project: pods_project)
+
+    rnfirebase_apply_spm_build_settings(installer)
+    rnfirebase_apply_spm_build_settings(installer)
+
+    app.build_configurations.each do |config|
+      settings = config.build_settings
+      definitions = rnfirebase_build_setting_list(settings['GCC_PREPROCESSOR_DEFINITIONS'])
+      assert_equal 1, definitions.count('RNFB_DYNAMIC_FIREBASE_PROBE=1')
+      assert_equal 'YES', settings['CLANG_ENABLE_MODULES']
+      assert_equal [
+        '$(inherited)',
+        '$(SRCROOT)/ExistingSwiftModules',
+        '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}',
+        '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/RNFBFirebase.swiftmodule'
+      ], rnfirebase_build_setting_list(settings['SWIFT_INCLUDE_PATHS'])
+      assert_equal [
+        '$(inherited)',
+        '$(SRCROOT)/ExistingFrameworks',
+        '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/PackageFrameworks'
+      ], rnfirebase_build_setting_list(settings['FRAMEWORK_SEARCH_PATHS'])
+      ldflags = rnfirebase_build_setting_list(settings['OTHER_LDFLAGS'])
+      assert_equal [
+        '$(inherited)',
+        '-framework',
+        'ExistingFramework',
+        '-ObjC',
+        '-framework',
+        RNFIREBASE_SPM_UMBRELLA_PRODUCT
+      ], ldflags
+      assert_equal 1, ldflags.count(RNFIREBASE_SPM_UMBRELLA_PRODUCT)
+    end
+    analytics.build_configurations.each do |config|
+      settings = config.build_settings
+      refute_includes rnfirebase_build_setting_list(settings['GCC_PREPROCESSOR_DEFINITIONS']),
+                      'RNFB_DYNAMIC_FIREBASE_PROBE=1'
+      refute_includes rnfirebase_build_setting_list(settings['SWIFT_INCLUDE_PATHS']),
+                      '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}'
+      refute_includes rnfirebase_build_setting_list(settings['FRAMEWORK_SEARCH_PATHS']),
+                      '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/PackageFrameworks'
+      refute_includes rnfirebase_build_setting_list(settings['OTHER_LDFLAGS']),
+                      RNFIREBASE_SPM_UMBRELLA_PRODUCT
+      refute_includes rnfirebase_build_setting_list(settings['SWIFT_INCLUDE_PATHS']),
+                      '${BUILD_DIR}/${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}/RNFBFirebase.swiftmodule'
+    end
+    order_targets = pods_project.targets.select { |candidate| candidate.name == RNFIREBASE_SPM_PROBE_ORDER_TARGET }
+    assert_equal 1, order_targets.length
+    order_target = order_targets.fetch(0)
+    assert_empty order_target.package_product_dependencies
+    product_edges = order_target.dependencies.select(&:product_ref)
+    assert_equal 1, product_edges.length
+    assert_equal RNFIREBASE_SPM_UMBRELLA_PRODUCT, product_edges.fetch(0).product_ref.product_name
+    assert_equal RNFirebaseSPM.umbrella_path, product_edges.fetch(0).product_ref.package.relative_path
+    assert_equal 1, pods_project.root_object.package_references.length
+    assert_empty app.package_product_dependencies
+    app_edges = app.dependencies.select { |dep| dep.target == order_target }
+    assert_equal 1, app_edges.length
+    assert_empty(app.dependencies.select(&:product_ref))
+    assert_empty analytics.dependencies
+    assert_equal 1, pods_project.save_count
+  end
+
   # ── rnfirebase_remove_spm_core_from_app_target (the fix for CP-149: undoes
   #    rnfirebase_add_spm_core_to_app_target once SPM is disabled, so a stale
   #    app-target FirebaseCore SPM link committed from a prior SPM-mode
@@ -1121,13 +1444,14 @@ class FirebaseSpmTest < Minitest::Test
   #    see "redefinition of module 'Firebase'" / duplicate App-Intents-metadata
   #    build commands) ──
 
-  def test_remove_core_noop_when_spm_active
+  def test_remove_core_noop_when_spm_active_and_no_stale_probe_link
     load_firebase_spm
-    RNFirebaseSPM.activate!('12.10.0')
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
 
-    installer = MockInstaller.new(nil) # would raise if ever touched
+    # Remote SPM still walks targets to drop a leftover local probe link, but
+    # with an empty aggregate list there is nothing to touch.
+    installer = MockInstaller.new([])
     rnfirebase_remove_spm_core_from_app_target(installer)
-    # No error raised => returned early without walking `installer.aggregate_targets`.
   end
 
   def test_remove_core_noop_when_no_stale_dependency_present

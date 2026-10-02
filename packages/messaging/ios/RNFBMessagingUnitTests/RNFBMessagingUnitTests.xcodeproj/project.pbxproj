@@ -1,0 +1,281 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		M1000000000000000000000A /* RNFBMessagingSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000008 /* RNFBMessagingSerializer.m */; };
+		M1000000000000000000000B /* RNFBMessagingSerializerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000009 /* RNFBMessagingSerializerStorage.swift */; };
+		M1000000000000000000000C /* RNFBMessagingSerializerStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = M1000000000000000000000D /* RNFBMessagingSerializerStorageTests.swift */; };
+		M1000000000000000000000E /* RNFBMessagingSerializerFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = M1000000000000000000000F /* RNFBMessagingSerializerFacadeTests.m */; };
+		M10000000000000000000010 /* UNNotificationHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000011 /* UNNotificationHostStub.m */; };
+		M10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = M10000000000000000000014 /* XCTest.framework */; };
+		M10000000000000000000020 /* RNFBMessagingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000021 /* RNFBMessagingHelper.m */; };
+		M10000000000000000000022 /* RNFBMessagingHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000023 /* RNFBMessagingHelperHostStubTests.m */; };
+		M10000000000000000000024 /* FIRMessagingHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000025 /* FIRMessagingHostStub.m */; };
+		M10000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */; };
+		M10000000000000000000028 /* RCTConvertHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000029 /* RCTConvertHostStub.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		M10000000000000000000003 /* RNFBMessagingUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBMessagingUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		M10000000000000000000007 /* RNFBMessagingSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMessagingSerializer.h; path = ../RNFBMessaging/RNFBMessagingSerializer.h; sourceTree = SOURCE_ROOT; };
+		M10000000000000000000008 /* RNFBMessagingSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingSerializer.m; path = ../RNFBMessaging/RNFBMessagingSerializer.m; sourceTree = SOURCE_ROOT; };
+		M10000000000000000000009 /* RNFBMessagingSerializerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBMessagingSerializerStorage.swift; path = ../RNFBMessaging/RNFBMessagingSerializerStorage.swift; sourceTree = SOURCE_ROOT; };
+		M1000000000000000000000D /* RNFBMessagingSerializerStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMessagingSerializerStorageTests.swift; sourceTree = "<group>"; };
+		M1000000000000000000000F /* RNFBMessagingSerializerFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingSerializerFacadeTests.m; sourceTree = "<group>"; };
+		M10000000000000000000011 /* UNNotificationHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UNNotificationHostStub.m; path = HostStubs/UserNotifications/UNNotificationHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		M10000000000000000000021 /* RNFBMessagingHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingHelper.m; path = ../RNFBMessaging/RNFBMessagingHelper.m; sourceTree = SOURCE_ROOT; };
+		M10000000000000000000023 /* RNFBMessagingHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingHelperHostStubTests.m; sourceTree = "<group>"; };
+		M10000000000000000000025 /* FIRMessagingHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRMessagingHostStub.m; path = HostStubs/Firebase/FIRMessagingHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000029 /* RCTConvertHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTConvertHostStub.m; path = HostStubs/React/RCTConvertHostStub.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		M10000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				M10000000000000000000015 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		M10000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				M10000000000000000000006 /* Sources */,
+				M10000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		M10000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				M10000000000000000000003 /* RNFBMessagingUnitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		M10000000000000000000006 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				M10000000000000000000007 /* RNFBMessagingSerializer.h */,
+				M10000000000000000000008 /* RNFBMessagingSerializer.m */,
+				M10000000000000000000009 /* RNFBMessagingSerializerStorage.swift */,
+				M10000000000000000000021 /* RNFBMessagingHelper.m */,
+				M1000000000000000000000D /* RNFBMessagingSerializerStorageTests.swift */,
+				M1000000000000000000000F /* RNFBMessagingSerializerFacadeTests.m */,
+				M10000000000000000000023 /* RNFBMessagingHelperHostStubTests.m */,
+				M10000000000000000000011 /* UNNotificationHostStub.m */,
+				M10000000000000000000025 /* FIRMessagingHostStub.m */,
+				M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
+				M10000000000000000000029 /* RCTConvertHostStub.m */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		M10000000000000000000002 /* RNFBMessagingUnitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = M10000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBMessagingUnitTests" */;
+			buildPhases = (
+				M10000000000000000000016 /* Sources */,
+				M10000000000000000000012 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RNFBMessagingUnitTests;
+			productName = RNFBMessagingUnitTests;
+			productReference = M10000000000000000000003 /* RNFBMessagingUnitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		M10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2600;
+				ORGANIZATIONNAME = Invertase;
+				TargetAttributes = {
+					M10000000000000000000002 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = M10000000000000000000017 /* Build configuration list for PBXProject "RNFBMessagingUnitTests" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = M10000000000000000000004;
+			productRefGroup = M10000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				M10000000000000000000002 /* RNFBMessagingUnitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		M10000000000000000000016 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				M1000000000000000000000B /* RNFBMessagingSerializerStorage.swift in Sources */,
+				M1000000000000000000000A /* RNFBMessagingSerializer.m in Sources */,
+				M10000000000000000000020 /* RNFBMessagingHelper.m in Sources */,
+				M10000000000000000000010 /* UNNotificationHostStub.m in Sources */,
+				M10000000000000000000024 /* FIRMessagingHostStub.m in Sources */,
+				M10000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */,
+				M10000000000000000000028 /* RCTConvertHostStub.m in Sources */,
+				M1000000000000000000000C /* RNFBMessagingSerializerStorageTests.swift in Sources */,
+				M1000000000000000000000E /* RNFBMessagingSerializerFacadeTests.m in Sources */,
+				M10000000000000000000022 /* RNFBMessagingHelperHostStubTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		M10000000000000000000018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Debug;
+		};
+		M10000000000000000000019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+			};
+			name = Release;
+		};
+		M1000000000000000000001A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBMessaging",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				OTHER_CFLAGS = (
+					"-fprofile-instr-generate",
+					"-fcoverage-mapping",
+				);
+				OTHER_LDFLAGS = (
+					"-fprofile-instr-generate",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBMessagingUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBMessagingSerializerStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+		M1000000000000000000001B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_CODE_COVERAGE = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBMessaging",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.firebase.RNFBMessagingUnitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBMessagingSerializerStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		M10000000000000000000017 /* Build configuration list for PBXProject "RNFBMessagingUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				M10000000000000000000018 /* Debug */,
+				M10000000000000000000019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		M10000000000000000000013 /* Build configuration list for PBXNativeTarget "RNFBMessagingUnitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				M1000000000000000000001A /* Debug */,
+				M1000000000000000000001B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = M10000000000000000000001 /* Project object */;
+}
