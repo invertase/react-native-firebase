@@ -36,6 +36,8 @@ cd ios/ && pod install
 
 On Android, you need to install the Google App Distribution Gradle plugin so you can upload releases from Gradle. That plugin is a **build/upload** integration. It does not enable the JavaScript alert APIs on Android (those reject at runtime; see Platform support).
 
+On Android, this package depends only on the API-only `firebase-appdistribution-api` library. The [official feedback guide](https://firebase.google.com/docs/app-distribution/collect-feedback-from-testers) warns that the full `firebase-appdistribution` implementation contains self-update code that may violate Google Play policy even if that code is not executed at runtime, so submitting your app to Google Play with the full implementation included may get your app removed from Google Play. It says to add the full implementation only to variants you distribute through App Distribution. The package itself does not add the full implementation.
+
 Add the plugin to your `/android/build.gradle` file as a dependency:
 
 ```groovy
@@ -63,13 +65,13 @@ apply plugin: 'com.google.firebase.appdistribution'
 
 > **React Native only:** There is no firebase-js-sdk web modular API for App Distribution (`firebase/app-distribution` does not exist). Every export below is React Native Firebase only.
 
-**Platform notes:** App Distribution supports only the **default** Firebase app (`hasMultiAppSupport: false`). Passing a secondary app to `getAppDistribution` throws. There is no App Distribution emulator and no `connect*Emulator` helper for this package. On iOS, when the Firebase App Distribution product headers are absent (for example some Mac Catalyst / SPM layouts), native calls reject with an unsupported message.
+**Platform notes:** App Distribution supports only the **default** Firebase app (`hasMultiAppSupport: false`). Passing a secondary app to `getAppDistribution` throws. There is no App Distribution emulator and no `connect*Emulator` helper for this package. On iOS, when the Firebase App Distribution product headers are absent (for example some Mac Catalyst / SPM layouts), native calls reject with code `appDistribution/unsupported`. On Android the package ships only the API-only library `firebase-appdistribution-api`, not the full SDK implementation, so this package adds no self-update code.
 
 React Native Firebase exports runtime `getAppDistribution`, `isTesterSignedIn`, `signInTester`, `checkForUpdate`, `signOutTester`, and `SDK_VERSION`, plus the TypeScript types `AppDistribution` and `AppDistributionRelease`. Each runtime export is explained in the section that uses it. The type-only exports are for typing only and are not demonstrated on the Expo screen.
 
-## Official Firebase docs walked and left out
+## Official Firebase docs and what this page leaves out
 
-Official pages read while writing this guide:
+Related official pages:
 
 - [Firebase App Distribution overview](https://firebase.google.com/docs/app-distribution?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution)
 - [Notify testers about new builds (Apple)](https://firebase.google.com/docs/app-distribution/set-up-alerts?platform=ios&utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=app-distribution)
@@ -140,9 +142,11 @@ function readAppDistributionInstance() {
 
 `isTesterSignedIn(appDistribution)` resolves to whether the App Distribution tester is signed in on this device. `signInTester(appDistribution)` presents the native Google sign-in UI for App Distribution. `signOutTester(appDistribution)` signs the tester out and clears enabled alerts until they sign in again.
 
-On **non-iOS** platforms these helpers reject with `App Distribution is not supported on the <platform> platform.`
+Enabling alerts through sign-in is a one-time step on the device. It persists across app updates until the app is uninstalled or `signOutTester` is called.
 
-`signInTester` may reject with native code `tester-sign-in-error` when Google sign-in fails.
+On **non-iOS** platforms these helpers reject with a plain `Error` (no `code`) whose message is `App Distribution is not supported on the <platform> platform.`, where `<platform>` is the value of `Platform.OS`.
+
+`signInTester` may reject with code `appDistribution/tester-sign-in-error` when Google sign-in fails.
 
 ```js
 import {
@@ -180,9 +184,9 @@ async function signOutAppDistributionTester() {
 
 Use `downloadURL` (for example with `Linking.openURL`) if you show your own update UI. Official iOS docs also describe a basic flow where `checkForUpdate` can prompt for sign-in when alerts are not yet enabled.
 
-On **non-iOS** platforms this helper rejects with `App Distribution is not supported on the <platform> platform.`
+On **non-iOS** platforms this helper rejects with a plain `Error` whose message is `App Distribution is not supported on the <platform> platform.`
 
-When the native SDK returns no release, React Native Firebase rejects with code `checkupdate-null` (`no update checked`). Other native failures reject with code `check-update-error`.
+When the native SDK returns no release, which is typically the case when the tester has no newer build, the promise **rejects** with code `appDistribution/checkupdate-null` (message `[appDistribution/checkupdate-null] no update checked`) instead of resolving to `null`. Handle that code as the normal "nothing to install" case. Other native failures reject with code `appDistribution/check-update-error`.
 
 ```js
 import { Linking } from 'react-native';
@@ -190,12 +194,20 @@ import { getAppDistribution, checkForUpdate } from '@react-native-firebase/app-d
 
 async function promptIfUpdateAvailable() {
   const appDistribution = getAppDistribution();
-  const release = await checkForUpdate(appDistribution);
-  console.log('New version:', release.displayVersion, release.buildVersion);
-  console.log('Notes:', release.releaseNotes);
-  console.log('Expired:', release.isExpired);
-  if (!release.isExpired) {
-    await Linking.openURL(release.downloadURL);
+  try {
+    const release = await checkForUpdate(appDistribution);
+    console.log('New version:', release.displayVersion, release.buildVersion);
+    console.log('Notes:', release.releaseNotes);
+    console.log('Expired:', release.isExpired);
+    if (!release.isExpired) {
+      await Linking.openURL(release.downloadURL);
+    }
+  } catch (error) {
+    if (error.code === 'appDistribution/checkupdate-null') {
+      console.log('No newer build is available for this tester.');
+      return;
+    }
+    throw error;
   }
 }
 ```

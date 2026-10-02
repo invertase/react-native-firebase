@@ -52,8 +52,8 @@ export default function AppDistributionScreen() {
       <Text style={styles.hint}>
         Controls mirror runtime APIs taught on the App Distribution usage page. JavaScript alert
         helpers are iOS-only and reject on Android and other platforms. There is no emulator and no
-        connect*Emulator helper; App Distribution is not in yarn tests:emulator:start-ci. Type-only
-        AppDistribution and AppDistributionRelease stay off this screen.
+        connect*Emulator helper. Type-only AppDistribution and AppDistributionRelease stay off this
+        screen.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -78,7 +78,7 @@ export default function AppDistributionScreen() {
       <Text style={styles.warning}>
         WARNING: isTesterSignedIn, signInTester, and signOutTester reject on non-iOS with "App
         Distribution is not supported on the PLATFORM platform" (PLATFORM is Platform.OS).
-        signInTester may also reject with native code tester-sign-in-error.
+        signInTester may also reject with code appDistribution/tester-sign-in-error.
       </Text>
       <AppButton
         title="isTesterSignedIn"
@@ -110,8 +110,8 @@ export default function AppDistributionScreen() {
       <Text style={styles.section}>Updates</Text>
       <Text style={styles.warning}>
         WARNING: checkForUpdate rejects on non-iOS. On iOS, no available release rejects with code
-        checkupdate-null; other native failures use check-update-error. Needs a real device and the
-        App Testers API enabled.
+        appDistribution/checkupdate-null; other native failures use
+        appDistribution/check-update-error. Needs a real device and the App Testers API enabled.
       </Text>
       <AppButton
         title="checkForUpdate"
