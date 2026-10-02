@@ -25,6 +25,7 @@ First, set up a component which will display the list of data. The component has
 `users`:
 
 ```jsx
+// codeblock-ignore: setLoading and setUsers are wired up in the next step
 import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -49,7 +50,7 @@ the `Users` collection documents:
 
 ```jsx
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { collection, getFirestore, onSnapshot } from '@react-native-firebase/firestore';
 
 const db = getFirestore();
@@ -88,7 +89,12 @@ function Users() {
     return <ActivityIndicator />;
   }
 
-  return <View>{/* FlatList uses `users` in the complete example below */}</View>;
+  // The complete example below renders `users` in a FlatList
+  return (
+    <View>
+      <Text>{users.length} users</Text>
+    </View>
+  );
 }
 
 export default Users;

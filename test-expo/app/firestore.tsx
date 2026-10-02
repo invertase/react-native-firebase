@@ -76,19 +76,23 @@ import {
   type Unsubscribe,
 } from '@react-native-firebase/firestore';
 import {
+  average as pipelineAverage,
   constant,
+  countAll,
   execute,
   field,
   ifAbsent,
   ifNull,
   mapGet,
   pipelineResultEqual,
+  subcollection,
   switchOn,
   timestampDiff,
   timestampExtract,
   toUpper,
   currentDocument,
   equal,
+  variable,
 } from '@react-native-firebase/firestore/pipelines';
 
 import { AppButton } from '../src/AppButton';
@@ -1041,6 +1045,12 @@ export default function FirestoreScreen() {
               timestampDiff(field('endTime'), field('startTime'), 'day'),
               timestampExtract(field('createdAt'), 'hour', 'America/Los_Angeles'),
               mapGet(currentDocument(), 'name'),
+              mapGet(variable('doc'), 'title'),
+              // Detached pipeline: embedded as a scalar expression, never executed on its own.
+              subcollection('reviews')
+                .aggregate(countAll().as('reviewCount'), pipelineAverage('rating').as('avgRating'))
+                .toScalarExpression()
+                .as('reviewSummary'),
             ];
             return `built ${expressions.length} expressions`;
           })
