@@ -23,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 BOOL RNFBFirebaseInstallationsLinked(void);
 NS_RETURNS_RETAINED NSObject *RNFBFirebaseCreateOptions(const char *_Nullable googleAppID,
                                                         const char *_Nullable senderID);
-NSString *_Nullable RNFBFirebaseOptionsGoogleAppID(NSObject *options);
-NSString *_Nullable RNFBFirebaseOptionsGCMSenderID(NSObject *options);
 NSString *_Nullable RNFBFirebaseOptionsAPIKey(NSObject *options);
 void RNFBFirebaseOptionsSetAPIKey(NSObject *options, const char *_Nullable value);
 NSString *_Nullable RNFBFirebaseOptionsProjectID(NSObject *options);
@@ -36,7 +34,7 @@ void RNFBFirebaseOptionsSetDatabaseURL(NSObject *options, const char *_Nullable 
 NSString *_Nullable RNFBFirebaseOptionsStorageBucket(NSObject *options);
 void RNFBFirebaseOptionsSetStorageBucket(NSObject *options, const char *_Nullable value);
 NSString *_Nullable RNFBFirebaseOptionsBundleID(NSObject *options);
-void RNFBFirebaseOptionsSetBundleID(NSObject *options, const char *value);
+void RNFBFirebaseOptionsSetBundleID(NSObject *options, const char *_Nullable value);
 NSString *_Nullable RNFBFirebaseOptionsAppGroupID(NSObject *options);
 void RNFBFirebaseOptionsSetAppGroupID(NSObject *options, const char *_Nullable value);
 NSObject *_Nullable RNFBFirebaseDefaultApp(void);

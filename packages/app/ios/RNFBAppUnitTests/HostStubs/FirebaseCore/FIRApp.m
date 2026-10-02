@@ -66,10 +66,20 @@ static BOOL RNFBStubRegisterLibraryAvailable = YES;
 }
 
 + (void)configureWithOptions:(FIROptions *)options {
+  if (RNFBStubDefaultApp != nil) {
+    // Mirrors FirebaseCore: configuring the default app twice raises.
+    [NSException raise:NSInternalInconsistencyException
+                format:@"Default app has already been configured."];
+  }
   RNFBStubDefaultApp = [[FIRApp alloc] initWithName:@"__FIRAPP_DEFAULT" options:options];
 }
 
 + (void)configureWithName:(NSString *)name options:(FIROptions *)options {
+  if ([self namedAppsRegistry][name] != nil) {
+    // Mirrors FirebaseCore: configuring a named app twice raises.
+    [NSException raise:NSInternalInconsistencyException
+                format:@"App named %@ has already been configured.", name];
+  }
   FIRApp *app = [[FIRApp alloc] initWithName:name options:options];
   [self namedAppsRegistry][name] = app;
 }

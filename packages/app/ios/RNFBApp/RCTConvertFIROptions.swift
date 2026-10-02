@@ -57,29 +57,26 @@ import FirebaseCore
 }
 
 /**
- * Single FIROptions alloc path. Dynamic mode asks the opaque facade; shipped mode
- * calls `alloc` / `initWithGoogleAppID:GCMSenderID:` and balances both +1 results
- * with `takeRetainedValue()`.
+ * Single FIROptions construction path. Dynamic mode asks the opaque facade. Shipped mode
+ * builds `FirebaseOptions` through the Swift overlay initializer.
  */
 enum RNFBFIROptionsAllocation {
   static func create(googleAppID: String?, gcmSenderID: String?) -> NSObject {
 #if canImport(RNFBFirebase)
     RNFBFirebaseOptionsClient.create(googleAppID: googleAppID, gcmSenderID: gcmSenderID)
 #else
-    // Pre-port forwarded nil into `initWithGoogleAppID:GCMSenderID:`. The Swift
-    // `FirebaseOptions(googleAppID:gcmSenderID:)` overlay requires non-optional String,
-    // so call the ObjC initializer directly to preserve nil.
-    let allocated = FirebaseOptions.perform(NSSelectorFromString("alloc"))!
-      .takeRetainedValue() as! NSObject
-    // `perform` returns +0. The extra retain is what `takeRetainedValue()` consumes
-    // when `init` returns the same instance, so the object is not over-released and
-    // still deallocated with its last owner.
-    _ = Unmanaged.passRetained(allocated)
-    return allocated.perform(
-      NSSelectorFromString("initWithGoogleAppID:GCMSenderID:"),
-      with: googleAppID,
-      with: gcmSenderID
-    )!.takeRetainedValue() as! NSObject
+    // Pre-port forwarded nil into `initWithGoogleAppID:GCMSenderID:`, which leaves the key
+    // unset. The Swift overlay initializer takes non-optional strings, so build with empty
+    // placeholders and clear the keys for nil input. KVC forwards nil to the ObjC setters,
+    // which remove the same dictionary entries the nil-initializer would never have added.
+    let options = FirebaseOptions(googleAppID: googleAppID ?? "", gcmSenderID: gcmSenderID ?? "")
+    if googleAppID == nil {
+      options.setValue(nil, forKey: "googleAppID")
+    }
+    if gcmSenderID == nil {
+      options.setValue(nil, forKey: "GCMSenderID")
+    }
+    return options
 #endif
   }
 }
@@ -173,7 +170,9 @@ final class RNFBFIROptionsConfiguringAdapter: NSObject, RNFBFIROptionsConfigurin
 
   var bundleID: String? {
     get { options.bundleID }
-    set { options.bundleID = newValue ?? "" }
+    // The Swift overlay types `bundleID` as non-optional. KVC forwards nil to the ObjC
+    // setter like pre-port `options.bundleID = nil` did.
+    set { options.setValue(newValue, forKey: "bundleID") }
   }
 
   var appGroupID: String? {

@@ -81,9 +81,9 @@ assert_podfile_fail_closed() {
 }
 
 assert_app_objc_import_boundary() {
-  log "--- App Objective-C++ Firebase/Swift import boundary check ---"
+  log "--- App native (.h/.m/.mm) Firebase/Swift import boundary check ---"
   ruby .github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb packages/app/ios ||
-    fail "packages/app iOS Objective-C++ sources cross the Swift-owned Firebase import boundary"
+    fail "packages/app iOS native sources (.h/.m/.mm) cross the Swift-owned Firebase import boundary"
 }
 
 assert_generated_graph() {

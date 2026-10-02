@@ -29,6 +29,11 @@ static NSString *RNFBFirebaseString(const char *value) {
   return value == NULL ? nil : [NSString stringWithUTF8String:value];
 }
 
+// Link anchor, not API. Nothing else in this bridge uses FirebaseInstallations, so this class
+// reference is what makes the RNFBFirebase dynamic product take a symbol dependency on the
+// FirebaseInstallations package product (declared in Package.swift, requested by
+// RNFBApp.podspec) instead of only importing its module. Its only caller is
+// RNFBFirebaseAppClientTests.testInstallationsLinkageAnchorIsDistinctFromNSObject.
 BOOL RNFBFirebaseInstallationsLinked(void) { return [FIRInstallations class] != [NSObject class]; }
 
 NS_RETURNS_RETAINED NSObject *RNFBFirebaseCreateOptions(const char *googleAppID,
@@ -38,14 +43,6 @@ NS_RETURNS_RETAINED NSObject *RNFBFirebaseCreateOptions(const char *googleAppID,
   // balance as takeRetainedValue plus Unmanaged.passRetained on perform.
   return [[FIROptions alloc] initWithGoogleAppID:RNFBFirebaseString(googleAppID)
                                      GCMSenderID:RNFBFirebaseString(senderID)];
-}
-
-NSString *RNFBFirebaseOptionsGoogleAppID(NSObject *options) {
-  return RNFBFirebaseOptions(options).googleAppID;
-}
-
-NSString *RNFBFirebaseOptionsGCMSenderID(NSObject *options) {
-  return RNFBFirebaseOptions(options).GCMSenderID;
 }
 
 NSString *RNFBFirebaseOptionsAPIKey(NSObject *options) {

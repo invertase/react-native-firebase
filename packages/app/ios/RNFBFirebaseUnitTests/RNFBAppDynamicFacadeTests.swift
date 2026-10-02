@@ -89,7 +89,7 @@ final class RNFBAppDynamicFacadeTests: XCTestCase {
       XCTAssertEqual(adapter.appGroupID, "group.com.example")
       adapter.bundleID = nil
       adapter.appGroupID = nil
-      XCTAssertEqual(adapter.bundleID, "")
+      XCTAssertNil(adapter.bundleID)
       XCTAssertNil(adapter.appGroupID)
     }
     XCTAssertNil(released)

@@ -89,11 +89,13 @@ module RNFBLoadCoverageAccumulate
     @sums ||= {}
   end
 
+  GUARD_SCRIPT = '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
+
   def app_production_ruby?(path)
-    path.is_a?(String) &&
-      path.include?('/packages/app/') &&
-      path.end_with?('.rb') &&
-      !path.include?('/__tests__/')
+    return false unless path.is_a?(String) && path.end_with?('.rb')
+    return true if path.end_with?("/#{GUARD_SCRIPT}")
+
+    path.include?('/packages/app/') && !path.include?('/__tests__/')
   end
 
   def line_hits(entry)
@@ -231,11 +233,14 @@ def start_simplecov!(repo_root, coverage_dir, command_name:)
 
     # SimpleCov 1.x verbs (`cover` / `skip`; legacy track_files/add_filter still work).
     # project_filename is relative (no leading `/`) — do not anchor on `/packages/...`.
-    cover 'packages/app/*.rb'
+    # The default hidden_filter profile skips dot-directories; the guard script lives in .github.
+    filters.reject! { |f| f.filter_argument.is_a?(Regexp) && f.filter_argument.source == '\\A\\..*' }
+    cover '{packages/app/*.rb,.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb}'
     skip %r{packages/app/__tests__/}
     skip %r{packages/app/node_modules/}
     skip do |source_file|
-      !source_file.filename.start_with?(File.join(repo_root, 'packages', 'app'))
+      !source_file.filename.start_with?(File.join(repo_root, 'packages', 'app')) &&
+        !source_file.filename.end_with?('.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb')
     end
   end
 end
@@ -312,11 +317,14 @@ else
   SimpleCov.collate(resultsets) do
     root repo_root
     coverage_dir coverage_dir
-    cover 'packages/app/*.rb'
+    # The default hidden_filter profile skips dot-directories; the guard script lives in .github.
+    filters.reject! { |f| f.filter_argument.is_a?(Regexp) && f.filter_argument.source == '\\A\\..*' }
+    cover '{packages/app/*.rb,.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb}'
     skip %r{packages/app/__tests__/}
     skip %r{packages/app/node_modules/}
     skip do |source_file|
-      !source_file.filename.start_with?(File.join(repo_root, 'packages', 'app'))
+      !source_file.filename.start_with?(File.join(repo_root, 'packages', 'app')) &&
+        !source_file.filename.end_with?('.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb')
     end
   end
 
