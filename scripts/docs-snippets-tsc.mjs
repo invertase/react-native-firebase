@@ -129,8 +129,10 @@ const SNIPPETS_DIR = path.join(GENERATED_ROOT, 'snippets');
 // Lives at repo root (sibling to tsconfig.consumer.json) purely so its
 // `extends`/`paths` resolve with zero path-translation. Regenerated every
 // run; gitignored (see root .gitignore). Written to disk (not just held
-// in-memory) so an author can reproduce a single file's result by hand:
-// `yarn tsc --project tsconfig.docs-snippets.generated.json <file>`.
+// in-memory) so the generated output can be inspected. Do not re-check a
+// file with `tsc --project <this file> <file>` (TS5042: a project cannot be
+// mixed with source files). To see every failing fence, run
+// `DOCS_TSC_ALL=1 yarn docs:tsc:check` and filter the output by path.
 const TMP_TSCONFIG = path.join(REPO_ROOT, 'tsconfig.docs-snippets.generated.json');
 
 const MAX_PRINTED_FAILURES = 10;
