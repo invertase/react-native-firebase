@@ -32,9 +32,13 @@ Pod::Spec.new do |s|
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.private_header_files = [
     'ios/RNFBFirestore/RNFBFirestoreModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreModuleHelper.h',
     'ios/RNFBFirestore/RNFBFirestoreCollectionModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreCollectionModuleHelper.h',
     'ios/RNFBFirestore/RNFBFirestoreDocumentModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreDocumentModuleHelper.h',
     'ios/RNFBFirestore/RNFBFirestoreTransactionModule.h',
+    'ios/RNFBFirestore/RNFBFirestoreTransactionModuleHelper.h',
     'ios/RNFBFirestore/RNFBFirestoreListenerRegistry.h',
     'ios/RNFBFirestore/RNFBFirestoreTransactionRegistry.h',
     'ios/RNFBFirestore/RNFBFirestoreTransactionAttempt.h',
