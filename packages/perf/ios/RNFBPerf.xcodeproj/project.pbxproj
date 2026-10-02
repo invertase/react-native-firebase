@@ -13,6 +13,7 @@
 		RNFBPERF0000000000000006 /* RNFBPerfHttpMethodMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000007 /* RNFBPerfHttpMethodMapper.swift */; };
 		RNFBPERF0000000000000008 /* RNFBPerfTraceStopApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF0000000000000009 /* RNFBPerfTraceStopApplier.swift */; };
 		RNFBPERF000000000000000A /* RNFBPerfHttpMetricStopApplier.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF000000000000000B /* RNFBPerfHttpMetricStopApplier.swift */; };
+		RNFBPERF000000000000000C /* RNFBPerfHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBPERF000000000000000D /* RNFBPerfHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,8 @@
 		RNFBPERF0000000000000007 /* RNFBPerfHttpMethodMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMethodMapper.swift; path = RNFBPerf/RNFBPerfHttpMethodMapper.swift; sourceTree = SOURCE_ROOT; };
 		RNFBPERF0000000000000009 /* RNFBPerfTraceStopApplier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfTraceStopApplier.swift; path = RNFBPerf/RNFBPerfTraceStopApplier.swift; sourceTree = SOURCE_ROOT; };
 		RNFBPERF000000000000000B /* RNFBPerfHttpMetricStopApplier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBPerfHttpMetricStopApplier.swift; path = RNFBPerf/RNFBPerfHttpMetricStopApplier.swift; sourceTree = SOURCE_ROOT; };
+		RNFBPERF000000000000000E /* RNFBPerfHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBPerfHelper.h; path = RNFBPerf/RNFBPerfHelper.h; sourceTree = SOURCE_ROOT; };
+		RNFBPERF000000000000000D /* RNFBPerfHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPerfHelper.m; path = RNFBPerf/RNFBPerfHelper.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +72,8 @@
 				RNFBPERF0000000000000007 /* RNFBPerfHttpMethodMapper.swift */,
 				RNFBPERF0000000000000009 /* RNFBPerfTraceStopApplier.swift */,
 				RNFBPERF000000000000000B /* RNFBPerfHttpMetricStopApplier.swift */,
+				RNFBPERF000000000000000E /* RNFBPerfHelper.h */,
+				RNFBPERF000000000000000D /* RNFBPerfHelper.m */,
 				2744B98421F45429004F8E3F /* RNFBPerfModule.h */,
 				2744B98521F45429004F8E3F /* RNFBPerfModule.mm */,
 			);
@@ -146,6 +151,7 @@
 				RNFBPERF0000000000000008 /* RNFBPerfTraceStopApplier.swift in Sources */,
 				RNFBPERF000000000000000A /* RNFBPerfHttpMetricStopApplier.swift in Sources */,
 				RNFBPERF0000000000000001 /* RNFBPerfHandleRegistry.m in Sources */,
+				RNFBPERF000000000000000C /* RNFBPerfHelper.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBPerfModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

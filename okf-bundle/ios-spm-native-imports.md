@@ -89,7 +89,7 @@ same platform exclusion.
 | Product | Upstream SPM Catalyst gate | RNFB stub | Notes |
 | --- | --- | --- | --- |
 | App Distribution | `FirebaseAppDistributionTarget` is `.iOS` only | `RNFBAppDistributionModule.mm` (`RNFB_APP_DISTRIBUTION_SDK_AVAILABLE`) | Intentionally iOS-tester-only; not proposed for Catalyst |
-| Performance | `FirebasePerformanceTarget` omits `.macCatalyst` | `RNFBPerfModule.mm` (`RNFB_PERF_SDK_AVAILABLE`) | Speculative enablement: [firebase-ios-sdk#16468](https://github.com/firebase/firebase-ios-sdk/pull/16468) |
+| Performance | `FirebasePerformanceTarget` omits `.macCatalyst` | `RNFBPerfHelper.m` (`RNFB_PERF_SDK_AVAILABLE`; Catalyst skips `@import`) | Speculative enablement: [firebase-ios-sdk#16468](https://github.com/firebase/firebase-ios-sdk/pull/16468); helper stays plain `.m` so iOS/tvOS SPM can `@import` |
 | In-App Messaging | `FirebaseInAppMessagingTarget` omits `.macCatalyst` | `RNFBFiamHelper.m` (`RNFB_FIAM_SDK_AVAILABLE`; Catalyst skips `@import`) | Same speculative PR; helper stays plain `.m` so iOS/tvOS SPM can `@import` |
 
 Until/unless #16468 lands (or upstream declines and the stubs become permanent),
