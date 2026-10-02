@@ -13,11 +13,43 @@ import {
   initiateOnDeviceConversionMeasurementWithHashedPhoneNumber,
   initiateOnDeviceConversionMeasurementWithPhoneNumber,
   isSupported,
+  logAddPaymentInfo,
+  logAddShippingInfo,
+  logAddToCart,
+  logAddToWishlist,
+  logAppOpen,
+  logBeginCheckout,
+  logCampaignDetails,
+  logEarnVirtualCurrency,
   logEvent,
+  logGenerateLead,
+  logJoinGroup,
+  logLevelEnd,
+  logLevelStart,
+  logLevelUp,
+  logLogin,
+  logPostScore,
   logPurchase,
+  logRefund,
+  logRemoveFromCart,
   logScreenView,
+  logSearch,
   logSelectContent,
+  logSelectItem,
+  logSelectPromotion,
+  logSetCheckoutOption,
+  logShare,
+  logSignUp,
+  logSpendVirtualCurrency,
   logTransaction,
+  logTutorialBegin,
+  logTutorialComplete,
+  logUnlockAchievement,
+  logViewCart,
+  logViewItem,
+  logViewItemList,
+  logViewPromotion,
+  logViewSearchResults,
   resetAnalyticsData,
   setAnalyticsCollectionEnabled,
   setConsent,
@@ -35,6 +67,185 @@ import { theme } from '../src/theme';
 
 /** Example SHA-256 hex digest for hashed on-device conversion helpers (not a real credential). */
 const EXAMPLE_SHA256_HEX = '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08';
+
+const EXAMPLE_ITEM = {
+  item_id: 'sku-grey-tee',
+  item_name: 'mens grey t-shirt',
+  item_category: 'clothing',
+  quantity: 1,
+  price: 19.99,
+};
+
+/** One control per predefined event helper that has no dedicated button below. */
+const PREDEFINED_EVENT_CONTROLS: { title: string; log: () => Promise<void> }[] = [
+  {
+    title: 'logAddPaymentInfo',
+    log: () =>
+      logAddPaymentInfo(getAnalytics(), {
+        value: 19.99,
+        currency: 'USD',
+        payment_type: 'card',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logAddShippingInfo',
+    log: () =>
+      logAddShippingInfo(getAnalytics(), {
+        value: 19.99,
+        currency: 'USD',
+        shipping_tier: 'ground',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logAddToCart',
+    log: () =>
+      logAddToCart(getAnalytics(), { value: 19.99, currency: 'USD', items: [EXAMPLE_ITEM] }),
+  },
+  {
+    title: 'logAddToWishlist',
+    log: () =>
+      logAddToWishlist(getAnalytics(), { value: 19.99, currency: 'USD', items: [EXAMPLE_ITEM] }),
+  },
+  { title: 'logAppOpen', log: () => logAppOpen(getAnalytics()) },
+  {
+    title: 'logBeginCheckout',
+    log: () =>
+      logBeginCheckout(getAnalytics(), { value: 19.99, currency: 'USD', items: [EXAMPLE_ITEM] }),
+  },
+  {
+    title: 'logCampaignDetails',
+    log: () =>
+      logCampaignDetails(getAnalytics(), {
+        source: 'newsletter',
+        medium: 'email',
+        campaign: 'spring_launch',
+      }),
+  },
+  {
+    title: 'logEarnVirtualCurrency',
+    log: () => logEarnVirtualCurrency(getAnalytics(), { virtual_currency_name: 'gems', value: 10 }),
+  },
+  {
+    title: 'logGenerateLead',
+    log: () => logGenerateLead(getAnalytics(), { value: 19.99, currency: 'USD' }),
+  },
+  { title: 'logJoinGroup', log: () => logJoinGroup(getAnalytics(), { group_id: 'group-1' }) },
+  { title: 'logLevelEnd', log: () => logLevelEnd(getAnalytics(), { level: 3, success: true }) },
+  { title: 'logLevelStart', log: () => logLevelStart(getAnalytics(), { level: 3 }) },
+  {
+    title: 'logLevelUp',
+    log: () => logLevelUp(getAnalytics(), { level: 4, character: 'knight' }),
+  },
+  { title: 'logLogin', log: () => logLogin(getAnalytics(), { method: 'email' }) },
+  {
+    title: 'logPostScore',
+    log: () => logPostScore(getAnalytics(), { score: 1200, level: 3, character: 'knight' }),
+  },
+  {
+    title: 'logRefund',
+    log: () =>
+      logRefund(getAnalytics(), {
+        value: 19.99,
+        currency: 'USD',
+        transaction_id: 'T12345',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logRemoveFromCart',
+    log: () =>
+      logRemoveFromCart(getAnalytics(), { value: 19.99, currency: 'USD', items: [EXAMPLE_ITEM] }),
+  },
+  {
+    title: 'logSearch',
+    log: () => logSearch(getAnalytics(), { search_term: 'grey t-shirt' }),
+  },
+  {
+    title: 'logSelectItem',
+    log: () =>
+      logSelectItem(getAnalytics(), {
+        content_type: 'product',
+        item_list_id: 'list-1',
+        item_list_name: 'Featured',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logSelectPromotion',
+    log: () =>
+      logSelectPromotion(getAnalytics(), {
+        creative_name: 'spring_banner',
+        creative_slot: 'top',
+        location_id: 'home',
+        promotion_id: 'promo-1',
+        promotion_name: 'Spring sale',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logSetCheckoutOption',
+    log: () =>
+      logSetCheckoutOption(getAnalytics(), { checkout_step: 2, checkout_option: 'express' }),
+  },
+  {
+    title: 'logShare',
+    log: () =>
+      logShare(getAnalytics(), { content_type: 'clothing', item_id: 'abcd', method: 'email' }),
+  },
+  { title: 'logSignUp', log: () => logSignUp(getAnalytics(), { method: 'email' }) },
+  {
+    title: 'logSpendVirtualCurrency',
+    log: () =>
+      logSpendVirtualCurrency(getAnalytics(), {
+        item_name: 'sword',
+        virtual_currency_name: 'gems',
+        value: 5,
+      }),
+  },
+  { title: 'logTutorialBegin', log: () => logTutorialBegin(getAnalytics()) },
+  { title: 'logTutorialComplete', log: () => logTutorialComplete(getAnalytics()) },
+  {
+    title: 'logUnlockAchievement',
+    log: () => logUnlockAchievement(getAnalytics(), { achievement_id: 'first_win' }),
+  },
+  {
+    title: 'logViewCart',
+    log: () =>
+      logViewCart(getAnalytics(), { value: 19.99, currency: 'USD', items: [EXAMPLE_ITEM] }),
+  },
+  {
+    title: 'logViewItem',
+    log: () =>
+      logViewItem(getAnalytics(), { value: 19.99, currency: 'USD', items: [EXAMPLE_ITEM] }),
+  },
+  {
+    title: 'logViewItemList',
+    log: () =>
+      logViewItemList(getAnalytics(), {
+        item_list_id: 'list-1',
+        item_list_name: 'Featured',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logViewPromotion',
+    log: () =>
+      logViewPromotion(getAnalytics(), {
+        creative_name: 'spring_banner',
+        creative_slot: 'top',
+        location_id: 'home',
+        promotion_id: 'promo-1',
+        promotion_name: 'Spring sale',
+        items: [EXAMPLE_ITEM],
+      }),
+  },
+  {
+    title: 'logViewSearchResults',
+    log: () => logViewSearchResults(getAnalytics(), { search_term: 'grey t-shirt' }),
+  },
+];
 
 function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
@@ -72,8 +283,8 @@ export default function AnalyticsScreen() {
   return (
     <ScreenChrome title="analytics" result={result} error={error}>
       <Text style={styles.hint}>
-        Controls mirror runtime APIs taught on the Analytics usage and screen-tracking pages. There
-        is no Analytics emulator in yarn tests:emulator:start-ci.
+        Controls mirror runtime APIs taught on the Analytics usage and screen-tracking pages.
+        Analytics has no emulator, so every control calls the native SDK directly.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -123,9 +334,21 @@ export default function AnalyticsScreen() {
       <AppButton
         title="logEvent"
         onPress={() =>
-          run('logEvent', async () => {
-            await logEvent(analytics, 'test_expo_example', { source: 'test-expo' });
+          run('logEvent', () => {
+            logEvent(analytics, 'test_expo_example', { source: 'test-expo' });
             return 'logged test_expo_example';
+          })
+        }
+      />
+      <Text style={styles.warning}>
+        WARNING: logEvent throws for reserved event names and names with a reserved prefix.
+      </Text>
+      <AppButton
+        title="logEvent (reserved name; can throw)"
+        onPress={() =>
+          run('logEvent(reserved)', () => {
+            logEvent(analytics, 'first_open');
+            return 'logged first_open';
           })
         }
       />
@@ -162,8 +385,20 @@ export default function AnalyticsScreen() {
           })
         }
       />
+      {PREDEFINED_EVENT_CONTROLS.map(control => (
+        <AppButton
+          key={control.title}
+          title={control.title}
+          onPress={() =>
+            run(control.title, async () => {
+              await control.log();
+              return `logged ${control.title}`;
+            })
+          }
+        />
+      ))}
       <Text style={styles.warning}>
-        WARNING: logTransaction rejects on Android and web (iOS only).
+        WARNING: logTransaction rejects on Android and web (iOS only) and on iOS older than 15.0.
       </Text>
       <AppButton
         title="logTransaction (can throw)"
@@ -226,6 +461,9 @@ export default function AnalyticsScreen() {
         title="getAppInstanceId"
         onPress={() => run('getAppInstanceId', async () => getAppInstanceId(analytics))}
       />
+      <Text style={styles.warning}>
+        WARNING: on iOS getSessionId can take up to 60 seconds before it resolves null.
+      </Text>
       <AppButton
         title="getSessionId"
         onPress={() => run('getSessionId', async () => getSessionId(analytics))}
@@ -238,8 +476,12 @@ export default function AnalyticsScreen() {
           )
         }
       />
+      <Text style={styles.warning}>
+        WARNING: resetAnalyticsData clears Analytics data on this device and resets the app instance
+        id.
+      </Text>
       <AppButton
-        title="resetAnalyticsData"
+        title="resetAnalyticsData (destructive)"
         onPress={() => run('resetAnalyticsData', async () => resetAnalyticsData(analytics))}
       />
 
@@ -267,6 +509,11 @@ export default function AnalyticsScreen() {
       />
 
       <Text style={styles.section}>On-device conversion (iOS; no-op elsewhere)</Text>
+      <Text style={styles.warning}>
+        WARNING: iOS only. These resolve without doing anything on Android. They throw when the
+        argument has the wrong format (E.164 for phone numbers, 64-character SHA-256 hex for hashed
+        values).
+      </Text>
       <AppButton
         title="initiateOnDeviceConversionMeasurementWithEmailAddress"
         onPress={() =>

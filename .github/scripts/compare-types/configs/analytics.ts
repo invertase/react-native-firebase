@@ -11,9 +11,9 @@ const config: PackageConfig = {
   nameMapping: {},
 
   missingInRN: [
-    { name: 'setCurrentScreen', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/analytics.' },
-    { name: 'ControlParams', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/analytics.' },
-    { name: 'CustomParams', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/analytics.' },
+    { name: 'setCurrentScreen', reason: 'Not exported by @react-native-firebase/analytics. Log screens with `logScreenView()` or `logEvent()` using the `screen_view` event.' },
+    { name: 'ControlParams', reason: 'Type for web gtag control parameters. Not exported by @react-native-firebase/analytics.' },
+    { name: 'CustomParams', reason: 'Type for web gtag custom parameters. Not exported by @react-native-firebase/analytics.' },
   ],
 
   extraInRN: [
@@ -103,39 +103,39 @@ const config: PackageConfig = {
     {
       name: 'logEvent',
       reason:
-        'Return type aligned to firebase-js-sdk sync `void` (Phase B). Remaining drift is ' +
-        'cosmetic: firebase-js-sdk overloads include `[key: string]: any` index signatures and ' +
-        'slightly different property ordering on typed event params; behaviour is equivalent.',
+        'RN Firebase `logEvent` returns `void`, like the firebase-js-sdk. The remaining difference ' +
+        'is in the types: firebase-js-sdk overloads include `[key: string]: any` index signatures and ' +
+        'a slightly different property order on typed event parameters.',
     },
     {
       name: 'setAnalyticsCollectionEnabled',
       reason:
-        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+        'RN Firebase returns `Promise<void>` because the call goes to the native SDK, whereas the ' +
+        'firebase-js-sdk web modular API is synchronous.',
     },
     {
       name: 'setConsent',
       reason:
-        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+        'RN Firebase returns `Promise<void>` because the call goes to the native SDK, whereas the ' +
+        'firebase-js-sdk web modular API is synchronous.',
     },
     {
       name: 'setDefaultEventParameters',
       reason:
-        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+        'RN Firebase returns `Promise<void>` because the call goes to the native SDK, whereas the ' +
+        'firebase-js-sdk web modular API is synchronous.',
     },
     {
       name: 'setUserId',
       reason:
-        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+        'RN Firebase returns `Promise<void>` because the call goes to the native SDK, whereas the ' +
+        'firebase-js-sdk web modular API is synchronous.',
     },
     {
       name: 'setUserProperties',
       reason:
-        'RN Firebase returns `Promise<void>` whereas the firebase-js-sdk web modular API is synchronous. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+        'RN Firebase returns `Promise<void>` because the call goes to the native SDK, whereas the ' +
+        'firebase-js-sdk web modular API is synchronous.',
     },
     { name: 'Analytics', reason: 'RN Firebase extends the Analytics service interface with native bridge methods (collection toggles, predefined event helpers, and iOS on-device conversion measurement) that are not on the firebase-js-sdk web service type.' },
     { name: 'ConsentSettings', reason: 'RN Firebase maps most consent flags to native boolean toggles, while the firebase-js-sdk uses `ConsentStatusString` for web gtag consent modes.' },

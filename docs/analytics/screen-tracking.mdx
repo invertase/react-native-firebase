@@ -15,7 +15,7 @@ Example Expo Router screen: https://github.com/invertase/react-native-firebase/b
 
 # Manual screen views
 
-Standard React Native applications run inside a single `Activity`/`ViewController`, so native Firebase SDKs do not see JavaScript navigation screen changes automatically. Call `logScreenView` with `ScreenViewParameters` (`screen_name`, `screen_class`) whenever the visible route changes.
+Standard React Native applications run inside a single `Activity`/`ViewController`, so native Firebase SDKs do not see JavaScript navigation screen changes automatically. Call `logScreenView` with `ScreenViewParameters` (`screen_name`, `screen_class`) whenever the visible route changes. It logs a `screen_view` event, so `logEvent(getAnalytics(), 'screen_view', { screen_name, screen_class })` is equivalent. When `screen_class` is not set, Analytics sets a default value based on the `UIViewController` or `Activity` in focus, which is the same native class for every JavaScript screen. The firebase-js-sdk `setCurrentScreen` function is not exported by React Native Firebase; use `logScreenView` instead.
 
 ```js
 import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
@@ -38,7 +38,7 @@ access to the current navigation state when a screen changes, allowing you to us
 method the Analytics library provides:
 
 ```jsx
-// codeblock-ignore: @react-navigation/native is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: imports @react-navigation/native, a third-party package that is not a dependency of React Native Firebase
 import React from 'react';
 import { Text } from 'react-native';
 import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
@@ -84,7 +84,7 @@ for React Native apps. To manually track screens, you need to setup a `component
 [`logScreenView`](https://invertase.github.io/react-native-firebase/_react-native-firebase/analytics/modular/logScreenView.html) method the Analytics library provides:
 
 ```js
-// codeblock-ignore: react-native-navigation is not a workspace dependency; types unavailable to docs:tsc:check
+// codeblock-ignore: imports react-native-navigation, a third-party package that is not a dependency of React Native Firebase
 import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
 import { Navigation } from 'react-native-navigation';
 
