@@ -15,6 +15,7 @@
 		37D60F7424E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 37D60F7324E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m */; };
 		DA446E5222CA48690066A0A3 /* RNFBMessagingSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */; };
 		RNFBMSG00000000000000001 /* RNFBMessagingSerializerStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBMSG00000000000000002 /* RNFBMessagingSerializerStorage.swift */; };
+		RNFBMSG00000000000000003 /* RNFBMessagingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBMSG00000000000000005 /* RNFBMessagingHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +47,8 @@
 		DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMessagingSerializer.h; sourceTree = "<group>"; };
 		DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingSerializer.m; sourceTree = "<group>"; };
 		RNFBMSG00000000000000002 /* RNFBMessagingSerializerStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBMessagingSerializerStorage.swift; path = RNFBMessaging/RNFBMessagingSerializerStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBMSG00000000000000004 /* RNFBMessagingHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMessagingHelper.h; path = RNFBMessaging/RNFBMessagingHelper.h; sourceTree = SOURCE_ROOT; };
+		RNFBMSG00000000000000005 /* RNFBMessagingHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingHelper.m; path = RNFBMessaging/RNFBMessagingHelper.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +77,8 @@
 				37D60F7124E6465300E44930 /* RNFBMessaging+UNNotificationServiceExtension.h */,
 				2744B98421F45429004F8E3F /* RNFBMessagingModule.h */,
 				2744B98521F45429004F8E3F /* RNFBMessagingModule.mm */,
+				RNFBMSG00000000000000004 /* RNFBMessagingHelper.h */,
+				RNFBMSG00000000000000005 /* RNFBMessagingHelper.m */,
 				DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */,
 				DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */,
 				RNFBMSG00000000000000002 /* RNFBMessagingSerializerStorage.swift */,
@@ -161,6 +166,7 @@
 				37D60F7424E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m in Sources */,
 				27F24640242AA29F0098906C /* RNFBMessaging+UNUserNotificationCenter.m in Sources */,
 				RNFBMSG00000000000000001 /* RNFBMessagingSerializerStorage.swift in Sources */,
+				RNFBMSG00000000000000003 /* RNFBMessagingHelper.m in Sources */,
 				DA446E5222CA48690066A0A3 /* RNFBMessagingSerializer.m in Sources */,
 				27F2464D242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m in Sources */,
 				27F24646242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m in Sources */,

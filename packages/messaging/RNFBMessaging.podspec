@@ -35,6 +35,7 @@ Pod::Spec.new do |s|
   ]
   s.private_header_files = [
     'ios/RNFBMessaging/RNFBMessaging+*.h',
+    'ios/RNFBMessaging/RNFBMessagingHelper.h',
     'ios/RNFBMessaging/RNFBMessagingSerializer.h',
     'ios/generated/**/*.h',
   ]
