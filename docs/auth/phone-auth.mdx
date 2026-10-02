@@ -80,7 +80,7 @@ function PhoneSignIn() {
   async function confirmCode() {
     try {
       await confirm.confirm(code);
-    } catch (error) {
+    } catch {
       console.log('Invalid code.');
     }
   }
