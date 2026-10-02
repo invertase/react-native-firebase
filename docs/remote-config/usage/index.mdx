@@ -1,6 +1,6 @@
 ---
 title: Remote Config
-description: 'Remote Config: getRemoteConfig, defaultConfig, setDefaultsFromResource, fetchAndActivate/fetchConfig/activate, getValue/getBoolean/getNumber/getString/getAll, ValueSource, LastFetchStatus, onConfigUpdate, setCustomSignals, reset, SDK_VERSION, and caching via minimumFetchIntervalMillis.'
+description: 'Remote Config: getRemoteConfig, ensureInitialized, isSupported, defaultConfig, setDefaultsFromResource, fetchAndActivate/fetchConfig/activate, getValue/getBoolean/getNumber/getString/getAll, ValueSource, LastFetchStatus, onConfigUpdate, setCustomSignals, reset, setLogLevel, SDK_VERSION, and caching via minimumFetchIntervalMillis.'
 next: /perf/usage
 previous: /ml/usage
 ---
@@ -65,6 +65,8 @@ To get started, define parameters in the [Firebase Console](https://console.fire
 
 Each parameter has a unique key and values. Values can target conditions (such as Android or iOS). In the example above, only Android devices would receive `enabled` for the `awesome_new_feature` parameter.
 
+Do not store confidential data in parameter keys or values. Remote Config data is encrypted in transit, but end users can read any default or fetched parameter available to their app instance (see [Remote Config parameters and conditions](https://firebase.google.com/docs/remote-config/parameters?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config)).
+
 ## Package version
 
 `SDK_VERSION` is the React Native Firebase Remote Config package version string exported from `@react-native-firebase/remote-config`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/remote-config`.
@@ -77,7 +79,7 @@ console.log('Remote Config package version:', SDK_VERSION);
 
 ## Get a Remote Config instance
 
-`getRemoteConfig(app?)` returns the `RemoteConfig` instance for the default app, or for the `FirebaseApp` you pass. Optional `RemoteConfigOptions` (`templateId`, `initialFetchResponse`) are accepted for type parity with firebase-js-sdk but are ignored on React Native Firebase (`void options` in the modular entry point). Web-only bootstrap fields such as `FetchType`, `FirebaseRolloutMetadata`, and `FetchResponse.rollouts` are not surfaced here.
+`getRemoteConfig(app?)` returns the `RemoteConfig` instance for the default app, or for the `FirebaseApp` you pass. Optional `RemoteConfigOptions` (`templateId`, `initialFetchResponse`) are accepted for type parity with firebase-js-sdk but are ignored on React Native Firebase. Web-only bootstrap fields such as `FetchType`, `FirebaseRolloutMetadata`, and `FetchResponse.rollouts` are not surfaced here.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -143,7 +145,32 @@ function applyInAppDefaults() {
 
 ### Defaults from a native resource
 
-`setDefaultsFromResource(remoteConfig, resourceName)` is React Native Firebase-specific. It loads defaults from a platform resource file: an iOS `.plist` or Android XML resource identified by `resourceName`. There is no firebase-js-sdk modular equivalent. The web get-started guide instead downloads a JSON defaults file via REST or the console; on React Native, prefer `defaultConfig` or this native resource API.
+`setDefaultsFromResource(remoteConfig, resourceName)` is React Native Firebase-specific. It loads defaults from a platform resource file: an iOS `.plist` in the app bundle (pass the file name without the `.plist` extension) or an Android XML resource (pass the resource name without the `.xml` extension). The Promise rejects with the message `The specified resource name was not found.` when the resource does not exist. There is no firebase-js-sdk modular equivalent. The web get-started guide instead downloads a JSON defaults file via REST or the console; on React Native, prefer `defaultConfig` or this native resource API.
+
+Example Android resource at `android/app/src/main/res/xml/remote_config_defaults.xml`:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+  <entry>
+    <key>awesome_new_feature</key>
+    <value>disabled</value>
+  </entry>
+</defaultsMap>
+```
+
+Example iOS resource `remote_config_defaults.plist`, added to the app target so it is copied into the app bundle:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>awesome_new_feature</key>
+  <string>disabled</string>
+</dict>
+</plist>
+```
 
 ```js
 import { getRemoteConfig, setDefaultsFromResource } from '@react-native-firebase/remote-config';
@@ -356,7 +383,7 @@ function explainValueSource() {
 
 ## Custom signals
 
-`setCustomSignals(remoteConfig, customSignals)` sets client-defined signal attributes used by custom signal conditions in the Firebase console. Values must be `string`, `number`, or `null` (use `null` to unset). Invalid types throw synchronously before the native call.
+`setCustomSignals(remoteConfig, customSignals)` sets client-defined signal attributes used by custom signal conditions in the Firebase console. Values must be `string`, `number`, or `null` (use `null` to unset). A value of any other type rejects the returned Promise with an `Error` before the native call is made.
 
 Pair this with conditions you create under Remote Config parameters in the console. Condition authoring itself is console-only; see [Remote Config Parameters and Conditions](https://firebase.google.com/docs/remote-config/parameters?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config).
 
@@ -376,18 +403,15 @@ async function applyCustomSignals() {
 
 ## Real-time updates
 
-After you fetch parameter values, use [real-time Remote Config](https://firebase.google.com/docs/remote-config/real-time?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config) so connected devices learn about published template changes. Call `onConfigUpdate(remoteConfig, observer)` with `next`, `error`, and `complete` callbacks (`complete` is part of the typed observer; the update stream does not end on its own).
+After you fetch parameter values, use [real-time Remote Config](https://firebase.google.com/docs/remote-config/real-time?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config) so connected devices learn about published template changes. Call `onConfigUpdate(remoteConfig, observer)` with `next`, `error`, and `complete` callbacks (`complete` is part of the typed observer; the update stream does not end on its own). The call throws synchronously when `observer` is not an object with `next` and `error` functions.
 
 ### Key points
 
-1. **No activation by default:** When a template updates and a listener is subscribed, the native SDK fetches the new template but does not activate it. Your `next` callback should call `activate` when you want the new values to take effect, and your app code should re-read parameters afterward.
-2. **Keys stay "updated" until activated:** Keys appear in `getUpdatedKeys()` if they changed since you last activated. If you never activate, previously changed keys keep showing up for new listeners.
-3. **Real-time updates have a cost:** The first listener opens a persistent connection to Firebase. When the last listener unsubscribes, that connection closes. Consider battery and data usage.
-4. **Pending changes can fire immediately:** If a template changed since the last activation and you attach a listener, that listener may be called immediately for the pending keys.
-
-### Known issues
-
-During testing in React Native Firebase (and the Flutter Firebase plugins), the firebase-js-sdk web path often does not deliver real-time events until `fetchAndActivate` has run at least once. Call `fetchAndActivate` (or `fetchConfig` + `activate`) during startup before relying on listeners alone.
+1. **Fetch at startup too:** Real-time updates complement `fetchConfig`. Fetch and activate when the app starts, and listen for updates during the session.
+2. **No activation by default:** When a template updates and a listener is subscribed, the native SDK fetches the new template but does not activate it. Your `next` callback should call `activate` when you want the new values to take effect, and your app code should re-read parameters afterward.
+3. **What `getUpdatedKeys()` contains:** Parameter keys that were added or removed, whose values changed, whose metadata changed, or whose value source changed (for example an in-app default replaced by a server value).
+4. **Connection lifetime:** The first listener opens a connection to the Remote Config backend. When the last listener unsubscribes, that connection closes. The connection is maintained while the app is in the foreground.
+5. **Errors:** The `error` callback receives a Firebase error whose `code` is prefixed with `remoteConfig/`. Native codes are `config_update_stream_error`, `config_update_message_invalid`, `config_update_not_fetched`, and `config_update_unavailable`, plus `internal` for other errors (and `unknown` on Android).
 
 ```js
 import {

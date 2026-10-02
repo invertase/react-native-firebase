@@ -64,8 +64,8 @@ export default function RemoteConfigScreen() {
   return (
     <ScreenChrome title="remote-config" result={result} error={error}>
       <Text style={styles.hint}>
-        Controls mirror runtime APIs taught on the Remote Config usage page. Remote Config is not in
-        yarn tests:emulator:start-ci, and there is no connect*Emulator helper.
+        Controls mirror runtime APIs taught on the Remote Config usage page. There is no Remote
+        Config emulator and no connect*Emulator helper.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -115,8 +115,8 @@ export default function RemoteConfigScreen() {
         }
       />
       <Text style={styles.warning}>
-        WARNING: setDefaultsFromResource loads an iOS .plist or Android XML resource by name. A
-        missing resource rejects from the native SDK.
+        WARNING: setDefaultsFromResource loads an iOS .plist or Android XML resource by name. This
+        screen uses remote_config_defaults, and a missing resource rejects.
       </Text>
       <AppButton
         title="setDefaultsFromResource"
@@ -262,7 +262,7 @@ export default function RemoteConfigScreen() {
 
       <Text style={styles.section}>Signals and listeners</Text>
       <Text style={styles.warning}>
-        WARNING: setCustomSignals throws synchronously when a value is not string, number, or null.
+        WARNING: setCustomSignals rejects when a value is not string, number, or null.
       </Text>
       <AppButton
         title="setCustomSignals"
@@ -278,7 +278,7 @@ export default function RemoteConfigScreen() {
         }
       />
       <AppButton
-        title="setCustomSignals (invalid type throws)"
+        title="setCustomSignals (invalid type rejects)"
         onPress={() =>
           run('setCustomSignals invalid', async () => {
             const invalidSignals = { bad: true } as unknown as CustomSignals;
