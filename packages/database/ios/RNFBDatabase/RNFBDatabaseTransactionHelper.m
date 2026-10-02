@@ -25,6 +25,7 @@
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBDatabaseCommon.h"
+#import "RNFBDatabaseNullSentinelDecoder.h"
 #import "RNFBDatabaseTransactionHelper.h"
 #import "RNFBRCTEventEmitter.h"
 
@@ -163,7 +164,8 @@ static NSString *const RNFB_DATABASE_TRANSACTION_EVENT = @"database_transaction_
   if (abort) {
     [transactionState setValue:@true forKey:@"abort"];
   } else {
-    id newValue = [updates valueForKey:@"value"];
+    id newValue =
+        [RNFBDatabaseNullSentinelDecoder decodedTransactionValue:[updates valueForKey:@"value"]];
     [transactionState setValue:newValue forKey:@"value"];
   }
 

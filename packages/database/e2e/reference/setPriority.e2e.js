@@ -60,6 +60,20 @@ describe('database().ref().setPriority()', function () {
       );
     });
 
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('clears an existing priority when it is set to null (#9339)', async function () {
+      const { getDatabase, ref, set, setPriority, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullPriority`);
+
+      await set(dbRef, { a: 1 });
+      await setPriority(dbRef, 1);
+      await setPriority(dbRef, null);
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      should.equal(snapshot.getPriority(), null);
+    });
+
     it('throws if setting priority on non-existent node', async function () {
       const { getDatabase, ref, setPriority } = databaseModular;
       const db = getDatabase();
