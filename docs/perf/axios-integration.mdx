@@ -21,7 +21,7 @@ metadata which can be hooked into the Performance Monitoring library.
 ## Request Interceptor
 
 Before HTTP requests are sent out of the React Native environment, a callback can be attached to the `request`
-property on the axios instance. At this point, a new HTTP metric can be defined on the Performance Monitoring library:
+property on the axios instance. At this point, an HTTP metric can be created with the Performance Monitoring library:
 
 ```js
 import axios from 'axios';
@@ -47,7 +47,7 @@ axios.interceptors.request.use(async function (config) {
 ```
 
 This callback attaches the HTTP metric returned onto the request metadata, which can later be used on an
-incoming response.
+incoming response. `httpMetric` throws if `config.url` is not a string, and the `try` / `finally` block returns the request config either way, so the request is still sent without a metric.
 
 ## Response Interceptor
 
@@ -81,7 +81,8 @@ axios.interceptors.response.use(
       const metric = requestConfig.metadata.httpMetric;
 
       metric.setHttpResponseCode(response.status);
-      metric.setResponseContentType(response.headers['content-type']);
+      // setResponseContentType throws for undefined, so fall back to null.
+      metric.setResponseContentType(response.headers['content-type'] ?? null);
       metric.stop();
     } finally {
       return response;
@@ -96,7 +97,7 @@ axios.interceptors.response.use(
       // Network / timeout errors have no response; still stop() so the metric finishes.
       if (error.response) {
         metric.setHttpResponseCode(error.response.status);
-        metric.setResponseContentType(error.response.headers['content-type']);
+        metric.setResponseContentType(error.response.headers['content-type'] ?? null);
       }
       metric.stop();
     } finally {

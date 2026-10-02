@@ -1,6 +1,6 @@
 ---
 title: Performance Monitoring
-description: 'Performance Monitoring: getPerformance/initializePerformance, trace() custom traces, httpMetric() HTTP metrics, newScreenTrace/startScreenTrace, collection toggles, SDK_VERSION, and the perf_auto_collection_enabled firebase.json flag.'
+description: 'Performance Monitoring: getPerformance/initializePerformance, trace() custom traces, httpMetric() HTTP metrics, newScreenTrace/startScreenTrace, collection toggles, SDK_VERSION, and the perf_auto_collection_enabled and perf_collection_deactivated firebase.json flags.'
 next: /perf/axios-integration
 previous: /remote-config/usage
 ---
@@ -39,19 +39,21 @@ The manual installation pages for [iOS](/perf/usage/installation/ios) and [Andro
 On Android, you need to install the Google Performance Monitoring Plugin which enables automatic
 HTTPS network request monitoring.
 
-Add the plugin to your `/android/build.gradle` file as a dependency:
+Add the plugin to your `/android/build.gradle` file as a dependency, inside the existing `buildscript.dependencies` block:
 
 ```groovy
+// File: android/build.gradle (inside the existing buildscript.dependencies block)
 buildscript {
     dependencies {
-        // ...
         classpath 'com.google.firebase:perf-plugin:2.0.2'
     }
+}
 ```
 
 Apply the plugin via the `/android/app/build.gradle` file (at the top):
 
 ```groovy
+// File: android/app/build.gradle (top of file)
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 ```
@@ -140,9 +142,18 @@ Setting `instrumentationEnabled` from JavaScript takes effect on **iOS** (applie
 
 ## Custom tracing
 
-`trace(performance, name)` returns a `PerformanceTrace` for measuring how long a specific task takes. Call `start` before the work and `stop` after. You can attach custom attributes and custom metrics while the trace is active.
+`trace(performance, name)` returns a `PerformanceTrace` for measuring how long a specific task takes. Call `start` before the work and `stop` after. You can attach custom attributes and custom metrics to the trace.
 
 `PerformanceTrace` on React Native Firebase uses synchronous `start`/`stop` (TurboModule calls), matching firebase-js-sdk web. React Native also exposes `getMetrics` and `removeMetric` for native-backed custom metrics. The web SDK additionally exposes `record()` for recording a trace from already-known timestamps; React Native Firebase does not.
+
+How the JavaScript layer treats a trace:
+
+- `trace` throws if `name` is not a string or is longer than 100 characters.
+- Attributes and metrics are kept in JavaScript and sent to native when you call `stop`. Set them before `stop`; changes made after `stop` are not reported.
+- Calling `start` or `stop` a second time does nothing.
+- `putAttribute` throws if the attribute name is longer than 40 characters, the value is longer than 100 characters, or the trace already has 5 attributes. Both arguments must be strings.
+- `putMetric` and `incrementMetric` need a number for the value, and `getMetric` returns `0` for a metric that was never set. The native SDKs store metric values as integers, so decimals are not kept.
+- The Firebase backend applies its own rules to names, for example no leading underscore and no leading or trailing spaces, and attribute names limited to letters and underscores. See [Add custom monitoring for specific app code](https://firebase.google.com/docs/perf-mon/custom-code-traces) in the Firebase documentation. Do not put information that identifies a person in attributes.
 
 ```js
 import { getPerformance, trace } from '@react-native-firebase/perf';
@@ -169,9 +180,10 @@ function customTrace() {
 
 Throw timing matches `start`, not JS construction:
 
-- On **iOS**, `ScreenTrace.start()` (and therefore `startScreenTrace`) throws (`Custom screentraces are currently not supported on iOS.`).
-- On **Android**, the throw (if any) happens when native `startScreenTrace` builds the Java `ScreenTrace`: API 26 or 27, or when hardware acceleration is off. Catching only around `newScreenTrace()` misses that throw.
-- Also on **Android**, if there is no current Activity when start runs, native start returns without constructing a trace (silent no-op). Unsupported devices are not guaranteed to throw in every start path.
+- On **iOS**, `ScreenTrace.start()` (and therefore `startScreenTrace`) always throws an error whose message says that custom screen traces are not supported on iOS.
+- On **Android**, the throw (if any) happens when native `startScreenTrace` builds the Java `ScreenTrace`: Android API 26 or 27, a missing `FrameMetricsAggregator` class, or hardware acceleration turned off for the Activity. Catching only around `newScreenTrace()` misses that throw.
+- Also on **Android**, if there is no current Activity when start runs, native start returns without constructing a trace (silent no-op).
+- `newScreenTrace` and `startScreenTrace` throw if `screenName` is not a string or is longer than 100 characters. Calling `stop` before `start` does nothing.
 
 ```js
 import { getPerformance, newScreenTrace, startScreenTrace } from '@react-native-firebase/perf';
@@ -198,7 +210,13 @@ function screenTraceStarted() {
 
 `httpMetric(performance, url, httpMethod)` constructs an `HttpMetric` for measuring HTTP request latency. `HttpMethod` is the string union of allowed verbs (`GET`, `HEAD`, `PUT`, `POST`, `PATCH`, `TRACE`, `DELETE`, `CONNECT`, `OPTIONS`). The firebase-js-sdk modular Performance API does not expose HTTP metrics on its public modular surface; React Native Firebase does via native instrumentation.
 
-Call `start` before the request. Before `stop`, set at least `setHttpResponseCode`. Without a response code the metric is still stopped locally, but the package logs a warning and the metric will not be visible in the Firebase console.
+Performance Monitoring already collects network request traces automatically for requests made through the native networking libraries that Firebase supports (see [HTTP/S network request performance data](https://firebase.google.com/docs/perf-mon/network-traces)). Use `httpMetric` for requests that those traces miss, or to attach your own attributes and payload sizes.
+
+- `httpMetric` throws if `url` is not a string or `httpMethod` is not one of the `HttpMethod` values.
+- Call `start` before the request. Before `stop`, set at least `setHttpResponseCode`. Without a response code the metric is still stopped locally, but the package logs a warning and the metric will not be visible in the Firebase console.
+- `setHttpResponseCode`, `setRequestPayloadSize` and `setResponsePayloadSize` accept a number or `null`, and `setResponseContentType` accepts a string or `null`. They throw for `undefined` and any other type, so pass `null` when a value is missing, for example a response without a `Content-Type` header.
+- The response code, payload sizes, content type and attributes are kept in JavaScript and sent to native when you call `stop`. `putAttribute` follows the same limits as for traces.
+- Calling `start` or `stop` a second time does nothing.
 
 ```js
 import { getPerformance, httpMetric } from '@react-native-firebase/perf';
@@ -231,7 +249,9 @@ For Axios and KY interceptors that wrap `httpMetric`, see [Axios integration](/p
 
 ## Collection toggles
 
-`dataCollectionEnabled` controls logging of custom traces. `instrumentationEnabled` controls automatic (out-of-the-box) monitoring. `isPerformanceCollectionEnabled` mirrors the native collection flag used by the package.
+`dataCollectionEnabled` and `isPerformanceCollectionEnabled` read the same value: the Performance Monitoring data collection flag. Assigning `dataCollectionEnabled` updates that value and calls the native SDK without waiting for it to finish. Assigning `instrumentationEnabled` controls automatic (out-of-the-box) monitoring on iOS and does nothing on Android. Both setters throw if the value is not a boolean.
+
+`dataCollectionEnabled` starts with the value the native SDK reports at startup, which reflects the `perf_auto_collection_enabled` and `perf_collection_deactivated` options from `firebase.json`. On Android `instrumentationEnabled` always starts as `true` and is not affected by assignments.
 
 Prefer assigning the properties on the modular instance:
 
@@ -271,3 +291,18 @@ set the `perf_auto_collection_enabled` flag to `false`:
 ```
 
 To re-enable collection at runtime after the user consents, assign `dataCollectionEnabled` (and on iOS, `instrumentationEnabled` if you also want automatic monitoring) as shown in [Collection toggles](/perf/usage#collection-toggles).
+
+## Deactivate collection permanently
+
+Set `perf_collection_deactivated` to `true` to switch Performance Monitoring off for a build in a way that your app cannot undo at runtime. It takes precedence over `perf_auto_collection_enabled`. Remove it to turn collection back on.
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "perf_collection_deactivated": true
+  }
+}
+```
+
+Both options are read when the app is built, so rebuild the app after you change them. On Android they set the `firebase_performance_collection_enabled` and `firebase_performance_collection_deactivated` manifest values described in [Disable Firebase Performance Monitoring](https://firebase.google.com/docs/perf-mon/disable-sdk). On iOS they set the matching keys in the app's `Info.plist`.

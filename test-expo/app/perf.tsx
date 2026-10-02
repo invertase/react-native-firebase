@@ -52,7 +52,7 @@ export default function PerfScreen() {
     <ScreenChrome title="perf" result={result} error={error}>
       <Text style={styles.hint}>
         Controls mirror runtime APIs taught on the Performance Monitoring usage pages. Performance
-        is not in yarn tests:emulator:start-ci, and there is no connect*Emulator helper.
+        Monitoring has no emulator, so every control calls the native SDK directly.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -152,6 +152,11 @@ export default function PerfScreen() {
       />
 
       <Text style={styles.section}>Collection</Text>
+      <Text style={styles.warning}>
+        WARNING: dataCollectionEnabled(false) turns off Performance Monitoring data collection;
+        assign true to turn it back on. perf_collection_deactivated in firebase.json cannot be
+        undone from JavaScript.
+      </Text>
       <AppButton
         title="dataCollectionEnabled(true)"
         onPress={() =>
