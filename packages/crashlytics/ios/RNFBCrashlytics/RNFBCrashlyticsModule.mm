@@ -15,31 +15,20 @@
  *
  */
 
-#include <Foundation/Foundation.h>
-
+// This module intentionally has no Firebase imports and no `*-Swift.h` —
+// see RNFBCrashlyticsHelper.h. Every Firebase Crashlytics SDK call (and the
+// Swift debugger probe) is routed through the plain Objective-C
+// RNFBCrashlyticsHelper class instead, which can safely `@import`
+// FirebaseCrashlytics / import the generated Swift interface because it
+// compiles as ObjC, not ObjC++.
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
-#import <React/RCTUtils.h>
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseCrashlytics/FirebaseCrashlytics.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseCrashlytics/FirebaseCrashlytics.h>
-#else
-@import FirebaseCore;
-@import FirebaseCrashlytics;
-#endif
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBCrashlyticsHelper.h"
 #import "RNFBCrashlyticsInitProvider.h"
 #import "RNFBCrashlyticsModule.h"
 #import "RNFBPreferences.h"
-
-#if __has_include(<RNFBCrashlytics/RNFBCrashlytics-Swift.h>)
-#import <RNFBCrashlytics/RNFBCrashlytics-Swift.h>
-#elif __has_include("RNFBCrashlytics-Swift.h")
-#import "RNFBCrashlytics-Swift.h"
-#endif
 
 @implementation RNFBCrashlyticsModule
 
@@ -63,7 +52,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
   constants[@"isCrashlyticsJavascriptExceptionHandlerChainingEnabled"] =
       @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider
                              isCrashlyticsJavascriptExceptionHandlerChainingEnabled])]);
-  if ([self isDebuggerAttached]) {
+  if ([RNFBCrashlyticsHelper isDebuggerAttached]) {
     RCTLog(
         @"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
   }
@@ -79,14 +68,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 }
 
 - (void)checkForUnsentReports:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  [[FIRCrashlytics crashlytics] checkForUnsentReportsWithCompletion:^(BOOL unsentReports) {
+  (void)reject;
+  [RNFBCrashlyticsHelper checkForUnsentReportsWithCompletion:^(BOOL unsentReports) {
     resolve([NSNumber numberWithBool:unsentReports]);
   }];
 }
 
 - (void)crash {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    if ([self isDebuggerAttached]) {
+    if ([RNFBCrashlyticsHelper isDebuggerAttached]) {
       RCTLog(
           @"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
     }
@@ -101,8 +91,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 - (void)crashWithStackPromise:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict
                       resolve:(RCTPromiseResolveBlock)resolve
                        reject:(RCTPromiseRejectBlock)reject {
+  (void)reject;
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    if ([self isDebuggerAttached]) {
+    if ([RNFBCrashlyticsHelper isDebuggerAttached]) {
       RCTLog(
           @"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
     }
@@ -117,37 +108,41 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 }
 
 - (void)deleteUnsentReports:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  [[FIRCrashlytics crashlytics] deleteUnsentReports];
+  (void)reject;
+  [RNFBCrashlyticsHelper deleteUnsentReports];
   resolve([NSNull null]);
 }
 
 - (void)didCrashOnPreviousExecution:(RCTPromiseResolveBlock)resolve
                              reject:(RCTPromiseRejectBlock)reject {
-  BOOL didCrash = [[FIRCrashlytics crashlytics] didCrashDuringPreviousExecution];
+  (void)reject;
+  BOOL didCrash = [RNFBCrashlyticsHelper didCrashDuringPreviousExecution];
   resolve([NSNumber numberWithBool:didCrash]);
 }
 
 - (void)log:(NSString *)message {
-  [[FIRCrashlytics crashlytics] log:message];
+  [RNFBCrashlyticsHelper log:message];
 }
 
 - (void)logPromise:(NSString *)message
            resolve:(RCTPromiseResolveBlock)resolve
             reject:(RCTPromiseRejectBlock)reject {
-  [[FIRCrashlytics crashlytics] log:message];
+  (void)reject;
+  [RNFBCrashlyticsHelper log:message];
   resolve([NSNull null]);
 }
 
 - (void)sendUnsentReports {
-  [[FIRCrashlytics crashlytics] sendUnsentReports];
+  [RNFBCrashlyticsHelper sendUnsentReports];
 }
 
 - (void)setAttribute:(NSString *)key
                value:(NSString *)value
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
+  (void)reject;
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[FIRCrashlytics crashlytics] setCustomValue:value forKey:key];
+    [RNFBCrashlyticsHelper setCustomValue:value forKey:key];
   }
   resolve([NSNull null]);
 }
@@ -155,12 +150,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 - (void)setAttributes:(NSDictionary *)attributes
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
+  (void)reject;
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    NSArray *keys = [attributes allKeys];
-
-    for (NSString *key in keys) {
-      [[FIRCrashlytics crashlytics] setCustomValue:attributes[key] forKey:key];
-    }
+    [RNFBCrashlyticsHelper setCustomKeysAndValues:attributes];
   }
   resolve([NSNull null]);
 }
@@ -168,8 +160,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 - (void)setUserId:(NSString *)userId
           resolve:(RCTPromiseResolveBlock)resolve
            reject:(RCTPromiseRejectBlock)reject {
+  (void)reject;
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[FIRCrashlytics crashlytics] setUserID:userId];
+    [RNFBCrashlyticsHelper setUserID:userId];
   }
   resolve([NSNull null]);
 }
@@ -183,6 +176,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 - (void)recordErrorPromise:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
+  (void)reject;
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [self recordJavaScriptError:jsErrorDict];
   }
@@ -192,6 +186,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 - (void)setCrashlyticsCollectionEnabled:(BOOL)enabled
                                 resolve:(RCTPromiseResolveBlock)resolve
                                  reject:(RCTPromiseRejectBlock)reject {
+  (void)reject;
   [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled"
                                   boolValue:enabled];
   resolve([NSNull null]);
@@ -200,30 +195,20 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 - (void)recordJavaScriptError:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict {
   NSString *message = jsErrorDict.message();
   auto stackFrames = jsErrorDict.frames();
-  NSMutableArray *stackTrace = [[NSMutableArray alloc] init];
+  NSMutableArray *frames = [[NSMutableArray alloc] init];
   BOOL isUnhandledPromiseRejection = jsErrorDict.isUnhandledRejection();
 
   for (const auto &stackFrame : stackFrames) {
-    FIRStackFrame *customFrame = [FIRStackFrame stackFrameWithSymbol:stackFrame.fn()
-                                                                file:stackFrame.file()
-                                                                line:(uint32_t)stackFrame.line()];
-    [stackTrace addObject:customFrame];
+    [frames addObject:@{
+      @"fn" : stackFrame.fn() ?: @"",
+      @"file" : stackFrame.file() ?: @"",
+      @"line" : @((NSUInteger)stackFrame.line()),
+    }];
   }
 
-  NSString *name = @"JavaScriptError";
-  if (isUnhandledPromiseRejection) {
-    name = @"UnhandledPromiseRejection";
-  }
-
-  FIRExceptionModel *exceptionModel = [FIRExceptionModel exceptionModelWithName:name
-                                                                         reason:message];
-  exceptionModel.stackTrace = stackTrace;
-
-  [[FIRCrashlytics crashlytics] recordExceptionModel:exceptionModel];
-}
-
-- (BOOL)isDebuggerAttached {
-  return [RNFBCrashlyticsDebuggerProbe isDebuggerAttached];
+  [RNFBCrashlyticsHelper recordJavaScriptErrorWithMessage:message
+                                                   frames:frames
+                              isUnhandledPromiseRejection:isUnhandledPromiseRejection];
 }
 
 @end
