@@ -36,6 +36,12 @@ import './types/internal';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { AppRegistry } from 'react-native';
+import {
+  callNextOrObserver,
+  installationIdNotEnabledError,
+  isNextFnOrObserver,
+  tokenApiDisabledError,
+} from './installationIdMode';
 import remoteMessageOptions from './remoteMessageOptions';
 import {
   AuthorizationStatus,
@@ -49,6 +55,10 @@ import type {
   AuthorizationStatus as AuthorizationStatusType,
   NativeTokenOptions,
   GetTokenOptions,
+  RegisterOptions,
+  NextFn,
+  Observer,
+  Unsubscribe,
   SendErrorEvent,
 } from './types/messaging';
 import { version } from './version';
@@ -63,6 +73,8 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
   _isDeliveryMetricsExportToBigQueryEnabled: boolean;
   _isRegisteredForRemoteNotifications: boolean;
   _isNotificationDelegationEnabled: boolean;
+  _isInstallationIdEnabled: boolean;
+  _cachedInstallationId: string | null;
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
@@ -82,6 +94,18 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
         : true;
     this._isNotificationDelegationEnabled =
       this.native.getConstants?.()?.isNotificationDelegationEnabled ?? false;
+    this._isInstallationIdEnabled = this.native.getConstants?.()?.isInstallationIdEnabled ?? false;
+    this._cachedInstallationId = null;
+
+    // The FID cache only matters in installation-id mode; token mode skips these subscriptions.
+    if (this._isInstallationIdEnabled) {
+      this.emitter.addListener('messaging_registered', (event: { installationId: string }) => {
+        this._cachedInstallationId = event.installationId;
+      });
+      this.emitter.addListener('messaging_unregistered', () => {
+        this._cachedInstallationId = null;
+      });
+    }
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       const handler = backgroundMessageHandler;
@@ -186,7 +210,17 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     return this.native.getIsHeadless();
   }
 
+  /**
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). Prefer `register` and `onRegistered` after opting in to Installation ID
+   * messaging. Token APIs still work while the FID flag is off.
+   */
   getToken(options?: { appName?: string; senderId?: string }): Promise<string> {
+    if (this._isInstallationIdEnabled) {
+      return Promise.reject(tokenApiDisabledError('getToken'));
+    }
+
     if (!isUndefined(options?.appName) && !isString(options?.appName)) {
       throw new Error("getMessaging().getToken(*) 'appName' expected a string.");
     }
@@ -201,7 +235,17 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     return this.native.getToken(appName, senderId || '');
   }
 
+  /**
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`unregister` /
+   * `onUnregistered`). Prefer `unregister` and `onUnregistered` after opting in to Installation ID
+   * messaging. Token APIs still work while the FID flag is off.
+   */
   deleteToken(options?: { appName?: string; senderId?: string }): Promise<void> {
+    if (this._isInstallationIdEnabled) {
+      return Promise.reject(tokenApiDisabledError('deleteToken'));
+    }
+
     if (!isUndefined(options?.appName) && !isString(options?.appName)) {
       throw new Error("getMessaging().deleteToken(*) 'appName' expected a string.");
     }
@@ -214,6 +258,30 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     const senderId = options?.senderId || this.app.options.messagingSenderId;
 
     return this.native.deleteToken(appName, senderId || '');
+  }
+
+  /**
+   * Registers the app instance with FCM using its Firebase Installation ID (FID).
+   * Does not call `registerDeviceForRemoteMessages` / APNs registration.
+   * Web-only `RegisterOptions` are ignored on React Native.
+   */
+  register(_options?: RegisterOptions): Promise<void> {
+    if (!this._isInstallationIdEnabled) {
+      return Promise.reject(installationIdNotEnabledError('register'));
+    }
+
+    return this.native.register();
+  }
+
+  /**
+   * Unregisters the app instance from FCM so the current FID is no longer active.
+   */
+  unregister(): Promise<void> {
+    if (!this._isInstallationIdEnabled) {
+      return Promise.reject(installationIdNotEnabledError('unregister'));
+    }
+
+    return this.native.unregister();
   }
 
   onMessage(listener: (message: RemoteMessage) => any): () => void {
@@ -234,7 +302,17 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
     return () => subscription.remove();
   }
 
+  /**
+   * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+   * `onRegistered`). Prefer `register` and `onRegistered` after opting in to Installation ID
+   * messaging. Token APIs still work while the FID flag is off.
+   */
   onTokenRefresh(listener: (token: string) => any): () => void {
+    if (this._isInstallationIdEnabled) {
+      throw tokenApiDisabledError('onTokenRefresh');
+    }
+
     if (!isFunction(listener)) {
       throw new Error("getMessaging().onTokenRefresh(*) 'listener' expected a function.");
     }
@@ -244,6 +322,60 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
       (event: { token: string }) => {
         const { token } = event;
         listener(token);
+      },
+    );
+    return () => subscription.remove();
+  }
+
+  onRegistered(nextOrObserver: NextFn<string> | Observer<string>): Unsubscribe {
+    if (!this._isInstallationIdEnabled) {
+      throw installationIdNotEnabledError('onRegistered');
+    }
+
+    if (!isNextFnOrObserver(nextOrObserver)) {
+      throw new Error(
+        "getMessaging().onRegistered(*) 'nextOrObserver' expected a function or Observer.",
+      );
+    }
+
+    // Subscribe first so an event arriving during the replay is not missed.
+    const subscription = this.emitter.addListener(
+      'messaging_registered',
+      (event: { installationId: string }) => {
+        callNextOrObserver(nextOrObserver, event.installationId);
+      },
+    );
+
+    const cachedInstallationId = this._cachedInstallationId;
+    if (cachedInstallationId) {
+      try {
+        callNextOrObserver(nextOrObserver, cachedInstallationId);
+      } catch (error) {
+        // The caller never receives an unsubscribe handle when this throws, so remove the
+        // subscription before rethrowing to avoid leaving an unreachable listener attached.
+        subscription.remove();
+        throw error;
+      }
+    }
+
+    return () => subscription.remove();
+  }
+
+  onUnregistered(nextOrObserver: NextFn<string> | Observer<string>): Unsubscribe {
+    if (!this._isInstallationIdEnabled) {
+      throw installationIdNotEnabledError('onUnregistered');
+    }
+
+    if (!isNextFnOrObserver(nextOrObserver)) {
+      throw new Error(
+        "getMessaging().onUnregistered(*) 'nextOrObserver' expected a function or Observer.",
+      );
+    }
+
+    const subscription = this.emitter.addListener(
+      'messaging_unregistered',
+      (event: { installationId: string }) => {
+        callNextOrObserver(nextOrObserver, event.installationId);
       },
     );
     return () => subscription.remove();
@@ -533,6 +665,8 @@ const config: ModuleConfig = {
   nativeModuleName,
   nativeEvents: [
     'messaging_token_refresh',
+    'messaging_registered',
+    'messaging_unregistered',
     'messaging_message_sent',
     'messaging_message_deleted',
     'messaging_message_received',
@@ -563,6 +697,11 @@ export function getMessaging(app?: FirebaseApp): Messaging {
 
 /**
  * Removes access to an FCM token previously authorized by its scope.
+ *
+ * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+ * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`unregister` /
+ * `onUnregistered`). Prefer {@link unregister} and {@link onUnregistered} after opting in to
+ * Installation ID messaging. Token APIs still work while the FID flag is off.
  */
 export function deleteToken(
   messaging: Messaging,
@@ -573,12 +712,36 @@ export function deleteToken(
 
 /**
  * Returns an FCM token for this device.
+ *
+ * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+ * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+ * `onRegistered`). Prefer {@link register} and {@link onRegistered} after opting in to Installation
+ * ID messaging. Token APIs still work while the FID flag is off.
  */
 export function getToken(
   messaging: Messaging,
   options?: GetTokenOptions & NativeTokenOptions,
 ): Promise<string> {
   return messaging.getToken(options);
+}
+
+/**
+ * Registers the app instance with FCM using its Firebase Installation ID (FID).
+ *
+ * Requires Installation ID messaging opt-in. Does not register for APNs /
+ * `registerDeviceForRemoteMessages`. Web-only options are ignored on React Native.
+ */
+export function register(messaging: Messaging, options?: RegisterOptions): Promise<void> {
+  return messaging.register(options);
+}
+
+/**
+ * Unregisters the app instance from FCM so the current FID is no longer active.
+ *
+ * Requires Installation ID messaging opt-in.
+ */
+export function unregister(messaging: Messaging): Promise<void> {
+  return messaging.unregister();
 }
 
 /**
@@ -611,11 +774,42 @@ export function onNotificationOpenedApp(
 /**
  * Called when a new registration token is generated for the device.
  *
+ * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
+ * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
+ * `onRegistered`). Prefer {@link register} and {@link onRegistered} after opting in to Installation
+ * ID messaging. Token APIs still work while the FID flag is off.
+ *
  * @remarks Event delivery uses the legacy native event proxy shared across RN Firebase modules
  * (not yet migrated to Codegen TurboModule events). Behavior matches pre-v26 releases.
  */
 export function onTokenRefresh(messaging: Messaging, listener: (token: string) => any): () => void {
   return messaging.onTokenRefresh(listener);
+}
+
+/**
+ * Subscribes to Firebase Installation ID (FID) registration events.
+ *
+ * Requires Installation ID messaging opt-in. While registered, a new subscriber receives the
+ * cached FID immediately; later events still fire.
+ */
+export function onRegistered(
+  messaging: Messaging,
+  nextOrObserver: NextFn<string> | Observer<string>,
+): Unsubscribe {
+  return messaging.onRegistered(nextOrObserver);
+}
+
+/**
+ * Subscribes to Firebase Installation ID (FID) unregistration events.
+ *
+ * Requires Installation ID messaging opt-in. Fires only after a successful `unregister()` and does
+ * not replay to a late subscriber.
+ */
+export function onUnregistered(
+  messaging: Messaging,
+  nextOrObserver: NextFn<string> | Observer<string>,
+): Unsubscribe {
+  return messaging.onUnregistered(nextOrObserver);
 }
 
 /**
@@ -859,6 +1053,10 @@ export type {
   FcmOptions,
   NativeTokenOptions,
   GetTokenOptions,
+  RegisterOptions,
+  NextFn,
+  Observer,
+  Unsubscribe,
   Notification,
   NotificationIOSCriticalSound,
   IOSPermissions,

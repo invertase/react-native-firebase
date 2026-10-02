@@ -51,6 +51,7 @@ public abstract class NativeRNFBTurboMessagingSpec extends ReactContextBaseJavaM
           "isDeliveryMetricsExportToBigQueryEnabled"
       ));
       Set<String> optionalFlowConstants = new HashSet<>(Arrays.asList(
+          "isInstallationIdEnabled",
           "isNotificationDelegationEnabled",
           "isRegisteredForRemoteNotifications"
       ));
@@ -96,6 +97,14 @@ public abstract class NativeRNFBTurboMessagingSpec extends ReactContextBaseJavaM
   @ReactMethod
   @DoNotStrip
   public abstract void deleteToken(String appName, String senderId, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void register(Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void unregister(Promise promise);
 
   @ReactMethod
   @DoNotStrip

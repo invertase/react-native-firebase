@@ -73,6 +73,34 @@ You may re-enable notification delegation if your use case requires it and you c
 
 You may also use the new messaging APIs to get and set the notification delegation state for the app, as desired.
 
+## Installation ID messaging (optional)
+
+Firebase Installation ID (FID) registration (`register` / `onRegistered`) is available but **off by default**.
+Opt in with the Expo plugin:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/messaging",
+        {
+          "installationIdEnabled": true,
+          "android": {
+            "notificationIcon": "./assets/notification_icon.png",
+            "notificationColor": "#ffffff"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+`installationIdEnabled: true` writes Android meta-data `firebase_messaging_installation_id_enabled` and iOS
+`FirebaseMessagingInstallationIdEnabled`. Omitted or `false` writes nothing. See
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
 # Platform support and New Architecture
 
 |                      |                                                                                                |
@@ -495,7 +523,9 @@ Refer to [UNNotificationPresentationOptions](https://developer.apple.com/documen
 
 ## Auto initialization
 
-Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection.
+Firebase generates an Instance ID, which FCM uses to generate a registration token (or, when Installation ID messaging is
+enabled, to register via FID, see [Installation ID messaging](/messaging/server-integration#installation-id-messaging))
+and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
 you do not need to change this behavior.
 

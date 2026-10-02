@@ -29,6 +29,9 @@ public class ReactNativeFirebaseMessagingSerializer {
   private static final String EVENT_NOTIFICATION_OPENED = "messaging_notification_opened";
   private static final String EVENT_MESSAGE_SEND_ERROR = "messaging_message_send_error";
   private static final String EVENT_NEW_TOKEN = "messaging_token_refresh";
+  private static final String EVENT_REGISTERED = "messaging_registered";
+  private static final String EVENT_UNREGISTERED = "messaging_unregistered";
+  private static final String KEY_INSTALLATION_ID = "installationId";
 
   public static ReactNativeFirebaseEvent messagesDeletedToEvent() {
     return new ReactNativeFirebaseEvent(EVENT_MESSAGES_DELETED, Arguments.createMap());
@@ -65,6 +68,18 @@ public class ReactNativeFirebaseMessagingSerializer {
     WritableMap eventBody = Arguments.createMap();
     eventBody.putString(KEY_TOKEN, newToken);
     return new ReactNativeFirebaseEvent(EVENT_NEW_TOKEN, eventBody);
+  }
+
+  public static ReactNativeFirebaseEvent registeredToEvent(String installationId) {
+    WritableMap eventBody = Arguments.createMap();
+    eventBody.putString(KEY_INSTALLATION_ID, installationId);
+    return new ReactNativeFirebaseEvent(EVENT_REGISTERED, eventBody);
+  }
+
+  public static ReactNativeFirebaseEvent unregisteredToEvent(String installationId) {
+    WritableMap eventBody = Arguments.createMap();
+    eventBody.putString(KEY_INSTALLATION_ID, installationId);
+    return new ReactNativeFirebaseEvent(EVENT_UNREGISTERED, eventBody);
   }
 
   static WritableMap remoteMessageToWritableMap(RemoteMessage remoteMessage) {

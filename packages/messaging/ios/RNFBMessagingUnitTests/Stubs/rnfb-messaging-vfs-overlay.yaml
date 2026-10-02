@@ -1,0 +1,18 @@
+{
+  "version": 0,
+  "case-sensitive": "false",
+  "overlay-relative": "true",
+  "roots": [
+    {
+      "name": "/rnfb-messaging-unit-test-stub-headers",
+      "type": "directory",
+      "contents": [
+        {
+          "name": "RNFBMessagingTurboModules.h",
+          "type": "file",
+          "external-contents": "RNFBMessagingTurboModulesStub.h"
+        }
+      ]
+    }
+  ]
+}

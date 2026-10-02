@@ -277,6 +277,8 @@ Skipping this gate causes missing or half-written `dist/module/**` while Metro `
 
 Owner for install/prepare serialization: [agent command policy § prepare must finish first](agent-command-policy.md#prepare-must-finish-first).
 
+**Stale install after a merge or pull (blocking).** A merge or pull that changes React Native or native dependency versions (or the Apple app lifecycle) leaves `node_modules`, `tests/ios/Pods`, and the native builds on the old version. Symptom: `:test-cover` fails before any Mocha test runs (iOS app killed shortly after launch, `NoSceneLifecycleAdoption` / `AppWillTerminateWithError` / `waitForActive`; Android `No instrumentation runner found` after a cold boot). Treat this as a stale install first, not a host, Simulator, or Metro fault. Re-run the [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn`), then `yarn tests:ios:pod:install` (if it fails on stale Pods or hermes-engine podspec drift, delete the gitignored `tests/ios/Pods` and re-run it), then `yarn tests:ios:build` / `yarn tests:android:build`, then one `:test-cover` per platform.
+
 #### 1. Host clear
 
 No in-flight test run on the target platform:
@@ -367,6 +369,8 @@ Do **not** use `boot-simulator.sh` or `simctl shutdown all` as routine prep ([wh
 
 **Packager start** — `yarn tests:packager:jet` / `jet-reset-cache` (and macOS variants). Honor `RCT_METRO_PORT`. **Always kill** the listener on that port (SIGTERM then SIGKILL of **that port’s PIDs**), then start clean — a control layer (human or Mellifera) owns the slot, so reuse detection is not required. `TMPDIR` is per listen port (e.g. `$HOME/.metro/rnfb-${RCT_METRO_PORT}`). Wait until `http://127.0.0.1:${RCT_METRO_PORT}/status` contains `packager-status:running` (long documented timeout), then succeed or **fail** — no hidden restart inside `:test-cover`. Before start, drop a stale Watchman watch for **this Metro project root** and watch **only** the trees Metro would reload (allowlist), not the whole monorepo plus native `*/build`.
 
+**One `tests/` packager per worktree:** do **not** start a second `yarn tests:packager:jet` against `tests/` while another is already running in the same worktree (e.g. iOS slot + Android slot). `scripts/e2e/start-packager.sh` runs `watchman watch-del` on that shared Metro root; the second start deletes the watch the first Metro needs, and both are dead by `:test-cover`. Distinct `RCT_METRO_PORT` values do **not** prevent it. Share one `tests/` Metro, or use separate worktrees.
+
 <a id="packager-reset-cache-eaddrinuse"></a>
 
 **Packager restart (`jet-reset-cache`)** — same kill-then-start as above (port from env, default `:8081`). Matching packager only — iOS/Android (`tests/`) vs macOS (`tests-macos/`); not interchangeable.
@@ -384,10 +388,12 @@ Metro and emulators must be **running and responsive** — do not assume from a 
 METRO_PORT="${RCT_METRO_PORT:-${RNFB_METRO_PORT:-8081}}"
 FIRESTORE_PORT="${RNFB_ANDROID_EMULATOR_FIRESTORE_PORT:-${RNFB_IOS_EMULATOR_FIRESTORE_PORT:-${RNFB_MACOS_EMULATOR_FIRESTORE_PORT:-8080}}}"
 FUNCTIONS_PORT="${RNFB_ANDROID_EMULATOR_FUNCTIONS_PORT:-${RNFB_IOS_EMULATOR_FUNCTIONS_PORT:-${RNFB_MACOS_EMULATOR_FUNCTIONS_PORT:-5001}}}"
-curl -sf "http://127.0.0.1:${METRO_PORT}/status" >/dev/null
+curl -sf "http://127.0.0.1:${METRO_PORT}/status"
 curl -sf "http://127.0.0.1:${FIRESTORE_PORT}" >/dev/null
 test -n "$(lsof -nP -iTCP:${FUNCTIONS_PORT} -sTCP:LISTEN -t 2>/dev/null || true)"   # Functions emulator — listener only
 ```
+
+**Metro alive or dead (blocking, last check before `:test-cover`).** Run the Metro `curl` again after `:build` and read the body. Do not discard it. **Alive:** body contains `packager-status:running`. **Dead:** `curl` fails, or the body does not contain that string. A port listener with any other HTTP success is dead. If dead, start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) again and require alive. Do not start `:test-cover` while Metro is dead. Metro can pass this check before `:build` and be dead after it. One `tests/` packager per worktree still applies.
 
 If Metro or Firestore checks fail: start `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS) and `yarn tests:emulator:start` (background) from **this checkout's repo root**; re-check until both pass. After **`yarn lerna:prepare` has finished** (step [0](#prepare-completion-gate-blocking)) or test-runner patch edits, restart the packager via [packager start](#packager-reset-cache-eaddrinuse) — never restart Metro while prepare is still running.
 

@@ -128,6 +128,8 @@ protected:
     methodMap_["completeNotificationProcessing"] = MethodMetadata {.argCount = 0, .invoker = __completeNotificationProcessing};
     methodMap_["getToken"] = MethodMetadata {.argCount = 2, .invoker = __getToken};
     methodMap_["deleteToken"] = MethodMetadata {.argCount = 2, .invoker = __deleteToken};
+    methodMap_["register"] = MethodMetadata {.argCount = 0, .invoker = __register};
+    methodMap_["unregister"] = MethodMetadata {.argCount = 0, .invoker = __unregister};
     methodMap_["getAPNSToken"] = MethodMetadata {.argCount = 0, .invoker = __getAPNSToken};
     methodMap_["setAPNSToken"] = MethodMetadata {.argCount = 2, .invoker = __setAPNSToken};
     methodMap_["getIsHeadless"] = MethodMetadata {.argCount = 0, .invoker = __getIsHeadless};
@@ -203,6 +205,20 @@ private:
     return bridging::callFromJs<jsi::Value>(rt, &T::deleteToken,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
       count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
       count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt));
+  }
+
+  static jsi::Value __register(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::register) == 1,
+      "Expected register(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::register,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
+  }
+
+  static jsi::Value __unregister(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {
+    static_assert(
+      bridging::getParameterCount(&T::unregister) == 1,
+      "Expected unregister(...) to have 1 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::unregister,  static_cast<NativeRNFBTurboMessagingCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule));
   }
 
   static jsi::Value __getAPNSToken(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* /*args*/, size_t /*count*/) {

@@ -4,9 +4,13 @@ import {
   getMessaging,
   deleteToken,
   getToken,
+  register,
+  unregister,
   onMessage,
   onNotificationOpenedApp,
   onTokenRefresh,
+  onRegistered,
+  onUnregistered,
   requestPermission,
   isAutoInitEnabled,
   setAutoInitEnabled,
@@ -40,6 +44,32 @@ import {
 import remoteMessageOptions from '../lib/remoteMessageOptions';
 import { SharedEventEmitter } from '@react-native-firebase/app/dist/module/internal';
 
+type MessagingInternals = ReturnType<typeof getMessaging> & {
+  _nativeModule: Record<string, unknown>;
+  _isInstallationIdEnabled: boolean;
+  _cachedInstallationId: string | null;
+  _isAutoInitEnabled: boolean;
+  _isDeliveryMetricsExportToBigQueryEnabled: boolean;
+  _isNotificationDelegationEnabled: boolean;
+};
+
+/**
+ * Builds a fresh messaging module whose constructor sees the given native
+ * `isInstallationIdEnabled` constant, so constructor-time wiring can be asserted per flag state.
+ */
+function createMessagingInstance(isInstallationIdEnabled: boolean): MessagingInternals {
+  const existing = getMessaging() as MessagingInternals;
+  const Base = existing.constructor as new (...args: unknown[]) => MessagingInternals;
+  const native = { getConstants: () => ({ isInstallationIdEnabled }) };
+  class FreshMessaging extends Base {}
+  Object.defineProperty(FreshMessaging.prototype, 'native', { get: () => native });
+  return new FreshMessaging(
+    (existing as unknown as { _app: unknown })._app,
+    (existing as unknown as { _config: unknown })._config,
+    null,
+  );
+}
+
 describe('remoteMessageOptions', function () {
   it('serializes array data values as JSON', function () {
     const options = remoteMessageOptions('sender-id', {
@@ -59,11 +89,7 @@ describe('Messaging', function () {
 
     beforeEach(function () {
       nativeOverrides = {};
-      (
-        getMessaging() as ReturnType<typeof getMessaging> & {
-          _nativeModule: Record<string, unknown>;
-        }
-      )._nativeModule = new Proxy(
+      (getMessaging() as MessagingInternals)._nativeModule = new Proxy(
         {},
         {
           get: (_target, property) =>
@@ -73,6 +99,9 @@ describe('Messaging', function () {
             } as never),
         },
       );
+      const messaging = getMessaging() as MessagingInternals;
+      messaging._isInstallationIdEnabled = false;
+      messaging._cachedInstallationId = null;
     });
 
     it('`getMessaging` function is properly exposed to end user', function () {
@@ -97,6 +126,251 @@ describe('Messaging', function () {
 
     it('`onTokenRefresh` function is properly exposed to end user', function () {
       expect(onTokenRefresh).toBeDefined();
+    });
+
+    it('`register` function is properly exposed to end user', function () {
+      expect(register).toBeDefined();
+    });
+
+    it('`unregister` function is properly exposed to end user', function () {
+      expect(unregister).toBeDefined();
+    });
+
+    it('`onRegistered` function is properly exposed to end user', function () {
+      expect(onRegistered).toBeDefined();
+    });
+
+    it('`onUnregistered` function is properly exposed to end user', function () {
+      expect(onUnregistered).toBeDefined();
+    });
+
+    describe('installation id mode gating', function () {
+      it('rejects FID APIs when the flag is off', async function () {
+        const messaging = getMessaging() as MessagingInternals;
+        messaging._isInstallationIdEnabled = false;
+
+        await expect(register(messaging)).rejects.toThrow(/installation-id-not-enabled/);
+        await expect(unregister(messaging)).rejects.toThrow(/installation-id-not-enabled/);
+
+        try {
+          onRegistered(messaging, () => undefined);
+          throw new Error('expected onRegistered to throw');
+        } catch (e) {
+          expect((e as { code?: string }).code).toBe('messaging/installation-id-not-enabled');
+        }
+
+        try {
+          onUnregistered(messaging, () => undefined);
+          throw new Error('expected onUnregistered to throw');
+        } catch (e) {
+          expect((e as { code?: string }).code).toBe('messaging/installation-id-not-enabled');
+        }
+      });
+
+      it('rejects token APIs when the flag is on', async function () {
+        const messaging = getMessaging() as MessagingInternals;
+        messaging._isInstallationIdEnabled = true;
+
+        await expect(getToken(messaging)).rejects.toThrow(/token-api-disabled/);
+        await expect(deleteToken(messaging)).rejects.toThrow(/token-api-disabled/);
+
+        try {
+          onTokenRefresh(messaging, () => undefined);
+          throw new Error('expected onTokenRefresh to throw');
+        } catch (e) {
+          expect((e as { code?: string }).code).toBe('messaging/token-api-disabled');
+        }
+      });
+
+      it('keeps getToken and deleteToken calling native when the flag is off', async function () {
+        const messaging = getMessaging() as MessagingInternals;
+        expect(messaging._isInstallationIdEnabled).toBe(false);
+        const getTokenNative = jest.fn().mockResolvedValue('fcm-token' as never);
+        const deleteTokenNative = jest.fn().mockResolvedValue(undefined as never);
+        nativeOverrides.getToken = getTokenNative;
+        nativeOverrides.deleteToken = deleteTokenNative;
+
+        await expect(getToken(messaging, { appName: 'app', senderId: 'sender' })).resolves.toBe(
+          'fcm-token',
+        );
+        await expect(
+          deleteToken(messaging, { appName: 'app', senderId: 'sender' }),
+        ).resolves.toBeUndefined();
+
+        expect(getTokenNative).toHaveBeenCalledWith('app', 'sender');
+        expect(deleteTokenNative).toHaveBeenCalledWith('app', 'sender');
+      });
+
+      it('keeps onTokenRefresh subscribing when the flag is off', function () {
+        const messaging = getMessaging() as MessagingInternals;
+        expect(messaging._isInstallationIdEnabled).toBe(false);
+
+        const listener = jest.fn();
+        let unsubscribe: (() => void) | undefined;
+        expect(() => {
+          unsubscribe = onTokenRefresh(messaging, listener);
+        }).not.toThrow();
+
+        SharedEventEmitter.emit('messaging_token_refresh', { token: 'fcm-token-2' });
+        expect(listener).toHaveBeenCalledWith('fcm-token-2');
+
+        unsubscribe?.();
+        SharedEventEmitter.emit('messaging_token_refresh', { token: 'fcm-token-3' });
+        expect(listener).toHaveBeenCalledTimes(1);
+      });
+
+      it('calls native register/unregister when the flag is on', async function () {
+        const messaging = getMessaging() as MessagingInternals;
+        messaging._isInstallationIdEnabled = true;
+        const registerNative = jest.fn().mockResolvedValue(undefined as never);
+        const unregisterNative = jest.fn().mockResolvedValue(undefined as never);
+        nativeOverrides.register = registerNative;
+        nativeOverrides.unregister = unregisterNative;
+
+        await register(messaging, { vapidKey: 'ignored-on-native' });
+        await unregister(messaging);
+
+        expect(registerNative).toHaveBeenCalledTimes(1);
+        expect(unregisterNative).toHaveBeenCalledTimes(1);
+      });
+
+      it('replays the cached installation id to a late onRegistered subscriber', function () {
+        const messaging = createMessagingInstance(true);
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-cached' });
+
+        const listener = jest.fn();
+        const unsubscribe = onRegistered(messaging, listener);
+
+        expect(listener).toHaveBeenCalledTimes(1);
+        expect(listener).toHaveBeenCalledWith('fid-cached');
+
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-rotated' });
+        expect(listener).toHaveBeenCalledTimes(2);
+        expect(listener).toHaveBeenLastCalledWith('fid-rotated');
+        expect(messaging._cachedInstallationId).toBe('fid-rotated');
+
+        unsubscribe();
+      });
+
+      it('does not replay onRegistered before any registration', function () {
+        const messaging = createMessagingInstance(true);
+
+        const listener = jest.fn();
+        const unsubscribe = onRegistered(messaging, listener);
+        expect(listener).not.toHaveBeenCalled();
+
+        unsubscribe();
+      });
+
+      it('registers the onRegistered subscription before replaying the cached id', function () {
+        const messaging = createMessagingInstance(true);
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-cached' });
+
+        const addListener = jest.spyOn(SharedEventEmitter, 'addListener');
+        const subscribedAtReplay: boolean[] = [];
+        const listener = jest.fn(() => {
+          subscribedAtReplay.push(
+            addListener.mock.calls.some(call => call[0] === 'messaging_registered'),
+          );
+        });
+
+        try {
+          const unsubscribe = onRegistered(messaging, listener);
+          expect(listener).toHaveBeenCalledTimes(1);
+          expect(subscribedAtReplay).toEqual([true]);
+          unsubscribe();
+        } finally {
+          addListener.mockRestore();
+        }
+      });
+
+      it('rethrows the replay error and removes the subscription when the replay callback throws', function () {
+        const messaging = createMessagingInstance(true);
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-cached' });
+
+        const replayError = new Error('replay callback failed');
+        const listener = jest.fn<(installationId: string) => void>().mockImplementationOnce(() => {
+          throw replayError;
+        });
+
+        expect(() => onRegistered(messaging, listener)).toThrow(replayError);
+        expect(listener).toHaveBeenCalledTimes(1);
+
+        // The caller never got an unsubscribe handle, so nothing may stay attached.
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-rotated' });
+        expect(listener).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not replay onUnregistered to a late subscriber and clears the cache', function () {
+        const messaging = createMessagingInstance(true);
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-active' });
+        expect(messaging._cachedInstallationId).toBe('fid-active');
+
+        SharedEventEmitter.emit('messaging_unregistered', { installationId: 'fid-active' });
+        expect(messaging._cachedInstallationId).toBe(null);
+
+        const listener = jest.fn();
+        const unsubscribe = onUnregistered(messaging, listener);
+        expect(listener).not.toHaveBeenCalled();
+
+        SharedEventEmitter.emit('messaging_unregistered', { installationId: 'fid-again' });
+        expect(listener).toHaveBeenCalledWith('fid-again');
+        unsubscribe();
+      });
+
+      it('only subscribes to the FID cache events when the flag is on', function () {
+        const addListener = jest.spyOn(SharedEventEmitter, 'addListener');
+        const fidEvents = () =>
+          addListener.mock.calls
+            .map(call => call[0])
+            .filter(name => name === 'messaging_registered' || name === 'messaging_unregistered');
+
+        try {
+          createMessagingInstance(false);
+          expect(fidEvents()).toEqual([]);
+
+          createMessagingInstance(true);
+          expect(fidEvents()).toEqual(['messaging_registered', 'messaging_unregistered']);
+        } finally {
+          addListener.mockRestore();
+        }
+      });
+
+      it('does not cache the installation id when the flag is off', function () {
+        const messaging = createMessagingInstance(false);
+
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-ignored' });
+
+        expect(messaging._cachedInstallationId).toBe(null);
+      });
+
+      it('throws when onRegistered/onUnregistered get neither a function nor an Observer', function () {
+        const messaging = getMessaging() as MessagingInternals;
+        messaging._isInstallationIdEnabled = true;
+
+        expect(() => onRegistered(messaging, 'nope' as never)).toThrow(
+          "getMessaging().onRegistered(*) 'nextOrObserver' expected a function or Observer.",
+        );
+        expect(() => onUnregistered(messaging, 'nope' as never)).toThrow(
+          "getMessaging().onUnregistered(*) 'nextOrObserver' expected a function or Observer.",
+        );
+      });
+
+      it('supports Observer next for onRegistered', function () {
+        const messaging = getMessaging() as MessagingInternals;
+        messaging._isInstallationIdEnabled = true;
+        messaging._cachedInstallationId = 'fid-observer';
+
+        const next = jest.fn();
+        const unsubscribe = onRegistered(messaging, {
+          next,
+          error: () => undefined,
+          complete: () => undefined,
+        });
+
+        expect(next).toHaveBeenCalledWith('fid-observer');
+        unsubscribe();
+      });
     });
 
     it('`requestPermission` function is properly exposed to end user', function () {
@@ -207,10 +481,9 @@ describe('Messaging', function () {
       }
 
       it('preserves auto-init state when the native update rejects', async function () {
-        const messaging = getMessaging();
+        const messaging = getMessaging() as MessagingInternals;
         const error = new Error('native update failed');
-        (messaging as typeof messaging & { _isAutoInitEnabled: boolean })._isAutoInitEnabled =
-          false;
+        messaging._isAutoInitEnabled = false;
         mockNativeRejection('setAutoInitEnabled', error);
 
         await expect(setAutoInitEnabled(messaging, true)).rejects.toBe(error);
@@ -218,13 +491,9 @@ describe('Messaging', function () {
       });
 
       it('preserves delivery-metrics state when the native update rejects', async function () {
-        const messaging = getMessaging();
+        const messaging = getMessaging() as MessagingInternals;
         const error = new Error('native update failed');
-        (
-          messaging as typeof messaging & {
-            _isDeliveryMetricsExportToBigQueryEnabled: boolean;
-          }
-        )._isDeliveryMetricsExportToBigQueryEnabled = false;
+        messaging._isDeliveryMetricsExportToBigQueryEnabled = false;
         mockNativeRejection('setDeliveryMetricsExportToBigQuery', error);
 
         await expect(
@@ -234,13 +503,9 @@ describe('Messaging', function () {
       });
 
       it('preserves notification-delegation state when the native update rejects', async function () {
-        const messaging = getMessaging();
+        const messaging = getMessaging() as MessagingInternals;
         const error = new Error('native update failed');
-        (
-          messaging as typeof messaging & {
-            _isNotificationDelegationEnabled: boolean;
-          }
-        )._isNotificationDelegationEnabled = false;
+        messaging._isNotificationDelegationEnabled = false;
         mockNativeRejection('setNotificationDelegationEnabled', error);
 
         await expect(setNotificationDelegationEnabled(messaging, true)).rejects.toBe(error);
