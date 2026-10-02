@@ -102,6 +102,26 @@ describe('database().ref().transaction()', function () {
       }
     });
 
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('does not store a child that the update function returns as null (#9339)', async function () {
+      const { getDatabase, ref, set, runTransaction, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionNullChild`);
+
+      await set(dbRef, { a: 1, b: 2 });
+
+      // The first run can see null (no local cache) before it is retried with the server value.
+      const { committed, snapshot } = await runTransaction(dbRef, current => {
+        return { a: (current ? current.a : 0) + 1, b: null };
+      });
+
+      should.equal(committed, true, 'Transaction did not commit.');
+      snapshot.val().should.eql(jet.contextify({ a: 2 }));
+
+      const readBack = await get(dbRef);
+      readBack.val().should.eql(jet.contextify({ a: 2 }));
+      JSON.stringify(readBack.val()).should.not.containEql('__rnfbNull');
+    });
+
     it('sets a value if one does not exist', async function () {
       const { getDatabase, ref, runTransaction, remove } = databaseModular;
 

@@ -123,6 +123,31 @@ describe('database().ref().onDisconnect().update()', function () {
       );
     });
 
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('removes a child that is updated to null when disconnected (#9339)', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
+      if (Platform.other) {
+        // iOS-only sentinel decode; the onDisconnect write is not observed on macOS in CI
+        this.skip();
+      }
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get, set } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, `${TEST_PATH}/nullChild`);
+
+      await set(dbRef, { a: 1, b: 2 });
+
+      await onDisconnect(dbRef).update({ b: null });
+      goOffline(db);
+      goOnline(db);
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
+
     it('calls back to the onComplete function', async function () {
       const { getDatabase, ref, onDisconnect, goOffline, goOnline, set } = databaseModular;
       const db = getDatabase();

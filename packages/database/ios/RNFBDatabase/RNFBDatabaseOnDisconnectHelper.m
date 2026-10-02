@@ -24,6 +24,7 @@
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBDatabaseCommon.h"
+#import "RNFBDatabaseNullSentinelDecoder.h"
 #import "RNFBDatabaseOnDisconnectHelper.h"
 
 @implementation RNFBDatabaseOnDisconnectHelper
@@ -79,14 +80,15 @@
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference onDisconnectSetValue:[props valueForKey:@"value"]
-                         withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-                           if (error != nil) {
-                             [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-                           } else {
-                             resolve([NSNull null]);
-                           }
-                         }];
+  [firDatabaseReference
+      onDisconnectSetValue:[RNFBDatabaseNullSentinelDecoder decodedValueFromProps:props]
+       withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+         if (error != nil) {
+           [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+         } else {
+           resolve([NSNull null]);
+         }
+       }];
 }
 
 + (void)onDisconnectSetWithPriority:(NSString *)app
@@ -100,15 +102,16 @@
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference onDisconnectSetValue:[props valueForKey:@"value"]
-                                 andPriority:[props valueForKey:@"priority"]
-                         withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-                           if (error != nil) {
-                             [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-                           } else {
-                             resolve([NSNull null]);
-                           }
-                         }];
+  [firDatabaseReference
+      onDisconnectSetValue:[RNFBDatabaseNullSentinelDecoder decodedValueFromProps:props]
+               andPriority:[RNFBDatabaseNullSentinelDecoder decodedPriorityFromProps:props]
+       withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+         if (error != nil) {
+           [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+         } else {
+           resolve([NSNull null]);
+         }
+       }];
 }
 
 + (void)onDisconnectUpdate:(NSString *)app
@@ -122,15 +125,15 @@
   FIRDatabaseReference *firDatabaseReference =
       [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference onDisconnectUpdateChildValues:[props valueForKey:@"values"]
-                                  withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-                                    if (error != nil) {
-                                      [RNFBDatabaseCommon promiseRejectDatabaseException:reject
-                                                                                   error:error];
-                                    } else {
-                                      resolve([NSNull null]);
-                                    }
-                                  }];
+  [firDatabaseReference
+      onDisconnectUpdateChildValues:[RNFBDatabaseNullSentinelDecoder decodedValuesFromProps:props]
+                withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+                  if (error != nil) {
+                    [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+                  } else {
+                    resolve([NSNull null]);
+                  }
+                }];
 }
 
 @end
