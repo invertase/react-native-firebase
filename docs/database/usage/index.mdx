@@ -176,7 +176,7 @@ You can unsubscribe by calling the function returned from `onValue`. This can be
 when the hook needs to unsubscribe itself:
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getDatabase, ref, onValue } from '@react-native-firebase/database';
 
 function User({ userId }) {
@@ -204,7 +204,7 @@ If you are listening to a node with many children, only listening to data you ca
 and speeds up your application.
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getDatabase, ref, onChildAdded } from '@react-native-firebase/database';
 
 function User({ userId }) {

@@ -28,7 +28,7 @@ To keep things simple we'll assume the user is authenticated (e.g. with [Firebas
 Whenever the application opens, [write a new value](/database/usage#writing-data) on a reference node (e.g. `/online/:userId`):
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getAuth } from '@react-native-firebase/auth';
 import { getDatabase, ref, set } from '@react-native-firebase/database';
 
@@ -70,7 +70,7 @@ provides functionality to remove or set data whenever a client disconnects. Usin
 [`remove`](https://invertase.github.io/react-native-firebase/_react-native-firebase/database/FirebaseDatabaseTypes/OnDisconnect.html#remove) method we can remove the node on the database if the client disconnects:
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getAuth } from '@react-native-firebase/auth';
 import { getDatabase, ref, set, onDisconnect } from '@react-native-firebase/database';
 

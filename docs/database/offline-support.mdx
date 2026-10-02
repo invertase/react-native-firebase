@@ -46,7 +46,7 @@ Once offline, all operations will continue to execute, instead using a local ins
 For example, we write to a record which has a listener whilst offline allowing the listener to be called with the updated data:
 
 ```jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getDatabase, ref, onValue, goOffline, set } from '@react-native-firebase/database';
 
 function App() {
