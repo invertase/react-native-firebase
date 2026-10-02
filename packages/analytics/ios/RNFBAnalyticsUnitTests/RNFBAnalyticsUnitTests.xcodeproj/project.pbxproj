@@ -13,6 +13,11 @@
 		A10000000000000000000020 /* RNFBAnalyticsConsentSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000021 /* RNFBAnalyticsConsentSettingsMapper.swift */; };
 		A10000000000000000000022 /* RNFBAnalyticsConsentSettingsMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000023 /* RNFBAnalyticsConsentSettingsMapperTests.swift */; };
 		A10000000000000000000024 /* RNFBAnalyticsConsentSettingsMapperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* RNFBAnalyticsConsentSettingsMapperHostStubTests.m */; };
+		A10000000000000000000030 /* RNFBAnalyticsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000031 /* RNFBAnalyticsHelper.m */; };
+		A10000000000000000000032 /* RNFBAnalyticsHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000033 /* RNFBAnalyticsHelperHostStubTests.m */; };
+		A10000000000000000000034 /* FIRAnalyticsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000035 /* FIRAnalyticsHostStub.m */; };
+		A10000000000000000000036 /* RNFBAnalyticsLogTransactionHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000037 /* RNFBAnalyticsLogTransactionHostStub.m */; };
+		A10000000000000000000038 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000039 /* RNFBSharedUtilsHostStub.m */; };
 		A10000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
@@ -24,6 +29,12 @@
 		A10000000000000000000021 /* RNFBAnalyticsConsentSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAnalyticsConsentSettingsMapper.swift; path = ../RNFBAnalytics/RNFBAnalyticsConsentSettingsMapper.swift; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000023 /* RNFBAnalyticsConsentSettingsMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBAnalyticsConsentSettingsMapperTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000025 /* RNFBAnalyticsConsentSettingsMapperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAnalyticsConsentSettingsMapperHostStubTests.m; sourceTree = "<group>"; };
+		A10000000000000000000031 /* RNFBAnalyticsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAnalyticsHelper.m; path = ../RNFBAnalytics/RNFBAnalyticsHelper.m; sourceTree = SOURCE_ROOT; };
+		A10000000000000000000033 /* RNFBAnalyticsHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAnalyticsHelperHostStubTests.m; sourceTree = "<group>"; };
+		A10000000000000000000035 /* FIRAnalyticsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRAnalyticsHostStub.m; path = HostStubs/Firebase/FIRAnalyticsHostStub.m; sourceTree = "<group>"; };
+		A10000000000000000000037 /* RNFBAnalyticsLogTransactionHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAnalyticsLogTransactionHostStub.m; path = HostStubs/RNFBAnalytics/RNFBAnalyticsLogTransactionHostStub.m; sourceTree = "<group>"; };
+		A10000000000000000000039 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
+		A1000000000000000000003A /* RNFBAnalyticsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAnalyticsHelper.h; path = ../RNFBAnalytics/RNFBAnalyticsHelper.h; sourceTree = SOURCE_ROOT; };
 		A10000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -64,6 +75,12 @@
 				A10000000000000000000021 /* RNFBAnalyticsConsentSettingsMapper.swift */,
 				A10000000000000000000023 /* RNFBAnalyticsConsentSettingsMapperTests.swift */,
 				A10000000000000000000025 /* RNFBAnalyticsConsentSettingsMapperHostStubTests.m */,
+				A1000000000000000000003A /* RNFBAnalyticsHelper.h */,
+				A10000000000000000000031 /* RNFBAnalyticsHelper.m */,
+				A10000000000000000000033 /* RNFBAnalyticsHelperHostStubTests.m */,
+				A10000000000000000000035 /* FIRAnalyticsHostStub.m */,
+				A10000000000000000000037 /* RNFBAnalyticsLogTransactionHostStub.m */,
+				A10000000000000000000039 /* RNFBSharedUtilsHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -131,6 +148,11 @@
 				A10000000000000000000020 /* RNFBAnalyticsConsentSettingsMapper.swift in Sources */,
 				A10000000000000000000022 /* RNFBAnalyticsConsentSettingsMapperTests.swift in Sources */,
 				A10000000000000000000024 /* RNFBAnalyticsConsentSettingsMapperHostStubTests.m in Sources */,
+				A10000000000000000000030 /* RNFBAnalyticsHelper.m in Sources */,
+				A10000000000000000000034 /* FIRAnalyticsHostStub.m in Sources */,
+				A10000000000000000000036 /* RNFBAnalyticsLogTransactionHostStub.m in Sources */,
+				A10000000000000000000038 /* RNFBSharedUtilsHostStub.m in Sources */,
+				A10000000000000000000032 /* RNFBAnalyticsHelperHostStubTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
