@@ -98,7 +98,7 @@ async function readInstallationId() {
 
 ## Get an installation auth token
 
-`getToken(installations, forceRefresh?)` returns a short-lived Firebase Installations auth token (JWT) for the current installation. Pass `forceRefresh: true` to request a new token regardless of expiration. The default token lifetime is one week.
+`getToken(installations, forceRefresh?)` returns a short-lived Firebase Installations auth token (JWT) for the current installation. Pass `forceRefresh: true` to request a new token regardless of expiration. The default token lifetime is one week. An installation auth token cannot be revoked and stays valid until it expires. Do not confuse it with a Firebase Authentication ID token: the two are not interchangeable.
 
 ```js
 import { getInstallations, getToken } from '@react-native-firebase/installations';
@@ -113,15 +113,34 @@ async function readInstallationAuthToken() {
 
 ## Delete the installation
 
-`deleteInstallations(installations)` deletes the Firebase Installation and associated data for this app instance. Unless you disable Firebase services that create installation IDs, Firebase may create a new installation ID later; that new ID is not associated with the previous one.
+`deleteInstallations(installations)` deletes the Firebase Installation and associated data for this app instance. Data tied to the deleted installation ID is removed from the live and backup systems of Firebase services that use installation IDs within 180 days. Unless you disable all Firebase services that create installation IDs, Firebase creates a new installation ID within a few days; that new ID is not associated with the previous one. Deleting an installation ID does not delete Google Analytics data.
 
 ```js
 import { deleteInstallations, getInstallations } from '@react-native-firebase/installations';
 
 async function removeFirebaseInstallation() {
+  // WARNING: this deletes the installation and its associated data for this app instance.
   const installations = getInstallations();
   await deleteInstallations(installations);
   console.log('Installation deleted.');
+}
+```
+
+## Errors
+
+`getId`, `getToken`, and `deleteInstallations` reject with a Firebase error whose `code` is prefixed with `installations/`: `id-error` (`getId`), `token-error` (`getToken`), and `delete-error` (`deleteInstallations`). The message is the native SDK error message. On iOS, `getId` can also reject with `installations/id-null` and `getToken` with `installations/token-null` when the native SDK returns neither a value nor an error.
+
+```js
+import { getId, getInstallations } from '@react-native-firebase/installations';
+
+async function readInstallationIdSafely() {
+  try {
+    return await getId(getInstallations());
+  } catch (error) {
+    console.log('Installation error code:', error.code);
+    console.log('Installation error message:', error.message);
+    return null;
+  }
 }
 ```
 

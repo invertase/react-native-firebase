@@ -50,8 +50,8 @@ export default function InstallationsScreen() {
   return (
     <ScreenChrome title="installations" result={result} error={error}>
       <Text style={styles.hint}>
-        Controls mirror runtime APIs taught on the Installations usage page. Installations is not in
-        yarn tests:emulator:start-ci, and there is no connect*Emulator helper.
+        Controls mirror runtime APIs taught on the Installations usage page. There is no
+        Installations emulator and no connect*Emulator helper.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
