@@ -42,16 +42,16 @@ The manual installation pages for [iOS](/in-app-messaging/usage/installation/ios
 {/* prettier-ignore */}
 | | |
 | --- | --- |
-| **Platforms** | Android, iOS (native Firebase SDK) |
+| **Platforms** | Android, iOS (native Firebase SDK). On web builds a JavaScript fallback is used: every call resolves without reaching native code and both flags start as `false`. |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
 **Platform notes:** The firebase-js-sdk does not ship a modular public API for this product (`firebase/in-app-messaging` does not exist). Every export below is React Native Firebase only. In-App Messaging supports only the **default** Firebase app (`hasMultiAppSupport: false`). There is no In-App Messaging emulator and no `connect*Emulator` helper for this package. Do not confuse this package with [Cloud Messaging](/messaging/usage).
 
 React Native Firebase exports runtime `getInAppMessaging`, `isMessagesDisplaySuppressed`, `setMessagesDisplaySuppressed`, `isAutomaticDataCollectionEnabled`, `setAutomaticDataCollectionEnabled`, `triggerEvent`, and `SDK_VERSION`, plus the TypeScript type `InAppMessaging`. Each runtime export is explained in the section that uses it. The type-only export is for typing only and is not demonstrated on the Expo screen.
 
-## Official Firebase docs walked and left out
+## Official Firebase docs and what this page leaves out
 
-Official pages read while writing this guide:
+Related official pages:
 
 - [Firebase In-App Messaging overview](https://firebase.google.com/docs/in-app-messaging?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=in-app-messaging)
 - [Get started (Android)](https://firebase.google.com/docs/in-app-messaging/get-started?platform=android&utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=in-app-messaging) and [Get started (Apple)](https://firebase.google.com/docs/in-app-messaging/get-started?platform=ios&utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=in-app-messaging)
@@ -68,7 +68,7 @@ Left out of this page (each with a reason):
 - **Full console compose, targeting, scheduling, conversion events, publish/draft, and Gemini AI campaign insights**: Firebase console workflows. Summarized below; detail stays on official compose docs.
 - **A/B Testing experiments** with In-App Messaging: console / A/B Testing product, not this client API.
 - **Flutter get-started** guides: wrong client platform for this package.
-- **Test-on-device console steps** beyond needing a Firebase installation ID: use [`@react-native-firebase/installations`](/installations/usage) `getId` (or native log lines from the get-started guides) plus the console Test on Device flow.
+- **Test-on-device console steps** beyond needing a Firebase installation ID: use [`@react-native-firebase/installations`](/installations/usage) `getId` (or the native log lines from the get-started guides: the `FIAM.Headless` log tag on Android, `-FIRDebugEnabled` on iOS) plus the console Test on Device flow. After the console sends the test message, close and reopen the app to see it.
 
 # What does it do
 
@@ -117,11 +117,11 @@ function readInAppMessagingInstance() {
 
 ## Suppress message display
 
-`isMessagesDisplaySuppressed(inAppMessaging)` reports whether rendering is currently suppressed. `setMessagesDisplaySuppressed(inAppMessaging, enabled)` enables or disables suppression.
+`isMessagesDisplaySuppressed(inAppMessaging)` reports whether rendering is suppressed. `setMessagesDisplaySuppressed(inAppMessaging, enabled)` enables or disables suppression. The check reads a value held in JavaScript: it is the native value when the instance was created, then whatever you last passed to `setMessagesDisplaySuppressed`, and it updates before the native call finishes.
 
-When `enabled` is `true`, no in-app messages render until you set it back to `false` or the app restarts. Suppression is **not** persisted across restarts. Call it as early as possible if you need messages hidden during bootstrap (for example payment flows).
+When `enabled` is `true`, no in-app messages render until you set it back to `false` or the app restarts. Suppression is **not** persisted across restarts. Messages whose trigger fires while suppression is on are dropped, so their trigger conditions must be met again after you turn suppression off. Call it as early as possible if you need messages hidden during bootstrap (for example payment flows).
 
-`setMessagesDisplaySuppressed` throws if `enabled` is not a boolean.
+`setMessagesDisplaySuppressed` throws an `Error` synchronously (it does not return a rejected promise) if `enabled` is not a boolean.
 
 ```js
 import {
@@ -147,9 +147,9 @@ async function allowMessagesAfterSetup() {
 
 `isAutomaticDataCollectionEnabled(inAppMessaging)` reports whether automatic data collection is on. `setAutomaticDataCollectionEnabled(inAppMessaging, enabled)` enables or disables it at runtime.
 
-This setting is **persisted** across app restarts and overrides the value from `firebase.json` / native manifests (`in_app_messaging_auto_collection_enabled` on Android via `firebase.json`, and the iOS Info.plist key applied from the same `firebase.json` flag). Use it for opt-in-first flows (for example GDPR).
+This setting is **persisted** across app restarts and overrides the startup value from your native configuration (the `Info.plist` key on iOS, the manifest entry on Android). The check reads a value held in JavaScript, the same way as the suppression check above. Use it for opt-in-first flows (for example GDPR): turn collection off at startup, then enable it after the user consents.
 
-`setAutomaticDataCollectionEnabled` throws if `enabled` is not a boolean.
+`setAutomaticDataCollectionEnabled` throws an `Error` synchronously (it does not return a rejected promise) if `enabled` is not a boolean.
 
 ```js
 import {
@@ -175,7 +175,9 @@ async function disableCollection() {
 
 `triggerEvent(inAppMessaging, eventId)` requests any eligible campaigns whose programmatic trigger matches `eventId`. Create or note that event ID in the campaign Scheduling step in the console, then call `triggerEvent` with the same string.
 
-`triggerEvent` throws if `eventId` is not a string.
+Campaigns can also use trigger events that Google Analytics collects. The [compose campaign guide](https://firebase.google.com/docs/in-app-messaging/compose-campaign?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=in-app-messaging) says you can pick default events or events logged through Analytics, and the message is triggered when any of the campaign's events occur. Events you log with the [Analytics `logEvent` function](/analytics/usage) therefore need no `triggerEvent` call.
+
+`triggerEvent` throws an `Error` synchronously (it does not return a rejected promise) if `eventId` is not a string. The returned promise resolves once the native call has been made, whether or not a campaign matches or is displayed.
 
 ```js
 import { getInAppMessaging, triggerEvent } from '@react-native-firebase/in-app-messaging';
@@ -195,7 +197,9 @@ async function fireCampaignTrigger() {
 
 ## Disable collection of data
 
-Set `in_app_messaging_auto_collection_enabled` in the project-root `firebase.json` so native builds start with automatic data collection off. Override later with `setAutomaticDataCollectionEnabled`.
+Set `in_app_messaging_auto_collection_enabled` in the project-root `firebase.json` so iOS builds start with automatic data collection off: the build copies the flag into the `FirebaseInAppMessagingAutomaticDataCollectionEnabled` key of your `Info.plist`. Override later with `setAutomaticDataCollectionEnabled`.
+
+On Android the package writes the same flag into a manifest `meta-data` entry (and a `firebase.json` value of `app_data_collection_default_enabled: false` also turns the default off there), but the Firebase Android SDK documents a different manifest key, `firebase_inapp_messaging_auto_data_collection_enabled`. If collection must be off before any JavaScript runs on Android, add that key to your own `AndroidManifest.xml` as described in the official [modify message behavior](https://firebase.google.com/docs/in-app-messaging/modify-message-behavior?platform=android) page.
 
 ```json
 // <project-root>/firebase.json

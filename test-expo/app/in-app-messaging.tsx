@@ -53,8 +53,7 @@ export default function InAppMessagingScreen() {
       <Text style={styles.hint}>
         Controls mirror runtime APIs taught on the In-App Messaging usage page. This is Firebase
         In-App Messaging, not Cloud Messaging (@react-native-firebase/messaging). There is no
-        emulator and no connect*Emulator helper; In-App Messaging is not in yarn
-        tests:emulator:start-ci. Campaigns are authored in the Firebase console.
+        emulator and no connect*Emulator helper. Campaigns are authored in the Firebase console.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
