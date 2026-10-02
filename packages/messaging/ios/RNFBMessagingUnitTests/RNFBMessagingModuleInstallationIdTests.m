@@ -19,18 +19,9 @@
 #import <React/RCTBridgeModule.h>
 #import <XCTest/XCTest.h>
 
-#import "RNFBMessagingModule.h"
-
-// `register` / `unregister` come from the codegen'd NativeRNFBTurboMessagingSpec protocol, which
-// the host stub does not redeclare.
-@interface RNFBMessagingModule (InstallationIdTesting)
-- (void)register:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
-- (void)unregister:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
-- (NSDictionary *)messagingConstantsDictionary;
-@end
+#import "RNFBMessagingHelper.h"
 
 @interface RNFBMessagingModuleInstallationIdTests : XCTestCase
-@property(nonatomic, strong) RNFBMessagingModule *module;
 @property(nonatomic, strong) NSMutableArray *resolved;
 @property(nonatomic, strong) NSMutableArray<NSError *> *rejectedErrors;
 @end
@@ -39,7 +30,6 @@
 
 - (void)setUp {
   [super setUp];
-  self.module = [[RNFBMessagingModule alloc] init];
   self.resolved = [NSMutableArray array];
   self.rejectedErrors = [NSMutableArray array];
   [[FIRMessaging messaging] resetForTesting];
@@ -65,7 +55,7 @@
 #pragma mark - register
 
 - (void)testRegister_success_resolvesNull {
-  [self.module register:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper registerWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].registerCallCountForTesting, 1);
   XCTAssertEqual([FIRMessaging messaging].unregisterCallCountForTesting, 0);
@@ -77,7 +67,7 @@
   NSError *error = [NSError errorWithDomain:@"com.google.fcm" code:42 userInfo:nil];
   [FIRMessaging messaging].completionErrorForTesting = error;
 
-  [self.module register:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper registerWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].registerCallCountForTesting, 1);
   XCTAssertEqual(self.resolved.count, 0);
@@ -88,7 +78,7 @@
 #pragma mark - unregister
 
 - (void)testUnregister_success_resolvesNull {
-  [self.module unregister:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper unregisterWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].unregisterCallCountForTesting, 1);
   XCTAssertEqual([FIRMessaging messaging].registerCallCountForTesting, 0);
@@ -100,7 +90,7 @@
   NSError *error = [NSError errorWithDomain:@"com.google.fcm" code:43 userInfo:nil];
   [FIRMessaging messaging].completionErrorForTesting = error;
 
-  [self.module unregister:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper unregisterWithResolve:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual([FIRMessaging messaging].unregisterCallCountForTesting, 1);
   XCTAssertEqual(self.resolved.count, 0);
@@ -111,15 +101,13 @@
 #pragma mark - constants
 
 - (void)testConstants_installationIdDisabled_byDefault {
-  XCTAssertEqualObjects([self.module messagingConstantsDictionary][@"isInstallationIdEnabled"],
-                        @NO);
+  XCTAssertEqual([RNFBMessagingHelper isInstallationIdEnabled], NO);
 }
 
 - (void)testConstants_installationIdEnabled_whenSdkFlagOn {
   [FIRMessaging messaging].installationIdEnabledForTesting = YES;
 
-  XCTAssertEqualObjects([self.module messagingConstantsDictionary][@"isInstallationIdEnabled"],
-                        @YES);
+  XCTAssertEqual([RNFBMessagingHelper isInstallationIdEnabled], YES);
 }
 
 @end
