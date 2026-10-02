@@ -252,9 +252,41 @@ describe('functions() modular', function () {
         const response = await functionRunner();
         response.data.should.equal('Hello from Firebase!');
       });
+
+      // Native Module.mm optional defaults: timeout omitted (: 0) + limitedUse present.
+      it('omits timeout and passes limitedUseAppCheckTokens', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+
+        const functions = getFunctions(getApp());
+        const functionRunner = httpsCallableFromUrl(
+          functions,
+          functionsCallableUrl('helloWorldV2'),
+          {
+            limitedUseAppCheckTokens: true,
+          },
+        );
+        const response = await functionRunner();
+        response.data.should.equal('Hello from Firebase!');
+      });
     });
 
     describe('httpsCallable(fnName)(args)', function () {
+      // Native Module.mm optional defaults: timeout omitted (: 0) + limitedUse present.
+      it('omits timeout and passes limitedUseAppCheckTokens', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testFunctionDefaultRegionV2',
+          {
+            limitedUseAppCheckTokens: true,
+          },
+        );
+        const response = await functionRunner();
+        response.data.should.equal('null');
+      });
+
       it('accepts primitive args: undefined', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
@@ -654,6 +686,29 @@ describe('functions() modular', function () {
           e2eCallableTimeoutOptions(),
         );
         const { stream, data } = await functionRunner.stream({ count: 3, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      // Native Module.mm streamSetup: timeout omitted (: 0). No limitedUse ternary on stream path.
+      it('streams when HttpsCallableOptions.timeout is omitted', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const { stream, data } = await functionRunner.stream({ count: 2, delay: 200 });
 
         const chunks = [];
         for await (const chunk of stream) {
