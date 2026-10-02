@@ -98,6 +98,32 @@ describe('database().ref().onDisconnect().setWithPriority()', function () {
       snapshot.exportVal()['.priority'].should.eql(3);
     });
 
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('does not store a child that is set to null when disconnected (#9339)', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
+      if (Platform.other) {
+        // iOS-only sentinel decode; the onDisconnect write is not observed on macOS in CI
+        this.skip();
+      }
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get, set } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, `${TEST_PATH}/nullChild`);
+
+      await set(dbRef, { a: 1, b: 2 });
+
+      await onDisconnect(dbRef).setWithPriority({ a: 1, b: null }, 3);
+      goOffline(db);
+      goOnline(db);
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      snapshot.getPriority().should.eql(3);
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
+
     it('calls back to the onComplete function', async function () {
       const { getDatabase, ref, onDisconnect, set, goOffline, goOnline } = databaseModular;
       const db = getDatabase();

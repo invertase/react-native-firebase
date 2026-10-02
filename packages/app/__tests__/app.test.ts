@@ -92,6 +92,88 @@ describe('App', function () {
       }
     });
 
+    describe('automaticDataCollectionEnabled after initializeApp', function () {
+      const initializeWithNativeResult = async (
+        name: string,
+        config: Record<string, unknown>,
+        nativeResult: unknown,
+      ) => {
+        (nativeAppModule.initializeApp as jest.Mock).mockImplementationOnce(() =>
+          Promise.resolve(nativeResult),
+        );
+        return initializeApp(firebaseOptions, { name, ...config });
+      };
+
+      it('reflects the native flag when the config omits it', async function () {
+        const name = 'adce-native-true-omitted';
+        const app = await initializeWithNativeResult(
+          name,
+          {},
+          { options: firebaseOptions, appConfig: { name, automaticDataCollectionEnabled: true } },
+        );
+
+        try {
+          expect(app.automaticDataCollectionEnabled).toBe(true);
+        } finally {
+          await deleteApp(app);
+        }
+      });
+
+      it('prefers the native flag over the input config', async function () {
+        const name = 'adce-native-false-input-true';
+        const app = await initializeWithNativeResult(
+          name,
+          { automaticDataCollectionEnabled: true },
+          { options: firebaseOptions, appConfig: { name, automaticDataCollectionEnabled: false } },
+        );
+
+        try {
+          expect(app.automaticDataCollectionEnabled).toBe(false);
+        } finally {
+          await deleteApp(app);
+        }
+      });
+
+      it.each([
+        ['true input', { automaticDataCollectionEnabled: true }, true],
+        ['omitted input', {}, false],
+      ])(
+        'keeps `!!input` when native resolves void (%s)',
+        async function (_label, config, expected) {
+          const app = await initializeWithNativeResult(`adce-void-${_label}`, config, undefined);
+
+          try {
+            expect(app.automaticDataCollectionEnabled).toBe(expected);
+          } finally {
+            await deleteApp(app);
+          }
+        },
+      );
+
+      it.each([
+        ['null flag', { appConfig: { automaticDataCollectionEnabled: null } }],
+        ['undefined flag', { appConfig: { automaticDataCollectionEnabled: undefined } }],
+        ['string flag', { appConfig: { automaticDataCollectionEnabled: 'false' } }],
+        ['missing appConfig', { options: firebaseOptions }],
+        ['null result', null],
+      ])(
+        'falls back to `!!input` when native does not resolve a boolean flag (%s)',
+        async function (label, nativeResult) {
+          const app = await initializeWithNativeResult(
+            `adce-nonboolean-${label}`,
+            { automaticDataCollectionEnabled: true },
+            nativeResult,
+          );
+
+          try {
+            expect(app.automaticDataCollectionEnabled).toBe(true);
+          } finally {
+            await deleteApp(app);
+          }
+        },
+      );
+    });
+
     it('`onLog()` is called when using Logger (currently only VertexAI uses `onLog()`)', function () {
       const logger = new Logger('@firebase/vertexai');
       const spy2 = jest.fn();

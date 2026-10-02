@@ -38,6 +38,7 @@ Pod::Spec.new do |s|
     'ios/RNFBDatabase/RNFBDatabaseTransactionModule.h',
     'ios/RNFBDatabase/RNFBDatabaseQueryRegistry.h',
     'ios/RNFBDatabase/RNFBDatabaseListenerRegistry.h',
+    'ios/RNFBDatabase/RNFBDatabaseNullSentinelDecoder.h',
     'ios/generated/**/*.h',
   ]
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'

@@ -119,9 +119,13 @@ export namespace ReactNativeFirebase {
 
     /**
      * Default setting for data collection on startup that affects all Firebase module startup data collection settings,
-     * in the absence of module-specific overrides. This will start as false if you set "app_data_collection_default_enabled"
-     * to false in firebase.json and may be used in opt-in flows, for example a GDPR-compliant app.
+     * in the absence of module-specific overrides. It may be used in opt-in flows, for example a GDPR-compliant app.
      * If configured false initially, set to true after obtaining consent, then enable module-specific settings as needed afterwards.
+     *
+     * On iOS this starts as false if you set "app_data_collection_default_enabled" to false in firebase.json
+     * (written to Info.plist "FirebaseDataCollectionDefaultEnabled"). On Android that firebase.json key does not change
+     * this flag, which defaults to true unless the host app sets the manifest meta-data "firebase_data_collection_default_enabled".
+     * When omitted from the config passed to `initializeApp`, the native default is left unchanged on both platforms.
      */
     automaticDataCollectionEnabled?: boolean;
 
@@ -148,7 +152,10 @@ export namespace ReactNativeFirebase {
     readonly options: FirebaseAppOptions;
 
     /**
-     * The settable config flag for GDPR opt-in/opt-out
+     * The settable config flag for GDPR opt-in/opt-out.
+     *
+     * After `initializeApp` resolves, this reflects the flag the native SDK is using, which can
+     * differ from the value passed in when the key was omitted.
      */
     automaticDataCollectionEnabled: boolean;
 

@@ -28,6 +28,7 @@
 #import "RCTConvert+FIRApp.h"
 #import "RNFBAppModule.h"
 #import "RNFBAppTurboModules.h"
+#import "RNFBInitializeAppArguments.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
@@ -202,34 +203,28 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
             appConfig:(NSDictionary *)appConfig
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
+  // New Architecture delivers these as plain NSDictionary (no RCTCxxConvert), so JS null properties
+  // are still {__rnfbNull: true} sentinels. Null optional keys are dropped so they read as absent.
+  NSDictionary *normalizedOptions = [RNFBInitializeAppArguments normalizedOptions:options];
+  NSDictionary *normalizedAppConfig = [RNFBInitializeAppArguments normalizedAppConfig:appConfig];
   RCTUnsafeExecuteOnMainQueueSync(^{
     FIRApp *firApp;
-    NSString *appName = [appConfig valueForKey:@"name"];
-    NSString *authDomain = [options valueForKey:@"authDomain"];
+    NSString *appName = [normalizedAppConfig valueForKey:@"name"];
+    NSString *authDomain = [normalizedOptions valueForKey:@"authDomain"];
     NSString *jsAppName = (appName.length > 0) ? appName : DEFAULT_APP_DISPLAY_NAME;
     BOOL isDefaultApp = !appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME];
 
-    NSString *appId = [options valueForKey:@"appId"];
-    NSString *messagingSenderId = [options valueForKey:@"messagingSenderId"];
+    NSString *appId = [normalizedOptions valueForKey:@"appId"];
+    NSString *messagingSenderId = [normalizedOptions valueForKey:@"messagingSenderId"];
     FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:appId
                                                          GCMSenderID:messagingSenderId];
-    firOptions.APIKey = [options valueForKey:@"apiKey"];
-    firOptions.projectID = [options valueForKey:@"projectId"];
-    if (![[options valueForKey:@"databaseURL"] isEqual:[NSNull null]]) {
-      firOptions.databaseURL = [options valueForKey:@"databaseURL"];
-    }
-    if (![[options valueForKey:@"storageBucket"] isEqual:[NSNull null]]) {
-      firOptions.storageBucket = [options valueForKey:@"storageBucket"];
-    }
-    if (![[options valueForKey:@"iosBundleId"] isEqual:[NSNull null]]) {
-      firOptions.bundleID = [options valueForKey:@"iosBundleId"];
-    }
-    if (![[options valueForKey:@"iosClientId"] isEqual:[NSNull null]]) {
-      firOptions.clientID = [options valueForKey:@"iosClientId"];
-    }
-    if (![[options valueForKey:@"appGroupId"] isEqual:[NSNull null]]) {
-      firOptions.appGroupID = [options valueForKey:@"appGroupId"];
-    }
+    firOptions.APIKey = [normalizedOptions valueForKey:@"apiKey"];
+    firOptions.projectID = [normalizedOptions valueForKey:@"projectId"];
+    firOptions.databaseURL = [normalizedOptions valueForKey:@"databaseURL"];
+    firOptions.storageBucket = [normalizedOptions valueForKey:@"storageBucket"];
+    firOptions.bundleID = [normalizedOptions valueForKey:@"iosBundleId"];
+    firOptions.clientID = [normalizedOptions valueForKey:@"iosClientId"];
+    firOptions.appGroupID = [normalizedOptions valueForKey:@"appGroupId"];
 
     @try {
       if (isDefaultApp) {
@@ -252,8 +247,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboApp)
     // Store under the JS bridge app name ([DEFAULT]), never native __FIRAPP_DEFAULT.
     [RNFBAppModule setCustomDomain:authDomain forAppName:jsAppName];
 
-    firApp.dataCollectionDefaultEnabled =
-        (BOOL)[appConfig valueForKey:@"automaticDataCollectionEnabled"];
+    // Only apply when provided, so an omitted key keeps the SDK / Info.plist default (as Android).
+    NSNumber *automaticDataCollectionEnabled = [RNFBInitializeAppArguments
+        automaticDataCollectionEnabledFromAppConfig:normalizedAppConfig];
+    if (automaticDataCollectionEnabled != nil) {
+      firApp.dataCollectionDefaultEnabled = [automaticDataCollectionEnabled boolValue];
+    }
 
     resolve([RNFBSharedUtils firAppToDictionary:firApp]);
   });

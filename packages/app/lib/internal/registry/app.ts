@@ -191,7 +191,13 @@ export function initializeApp(
 
   return getAppModule()
     .initializeApp(options as FirebaseAppOptions, appConfig)
-    .then(() => {
+    .then(nativeResult => {
+      // Native resolves the real SDK flag, which differs from the input when the key was omitted
+      // (SDK / Info.plist default). Web echoes the input and Jest mocks resolve void; both keep `!!input`.
+      const nativeEnabled = nativeResult?.appConfig?.automaticDataCollectionEnabled;
+      if (typeof nativeEnabled === 'boolean') {
+        app._setAutomaticDataCollectionEnabledFromNative(nativeEnabled);
+      }
       app._initialized = true;
       return app as unknown as ReactNativeFirebase.FirebaseApp;
     })

@@ -39,6 +39,7 @@
 #import "RNFBAuthCacheRegistry.h"
 #import "RNFBAuthHelper.h"
 #import "RNFBAuthListenerRegistry.h"
+#import "RNFBAuthNullSentinelDecoder.h"
 
 @interface RNFBAuthListenerRemover : NSObject
 @property(nonatomic, copy, nullable) void (^onRemove)(void);
@@ -652,15 +653,18 @@ static __strong RNFBAuthCacheRegistry *cachedTotpSecrets;
 
   if (user) {
     FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
-    NSMutableArray *allKeys = [[props allKeys] mutableCopy];
+    // The decoder omits NSNull keys (subscript → nil). Iterate the original props keys so a
+    // cleared displayName/photoURL still reaches setValue:forKey: with nil.
+    NSDictionary *decodedProps = [RNFBAuthNullSentinelDecoder decodedProfileProps:props];
 
-    for (NSString *key in allKeys) {
+    for (NSString *key in props) {
       @try {
+        id value = decodedProps[key];
         if ([key isEqualToString:keyPhotoUrl]) {
-          NSURL *url = [NSURL URLWithString:[props valueForKey:key]];
-          [changeRequest setValue:url forKey:key];
+          [changeRequest setValue:[RNFBAuthNullSentinelDecoder photoURLFromDecodedValue:value]
+                           forKey:key];
         } else {
-          [changeRequest setValue:props[key] forKey:key];
+          [changeRequest setValue:value forKey:key];
         }
       } @catch (NSException *exception) {
         DLog(@"Exception occurred while configuring: %@", exception);

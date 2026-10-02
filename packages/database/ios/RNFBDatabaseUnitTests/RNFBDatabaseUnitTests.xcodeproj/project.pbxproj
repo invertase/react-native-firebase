@@ -12,6 +12,9 @@
 		D8000000000000000000000C /* RNFBDatabaseListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000009 /* RNFBDatabaseListenerRegistryTests.m */; };
 		D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */; };
 		D80000000000000000000022 /* RNFBDatabaseQueryRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */; };
+		D80000000000000000000030 /* RNFBNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000031 /* RNFBNullSentinelDecoder.m */; };
+		D80000000000000000000032 /* RNFBDatabaseNullSentinelDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000033 /* RNFBDatabaseNullSentinelDecoder.m */; };
+		D80000000000000000000038 /* RNFBDatabaseNullSentinelDecodeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000039 /* RNFBDatabaseNullSentinelDecodeTests.m */; };
 		D80000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D80000000000000000000014 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +28,11 @@
 		D80000000000000000000024 /* RNFBDatabaseQueryRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBDatabaseQueryRegistry.h; path = ../RNFBDatabase/RNFBDatabaseQueryRegistry.h; sourceTree = SOURCE_ROOT; };
 		D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDatabaseQueryRegistry.m; path = ../RNFBDatabase/RNFBDatabaseQueryRegistry.m; sourceTree = SOURCE_ROOT; };
 		D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseQueryRegistryTests.m; sourceTree = "<group>"; };
+		D80000000000000000000031 /* RNFBNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBNullSentinelDecoder.m; path = ../../../app/ios/RNFBApp/RNFBNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
+		D8000000000000000000003A /* RNFBNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBNullSentinelDecoder.h; path = ../../../app/ios/RNFBApp/RNFBNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000033 /* RNFBDatabaseNullSentinelDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDatabaseNullSentinelDecoder.m; path = ../RNFBDatabase/RNFBDatabaseNullSentinelDecoder.m; sourceTree = SOURCE_ROOT; };
+		D8000000000000000000003B /* RNFBDatabaseNullSentinelDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBDatabaseNullSentinelDecoder.h; path = ../RNFBDatabase/RNFBDatabaseNullSentinelDecoder.h; sourceTree = SOURCE_ROOT; };
+		D80000000000000000000039 /* RNFBDatabaseNullSentinelDecodeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseNullSentinelDecodeTests.m; sourceTree = "<group>"; };
 		D80000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -65,8 +73,13 @@
 				D80000000000000000000018 /* RNFBDatabaseListenerRegistry.m */,
 				D80000000000000000000024 /* RNFBDatabaseQueryRegistry.h */,
 				D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */,
+				D8000000000000000000003A /* RNFBNullSentinelDecoder.h */,
+				D80000000000000000000031 /* RNFBNullSentinelDecoder.m */,
+				D8000000000000000000003B /* RNFBDatabaseNullSentinelDecoder.h */,
+				D80000000000000000000033 /* RNFBDatabaseNullSentinelDecoder.m */,
 				D80000000000000000000009 /* RNFBDatabaseListenerRegistryTests.m */,
 				D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */,
+				D80000000000000000000039 /* RNFBDatabaseNullSentinelDecodeTests.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -131,8 +144,11 @@
 				D8000000000000000000000A /* RNFBHandleMap.m in Sources */,
 				D8000000000000000000000B /* RNFBDatabaseListenerRegistry.m in Sources */,
 				D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */,
+				D80000000000000000000030 /* RNFBNullSentinelDecoder.m in Sources */,
+				D80000000000000000000032 /* RNFBDatabaseNullSentinelDecoder.m in Sources */,
 				D8000000000000000000000C /* RNFBDatabaseListenerRegistryTests.m in Sources */,
 				D80000000000000000000022 /* RNFBDatabaseQueryRegistryTests.m in Sources */,
+				D80000000000000000000038 /* RNFBDatabaseNullSentinelDecodeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -183,6 +199,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBDatabase",
@@ -217,6 +234,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBDatabase",
