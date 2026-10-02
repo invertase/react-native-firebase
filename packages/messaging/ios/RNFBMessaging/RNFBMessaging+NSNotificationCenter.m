@@ -86,7 +86,9 @@
   [[RNFBMessagingFIRMessagingDelegate sharedInstance] observe];
 
   RCTRootView *rctRootView;
+  // `window` is optional on UIApplicationDelegate; scene-based apps may not implement it.
   if ([UIApplication sharedApplication].delegate != nil &&
+      [[UIApplication sharedApplication].delegate respondsToSelector:@selector(window)] &&
       [UIApplication sharedApplication].delegate.window != nil &&
       [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
       [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
@@ -168,6 +170,7 @@
 - (void)application_onDidEnterForeground {
   isHeadless = NO;
   if ([UIApplication sharedApplication].delegate != nil &&
+      [[UIApplication sharedApplication].delegate respondsToSelector:@selector(window)] &&
       [UIApplication sharedApplication].delegate.window != nil &&
       [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
       [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
