@@ -48,8 +48,7 @@ export default function PhoneNumberVerificationScreen() {
     <ScreenChrome title="phone-number-verification" result={result} error={error}>
       <Text style={styles.hint}>
         Controls mirror runtime APIs taught on the Phone Number Verification usage page. Android
-        only. There is no emulator and no connect*Emulator helper; this product is not in yarn
-        tests:emulator:start-ci. Platform.OS is {Platform.OS}.
+        only. There is no emulator for this product. Platform.OS is {Platform.OS}.
       </Text>
 
       <Text style={styles.warning}>
@@ -58,6 +57,10 @@ export default function PhoneNumberVerificationScreen() {
       </Text>
 
       <Text style={styles.section}>Support and errors</Text>
+      <Text style={styles.warning}>
+        WARNING: both getVerificationSupportInfo controls throw on non-Android. The PnvErrorCode
+        control only reads constants and does not throw.
+      </Text>
       <AppButton
         title="getVerificationSupportInfo"
         onPress={() => run('getVerificationSupportInfo', async () => getVerificationSupportInfo())}
