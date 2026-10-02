@@ -18,6 +18,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The job name below is a required status check on main (branch protection).
+  # Do not rename it. Besides spelling and grammar it also runs the docs lint,
+  # the docs snippet type-check (`yarn docs:tsc:check`) and the docs member
+  # check (`yarn docs:member:check`).
   spelling:
     name: 'Spelling & Grammar'
     runs-on: ubuntu-latest
