@@ -33,6 +33,7 @@ Pod::Spec.new do |s|
     'ios/RNFBAppCheck/RNFBAppCheckModule.h',
   ]
   s.private_header_files = [
+    'ios/RNFBAppCheck/RNFBAppCheckHelper.h',
     'ios/RNFBAppCheck/RNFBAppCheckProvider.h',
     'ios/RNFBAppCheck/RNFBAppCheckProviderFactory.h',
     'ios/generated/**/*.h',
