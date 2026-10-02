@@ -163,7 +163,7 @@ await unregister(messaging);
 
 `onRegistered` replays the cached FID to a new subscriber while the app is still registered, so subscribing after
 `register()` has completed still delivers the current FID. Later registrations and FID rotations fire as usual.
-If your callback throws during that initial replay, the subscription is still created and the error is thrown again asynchronously.
+If your callback throws during that initial replay, `onRegistered` throws the same error and no subscription is created.
 `onUnregistered` does not replay: it only fires for an `unregister()` that completes after you subscribe.
 
 ## Using tokens

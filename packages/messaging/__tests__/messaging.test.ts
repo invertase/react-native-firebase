@@ -284,41 +284,21 @@ describe('Messaging', function () {
         }
       });
 
-      it('keeps the onRegistered subscription and unsubscribe handle when the replay callback throws', function () {
-        jest.useFakeTimers();
-        try {
-          const messaging = createMessagingInstance(true);
-          SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-cached' });
+      it('rethrows the replay error and removes the subscription when the replay callback throws', function () {
+        const messaging = createMessagingInstance(true);
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-cached' });
 
-          const replayError = new Error('replay callback failed');
-          const listener = jest
-            .fn<(installationId: string) => void>()
-            .mockImplementationOnce(() => {
-              throw replayError;
-            });
+        const replayError = new Error('replay callback failed');
+        const listener = jest.fn<(installationId: string) => void>().mockImplementationOnce(() => {
+          throw replayError;
+        });
 
-          let unsubscribe: (() => void) | undefined;
-          expect(() => {
-            unsubscribe = onRegistered(messaging, listener);
-          }).not.toThrow();
-          expect(unsubscribe).toBeInstanceOf(Function);
-          expect(listener).toHaveBeenCalledTimes(1);
+        expect(() => onRegistered(messaging, listener)).toThrow(replayError);
+        expect(listener).toHaveBeenCalledTimes(1);
 
-          // The replay error is surfaced asynchronously rather than swallowed.
-          expect(() => jest.runAllTimers()).toThrow(replayError);
-
-          // The subscription stayed valid: later events still reach the callback.
-          SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-rotated' });
-          expect(listener).toHaveBeenCalledTimes(2);
-          expect(listener).toHaveBeenLastCalledWith('fid-rotated');
-
-          // And the returned handle still unsubscribes.
-          unsubscribe?.();
-          SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-after' });
-          expect(listener).toHaveBeenCalledTimes(2);
-        } finally {
-          jest.useRealTimers();
-        }
+        // The caller never got an unsubscribe handle, so nothing may stay attached.
+        SharedEventEmitter.emit('messaging_registered', { installationId: 'fid-rotated' });
+        expect(listener).toHaveBeenCalledTimes(1);
       });
 
       it('does not replay onUnregistered to a late subscriber and clears the cache', function () {
