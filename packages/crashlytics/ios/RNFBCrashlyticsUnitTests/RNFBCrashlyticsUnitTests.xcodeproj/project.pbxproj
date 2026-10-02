@@ -10,6 +10,9 @@
 		CL100000000000000000000B /* RNFBCrashlyticsDebuggerProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000009 /* RNFBCrashlyticsDebuggerProbe.swift */; };
 		CL100000000000000000000C /* RNFBCrashlyticsDebuggerProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CL100000000000000000000D /* RNFBCrashlyticsDebuggerProbeTests.swift */; };
 		CL1000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000014 /* XCTest.framework */; };
+		CL1000000000000000000020 /* RNFBCrashlyticsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000021 /* RNFBCrashlyticsHelper.m */; };
+		CL1000000000000000000022 /* RNFBCrashlyticsHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000023 /* RNFBCrashlyticsHelperHostStubTests.m */; };
+		CL1000000000000000000024 /* FIRCrashlyticsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000025 /* FIRCrashlyticsHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,6 +20,10 @@
 		CL1000000000000000000009 /* RNFBCrashlyticsDebuggerProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBCrashlyticsDebuggerProbe.swift; path = ../RNFBCrashlytics/RNFBCrashlyticsDebuggerProbe.swift; sourceTree = SOURCE_ROOT; };
 		CL100000000000000000000D /* RNFBCrashlyticsDebuggerProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBCrashlyticsDebuggerProbeTests.swift; sourceTree = "<group>"; };
 		CL1000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		CL1000000000000000000021 /* RNFBCrashlyticsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBCrashlyticsHelper.m; path = ../RNFBCrashlytics/RNFBCrashlyticsHelper.m; sourceTree = SOURCE_ROOT; };
+		CL1000000000000000000023 /* RNFBCrashlyticsHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsHelperHostStubTests.m; sourceTree = "<group>"; };
+		CL1000000000000000000025 /* FIRCrashlyticsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRCrashlyticsHostStub.m; path = HostStubs/Firebase/FIRCrashlyticsHostStub.m; sourceTree = "<group>"; };
+		CL1000000000000000000026 /* RNFBCrashlyticsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBCrashlyticsHelper.h; path = ../RNFBCrashlytics/RNFBCrashlyticsHelper.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +59,10 @@
 			children = (
 				CL1000000000000000000009 /* RNFBCrashlyticsDebuggerProbe.swift */,
 				CL100000000000000000000D /* RNFBCrashlyticsDebuggerProbeTests.swift */,
+				CL1000000000000000000026 /* RNFBCrashlyticsHelper.h */,
+				CL1000000000000000000021 /* RNFBCrashlyticsHelper.m */,
+				CL1000000000000000000023 /* RNFBCrashlyticsHelperHostStubTests.m */,
+				CL1000000000000000000025 /* FIRCrashlyticsHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -115,6 +126,9 @@
 			files = (
 				CL100000000000000000000B /* RNFBCrashlyticsDebuggerProbe.swift in Sources */,
 				CL100000000000000000000C /* RNFBCrashlyticsDebuggerProbeTests.swift in Sources */,
+				CL1000000000000000000020 /* RNFBCrashlyticsHelper.m in Sources */,
+				CL1000000000000000000024 /* FIRCrashlyticsHostStub.m in Sources */,
+				CL1000000000000000000022 /* RNFBCrashlyticsHelperHostStubTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +180,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
 					"$(SRCROOT)/../RNFBCrashlytics",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -201,6 +216,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
 					"$(SRCROOT)/../RNFBCrashlytics",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (

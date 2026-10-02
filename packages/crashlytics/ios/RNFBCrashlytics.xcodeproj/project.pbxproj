@@ -11,6 +11,7 @@
 		2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */; };
 		C66637BB25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */; };
 		RNFBCL000000000000000001 /* RNFBCrashlyticsDebuggerProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBCL000000000000000002 /* RNFBCrashlyticsDebuggerProbe.swift */; };
+		RNFBCL000000000000000003 /* RNFBCrashlyticsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBCL000000000000000005 /* RNFBCrashlyticsHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +35,8 @@
 		C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsNativeHelper.m; sourceTree = "<group>"; };
 		C66637BD25FA561D00DCAA51 /* RNFBCrashlyticsNativeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBCrashlyticsNativeHelper.h; sourceTree = "<group>"; };
 		RNFBCL000000000000000002 /* RNFBCrashlyticsDebuggerProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBCrashlyticsDebuggerProbe.swift; path = RNFBCrashlytics/RNFBCrashlyticsDebuggerProbe.swift; sourceTree = SOURCE_ROOT; };
+		RNFBCL000000000000000004 /* RNFBCrashlyticsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBCrashlyticsHelper.h; path = RNFBCrashlytics/RNFBCrashlyticsHelper.h; sourceTree = SOURCE_ROOT; };
+		RNFBCL000000000000000005 /* RNFBCrashlyticsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBCrashlyticsHelper.m; path = RNFBCrashlytics/RNFBCrashlyticsHelper.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +63,8 @@
 			children = (
 				2744B98421F45429004F8E3F /* RNFBCrashlyticsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.mm */,
+				RNFBCL000000000000000004 /* RNFBCrashlyticsHelper.h */,
+				RNFBCL000000000000000005 /* RNFBCrashlyticsHelper.m */,
 				RNFBCL000000000000000002 /* RNFBCrashlyticsDebuggerProbe.swift */,
 				2748D82222371C0900FC8DC8 /* RNFBCrashlyticsInitProvider.h */,
 				2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */,
@@ -136,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C66637BB25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m in Sources */,
+				RNFBCL000000000000000003 /* RNFBCrashlyticsHelper.m in Sources */,
 				2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.mm in Sources */,
 				RNFBCL000000000000000001 /* RNFBCrashlyticsDebuggerProbe.swift in Sources */,
