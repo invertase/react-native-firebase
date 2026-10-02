@@ -52,6 +52,16 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_delet
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "deleteToken", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
 }
 
+static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_register(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "register", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+}
+
+static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_unregister(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "unregister", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+}
+
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_getAPNSToken(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "getAPNSToken", "(Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
@@ -127,6 +137,8 @@ NativeRNFBTurboMessagingSpecJSI::NativeRNFBTurboMessagingSpecJSI(const JavaTurbo
   methodMap_["completeNotificationProcessing"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_completeNotificationProcessing};
   methodMap_["getToken"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboMessagingSpecJSI_getToken};
   methodMap_["deleteToken"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboMessagingSpecJSI_deleteToken};
+  methodMap_["register"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_register};
+  methodMap_["unregister"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_unregister};
   methodMap_["getAPNSToken"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_getAPNSToken};
   methodMap_["setAPNSToken"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboMessagingSpecJSI_setAPNSToken};
   methodMap_["getIsHeadless"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_getIsHeadless};

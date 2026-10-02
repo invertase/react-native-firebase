@@ -80,6 +80,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 #endif
   constants[@"isDeliveryMetricsExportToBigQueryEnabled"] =
       @([RCTConvert BOOL:@(_isDeliveryMetricsExportToBigQueryEnabled)]);
+  constants[@"isInstallationIdEnabled"] =
+      @([RCTConvert BOOL:@([FIRMessaging messaging].isInstallationIdEnabled)]);
   return constants;
 }
 
@@ -181,6 +183,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
                                                resolve([NSNull null]);
                                              }
                                            }];
+}
+
+- (void)register:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [[FIRMessaging messaging] registerWithCompletion:^(NSError *_Nullable error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve([NSNull null]);
+    }
+  }];
+}
+
+- (void)unregister:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [[FIRMessaging messaging] unregisterWithCompletion:^(NSError *_Nullable error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve([NSNull null]);
+    }
+  }];
 }
 
 - (void)getAPNSToken:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {

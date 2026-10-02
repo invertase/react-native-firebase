@@ -229,4 +229,68 @@ describe('Config Plugin Android Tests', function () {
       });
     });
   });
+
+  describe('installationIdEnabled', function () {
+    it('writes firebase_messaging_installation_id_enabled when true', function () {
+      const config: ExpoConfig = JSON.parse(
+        JSON.stringify(expoNotificationsConfigWithoutPluginExample),
+      );
+      const manifestApplication: ManifestApplication = JSON.parse(
+        JSON.stringify(manifestApplicationExample),
+      );
+      setFireBaseMessagingAndroidManifest(config, manifestApplication, {
+        installationIdEnabled: true,
+      });
+      expect(manifestApplication['meta-data']).toContainEqual({
+        $: {
+          'android:name': 'firebase_messaging_installation_id_enabled',
+          'android:value': 'true',
+        },
+      });
+    });
+
+    it('does not duplicate firebase_messaging_installation_id_enabled when already present', function () {
+      const config: ExpoConfig = JSON.parse(
+        JSON.stringify(expoNotificationsConfigWithoutPluginExample),
+      );
+      const manifestApplication: ManifestApplication = JSON.parse(
+        JSON.stringify(manifestApplicationExample),
+      );
+      setFireBaseMessagingAndroidManifest(config, manifestApplication, {
+        installationIdEnabled: true,
+      });
+      setFireBaseMessagingAndroidManifest(config, manifestApplication, {
+        installationIdEnabled: true,
+      });
+      const entries = (manifestApplication['meta-data'] ?? []).filter(
+        item => item.$['android:name'] === 'firebase_messaging_installation_id_enabled',
+      );
+      expect(entries).toHaveLength(1);
+    });
+
+    it('writes nothing when omitted or false', function () {
+      const config: ExpoConfig = JSON.parse(
+        JSON.stringify(expoNotificationsConfigWithoutPluginExample),
+      );
+      const omitted: ManifestApplication = JSON.parse(JSON.stringify(manifestApplicationExample));
+      setFireBaseMessagingAndroidManifest(config, omitted);
+      expect(omitted['meta-data'] ?? []).not.toContainEqual(
+        expect.objectContaining({
+          $: expect.objectContaining({
+            'android:name': 'firebase_messaging_installation_id_enabled',
+          }),
+        }),
+      );
+
+      const disabled: ManifestApplication = JSON.parse(JSON.stringify(manifestApplicationExample));
+      setFireBaseMessagingAndroidManifest(config, disabled, { installationIdEnabled: false });
+      expect(disabled['meta-data'] ?? []).not.toContainEqual(
+        expect.objectContaining({
+          $: expect.objectContaining({
+            'android:name': 'firebase_messaging_installation_id_enabled',
+          }),
+        }),
+      );
+    });
+  });
 });

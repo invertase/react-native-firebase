@@ -16,6 +16,7 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { CompleteFn, ErrorFn } from '@react-native-firebase/app/dist/module/types/common';
 
 // ============ Types ============
 
@@ -178,6 +179,47 @@ export interface GetTokenOptions {
    */
   serviceWorkerRegistration?: any; // ServiceWorkerRegistration is a web API type
 }
+
+/**
+ * Options for `register()`. Same shape as {@link GetTokenOptions} for SW and VAPID configuration.
+ *
+ * Web-only fields are accepted for API parity with the Firebase JS SDK and are ignored on
+ * React Native (Android / iOS).
+ */
+export interface RegisterOptions {
+  /**
+   * On Web, the VAPID key used to authenticate the push subscribers
+   * to receive push messages only from sending servers
+   * that hold the corresponding private key.
+   */
+  vapidKey?: string;
+
+  /**
+   * On Web, the service worker registration for receiving push messaging.
+   * If the registration is not provided explicitly, you need to
+   * have a firebase-messaging-sw.js at your root location.
+   */
+  serviceWorkerRegistration?: any; // ServiceWorkerRegistration is a web API type
+}
+
+/**
+ * A next-function observer callback. Matches `@firebase/util` / firebase-js-sdk messaging.
+ */
+export type NextFn<T> = (value: T) => void;
+
+/**
+ * A full Observer. Matches `@firebase/util` / firebase-js-sdk messaging.
+ */
+export interface Observer<T> {
+  next: NextFn<T>;
+  error: ErrorFn;
+  complete: CompleteFn;
+}
+
+/**
+ * Unsubscribe function returned by event listeners.
+ */
+export type Unsubscribe = () => void;
 
 /**
  * NotificationPayload is an alias for Notification. This is to keep it the same as
@@ -521,8 +563,8 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    *
    * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
    * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
-   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
-   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+   * `onRegistered`). Prefer {@link Messaging.register} and {@link Messaging.onRegistered} after
+   * opting in to Installation ID messaging. Token APIs still work while the FID flag is off.
    */
   getToken(options?: GetTokenOptions & NativeTokenOptions): Promise<string>;
 
@@ -533,11 +575,33 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    * @param options Options to override senderId (iOS) and appName (android)
    *
    * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
-   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
-   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
-   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+   * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`unregister` /
+   * `onUnregistered`). Prefer {@link Messaging.unregister} and {@link Messaging.onUnregistered}
+   * after opting in to Installation ID messaging. Token APIs still work while the FID flag is off.
    */
   deleteToken(options?: NativeTokenOptions): Promise<void>;
+
+  /**
+   * Registers the app instance with FCM using its Firebase Installation ID (FID).
+   *
+   * Requires Installation ID messaging to be enabled (Android meta-data
+   * `firebase_messaging_installation_id_enabled`, iOS Info.plist
+   * `FirebaseMessagingInstallationIdEnabled`, or Expo plugin `installationIdEnabled: true`).
+   * Does not call `registerDeviceForRemoteMessages` / APNs registration.
+   *
+   * Web-only `RegisterOptions` fields are ignored on React Native.
+   *
+   * @param options Optional web-parity options (ignored on native).
+   */
+  register(options?: RegisterOptions): Promise<void>;
+
+  /**
+   * Unregisters the app instance from FCM so the current Firebase Installation ID is no longer
+   * active for receiving messages.
+   *
+   * Requires Installation ID messaging to be enabled. See {@link Messaging.register}.
+   */
+  unregister(): Promise<void>;
 
   /**
    * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
@@ -570,10 +634,35 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
    *
    * @deprecated Firebase JS 12.14+, Android Messaging 25.1+, and Apple 12.18+ deprecated FCM token
    * APIs (`getToken`, `deleteToken`, `onTokenRefresh`) in favor of FID registration (`register` /
-   * `onRegistered`). React Native Firebase still supports the token path. Keep using `getToken`,
-   * `deleteToken`, and `onTokenRefresh`. RNFB `register` / `onRegistered` will land in a follow-up.
+   * `onRegistered`). Prefer {@link Messaging.register} and {@link Messaging.onRegistered} after
+   * opting in to Installation ID messaging. Token APIs still work while the FID flag is off.
    */
   onTokenRefresh(listener: (token: string) => any): () => void;
+
+  /**
+   * Subscribes to Firebase Installation ID (FID) registration events.
+   *
+   * Fires for explicit `register()`, auto-init at startup, and installation-id rotation.
+   * While still registered, a new subscriber receives the cached FID immediately; later events
+   * still fire.
+   *
+   * Requires Installation ID messaging to be enabled. See {@link Messaging.register}.
+   *
+   * @param nextOrObserver A next function or Observer called with the FID.
+   */
+  onRegistered(nextOrObserver: NextFn<string> | Observer<string>): Unsubscribe;
+
+  /**
+   * Subscribes to Firebase Installation ID (FID) unregistration events.
+   *
+   * Fires only after a successful `unregister()`, with that FID. Does not replay to a late
+   * subscriber.
+   *
+   * Requires Installation ID messaging to be enabled. See {@link Messaging.register}.
+   *
+   * @param nextOrObserver A next function or Observer called with the unregistered FID.
+   */
+  onUnregistered(nextOrObserver: NextFn<string> | Observer<string>): Unsubscribe;
 
   /**
    * On iOS, messaging permission must be requested by the current application before messages can

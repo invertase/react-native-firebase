@@ -1,5 +1,6 @@
 import { ConfigPlugin, withPlugins, createRunOncePlugin } from '@expo/config-plugins';
 import { withExpoPluginFirebaseNotification } from './android';
+import { withExpoPluginInstallationIdIos } from './ios/setupInstallationId';
 import { PluginConfigType } from './pluginConfig';
 
 /**
@@ -8,7 +9,7 @@ import { PluginConfigType } from './pluginConfig';
 const withRnFirebaseMessaging: ConfigPlugin<PluginConfigType | undefined> = (config, props) => {
   return withPlugins(config, [
     // iOS
-
+    [withExpoPluginInstallationIdIos, props],
     // Android
     [withExpoPluginFirebaseNotification, props],
   ]);

@@ -17,6 +17,7 @@
 
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
 
@@ -75,6 +76,58 @@
         (typeof(usersDidReceiveRegistrationTokenIMP))&objc_msgSend;
     usersDidReceiveRegistrationTokenIMP(
         applicationDelegate, messaging_didReceiveRegistrationTokenSelector, messaging, fcmToken);
+  }
+}
+
+// JS -> `onRegistered`
+// `installationId` is `nullable` in FIRMessaging.h, so only the JS event is skipped for nil; user
+// delegates are still told, like any other registration callback.
+- (void)messaging:(FIRMessaging *)messaging
+    didReceiveRegistration:(nullable NSString *)installationId {
+  if (installationId != nil) {
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_registered"
+                                               body:@{@"installationId" : installationId}];
+  } else {
+    DLog(@"RNFBMessaging didReceiveRegistration - nil installationId, skipping JS event.");
+  }
+
+  SEL messaging_didReceiveRegistrationSelector =
+      NSSelectorFromString(@"messaging:didReceiveRegistration:");
+  id<FIRMessagingDelegate> strongOriginalDelegate = self.originalDelegate;
+  if ([strongOriginalDelegate respondsToSelector:messaging_didReceiveRegistrationSelector]) {
+    [strongOriginalDelegate messaging:messaging didReceiveRegistration:installationId];
+  }
+
+  id<UIApplicationDelegate> applicationDelegate =
+      [GULAppDelegateSwizzler sharedApplication].delegate;
+  if (applicationDelegate != strongOriginalDelegate &&
+      [applicationDelegate respondsToSelector:messaging_didReceiveRegistrationSelector]) {
+    void (*usersDidReceiveRegistrationIMP)(id, SEL, FIRMessaging *, NSString *) =
+        (typeof(usersDidReceiveRegistrationIMP))&objc_msgSend;
+    usersDidReceiveRegistrationIMP(applicationDelegate, messaging_didReceiveRegistrationSelector,
+                                   messaging, installationId);
+  }
+}
+
+// JS -> `onUnregistered`
+- (void)messaging:(FIRMessaging *)messaging didUnregister:(NSString *)installationId {
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_unregistered"
+                                             body:@{@"installationId" : installationId}];
+
+  SEL messaging_didUnregisterSelector = NSSelectorFromString(@"messaging:didUnregister:");
+  id<FIRMessagingDelegate> strongOriginalDelegate = self.originalDelegate;
+  if ([strongOriginalDelegate respondsToSelector:messaging_didUnregisterSelector]) {
+    [strongOriginalDelegate messaging:messaging didUnregister:installationId];
+  }
+
+  id<UIApplicationDelegate> applicationDelegate =
+      [GULAppDelegateSwizzler sharedApplication].delegate;
+  if (applicationDelegate != strongOriginalDelegate &&
+      [applicationDelegate respondsToSelector:messaging_didUnregisterSelector]) {
+    void (*usersDidUnregisterIMP)(id, SEL, FIRMessaging *, NSString *) =
+        (typeof(usersDidUnregisterIMP))&objc_msgSend;
+    usersDidUnregisterIMP(applicationDelegate, messaging_didUnregisterSelector, messaging,
+                          installationId);
   }
 }
 
