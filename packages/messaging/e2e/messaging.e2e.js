@@ -428,6 +428,38 @@ describe('messaging()', function () {
       });
     });
 
+    describe('installation id APIs (flag off by default)', function () {
+      it('rejects register/unregister with installation-id-not-enabled', async function () {
+        const { getMessaging, register, unregister } = messagingModular;
+        try {
+          await register(getMessaging());
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.code.should.equal('messaging/installation-id-not-enabled');
+        }
+
+        try {
+          await unregister(getMessaging());
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.code.should.equal('messaging/installation-id-not-enabled');
+          return Promise.resolve();
+        }
+      });
+
+      it('throws onRegistered/onUnregistered with installation-id-not-enabled', function () {
+        const { getMessaging, onRegistered, onUnregistered } = messagingModular;
+        (() => onRegistered(getMessaging(), () => undefined)).should.throw(
+          Error,
+          /messaging\/installation-id-not-enabled/,
+        );
+        (() => onUnregistered(getMessaging(), () => undefined)).should.throw(
+          Error,
+          /messaging\/installation-id-not-enabled/,
+        );
+      });
+    });
+
     describe('onMessage()', function () {
       it('throws if listener is not a function', function () {
         const { getMessaging, onMessage } = messagingModular;

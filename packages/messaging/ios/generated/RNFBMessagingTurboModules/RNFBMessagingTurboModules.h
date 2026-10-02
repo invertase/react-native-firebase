@@ -67,6 +67,7 @@ namespace JS {
           RCTRequired<bool> isDeliveryMetricsExportToBigQueryEnabled;
           std::optional<bool> isRegisteredForRemoteNotifications;
           std::optional<bool> isNotificationDelegationEnabled;
+          std::optional<bool> isInstallationIdEnabled;
         };
 
         /** Initialize with a set of values */
@@ -106,6 +107,10 @@ namespace JS {
            senderId:(NSString *)senderId
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject;
+- (void)register:(RCTPromiseResolveBlock)resolve
+          reject:(RCTPromiseRejectBlock)reject;
+- (void)unregister:(RCTPromiseResolveBlock)resolve
+            reject:(RCTPromiseRejectBlock)reject;
 - (void)getAPNSToken:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject;
 - (void)setAPNSToken:(NSString *)token
@@ -213,6 +218,8 @@ inline JS::NativeRNFBTurboMessaging::Constants::Builder::Builder(const Input i) 
   d[@"isRegisteredForRemoteNotifications"] = isRegisteredForRemoteNotifications.has_value() ? @((BOOL)isRegisteredForRemoteNotifications.value()) : nil;
   auto isNotificationDelegationEnabled = i.isNotificationDelegationEnabled;
   d[@"isNotificationDelegationEnabled"] = isNotificationDelegationEnabled.has_value() ? @((BOOL)isNotificationDelegationEnabled.value()) : nil;
+  auto isInstallationIdEnabled = i.isInstallationIdEnabled;
+  d[@"isInstallationIdEnabled"] = isInstallationIdEnabled.has_value() ? @((BOOL)isInstallationIdEnabled.value()) : nil;
   return d;
 }) {}
 inline JS::NativeRNFBTurboMessaging::Constants::Builder::Builder(Constants i) : _factory(^{

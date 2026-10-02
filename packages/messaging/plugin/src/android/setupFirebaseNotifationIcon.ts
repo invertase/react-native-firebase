@@ -122,5 +122,17 @@ export function setFireBaseMessagingAndroidManifest(
     });
   }
 
+  if (
+    props?.installationIdEnabled &&
+    !hasMetaData(application, 'firebase_messaging_installation_id_enabled')
+  ) {
+    metaData.push({
+      $: {
+        'android:name': 'firebase_messaging_installation_id_enabled',
+        'android:value': 'true',
+      },
+    });
+  }
+
   return application;
 }

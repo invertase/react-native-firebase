@@ -31,6 +31,18 @@ public class ReactNativeFirebaseMessagingService extends FirebaseMessagingServic
   }
 
   @Override
+  public void onRegistered(String installationId) {
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.registeredToEvent(installationId));
+  }
+
+  @Override
+  public void onUnregistered(String installationId) {
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.unregisteredToEvent(installationId));
+  }
+
+  @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     // noop - handled in receiver
   }
