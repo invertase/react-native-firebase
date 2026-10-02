@@ -58,7 +58,6 @@
 		A1000000000000000000006E /* RCTConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006F /* RCTConvert.m */; };
 		A1000000000000000000007C /* RNFBUtilsHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007D /* RNFBUtilsHelpers.swift */; };
 		A1000000000000000000007E /* RNFBUtilsModule+Foundation.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */; };
-		A10000000000000000000080 /* RNFBUtilsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000081 /* RNFBUtilsModule.m */; };
 		A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */; };
 		A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */; };
 		A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */; };
@@ -74,6 +73,15 @@
 		A1000000000000000000009B /* RNFBAppModuleFirebaseFacadeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000009C /* RNFBAppModuleFirebaseFacadeTests.m */; };
 		A1000000000000000000009D /* RNFBAppModuleImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000009E /* RNFBAppModuleImplementation.m */; };
 		A1000000000000000000009F /* RNFBAppModuleLifecycleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A0 /* RNFBAppModuleLifecycleTests.m */; };
+		A100000000000000000000A2 /* RNFBAppModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A1 /* RNFBAppModule.mm */; };
+		A100000000000000000000A4 /* RNFBAppModule+CustomAuthDomain.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A3 /* RNFBAppModule+CustomAuthDomain.m */; };
+		A100000000000000000000A6 /* RNFBUtilsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A5 /* RNFBUtilsModule.mm */; };
+		A100000000000000000000A8 /* RNFBUtilsModuleImplementation.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A7 /* RNFBUtilsModuleImplementation.m */; };
+		A100000000000000000000AA /* RNFBUtilsModule+PhotoAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A9 /* RNFBUtilsModule+PhotoAssets.m */; };
+		A100000000000000000000AC /* RNFBAppTurboModules.mm in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AB /* RNFBAppTurboModules.mm */; };
+		A100000000000000000000AF /* RNFBAppModuleShellTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000AE /* RNFBAppModuleShellTests.mm */; };
+		A100000000000000000000B1 /* RNFBUtilsModuleShellTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B0 /* RNFBUtilsModuleShellTests.mm */; };
+		A100000000000000000000B3 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A100000000000000000000B2 /* Photos.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -139,7 +147,6 @@
 		A10000000000000000000071 /* RCTConvert+FIROptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIROptions.h"; path = "../RNFBApp/RCTConvert+FIROptions.h"; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000007D /* RNFBUtilsHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBUtilsHelpers.swift; path = ../RNFBApp/RNFBUtilsHelpers.swift; sourceTree = SOURCE_ROOT; };
 		A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RNFBUtilsModule+Foundation.m"; path = "../RNFBApp/RNFBUtilsModule+Foundation.m"; sourceTree = SOURCE_ROOT; };
-		A10000000000000000000081 /* RNFBUtilsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBUtilsModule.m; path = HostStubs/RNFBUtilsModule.m; sourceTree = "<group>"; };
 		A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBUtilsHelpersTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBUtilsModuleFacadeTests.m; sourceTree = "<group>"; };
 		A10000000000000000000086 /* RNFBUtilsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBUtilsModule.h; path = ../RNFBApp/RNFBUtilsModule.h; sourceTree = SOURCE_ROOT; };
@@ -156,6 +163,16 @@
 		A1000000000000000000009C /* RNFBAppModuleFirebaseFacadeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppModuleFirebaseFacadeTests.m; sourceTree = "<group>"; };
 		A1000000000000000000009E /* RNFBAppModuleImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAppModuleImplementation.m; path = ../RNFBApp/RNFBAppModuleImplementation.m; sourceTree = SOURCE_ROOT; };
 		A100000000000000000000A0 /* RNFBAppModuleLifecycleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAppModuleLifecycleTests.m; sourceTree = "<group>"; };
+		A100000000000000000000A1 /* RNFBAppModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAppModule.mm; path = ../RNFBApp/RNFBAppModule.mm; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000A3 /* RNFBAppModule+CustomAuthDomain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RNFBAppModule+CustomAuthDomain.m"; path = "../RNFBApp/RNFBAppModule+CustomAuthDomain.m"; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000A5 /* RNFBUtilsModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBUtilsModule.mm; path = ../RNFBApp/RNFBUtilsModule.mm; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000A7 /* RNFBUtilsModuleImplementation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBUtilsModuleImplementation.m; path = ../RNFBApp/RNFBUtilsModuleImplementation.m; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000A9 /* RNFBUtilsModule+PhotoAssets.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RNFBUtilsModule+PhotoAssets.m"; path = "../RNFBApp/RNFBUtilsModule+PhotoAssets.m"; sourceTree = SOURCE_ROOT; };
+		A100000000000000000000AB /* RNFBAppTurboModules.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAppTurboModules.mm; path = HostStubs/RNFBAppTurboModules.mm; sourceTree = "<group>"; };
+		A100000000000000000000AE /* RNFBAppModuleShellTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBAppModuleShellTests.mm; path = RNFBAppModuleShellTests.mm; sourceTree = "<group>"; };
+		A100000000000000000000B0 /* RNFBUtilsModuleShellTests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = RNFBUtilsModuleShellTests.mm; path = RNFBUtilsModuleShellTests.mm; sourceTree = "<group>"; };
+		A100000000000000000000AD /* RNFBAppTurboModules.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAppTurboModules.h; path = HostStubs/RNFBAppTurboModules.h; sourceTree = "<group>"; };
+		A100000000000000000000B2 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +181,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000015 /* XCTest.framework in Frameworks */,
+				A100000000000000000000B3 /* Photos.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,7 +268,6 @@
 				A10000000000000000000086 /* RNFBUtilsModule.h */,
 				A1000000000000000000007D /* RNFBUtilsHelpers.swift */,
 				A1000000000000000000007F /* RNFBUtilsModule+Foundation.m */,
-				A10000000000000000000081 /* RNFBUtilsModule.m */,
 				A10000000000000000000083 /* RNFBUtilsHelpersTests.swift */,
 				A10000000000000000000085 /* RNFBUtilsModuleFacadeTests.m */,
 				A10000000000000000000088 /* RNFBAppCustomAuthDomains.swift */,
@@ -266,6 +283,15 @@
 				A1000000000000000000009C /* RNFBAppModuleFirebaseFacadeTests.m */,
 				A1000000000000000000009E /* RNFBAppModuleImplementation.m */,
 				A100000000000000000000A0 /* RNFBAppModuleLifecycleTests.m */,
+				A100000000000000000000A1 /* RNFBAppModule.mm */,
+				A100000000000000000000A3 /* RNFBAppModule+CustomAuthDomain.m */,
+				A100000000000000000000A5 /* RNFBUtilsModule.mm */,
+				A100000000000000000000A7 /* RNFBUtilsModuleImplementation.m */,
+				A100000000000000000000A9 /* RNFBUtilsModule+PhotoAssets.m */,
+				A100000000000000000000AB /* RNFBAppTurboModules.mm */,
+				A100000000000000000000AE /* RNFBAppModuleShellTests.mm */,
+				A100000000000000000000B0 /* RNFBUtilsModuleShellTests.mm */,
+				A100000000000000000000AD /* RNFBAppTurboModules.h */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -377,7 +403,6 @@
 				A1000000000000000000005C /* FIRApp.m in Sources */,
 				A1000000000000000000007C /* RNFBUtilsHelpers.swift in Sources */,
 				A1000000000000000000007E /* RNFBUtilsModule+Foundation.m in Sources */,
-				A10000000000000000000080 /* RNFBUtilsModule.m in Sources */,
 				A10000000000000000000082 /* RNFBUtilsHelpersTests.swift in Sources */,
 				A10000000000000000000084 /* RNFBUtilsModuleFacadeTests.m in Sources */,
 				A10000000000000000000087 /* RNFBAppCustomAuthDomains.swift in Sources */,
@@ -393,6 +418,14 @@
 				A1000000000000000000009B /* RNFBAppModuleFirebaseFacadeTests.m in Sources */,
 				A1000000000000000000009D /* RNFBAppModuleImplementation.m in Sources */,
 				A1000000000000000000009F /* RNFBAppModuleLifecycleTests.m in Sources */,
+				A100000000000000000000A2 /* RNFBAppModule.mm in Sources */,
+				A100000000000000000000A4 /* RNFBAppModule+CustomAuthDomain.m in Sources */,
+				A100000000000000000000A6 /* RNFBUtilsModule.mm in Sources */,
+				A100000000000000000000A8 /* RNFBUtilsModuleImplementation.m in Sources */,
+				A100000000000000000000AA /* RNFBUtilsModule+PhotoAssets.m in Sources */,
+				A100000000000000000000AC /* RNFBAppTurboModules.mm in Sources */,
+				A100000000000000000000AF /* RNFBAppModuleShellTests.mm in Sources */,
+				A100000000000000000000B1 /* RNFBUtilsModuleShellTests.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

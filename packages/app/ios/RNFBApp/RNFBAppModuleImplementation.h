@@ -30,7 +30,8 @@ FOUNDATION_EXPORT NSDictionary *RNFBAppModuleConstantsDictionary(void);
 FOUNDATION_EXPORT void RNFBAppModuleInitializeApp(NSDictionary *options, NSDictionary *appConfig,
                                                   RCTPromiseResolveBlock resolve,
                                                   RCTPromiseRejectBlock reject);
-FOUNDATION_EXPORT void RNFBAppModuleCompleteInitializeApp(id firApp, NSString *_Nullable authDomain,
+FOUNDATION_EXPORT void RNFBAppModuleCompleteInitializeApp(id _Nullable firApp,
+                                                          NSString *_Nullable authDomain,
                                                           NSString *jsAppName,
                                                           NSDictionary *appConfig,
                                                           RCTPromiseResolveBlock resolve);

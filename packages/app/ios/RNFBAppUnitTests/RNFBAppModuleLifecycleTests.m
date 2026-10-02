@@ -21,6 +21,7 @@
 #import "RNFBAppModule.h"
 #import "RNFBAppModuleImplementation.h"
 #import "RNFBHandleMapStorage-Swift.inc"
+#import "RNFBJSON.h"
 #import "RNFBRCTEventEmitter.h"
 
 @interface RNFBAppModuleLifecycleTests : XCTestCase
@@ -36,6 +37,7 @@
   [RNFBRCTEventEmitter shared].bridge = nil;
   [FIRApp resetRegistryForTesting];
   [RNFBAppCustomAuthDomains resetCustomDomainsForTesting];
+  [FIRConfiguration resetForTesting];
 }
 
 - (void)tearDown {
@@ -44,6 +46,7 @@
   self.module = nil;
   [FIRApp resetRegistryForTesting];
   [RNFBAppCustomAuthDomains resetCustomDomainsForTesting];
+  [FIRConfiguration resetForTesting];
   [super tearDown];
 }
 
@@ -88,6 +91,115 @@
   XCTAssertTrue(app.isDataCollectionDefaultEnabled);
   XCTAssertEqualObjects(resolved[@"appConfig"][@"name"], @"secondary");
   XCTAssertEqualObjects(resolved[@"options"][@"authDomain"], @"auth.example.com");
+}
+
+- (FIRApp *)registeredAppNamed:(NSString *)name dataCollection:(BOOL)enabled {
+  FIROptions *options = [[FIROptions alloc] initWithGoogleAppID:@"app-id" GCMSenderID:@"sender"];
+  FIRApp *app = [[FIRApp alloc] initWithName:name options:options];
+  app.dataCollectionDefaultEnabled = enabled;
+  [FIRApp registerAppForTesting:app];
+  return app;
+}
+
+- (void)testCompleteInitializeAppReadsTheBooleanValueNotThePointer {
+  FIRApp *app = [self registeredAppNamed:@"secondary" dataCollection:YES];
+
+  RNFBAppModuleCompleteInitializeApp(app, nil, @"secondary",
+                                     @{@"automaticDataCollectionEnabled" : @NO},
+                                     ^(id result){
+                                     });
+
+  XCTAssertFalse(app.isDataCollectionDefaultEnabled);
+}
+
+- (void)testCompleteInitializeAppTreatsMissingOrNonNumericValueAsDisabled {
+  FIRApp *missing = [self registeredAppNamed:@"missing" dataCollection:YES];
+  FIRApp *null = [self registeredAppNamed:@"null" dataCollection:YES];
+
+  RNFBAppModuleCompleteInitializeApp(missing, nil, @"missing", @{},
+                                     ^(id result){
+                                     });
+  RNFBAppModuleCompleteInitializeApp(null, nil, @"null",
+                                     @{@"automaticDataCollectionEnabled" : [NSNull null]},
+                                     ^(id result){
+                                     });
+
+  XCTAssertFalse(missing.isDataCollectionDefaultEnabled);
+  XCTAssertFalse(null.isDataCollectionDefaultEnabled);
+}
+
+- (void)testCompleteInitializeAppMapsNumericBooleansByTheirValue {
+  FIRApp *one = [self registeredAppNamed:@"one" dataCollection:NO];
+  FIRApp *zero = [self registeredAppNamed:@"zero" dataCollection:YES];
+
+  RNFBAppModuleCompleteInitializeApp(one, nil, @"one", @{@"automaticDataCollectionEnabled" : @1},
+                                     ^(id result){
+                                     });
+  RNFBAppModuleCompleteInitializeApp(zero, nil, @"zero", @{@"automaticDataCollectionEnabled" : @0},
+                                     ^(id result){
+                                     });
+
+  XCTAssertTrue(one.isDataCollectionDefaultEnabled);
+  XCTAssertFalse(zero.isDataCollectionDefaultEnabled);
+}
+
+- (void)testCompleteInitializeAppWithNilConfigDisablesDataCollection {
+  FIRApp *app = [self registeredAppNamed:@"nilconfig" dataCollection:YES];
+
+  RNFBAppModuleCompleteInitializeApp(app, nil, @"nilconfig", nil,
+                                     ^(id result){
+                                     });
+
+  XCTAssertFalse(app.isDataCollectionDefaultEnabled);
+}
+
+- (void)testInitializeAppliesTheConfiguredAppLogLevel {
+  [self withJSONObject:@{@"app_log_level" : @"debug"}
+               perform:^{
+                 RNFBAppModuleInitialize();
+               }];
+
+  XCTAssertEqual([FIRConfiguration sharedInstance].loggerLevel, FIRLoggerLevelDebug);
+}
+
+- (void)testInitializeLeavesTheLogLevelAloneWithoutAConfiguredAppLogLevel {
+  [[FIRConfiguration sharedInstance] setLoggerLevel:FIRLoggerLevelNotice];
+
+  [self withJSONObject:@{@"other_key" : @"debug"}
+               perform:^{
+                 RNFBAppModuleInitialize();
+               }];
+
+  XCTAssertEqual([FIRConfiguration sharedInstance].loggerLevel, FIRLoggerLevelNotice);
+}
+
+/** Swaps the shared firebase.json for the duration of `block`, like the shared-utils tests. */
+- (void)withJSONObject:(NSDictionary *)object perform:(void (^)(void))block {
+  RNFBJSON *shared = [RNFBJSON shared];
+  id previous = [shared valueForKey:@"implementation"];
+  [shared setValue:[[RNFBJSONImplementation alloc] initWithJSONObject:object]
+            forKey:@"implementation"];
+  @try {
+    block();
+  } @finally {
+    [shared setValue:previous forKey:@"implementation"];
+  }
+}
+
+- (void)testCompleteInitializeAppWithoutAnAppStillStoresDomainAndResolvesEmptySections {
+  __block NSDictionary *resolved = nil;
+
+  RNFBAppModuleCompleteInitializeApp(nil, @"auth.example.com", @"secondary",
+                                     @{@"automaticDataCollectionEnabled" : @YES}, ^(id result) {
+                                       resolved = result;
+                                     });
+
+  XCTAssertEqualObjects([RNFBAppCustomAuthDomains getCustomDomain:@"secondary"],
+                        @"auth.example.com");
+  XCTAssertEqualObjects(resolved, (@{
+                          @"options" : @{},
+                          @"appConfig" : @{@"automaticDataCollectionEnabled" : @NO},
+                        }));
 }
 
 @end

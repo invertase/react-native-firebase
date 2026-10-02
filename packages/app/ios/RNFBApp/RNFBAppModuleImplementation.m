@@ -131,11 +131,18 @@ void RNFBAppModuleInitializeApp(NSDictionary *options, NSDictionary *appConfig,
         [RNFBAppInitializeOptionsMapper buildOptionsFrom:options
                                           optionsFactory:[RNFBAppModuleFirebase optionsFactory]];
 
+    // The catch only records the exception. A `return` inside it makes clang attribute zero
+    // hits to everything after the try, which hides the success path from coverage.
+    NSException *raised = nil;
     @try {
       firApp = [RNFBAppModuleFirebase configureOrReuseAppWithOptions:firOptions
                                                       nameResolution:names];
     } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+      raised = exception;
+    }
+    if (raised != nil) {
+      [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:raised];
+      return;
     }
 
     RNFBAppModuleCompleteInitializeApp(firApp, authDomain, names.jsAppName, appConfig, resolve);
@@ -145,10 +152,20 @@ void RNFBAppModuleInitializeApp(NSDictionary *options, NSDictionary *appConfig,
 void RNFBAppModuleCompleteInitializeApp(id firApp, NSString *authDomain, NSString *jsAppName,
                                         NSDictionary *appConfig, RCTPromiseResolveBlock resolve) {
   [RNFBAppCustomAuthDomains setCustomDomain:authDomain forAppName:jsAppName];
-  [RNFBAppModuleFirebase
-      setDataCollectionDefaultEnabled:(BOOL)
-                                          [appConfig valueForKey:@"automaticDataCollectionEnabled"]
-                               forApp:firApp];
+  if (firApp == nil) {
+    // Pre-port messaged a nil app (no-ops) and mapped it to empty option/config sections.
+    resolve(@{@"options" : @{}, @"appConfig" : @{@"automaticDataCollectionEnabled" : @NO}});
+    return;
+  }
+
+  // Intentionally differs from the pre-port pointer cast, which made any non-nil value
+  // (including JS `false` as @NO) enable collection. The boolean value is read now, so
+  // @NO / @0 / NSNull / absent disable it. Pinned by RNFBAppModuleLifecycleTests for
+  // @YES, @NO, @1, @0, NSNull and nil / absent.
+  id dataCollection = [appConfig valueForKey:@"automaticDataCollectionEnabled"];
+  BOOL dataCollectionEnabled =
+      [dataCollection respondsToSelector:@selector(boolValue)] && [dataCollection boolValue];
+  [RNFBAppModuleFirebase setDataCollectionDefaultEnabled:dataCollectionEnabled forApp:firApp];
   resolve([RNFBSharedUtils firAppToDictionary:firApp]);
 }
 
