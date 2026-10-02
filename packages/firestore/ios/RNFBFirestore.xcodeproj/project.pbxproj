@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		RNFBFS100000000000000001 /* RNFBFirestoreModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFS100000000000000003 /* RNFBFirestoreModuleHelper.m */; };
+		RNFBFS100000000000000011 /* RNFBFirestoreCollectionModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFS100000000000000013 /* RNFBFirestoreCollectionModuleHelper.m */; };
+		RNFBFS100000000000000021 /* RNFBFirestoreDocumentModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFS100000000000000023 /* RNFBFirestoreDocumentModuleHelper.m */; };
+		RNFBFS100000000000000031 /* RNFBFirestoreTransactionModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFS100000000000000033 /* RNFBFirestoreTransactionModuleHelper.m */; };
 		2744B98621F45429004F8E3F /* RNFBFirestoreModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBFirestoreModule.mm */; };
 		8B21821222CB9C4700A0A296 /* RCTConvert+FIRLoggerLevel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B21821122CB9C4700A0A296 /* RCTConvert+FIRLoggerLevel.m */; };
 		8B627A8122CB9ECD0056BCB3 /* RNFBFirestoreCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B627A8022CB9ECD0056BCB3 /* RNFBFirestoreCommon.m */; };
@@ -32,6 +36,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		RNFBFS100000000000000002 /* RNFBFirestoreModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreModuleHelper.h; sourceTree = "<group>"; };
+		RNFBFS100000000000000003 /* RNFBFirestoreModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreModuleHelper.m; sourceTree = "<group>"; };
+		RNFBFS100000000000000012 /* RNFBFirestoreCollectionModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreCollectionModuleHelper.h; sourceTree = "<group>"; };
+		RNFBFS100000000000000013 /* RNFBFirestoreCollectionModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreCollectionModuleHelper.m; sourceTree = "<group>"; };
+		RNFBFS100000000000000022 /* RNFBFirestoreDocumentModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreDocumentModuleHelper.h; sourceTree = "<group>"; };
+		RNFBFS100000000000000023 /* RNFBFirestoreDocumentModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreDocumentModuleHelper.m; sourceTree = "<group>"; };
+		RNFBFS100000000000000032 /* RNFBFirestoreTransactionModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBFirestoreTransactionModuleHelper.h; sourceTree = "<group>"; };
+		RNFBFS100000000000000033 /* RNFBFirestoreTransactionModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionModuleHelper.m; sourceTree = "<group>"; };
 		2744B98221F45429004F8E3F /* libRNFBFirestore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBFirestore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBFirestoreModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreModule.h; path = RNFBFirestore/RNFBFirestoreModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBFirestoreModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreModule.mm; path = RNFBFirestore/RNFBFirestoreModule.mm; sourceTree = SOURCE_ROOT; };
@@ -75,6 +87,14 @@
 		2744B98321F45429004F8E3F /* RNFBFirestore */ = {
 			isa = PBXGroup;
 			children = (
+				RNFBFS100000000000000002 /* RNFBFirestoreModuleHelper.h */,
+				RNFBFS100000000000000003 /* RNFBFirestoreModuleHelper.m */,
+				RNFBFS100000000000000012 /* RNFBFirestoreCollectionModuleHelper.h */,
+				RNFBFS100000000000000013 /* RNFBFirestoreCollectionModuleHelper.m */,
+				RNFBFS100000000000000022 /* RNFBFirestoreDocumentModuleHelper.h */,
+				RNFBFS100000000000000023 /* RNFBFirestoreDocumentModuleHelper.m */,
+				RNFBFS100000000000000032 /* RNFBFirestoreTransactionModuleHelper.h */,
+				RNFBFS100000000000000033 /* RNFBFirestoreTransactionModuleHelper.m */,
 				2744B98421F45429004F8E3F /* RNFBFirestoreModule.h */,
 				2744B98521F45429004F8E3F /* RNFBFirestoreModule.mm */,
 				8B21821022CB9C3800A0A296 /* RCTConvert+FIRLoggerLevel.h */,
@@ -164,6 +184,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				RNFBFS100000000000000001 /* RNFBFirestoreModuleHelper.m in Sources */,
+				RNFBFS100000000000000011 /* RNFBFirestoreCollectionModuleHelper.m in Sources */,
+				RNFBFS100000000000000021 /* RNFBFirestoreDocumentModuleHelper.m in Sources */,
+				RNFBFS100000000000000031 /* RNFBFirestoreTransactionModuleHelper.m in Sources */,
 				8B9B6AF122CCE2B90062975D /* RNFBFirestoreQuery.m in Sources */,
 				8B9B6AE522CC9AC50062975D /* RNFBFirestoreDocumentModule.mm in Sources */,
 				8B9B6AED22CCE11D0062975D /* RNFBFirestoreCollectionModule.mm in Sources */,
