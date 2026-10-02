@@ -10,6 +10,7 @@
 		2744B98621F45429004F8E3F /* RNFBFunctionsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBFunctionsModule.mm */; };
 		RNFBFN000000000000000001 /* RNFBFunctionsStreamingRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFN000000000000000002 /* RNFBFunctionsStreamingRegistry.m */; };
 		RNFBFN000000000000000003 /* RNFBFunctionsStreamingRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFN000000000000000004 /* RNFBFunctionsStreamingRegistryStorage.swift */; };
+		RNFBFN000000000000000006 /* RNFBFunctionsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBFN000000000000000008 /* RNFBFunctionsHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		RNFBFN000000000000000005 /* RNFBFunctionsStreamingRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFunctionsStreamingRegistry.h; path = RNFBFunctions/RNFBFunctionsStreamingRegistry.h; sourceTree = SOURCE_ROOT; };
 		RNFBFN000000000000000002 /* RNFBFunctionsStreamingRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFunctionsStreamingRegistry.m; path = RNFBFunctions/RNFBFunctionsStreamingRegistry.m; sourceTree = SOURCE_ROOT; };
 		RNFBFN000000000000000004 /* RNFBFunctionsStreamingRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFunctionsStreamingRegistryStorage.swift; path = RNFBFunctions/RNFBFunctionsStreamingRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		RNFBFN000000000000000007 /* RNFBFunctionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFunctionsHelper.h; path = RNFBFunctions/RNFBFunctionsHelper.h; sourceTree = SOURCE_ROOT; };
+		RNFBFN000000000000000008 /* RNFBFunctionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFunctionsHelper.m; path = RNFBFunctions/RNFBFunctionsHelper.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +62,8 @@
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBFunctionsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBFunctionsModule.mm */,
+				RNFBFN000000000000000007 /* RNFBFunctionsHelper.h */,
+				RNFBFN000000000000000008 /* RNFBFunctionsHelper.m */,
 				RNFBFN000000000000000005 /* RNFBFunctionsStreamingRegistry.h */,
 				RNFBFN000000000000000002 /* RNFBFunctionsStreamingRegistry.m */,
 				RNFBFN000000000000000004 /* RNFBFunctionsStreamingRegistryStorage.swift */,
@@ -133,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2744B98621F45429004F8E3F /* RNFBFunctionsModule.mm in Sources */,
+				RNFBFN000000000000000006 /* RNFBFunctionsHelper.m in Sources */,
 				RNFBFN000000000000000003 /* RNFBFunctionsStreamingRegistryStorage.swift in Sources */,
 				RNFBFN000000000000000001 /* RNFBFunctionsStreamingRegistry.m in Sources */,
 			);

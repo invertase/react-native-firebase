@@ -14,6 +14,12 @@
 		C10000000000000000000019 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1000000000000000000001C /* RNFBHandleMapStorage.swift */; };
 		C10000000000000000000020 /* RNFBFunctionsStreamingRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000021 /* RNFBFunctionsStreamingRegistryStorage.swift */; };
 		C10000000000000000000022 /* RNFBFunctionsStreamingRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10000000000000000000023 /* RNFBFunctionsStreamingRegistryStorageTests.swift */; };
+		FN1000000000000000000020 /* RNFBFunctionsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000021 /* RNFBFunctionsHelper.m */; };
+		FN1000000000000000000022 /* RNFBFunctionsHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000023 /* RNFBFunctionsHelperHostStubTests.m */; };
+		FN1000000000000000000024 /* FIRAppHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000025 /* FIRAppHostStub.m */; };
+		FN1000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000027 /* RNFBSharedUtilsHostStub.m */; };
+		FN1000000000000000000028 /* RCTConvert+FIRAppHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000029 /* RCTConvert+FIRAppHostStub.m */; };
+		FN100000000000000000002A /* RNFBFunctionsCallHandlerHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN100000000000000000002B /* RNFBFunctionsCallHandlerHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +33,13 @@
 		C1000000000000000000001C /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 		C10000000000000000000021 /* RNFBFunctionsStreamingRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFunctionsStreamingRegistryStorage.swift; path = ../RNFBFunctions/RNFBFunctionsStreamingRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
 		C10000000000000000000023 /* RNFBFunctionsStreamingRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBFunctionsStreamingRegistryStorageTests.swift; sourceTree = "<group>"; };
+		FN1000000000000000000021 /* RNFBFunctionsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFunctionsHelper.m; path = ../RNFBFunctions/RNFBFunctionsHelper.m; sourceTree = SOURCE_ROOT; };
+		FN1000000000000000000023 /* RNFBFunctionsHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFunctionsHelperHostStubTests.m; sourceTree = "<group>"; };
+		FN1000000000000000000025 /* FIRAppHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRAppHostStub.m; path = HostStubs/Firebase/FIRAppHostStub.m; sourceTree = "<group>"; };
+		FN1000000000000000000027 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
+		FN1000000000000000000029 /* RCTConvert+FIRAppHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIRAppHostStub.m"; path = "HostStubs/RNFBApp/RCTConvert+FIRAppHostStub.m"; sourceTree = "<group>"; };
+		FN100000000000000000002B /* RNFBFunctionsCallHandlerHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFunctionsCallHandlerHostStub.m; path = HostStubs/RNFBFunctions/RNFBFunctionsCallHandlerHostStub.m; sourceTree = "<group>"; };
+		FN100000000000000000002C /* RNFBFunctionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFunctionsHelper.h; path = ../RNFBFunctions/RNFBFunctionsHelper.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +81,13 @@
 				C10000000000000000000021 /* RNFBFunctionsStreamingRegistryStorage.swift */,
 				C10000000000000000000009 /* RNFBFunctionsStreamingRegistryTests.m */,
 				C10000000000000000000023 /* RNFBFunctionsStreamingRegistryStorageTests.swift */,
+				FN100000000000000000002C /* RNFBFunctionsHelper.h */,
+				FN1000000000000000000021 /* RNFBFunctionsHelper.m */,
+				FN1000000000000000000023 /* RNFBFunctionsHelperHostStubTests.m */,
+				FN1000000000000000000025 /* FIRAppHostStub.m */,
+				FN1000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
+				FN1000000000000000000029 /* RCTConvert+FIRAppHostStub.m */,
+				FN100000000000000000002B /* RNFBFunctionsCallHandlerHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -135,6 +155,12 @@
 				C1000000000000000000000B /* RNFBFunctionsStreamingRegistry.m in Sources */,
 				C1000000000000000000000C /* RNFBFunctionsStreamingRegistryTests.m in Sources */,
 				C10000000000000000000022 /* RNFBFunctionsStreamingRegistryStorageTests.swift in Sources */,
+				FN1000000000000000000020 /* RNFBFunctionsHelper.m in Sources */,
+				FN1000000000000000000024 /* FIRAppHostStub.m in Sources */,
+				FN1000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */,
+				FN1000000000000000000028 /* RCTConvert+FIRAppHostStub.m in Sources */,
+				FN100000000000000000002A /* RNFBFunctionsCallHandlerHostStub.m in Sources */,
+				FN1000000000000000000022 /* RNFBFunctionsHelperHostStubTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,6 +212,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBFunctions",
@@ -223,6 +250,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
 					"$(SRCROOT)/../RNFBFunctions",
