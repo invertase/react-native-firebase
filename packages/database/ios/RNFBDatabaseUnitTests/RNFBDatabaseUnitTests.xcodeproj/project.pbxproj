@@ -13,6 +13,7 @@
 		D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */; };
 		D80000000000000000000022 /* RNFBDatabaseQueryRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */; };
 		D80000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D80000000000000000000014 /* XCTest.framework */; };
+		D80000000000000000000025 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D80000000000000000000026 /* RNFBHandleMapStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		D80000000000000000000021 /* RNFBDatabaseQueryRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBDatabaseQueryRegistry.m; path = ../RNFBDatabase/RNFBDatabaseQueryRegistry.m; sourceTree = SOURCE_ROOT; };
 		D80000000000000000000023 /* RNFBDatabaseQueryRegistryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBDatabaseQueryRegistryTests.m; sourceTree = "<group>"; };
 		D80000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		D80000000000000000000026 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 			children = (
 				D80000000000000000000007 /* RNFBHandleMap.h */,
 				D80000000000000000000008 /* RNFBHandleMap.m */,
+				D80000000000000000000026 /* RNFBHandleMapStorage.swift */,
 				D80000000000000000000016 /* RNFBDatabaseListenerRegistry.h */,
 				D80000000000000000000018 /* RNFBDatabaseListenerRegistry.m */,
 				D80000000000000000000024 /* RNFBDatabaseQueryRegistry.h */,
@@ -129,6 +132,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				D80000000000000000000025 /* RNFBHandleMapStorage.swift in Sources */,
 				D8000000000000000000000B /* RNFBDatabaseListenerRegistry.m in Sources */,
 				D80000000000000000000020 /* RNFBDatabaseQueryRegistry.m in Sources */,
 				D8000000000000000000000C /* RNFBDatabaseListenerRegistryTests.m in Sources */,
@@ -181,6 +185,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -204,6 +209,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -215,6 +222,7 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../../app/ios",
@@ -231,6 +239,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};

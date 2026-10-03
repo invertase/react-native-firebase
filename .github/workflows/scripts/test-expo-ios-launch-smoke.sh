@@ -136,11 +136,49 @@ if [[ "$xcodebuild_status" -eq 124 || "$xcodebuild_status" -eq 142 ]]; then
 fi
 [[ "$xcodebuild_status" -eq 0 ]] || fail "xcodebuild Debug failed (exit ${xcodebuild_status})"
 
-APP="$(
-  find "${HOME}/Library/Developer/Xcode/DerivedData"/testexpo-*/Build/Products/Debug-iphonesimulator \
-    -maxdepth 1 -name '*.app' 2>/dev/null | head -1
+# Ask xcodebuild where this scheme's .app lands instead of scraping its build log: the log
+# escapes and mixes paths (spaces, "+", "(" in $HOME) in ways a regex cannot split reliably, and a
+# glob over DerivedData/testexpo-* can pick a stale app built from another worktree.
+# Each "Build settings for action build and target X" block lists TARGET_BUILD_DIR and
+# FULL_PRODUCT_NAME; the first block whose product is a .app is the application target.
+# Capture xcodebuild's output and exit status separately so a real failure (bad scheme,
+# package-resolution error) is reported as such instead of as "no .app product".
+settings_err="$(mktemp)"
+set +e
+settings_out="$(
+  xcodebuild \
+    -workspace "$WORKSPACE" \
+    -scheme "$XCODE_SCHEME" \
+    -configuration Debug \
+    -destination "id=${UDID}" \
+    -showBuildSettings 2>"$settings_err"
 )"
-[[ -n "$APP" && -d "$APP" ]] || fail "could not find Debug-iphonesimulator .app under DerivedData/testexpo-*"
+settings_status=$?
+set -e
+if [[ "$settings_status" -ne 0 ]]; then
+  tail -20 "$settings_err" >&2
+  rm -f "$settings_err"
+  fail "xcodebuild -showBuildSettings failed (exit ${settings_status}) for scheme ${XCODE_SCHEME}"
+fi
+rm -f "$settings_err"
+APP="$(
+  awk '
+        function flush() {
+          if (!found && dir != "" && name ~ /\.app$/) {
+            print dir "/" name
+            found = 1
+          }
+          dir = ""
+          name = ""
+        }
+        /^Build settings for action/ { flush(); next }
+        match($0, /^[[:space:]]+TARGET_BUILD_DIR = /) { dir = substr($0, RLENGTH + 1); next }
+        match($0, /^[[:space:]]+FULL_PRODUCT_NAME = /) { name = substr($0, RLENGTH + 1); next }
+        END { flush() }
+      ' <<<"$settings_out"
+)"
+[[ -n "$APP" ]] || fail "xcodebuild -showBuildSettings did not report an .app product for scheme ${XCODE_SCHEME}"
+[[ -d "$APP" ]] || fail "built app not found at: ${APP}"
 
 xcrun simctl install "$UDID" "$APP"
 

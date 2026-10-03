@@ -16,13 +16,23 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <Photos/Photos.h>
+
+@class PHAsset;
 
 @interface RNFBUtilsModule : NSObject
+
+@end
+
+@interface RNFBUtilsModule (FoundationHelpers)
 
 + (BOOL)isRemoteAsset:(NSString *)localFilePath;
 + (BOOL)unused_isHeic:(NSString *)localFilePath;
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
+
+@end
+
+@interface RNFBUtilsModule (PhotoAssets)
+
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
 
 @end

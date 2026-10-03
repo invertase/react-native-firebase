@@ -9,9 +9,9 @@ import com.google.firebase.messaging.RemoteMessage
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingStoreImpl
 
 /** Test-app TurboModule: platform-specific probes no-op on unsupported platforms. */
-class NativeRNFBTesting(reactContext: ReactApplicationContext) :
-  NativeRNFBTestingSpec(reactContext) {
-
+class NativeRNFBTesting(
+  reactContext: ReactApplicationContext,
+) : NativeRNFBTestingSpec(reactContext) {
   override fun messagingPreservesExistingDelegate(promise: Promise) {
     promise.resolve(false)
   }
@@ -20,7 +20,10 @@ class NativeRNFBTesting(reactContext: ReactApplicationContext) :
     promise.resolve(false)
   }
 
-  override fun serializeMessagingUserInfo(userInfo: ReadableMap, promise: Promise) {
+  override fun serializeMessagingUserInfo(
+    userInfo: ReadableMap,
+    promise: Promise,
+  ) {
     // iOS-only serializer probe — Android messaging RemoteMessage path is covered elsewhere.
     promise.resolve(Arguments.createMap())
   }
@@ -31,11 +34,13 @@ class NativeRNFBTesting(reactContext: ReactApplicationContext) :
     val maxNotificationSize =
       ReactNativeFirebaseMessagingStoreImpl::class.java.getDeclaredField("maxNotificationSize")
     val retainedMessage =
-      RemoteMessage.Builder("testing@fcm.googleapis.com")
+      RemoteMessage
+        .Builder("testing@fcm.googleapis.com")
         .setMessageId(RETAINED_MESSAGE_ID)
         .build()
     val discardedMessage =
-      RemoteMessage.Builder("testing@fcm.googleapis.com")
+      RemoteMessage
+        .Builder("testing@fcm.googleapis.com")
         .setMessageId(DISCARDED_MESSAGE_ID)
         .build()
 
