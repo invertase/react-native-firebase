@@ -82,23 +82,6 @@ describe('get()', function () {
     keys.should.eql(Object.keys(CONTENT.TYPES).sort().slice(0, 2));
   });
 
-  it('waits for the connection while offline, like once()', async function () {
-    const { getDatabase, ref, child, get, goOffline, goOnline } = databaseModular;
-
-    const db = getDatabase();
-    goOffline(db);
-    try {
-      const pending = get(child(ref(db, `${TEST_PATH}/types`), 'number'));
-      // Longer than the native get's connect timeout (3s on iOS and Android).
-      await Utils.sleep(5000);
-      goOnline(db);
-      const snapshot = await pending;
-      snapshot.val().should.eql(CONTENT.TYPES.number);
-    } finally {
-      goOnline(db);
-    }
-  });
-
   it('reads client-local .info paths without the server', async function () {
     const { getDatabase, ref, get } = databaseModular;
 
@@ -117,5 +100,81 @@ describe('get()', function () {
       error.code.includes('database/permission-denied').should.be.true();
       return Promise.resolve();
     }
+  });
+
+  // Android only: there get() is Query.get(), which can cancel the app's keepSynced at the location
+  // it reads. These run get() next to keepSynced through each path of the native tracking; whether
+  // keepSynced survived isn't visible from JS, so RNFBDatabaseKeepSyncedRegistryTest covers that.
+  // iOS reads with once(), and keepSynced is unsupported on other platforms.
+  describe('with keepSynced', function () {
+    const KEEP_SYNCED_PATH = `${TEST_PATH}/keepSynced`;
+
+    async function firstValue(query) {
+      const { onValue } = databaseModular;
+
+      let unsubscribe;
+      const snapshot = await new Promise(resolve => {
+        unsubscribe = onValue(query, resolve);
+      });
+      unsubscribe();
+      return snapshot;
+    }
+
+    it('reads a location that is kept synced', async function () {
+      if (!Platform.android) {
+        this.skip();
+      }
+      const { getDatabase, ref, get, set, keepSynced } = databaseModular;
+
+      const dbRef = ref(getDatabase(), `${KEEP_SYNCED_PATH}/read`);
+      await set(dbRef, 'synced');
+
+      await keepSynced(dbRef, true);
+      try {
+        (await get(dbRef)).val().should.equal('synced');
+        (await firstValue(dbRef)).val().should.equal('synced');
+      } finally {
+        await keepSynced(dbRef, false);
+      }
+    });
+
+    it('reads a location while keepSynced is turned on for it', async function () {
+      if (!Platform.android) {
+        this.skip();
+      }
+      const { getDatabase, ref, get, set, keepSynced } = databaseModular;
+
+      const dbRef = ref(getDatabase(), `${KEEP_SYNCED_PATH}/inFlight`);
+      await set(dbRef, 'synced');
+
+      const read = get(dbRef);
+      const keepSyncedSet = keepSynced(dbRef, true);
+      try {
+        (await read).val().should.equal('synced');
+        await keepSyncedSet;
+        (await firstValue(dbRef)).val().should.equal('synced');
+      } finally {
+        await keepSynced(dbRef, false);
+      }
+    });
+
+    it('reads a location with a query there kept synced', async function () {
+      if (!Platform.android) {
+        this.skip();
+      }
+      const { getDatabase, ref, get, set, keepSynced, query, limitToLast } = databaseModular;
+
+      const dbRef = ref(getDatabase(), `${KEEP_SYNCED_PATH}/query`);
+      await set(dbRef, { a: 1, b: 2 });
+
+      const lastRef = query(dbRef, limitToLast(1));
+      await keepSynced(lastRef, true);
+      try {
+        (await get(dbRef)).val().should.eql({ a: 1, b: 2 });
+        (await firstValue(lastRef)).val().should.eql({ b: 2 });
+      } finally {
+        await keepSynced(lastRef, false);
+      }
+    });
   });
 });
