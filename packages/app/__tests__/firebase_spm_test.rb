@@ -1458,6 +1458,465 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, pods_project.save_count
   end
 
+  # ── RNFB_DYNAMIC_FIREBASE_PROBE Swift compilation condition ──
+
+  def probe_condition
+    RNFIREBASE_SPM_PROBE_SWIFT_CONDITION
+  end
+
+  def test_probe_swift_condition_constant_matches_gcc_define_name
+    load_firebase_spm
+
+    assert_equal 'RNFB_DYNAMIC_FIREBASE_PROBE', probe_condition
+    assert_equal 'SWIFT_ACTIVE_COMPILATION_CONDITIONS', RNFIREBASE_SWIFT_CONDITIONS_SETTING
+  end
+
+  def test_set_probe_swift_condition_adds_once_and_preserves_inherited_values
+    load_firebase_spm
+
+    nil_settings = {}
+    string_settings = { 'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => '$(inherited) DEBUG' }
+    array_settings = { 'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => ['$(inherited)', 'DEBUG'] }
+
+    [nil_settings, string_settings, array_settings].each do |settings|
+      assert rnfirebase_set_probe_swift_condition(settings, true)
+      refute rnfirebase_set_probe_swift_condition(settings, true), 'second add must not change anything'
+    end
+
+    assert_equal '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE', nil_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_equal '$(inherited) DEBUG RNFB_DYNAMIC_FIREBASE_PROBE',
+                 string_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_equal ['$(inherited)', 'DEBUG', 'RNFB_DYNAMIC_FIREBASE_PROBE'],
+                 array_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'],
+                 'an Array value must stay an Array'
+  end
+
+  def test_set_probe_swift_condition_removal_restores_the_original_value
+    load_firebase_spm
+
+    added_to_nil = {}
+    rnfirebase_set_probe_swift_condition(added_to_nil, true)
+    added_to_debug = { 'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => '$(inherited) DEBUG' }
+    rnfirebase_set_probe_swift_condition(added_to_debug, true)
+
+    assert rnfirebase_set_probe_swift_condition(added_to_nil, false)
+    assert rnfirebase_set_probe_swift_condition(added_to_debug, false)
+
+    assert_empty added_to_nil
+    assert_equal '$(inherited) DEBUG', added_to_debug['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+  end
+
+  # Round trip (add, then remove) per authored shape. The key is read back with
+  # `eql?` so a String/Array form change fails.
+  def test_set_probe_swift_condition_round_trip_restores_string_and_array_forms
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+
+    [
+      '$(inherited) DEBUG',
+      'DEBUG',
+      ['$(inherited)', 'DEBUG'],
+      ['DEBUG'],
+      ['$(inherited)'],
+      ['$(inherited)', 'DEBUG', 'OTHER'],
+      # The token only counts as present as a whole entry. A longer entry that
+      # contains it (suffix or prefix variant) is another condition: add still
+      # appends the real token and remove leaves the other entry alone.
+      '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE',
+      '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE_X',
+      'RNFB_DYNAMIC_FIREBASE_PROBE_X',
+      ['$(inherited)', 'X_RNFB_DYNAMIC_FIREBASE_PROBE'],
+      ['RNFB_DYNAMIC_FIREBASE_PROBE_X']
+    ].each do |original|
+      settings = { key => original.dup }
+      assert rnfirebase_set_probe_swift_condition(settings, true)
+      assert rnfirebase_set_probe_swift_condition(settings, false)
+
+      assert_equal original, settings[key], "round trip must restore #{original.inspect}"
+      assert_equal original.class, settings[key].class
+    end
+  end
+
+  # Exact add/remove outcomes for entries that merely contain the token.
+  def test_set_probe_swift_condition_matches_whole_entries_only
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+
+    suffix = { key => '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE' }
+    assert rnfirebase_set_probe_swift_condition(suffix, true)
+    assert_equal '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE RNFB_DYNAMIC_FIREBASE_PROBE', suffix[key]
+
+    prefix = { key => ['RNFB_DYNAMIC_FIREBASE_PROBE_X'] }
+    assert rnfirebase_set_probe_swift_condition(prefix, true)
+    assert_equal %w[RNFB_DYNAMIC_FIREBASE_PROBE_X RNFB_DYNAMIC_FIREBASE_PROBE], prefix[key]
+
+    # Removal leaves the longer entry in place and reports no change when it is
+    # the only match.
+    only_longer = { key => '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE' }
+    refute rnfirebase_set_probe_swift_condition(only_longer, false)
+    assert_equal '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE', only_longer[key]
+
+    both = { key => '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE RNFB_DYNAMIC_FIREBASE_PROBE' }
+    assert rnfirebase_set_probe_swift_condition(both, false)
+    assert_equal '$(inherited) X_RNFB_DYNAMIC_FIREBASE_PROBE', both[key]
+
+    both_array = { key => %w[RNFB_DYNAMIC_FIREBASE_PROBE_X RNFB_DYNAMIC_FIREBASE_PROBE] }
+    assert rnfirebase_set_probe_swift_condition(both_array, false)
+    assert_equal ['RNFB_DYNAMIC_FIREBASE_PROBE_X'], both_array[key]
+  end
+
+  # A hand-edited doubled token: add sees it as present and writes nothing,
+  # remove drops every copy (and the key once nothing else is left).
+  def test_set_probe_swift_condition_doubled_token_add_is_noop_and_remove_drops_both
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+    token = 'RNFB_DYNAMIC_FIREBASE_PROBE'
+
+    doubled_array = { key => [token, token] }
+    refute rnfirebase_set_probe_swift_condition(doubled_array, true)
+    assert_equal [token, token], doubled_array[key]
+    assert rnfirebase_set_probe_swift_condition(doubled_array, false)
+    assert_empty doubled_array
+
+    doubled_string = { key => "$(inherited) #{token} DEBUG #{token}" }
+    refute rnfirebase_set_probe_swift_condition(doubled_string, true)
+    assert_equal "$(inherited) #{token} DEBUG #{token}", doubled_string[key]
+    assert rnfirebase_set_probe_swift_condition(doubled_string, false)
+    assert_equal '$(inherited) DEBUG', doubled_string[key]
+  end
+
+  # String values are split on whitespace when the token is added and re-joined
+  # with single spaces, so an authored String with tabs or repeated spaces is
+  # normalized (not byte-exact) after a probe then flag-off round trip.
+  def test_set_probe_swift_condition_normalizes_string_whitespace
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+
+    settings = { key => "$(inherited)  DEBUG\tOTHER" }
+    assert rnfirebase_set_probe_swift_condition(settings, true)
+    assert_equal '$(inherited) DEBUG OTHER RNFB_DYNAMIC_FIREBASE_PROBE', settings[key]
+    assert rnfirebase_set_probe_swift_condition(settings, false)
+    assert_equal '$(inherited) DEBUG OTHER', settings[key]
+  end
+
+  # Add writes `$(inherited) <token>` for an unset value, which is the same
+  # String an authored String `$(inherited)` ends up as. The two cannot be told
+  # apart afterwards. Removal picks "was unset" so a project that never had the
+  # setting (the checked-in testrnbare) stays byte-identical; an authored String
+  # `$(inherited)` becomes unset, which resolves to the same conditions. An
+  # authored Array `$(inherited)` is distinguishable (add never writes an Array
+  # for an unset value) and is kept.
+  def test_set_probe_swift_condition_removal_ambiguity_pins_unset_for_string_inherited
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+
+    unset = {}
+    explicit_string = { key => '$(inherited)' }
+    explicit_array = { key => ['$(inherited)'] }
+    [unset, explicit_string, explicit_array].each do |settings|
+      rnfirebase_set_probe_swift_condition(settings, true)
+      rnfirebase_set_probe_swift_condition(settings, false)
+    end
+
+    assert_empty unset
+    assert_empty explicit_string
+    assert_equal({ key => ['$(inherited)'] }, explicit_array)
+  end
+
+  # Empty and blank authored values read as unset (`$(inherited)` only), so
+  # after add then remove the key is deleted rather than restored as written.
+  def test_set_probe_swift_condition_removal_turns_empty_and_blank_values_into_unset
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+
+    empty_string = { key => '' }
+    blank_string = { key => '  ' }
+    empty_array = { key => [] }
+    [empty_string, blank_string, empty_array].each do |settings|
+      assert rnfirebase_set_probe_swift_condition(settings, true)
+      assert_equal '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE', settings[key]
+      assert rnfirebase_set_probe_swift_condition(settings, false)
+    end
+
+    assert_empty empty_string
+    assert_empty blank_string
+    assert_empty empty_array
+  end
+
+  def test_set_probe_swift_condition_removal_deletes_key_when_only_the_condition_was_set
+    load_firebase_spm
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+
+    only_string = { key => 'RNFB_DYNAMIC_FIREBASE_PROBE' }
+    only_array = { key => ['RNFB_DYNAMIC_FIREBASE_PROBE'] }
+
+    assert rnfirebase_set_probe_swift_condition(only_string, false)
+    assert rnfirebase_set_probe_swift_condition(only_array, false)
+
+    assert_empty only_string
+    assert_empty only_array
+  end
+
+  def test_set_probe_swift_condition_removal_is_noop_without_the_condition
+    load_firebase_spm
+
+    absent = {}
+    other = { 'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => '$(inherited) DEBUG' }
+
+    refute rnfirebase_set_probe_swift_condition(absent, false)
+    refute rnfirebase_set_probe_swift_condition(other, false)
+
+    assert_empty absent
+    assert_equal '$(inherited) DEBUG', other['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+  end
+
+  def test_apply_spm_build_settings_probe_sets_swift_condition_only_on_rnfb_app_pod
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    app = MockTarget.new([], name: 'RNFBApp')
+    app.build_configurations.each do |config|
+      config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = '$(inherited) DEBUG'
+    end
+    analytics = MockTarget.new([], name: 'RNFBAnalytics')
+    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [app, analytics])
+    pods_project.root_object = MockRootObject.new
+    installer = MockInstaller.new([], pods_project: pods_project)
+
+    rnfirebase_apply_spm_build_settings(installer)
+    rnfirebase_apply_spm_build_settings(installer)
+
+    app.build_configurations.each do |config|
+      conditions = rnfirebase_build_setting_list(config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'])
+      assert_equal ['$(inherited)', 'DEBUG', probe_condition], conditions
+      definitions = rnfirebase_build_setting_list(config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'])
+      assert_equal 1, definitions.count('RNFB_DYNAMIC_FIREBASE_PROBE=1')
+    end
+    analytics.build_configurations.each do |config|
+      assert_nil config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    end
+  end
+
+  def test_apply_spm_build_settings_flag_off_emits_no_swift_condition
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+
+    user_target = MockTarget.new(['[CP] Embed Pods Frameworks'])
+    app = MockTarget.new([], name: 'RNFBApp')
+    pods_project = MockPodsProject.new(uuid_prefix: 'ABCDEF', targets: [app])
+    installer = MockInstaller.new([MockAggregateTarget.new(MockUserProject.new([user_target]))],
+                                  pods_project: pods_project)
+
+    rnfirebase_apply_spm_build_settings(installer)
+
+    (user_target.build_configurations + app.build_configurations).each do |config|
+      assert_nil config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    end
+  end
+
+  def test_sync_probe_swift_condition_sets_it_on_app_targets_in_probe_mode
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    app = MockTarget.new([], name: 'testrnbare')
+    app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = '$(inherited) DEBUG'
+    user_project = MockUserProject.new([app])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+
+    assert_equal '$(inherited) DEBUG RNFB_DYNAMIC_FIREBASE_PROBE',
+                 app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_equal '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE',
+                 app.build_settings('Release')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_sync_probe_swift_condition_is_idempotent_across_repeated_pod_installs
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    key = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
+    # Two native targets: every target in the user project must be synced, not
+    # just the first one.
+    app = MockTarget.new([], name: 'testrnbare')
+    extension = MockTarget.new([], name: 'testrnbareExtension')
+    extension.build_settings('Debug')[key] = '$(inherited) DEBUG'
+    user_project = MockUserProject.new([app, extension])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    3.times { rnfirebase_sync_probe_swift_condition_on_app_targets(installer) }
+
+    [app, extension].each do |target|
+      target.build_configurations.each do |config|
+        conditions = rnfirebase_build_setting_list(config.build_settings[key])
+        assert_equal 1, conditions.count(probe_condition), "#{target.name} #{config.name}"
+        assert_includes conditions, '$(inherited)'
+      end
+    end
+    assert_equal '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE', app.build_settings('Debug')[key]
+    assert_equal '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE', app.build_settings('Release')[key]
+    assert_equal '$(inherited) DEBUG RNFB_DYNAMIC_FIREBASE_PROBE', extension.build_settings('Debug')[key]
+    assert_equal '$(inherited) RNFB_DYNAMIC_FIREBASE_PROBE', extension.build_settings('Release')[key]
+    assert_equal 1, user_project.save_count, 'repeated installs must change nothing after the first'
+
+    # Flag off: both targets are restored, then a second flag-off install is a no-op.
+    ENV.delete('RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE')
+    RNFirebaseSPM.reset!
+    2.times { rnfirebase_sync_probe_swift_condition_on_app_targets(installer) }
+
+    assert_nil app.build_settings('Debug')[key]
+    assert_nil app.build_settings('Release')[key]
+    assert_equal '$(inherited) DEBUG', extension.build_settings('Debug')[key]
+    assert_nil extension.build_settings('Release')[key]
+    assert_equal 2, user_project.save_count
+  end
+
+  def test_sync_probe_swift_condition_flag_off_emits_nothing_and_does_not_save
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+
+    app = MockTarget.new([], name: 'testrnbare')
+    app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = '$(inherited) DEBUG'
+    user_project = MockUserProject.new([app])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+
+    assert_equal '$(inherited) DEBUG', app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_nil app.build_settings('Release')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_equal 0, user_project.save_count
+  end
+
+  def test_sync_probe_swift_condition_env_set_without_umbrella_mode_emits_nothing
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    app = MockTarget.new([], name: 'testrnbare')
+    installer = MockInstaller.new([MockAggregateTarget.new(MockUserProject.new([app]))])
+
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+
+    app.build_configurations.each { |config| assert_nil config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] }
+  end
+
+  def test_sync_probe_swift_condition_removes_leftover_after_probe_run
+    load_firebase_spm
+    app = MockTarget.new([], name: 'testrnbare')
+    app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = '$(inherited) DEBUG'
+    user_project = MockUserProject.new([app])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    # Probe install writes the condition into the checked-in app project.
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+    assert_includes rnfirebase_build_setting_list(app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']),
+                    probe_condition
+
+    # A later flag-off install (remote SPM, then SPM disabled) removes it again.
+    ENV.delete('RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE')
+    RNFirebaseSPM.reset!
+    RNFirebaseSPM.activate!('12.10.0', mode: :remote)
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+    assert_equal '$(inherited) DEBUG', app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_nil app.build_settings('Release')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+    RNFirebaseSPM.reset!
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+    RNFirebaseSPM.reset!
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+    assert_equal '$(inherited) DEBUG', app.build_settings('Debug')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+    assert_nil app.build_settings('Release')['SWIFT_ACTIVE_COMPILATION_CONDITIONS']
+  end
+
+  def test_run_spm_user_project_hooks_syncs_probe_swift_condition_after_build_settings
+    load_firebase_spm
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+    Object.define_method(:rnfirebase_verify_spm_embed_phase_applied!) { |*| nil }
+    Object.define_method(:rnfirebase_add_spm_core_to_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_remove_spm_core_from_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_fix_spm_archive_signature_collision) { |*| nil }
+    Object.define_method(:rnfirebase_apply_spm_build_settings) { |*| nil }
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    app = MockTarget.new([], name: 'testrnbare')
+    installer = MockInstaller.new([MockAggregateTarget.new(MockUserProject.new([app]))])
+
+    rnfirebase_run_spm_user_project_hooks(installer)
+
+    app.build_configurations.each do |config|
+      assert_includes rnfirebase_build_setting_list(config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']),
+                      probe_condition
+    end
+  end
+
+  def test_sync_probe_swift_condition_skips_aggregate_targets_without_a_user_project
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0', mode: :umbrella)
+    ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = '1'
+
+    app = MockTarget.new([], name: 'testrnbare')
+    user_project = MockUserProject.new([app])
+    installer = MockInstaller.new([MockAggregateTarget.new(nil, name: 'Pods-no-project'),
+                                   MockAggregateTarget.new(user_project)])
+
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+
+    assert_equal 1, user_project.save_count
+    app.build_configurations.each do |config|
+      assert_includes rnfirebase_build_setting_list(config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS']),
+                      probe_condition
+    end
+  end
+
+  def test_run_spm_user_project_hooks_does_not_warn_probe_swift_condition_without_user_project
+    load_firebase_spm
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+    Object.define_method(:rnfirebase_verify_spm_embed_phase_applied!) { |*| nil }
+    Object.define_method(:rnfirebase_add_spm_core_to_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_remove_spm_core_from_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_fix_spm_archive_signature_collision) { |*| nil }
+    Object.define_method(:rnfirebase_apply_spm_build_settings) { |*| nil }
+    Pod::UI.warnings.clear
+
+    %i[remote umbrella].each do |mode|
+      RNFirebaseSPM.reset!
+      RNFirebaseSPM.activate!('12.10.0', mode: mode)
+      ENV['RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE'] = mode == :umbrella ? '1' : nil
+      installer = MockInstaller.new([MockAggregateTarget.new(nil)])
+
+      rnfirebase_run_spm_user_project_hooks(installer)
+    end
+
+    assert_empty(Pod::UI.warnings.select { |message| message.include?('RNFB_DYNAMIC_FIREBASE_PROBE') })
+  end
+
+  def test_run_spm_user_project_hooks_warns_on_probe_swift_condition_failure
+    load_firebase_spm
+    Object.define_method(:rnfirebase_add_spm_embed_phase) { |*| nil }
+    Object.define_method(:rnfirebase_verify_spm_embed_phase_applied!) { |*| nil }
+    Object.define_method(:rnfirebase_add_spm_core_to_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_remove_spm_core_from_app_target) { |*| nil }
+    Object.define_method(:rnfirebase_fix_spm_archive_signature_collision) { |*| nil }
+    Object.define_method(:rnfirebase_apply_spm_build_settings) { |*| nil }
+    Object.define_method(:rnfirebase_sync_probe_swift_condition_on_app_targets) { |*| raise 'condition boom' }
+    Pod::UI.warnings.clear
+
+    rnfirebase_run_spm_user_project_hooks(MockInstaller.new([]))
+
+    warning = Pod::UI.warnings.find { |message| message.include?('RNFB_DYNAMIC_FIREBASE_PROBE') }
+    refute_nil warning
+    assert_includes warning, 'condition boom'
+  end
+
   # ── rnfirebase_remove_spm_core_from_app_target (the fix for CP-149: undoes
   #    rnfirebase_add_spm_core_to_app_target once SPM is disabled, so a stale
   #    app-target FirebaseCore SPM link committed from a prior SPM-mode
@@ -2757,6 +3216,7 @@ class FirebaseSpmTest < Minitest::Test
     Object.define_method(:rnfirebase_remove_spm_core_from_app_target) { |*| nil }
     Object.define_method(:rnfirebase_fix_spm_archive_signature_collision) { |*| nil }
     Object.define_method(:rnfirebase_apply_spm_build_settings) { |*| nil }
+    Object.define_method(:rnfirebase_sync_probe_swift_condition_on_app_targets) { |*| nil }
   end
 
   def test_hook_warns_when_add_spm_core_raises

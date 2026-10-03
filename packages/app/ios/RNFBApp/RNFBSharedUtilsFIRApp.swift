@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 import RNFBFirebase
 #else
 import FirebaseCore
 #endif
 import Foundation
 
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 /**
  * Foundation snapshot from `RNFBFirebaseAppClient`, shaped as `RNFBFIROptionsProviding`.
  */
@@ -181,7 +181,7 @@ public final class RNFBSharedUtilsFIRApp: NSObject {
     fromFIRApp firApp: NSObject,
     customDomainProvider: RNFBCustomDomainProviding
   ) -> NSDictionary {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     firAppToDictionary(
       RNFBOpaqueAppProvider(RNFBFirebaseAppClient.snapshot(of: firApp)),
       customDomainProvider: customDomainProvider
@@ -240,7 +240,7 @@ public final class RNFBSharedUtilsFIRApp: NSObject {
     body: NSDictionary,
     eventSender: RNFBJSEventSending
   ) {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     sendJSEvent(
       forApp: RNFBOpaqueAppProvider(RNFBFirebaseAppClient.snapshot(of: firApp)),
       name: name,

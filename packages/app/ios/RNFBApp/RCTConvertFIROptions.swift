@@ -15,7 +15,7 @@
  */
 
 import Foundation
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 import RNFBFirebase
 #else
 import FirebaseCore
@@ -62,7 +62,7 @@ import FirebaseCore
  */
 enum RNFBFIROptionsAllocation {
   static func create(googleAppID: String?, gcmSenderID: String?) -> NSObject {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     RNFBFirebaseOptionsClient.create(googleAppID: googleAppID, gcmSenderID: gcmSenderID)
 #else
     // Pre-port forwarded nil into `initWithGoogleAppID:GCMSenderID:`, which leaves the key
@@ -81,7 +81,7 @@ enum RNFBFIROptionsAllocation {
   }
 }
 
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 /**
  * Wraps a live options object from `RNFBFirebaseOptionsClient` without naming Firebase types.
  */
