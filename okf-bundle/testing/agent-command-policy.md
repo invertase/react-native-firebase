@@ -74,6 +74,8 @@ Single source for **which shell commands agents may run** in this repo. E2e `yar
 - builds Debug into its own DerivedData (`RNFB_TEST_RN_BARE_LAUNCH_DERIVED_DATA`, default `/tmp/test-rn-bare-launch-derived-data-dynamic-firebase`), deleted first, and launches only from there;
 - fails unless `RNFBFirebase.framework` is embedded in the app, the app binary (`testrnbare` or `testrnbare.debug.dylib`) has an undefined `RNFBFirebase` `AppClient` symbol (`nm -u`, so the facade is what calls configure), `RNFBFirebase.framework/RNFBFirebase` is mapped into the running process (`lsof`), and FirebaseCore logged `Configuring the default app.` (the app is launched with `-FIRDebugEnabled`, after the log stream reports ready).
 
+The probe install sets the Swift compilation condition `RNFB_DYNAMIC_FIREBASE_PROBE` (next to the `RNFB_DYNAMIC_FIREBASE_PROBE=1` preprocessor define) on the `RNFBApp` pod and on the app's native targets. The undefined-symbol check above doubles as proof the condition reached the app target: if `AppDelegate.swift` compiled its `#else` branch, the binary would not reference the facade. A flag-off `pod install` removes the condition from the app project again.
+
 Flag off keeps the original build, app lookup, and assertions.
 
 ### Prepare / transpile (detail)

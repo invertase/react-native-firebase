@@ -27,6 +27,12 @@ RNFIREBASE_SPM_UMBRELLA_PRODUCT = 'RNFBFirebase'
 # ahead of RNFBApp. It is not an RNFBApp package-product dependency, so Xcode
 # does not copy transitive Firebase module maps onto that pod.
 RNFIREBASE_SPM_PROBE_ORDER_TARGET = 'RNFBFirebaseProbeOrder'
+# Swift compilation condition (`#if RNFB_DYNAMIC_FIREBASE_PROBE`) that selects
+# the `import RNFBFirebase` facade path in RNFBApp and the test-rn-bare
+# AppDelegate. It is the Swift twin of the `RNFB_DYNAMIC_FIREBASE_PROBE=1`
+# GCC preprocessor define and is only set while the probe is on.
+RNFIREBASE_SPM_PROBE_SWIFT_CONDITION = 'RNFB_DYNAMIC_FIREBASE_PROBE'
+RNFIREBASE_SWIFT_CONDITIONS_SETTING = 'SWIFT_ACTIVE_COMPILATION_CONDITIONS'
 
 # CI probe only: when `RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE=1`, `firebase_dependency`
 # and the app-target link helpers resolve Firebase through the local dynamic
@@ -214,6 +220,55 @@ def rnfirebase_build_setting_list(current)
   else
     current.dup
   end
+end
+
+# Adds (`enabled`) or removes (`!enabled`) the probe Swift compilation
+# condition on one `build_settings` hash. Never duplicates the entry, and keeps
+# every other condition and the value's form: a non-empty Array stays an Array
+# (token appended / removed), anything else is a space-joined String. Returns
+# whether the hash changed.
+#
+# Removal restores what the add path started from, without persisted state:
+# - Array value: add never writes an Array for an unset value, so an Array is
+#   an authored value. Only the token is removed; an explicit `$(inherited)`
+#   stays.
+# - String value: add writes `$(inherited) <token>` for an unset value, which
+#   is indistinguishable from an authored `$(inherited)` once the token is
+#   there. Removal treats a remainder of exactly `$(inherited)` as "was unset"
+#   and deletes the key, so a project that never had the setting (the checked-in
+#   `testrnbare`) is byte-identical after a probe then flag-off round trip. An
+#   authored String `$(inherited)` therefore becomes unset, which resolves to
+#   the same compilation conditions.
+# - A remainder with no entries left deletes the key.
+# - String values are split on whitespace and re-joined with single spaces on
+#   add, so an authored String with tabs or repeated spaces is normalized, not
+#   byte-exact, after a probe then flag-off round trip. This only happens in
+#   probe mode, the checked-in `testrnbare` has no such setting, and the
+#   resolved value is unchanged.
+def rnfirebase_set_probe_swift_condition(build_settings, enabled) # rubocop:disable Naming/PredicateMethod
+  key = RNFIREBASE_SWIFT_CONDITIONS_SETTING
+  condition = RNFIREBASE_SPM_PROBE_SWIFT_CONDITION
+  original = build_settings[key]
+  current = rnfirebase_build_setting_list(original)
+  array_form = original.is_a?(Array) && !original.empty?
+  write = ->(entries) { build_settings[key] = array_form ? entries : entries.join(' ') }
+
+  if enabled
+    return false if current.include?(condition)
+
+    write.call(current << condition)
+    return true
+  end
+
+  return false unless current.include?(condition)
+
+  remaining = current.reject { |entry| entry == condition }
+  if remaining.empty? || (!array_form && remaining == ['$(inherited)'])
+    build_settings.delete(key)
+  else
+    write.call(remaining)
+  end
+  true
 end
 
 # Exact firebase-ios-sdk SPM requirement. CocoaPods already pins `version`
@@ -731,6 +786,14 @@ def rnfirebase_run_spm_user_project_hooks(installer)
                    'to your Podfile\'s post_integrate block as a fallback if Release builds crash at launch with ' \
                    'missing FIRComponent registrations, or Xcode reports that a Firebase module such as ' \
                    '`FirebaseCoreInternal`/`FirebaseSharedSwift` cannot be resolved.'
+    end
+  end
+  begin
+    rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+  rescue StandardError => e
+    if defined?(Pod::UI)
+      Pod::UI.warn "[react-native-firebase] Couldn't sync the #{RNFIREBASE_SPM_PROBE_SWIFT_CONDITION} Swift " \
+                   "compilation condition on the app target (#{e.class}: #{e.message})."
     end
   end
 end
@@ -1361,6 +1424,37 @@ def rnfirebase_ensure_probe_facade_build_order!(project, app_target)
   changed
 end
 
+# Sets `RNFB_DYNAMIC_FIREBASE_PROBE` in `SWIFT_ACTIVE_COMPILATION_CONDITIONS`
+# on the app's own native targets while the dynamic probe is active, so app
+# code such as test-rn-bare's AppDelegate.swift selects the `import RNFBFirebase`
+# path. Pods settings never reach the app target, and the user project is
+# checked in, so the condition is also removed again whenever the probe is off
+# (flag unset, remote SPM, or SPM disabled). Runs regardless of whether SPM is
+# active so a probe condition left in the app project cannot leak into a
+# shipped-path build.
+def rnfirebase_sync_probe_swift_condition_on_app_targets(installer)
+  # `umbrella?` is only ever set by `firebase_dependency` while the probe env
+  # var is `1`, so it alone is the probe condition.
+  enabled = RNFirebaseSPM.umbrella?
+
+  installer.aggregate_targets.each do |aggregate_target|
+    project = aggregate_target.user_project
+    # `integrate_targets: false` has no user project: nothing to sync.
+    next if project.nil?
+
+    project_modified = false
+
+    project.native_targets.each do |target|
+      target.build_configurations.each do |config|
+        changed = rnfirebase_set_probe_swift_condition(config.build_settings, enabled)
+        project_modified ||= changed
+      end
+    end
+
+    project.save if project_modified
+  end
+end
+
 def rnfirebase_apply_spm_build_settings(installer)
   return unless RNFirebaseSPM.active?
 
@@ -1438,6 +1532,10 @@ def rnfirebase_apply_spm_build_settings(installer)
           'RNFB_DYNAMIC_FIREBASE_PROBE=1'
         )
         pods_modified ||= probe_define_changed
+        # Swift twin of the define above: RNFBApp's `.swift` files pick the
+        # `import RNFBFirebase` path with `#if RNFB_DYNAMIC_FIREBASE_PROBE`.
+        probe_swift_changed = rnfirebase_set_probe_swift_condition(config.build_settings, true)
+        pods_modified ||= probe_swift_changed
         # RN prebuilt Core requires its Clang module map. `YES` enables normal
         # Objective-C modules but does not enable the separate
         # `__has_feature(cxx_modules)` capability asserted by the probe TU.

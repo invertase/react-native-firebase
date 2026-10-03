@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 import RNFBFirebase
 #else
 import FirebaseCore
@@ -88,7 +88,7 @@ final class RNFBAppModuleFIROptionsFactory: NSObject, RNFBFIROptionsCreating {
   }
 }
 
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 /**
  * Adapts `RNFBFirebaseAppClient` class methods for `RNFBAppModuleFirebase`.
  */
@@ -346,7 +346,7 @@ public final class RNFBAppModuleFirebase: NSObject {
   @objc(setAutomaticDataCollectionEnabled:forAppName:)
   public static func setAutomaticDataCollectionEnabled(_ enabled: Bool, forAppName appName: String) {
     guard let app = app(forName: appName) else { return }
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     _ = RNFBFirebaseAppClient.setDataCollectionDefaultEnabled(enabled, forApp: app as! NSObject)
 #else
     guard let firebaseApp = app as? FirebaseApp else { return }
@@ -356,7 +356,7 @@ public final class RNFBAppModuleFirebase: NSObject {
 
   @objc(setDataCollectionDefaultEnabled:forApp:)
   public static func setDataCollectionDefaultEnabled(_ enabled: Bool, forApp app: AnyObject) {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     _ = RNFBFirebaseAppClient.setDataCollectionDefaultEnabled(enabled, forApp: app as! NSObject)
 #else
     guard let firebaseApp = app as? FirebaseApp else { return }
@@ -366,7 +366,7 @@ public final class RNFBAppModuleFirebase: NSObject {
 
   @objc(deleteApp:completion:)
   public static func deleteApp(_ app: AnyObject, completion: @escaping (Bool) -> Void) {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     if !RNFBFirebaseAppClient.deleteApp(app as! NSObject, completion: completion) {
       completion(false)
     }

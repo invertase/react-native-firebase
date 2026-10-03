@@ -37,7 +37,7 @@ private final class DynamicEventSender: NSObject, RNFBJSEventSending {
   }
 }
 
-/// Compiles RNFBApp with `canImport(RNFBFirebase)` so the opaque facade branch is executed.
+/// Compiles RNFBApp with `RNFB_DYNAMIC_FIREBASE_PROBE` so the opaque facade branch is executed.
 final class RNFBAppDynamicFacadeTests: XCTestCase {
   override func tearDown() {
     FirebaseApp.resetRegistryForTesting()

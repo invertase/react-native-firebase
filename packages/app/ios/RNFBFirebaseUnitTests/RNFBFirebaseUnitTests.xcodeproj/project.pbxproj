@@ -450,6 +450,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					"$(inherited)",
+					RNFB_DYNAMIC_FIREBASE_PROBE,
+				);
 				SWIFT_INCLUDE_PATHS = (
 					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
 					"$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/Modules",
@@ -485,6 +489,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					"$(inherited)",
+					RNFB_DYNAMIC_FIREBASE_PROBE,
+				);
 				SWIFT_INCLUDE_PATHS = (
 					"$(SRCROOT)/../RNFBAppUnitTests/HostStubs",
 					"$(BUILT_PRODUCTS_DIR)/RNFBFirebase.framework/Modules",

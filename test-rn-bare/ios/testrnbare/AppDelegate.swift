@@ -1,5 +1,5 @@
 import UIKit
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 import RNFBFirebase
 #else
 import Firebase
@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     RNFBFirebaseAppClient.configure()
 #else
     FirebaseApp.configure()
