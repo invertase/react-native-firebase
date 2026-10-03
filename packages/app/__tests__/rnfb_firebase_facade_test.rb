@@ -1,19 +1,31 @@
 # frozen_string_literal: true
 
+require 'fileutils'
 require 'minitest/autorun'
+require 'tmpdir'
 
 # Source-level contract for the dynamic Firebase probe facade. The isolated
 # client target typechecks `import RNFBFirebase` with SDK modules off its path.
 class RNFBFirebaseFacadeTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   FIREBASE_TYPE = /\bFirebase(?:Core|Installations|Options|App|Configuration|LoggerLevel)\b/
   IOS_ROOT = File.expand_path('../ios', __dir__)
-  FACADE_IMPORT = "#if canImport(RNFBFirebase)\nimport RNFBFirebase\n#else\nimport FirebaseCore\n#endif"
+  PROBE_CONDITION = 'RNFB_DYNAMIC_FIREBASE_PROBE'
+  FACADE_IMPORT = "#if #{PROBE_CONDITION}\nimport RNFBFirebase\n#else\nimport FirebaseCore\n#endif".freeze
   APP_SOURCES = %w[
     RNFBApp/RCTConvertFIRApp.swift
     RNFBApp/RCTConvertFIROptions.swift
     RNFBApp/RNFBSharedUtilsFIRApp.swift
     RNFBApp/RNFBAppModuleFirebase.swift
   ].freeze
+  CANIMPORT_VARIANTS = {
+    'plain' => "#if canImport(RNFBFirebase)\nimport RNFBFirebase\n#endif\n",
+    'space before paren' => "#if canImport (RNFBFirebase)\nimport RNFBFirebase\n#endif\n",
+    'inner spacing' => "#if canImport( RNFBFirebase )\nimport RNFBFirebase\n#endif\n",
+    'compound' => "#if canImport(RNFBFirebase) && os(iOS)\nimport RNFBFirebase\n#endif\n",
+    'compound reversed' => "#if os(iOS) || canImport(RNFBFirebase)\nimport RNFBFirebase\n#endif\n",
+    'elseif' => "#if DEBUG\n#elseif canImport(RNFBFirebase)\nimport RNFBFirebase\n#endif\n"
+  }.freeze
+
   def test_swift_facade_keeps_firebase_in_objective_c
     source = facade_source
     refute_match(/\binternal\s+import\b/, source)
@@ -48,8 +60,88 @@ class RNFBFirebaseFacadeTest < Minitest::Test # rubocop:disable Metrics/ClassLen
     signatures.each { |signature| refute_match(FIREBASE_TYPE, signature, signature) }
   end
 
-  def test_rnfbapp_canimport_branch_omits_firebase_types
+  def test_rnfbapp_probe_branch_omits_firebase_types
     APP_SOURCES.each { |relative| assert_facade_branch_hides_firebase(relative) }
+  end
+
+  # The probe path is chosen by an explicit compilation condition, never by
+  # whether a module named RNFBFirebase happens to be importable.
+  def test_no_swift_source_selects_probe_with_canimport
+    sources = swift_sources_for_canimport_guard
+    assert_includes sources, File.join(IOS_ROOT, 'RNFBApp/RCTConvertFIRApp.swift')
+    assert_includes sources, File.expand_path('../../../test-rn-bare/ios/testrnbare/AppDelegate.swift', __dir__)
+    offenders = sources.select { |path| canimport_probe_selector?(File.read(path)) }
+    assert_empty offenders, "canImport(RNFBFirebase) must not pick the probe path: #{offenders.join(', ')}"
+  end
+
+  def test_canimport_guard_scans_the_e2e_test_app_ios_sources
+    roots = canimport_guard_roots
+    assert_includes roots, File.expand_path('../../../tests/ios', __dir__)
+    assert_includes roots, File.expand_path('../../../test-rn-bare/ios', __dir__)
+    assert_includes roots, IOS_ROOT
+  end
+
+  def test_canimport_guard_catches_spacing_compound_and_elseif_variants
+    Dir.mktmpdir do |dir|
+      CANIMPORT_VARIANTS.each do |name, body|
+        path = File.join(dir, "#{name.tr(' ', '_')}.swift")
+        File.write(path, body)
+        assert canimport_probe_selector?(File.read(path)), "guard must catch the #{name} variant"
+      end
+    end
+  end
+
+  def test_canimport_guard_ignores_unrelated_canimport_and_condition_form
+    refute canimport_probe_selector?("#if canImport(FirebaseCore)\nimport FirebaseCore\n#endif\n")
+    refute canimport_probe_selector?("#if canImport(RNFBFirebaseBridge)\nimport X\n#endif\n")
+    refute canimport_probe_selector?("#if #{PROBE_CONDITION}\nimport RNFBFirebase\n#endif\n")
+  end
+
+  def test_canimport_guard_skips_pods_build_and_derived_data_trees
+    Dir.mktmpdir do |dir|
+      %w[Pods build DerivedData].each do |skipped|
+        FileUtils.mkdir_p(File.join(dir, skipped, 'nested'))
+        File.write(File.join(dir, skipped, 'nested', 'Skipped.swift'), "#if canImport(RNFBFirebase)\n#endif\n")
+      end
+      File.write(File.join(dir, 'Kept.swift'), "#if canImport(RNFBFirebase)\n#endif\n")
+
+      assert_equal [File.join(dir, 'Kept.swift')], canimport_guard_sources([dir])
+    end
+  end
+
+  def test_test_rn_bare_app_delegate_uses_probe_condition
+    source = File.read(File.expand_path('../../../test-rn-bare/ios/testrnbare/AppDelegate.swift', __dir__))
+    assert_includes source, "#if #{PROBE_CONDITION}\nimport RNFBFirebase\n#else\nimport Firebase\n#endif"
+    assert_includes source, "#if #{PROBE_CONDITION}\n    RNFBFirebaseAppClient.configure()\n#else"
+  end
+
+  def test_firebase_unit_test_target_sets_probe_condition_for_compiled_app_sources
+    blocks = build_configs('PRODUCT_NAME = "$(TARGET_NAME)"').select { |block| block.include?('RNFBFirebaseUnitTests') }
+    assert_equal 2, blocks.size
+    blocks.each do |block|
+      assert_match(/SWIFT_ACTIVE_COMPILATION_CONDITIONS = \(\s*"\$\(inherited\)",\s*#{PROBE_CONDITION},?\s*\);/, block)
+    end
+  end
+
+  def canimport_probe_selector?(source)
+    source.match?(/canImport\s*\(\s*RNFBFirebase\b/)
+  end
+
+  def canimport_guard_roots
+    [
+      IOS_ROOT,
+      File.expand_path('../../../test-rn-bare/ios', __dir__),
+      File.expand_path('../../../tests/ios', __dir__)
+    ]
+  end
+
+  def canimport_guard_sources(roots)
+    paths = roots.flat_map { |root| Dir.glob(File.join(root, '**/*.swift')) }
+    paths.grep_v(%r{/(?:Pods|build|DerivedData)/})
+  end
+
+  def swift_sources_for_canimport_guard
+    canimport_guard_sources(canimport_guard_roots)
   end
 
   def assert_isolated_client_source
@@ -145,8 +237,8 @@ class RNFBFirebaseFacadeTest < Minitest::Test # rubocop:disable Metrics/ClassLen
   end
 
   def facade_visible_source(source)
-    strip_comments(source).gsub(/#if canImport\(RNFBFirebase\)\n.*?#else\n.*?#endif/m) do |block|
-      block.split('#else', 2).first.sub(/\A#if canImport\(RNFBFirebase\)\n/, '')
+    strip_comments(source).gsub(/#if #{PROBE_CONDITION}\n.*?#else\n.*?#endif/m) do |block|
+      block.split('#else', 2).first.sub(/\A#if #{PROBE_CONDITION}\n/, '')
     end
   end
 

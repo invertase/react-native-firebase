@@ -276,8 +276,8 @@ if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]] && grep -q 'ImplementationOnlyDeprecat
 fi
 
 # A green probe that compiled RCTConvertFIRApp.swift's #else branch
-# (`import FirebaseCore`) is not evidence. Empty DerivedData used to make
-# canImport(RNFBFirebase) false, and a leftover module made it true.
+# (`import FirebaseCore`) is not evidence. The probe path is selected by the
+# RNFB_DYNAMIC_FIREBASE_PROBE Swift compilation condition.
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   log "--- dynamic probe facade import check ---"
   if grep -F 'RCTConvertFIRApp.swift' "$XCODEBUILD_LOG" | grep -F "no such module 'FirebaseCore'" >/dev/null; then

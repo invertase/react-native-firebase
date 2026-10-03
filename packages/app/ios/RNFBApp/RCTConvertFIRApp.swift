@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
 import RNFBFirebase
 #else
 import FirebaseCore
@@ -43,7 +43,7 @@ final class RNFBFIRAppRegistryAdapter: NSObject, RNFBFIRAppLookingUp {
   @objc static let shared = RNFBFIRAppRegistryAdapter()
 
   func defaultApp() -> AnyObject? {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     RNFBFirebaseAppClient.defaultApp()
 #else
     FirebaseApp.app()
@@ -51,7 +51,7 @@ final class RNFBFIRAppRegistryAdapter: NSObject, RNFBFIRAppLookingUp {
   }
 
   func appNamed(_ name: String) -> AnyObject? {
-#if canImport(RNFBFirebase)
+#if RNFB_DYNAMIC_FIREBASE_PROBE
     RNFBFirebaseAppClient.app(named: name)
 #else
     FirebaseApp.app(name: name)
