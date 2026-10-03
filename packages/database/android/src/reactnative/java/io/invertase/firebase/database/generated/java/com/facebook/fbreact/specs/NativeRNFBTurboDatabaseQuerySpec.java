@@ -40,6 +40,10 @@ public abstract class NativeRNFBTurboDatabaseQuerySpec extends ReactContextBaseJ
 
   @ReactMethod
   @DoNotStrip
+  public abstract void get(String app, String dbURL, String path, ReadableArray modifiers, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
   public abstract void on(String app, String dbURL, ReadableMap props);
 
   @ReactMethod

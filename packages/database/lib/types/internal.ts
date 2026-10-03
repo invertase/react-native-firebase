@@ -151,6 +151,7 @@ export interface RNFBDatabaseModule {
     modifiers: DatabaseQueryModifier[],
     eventType: EventType,
   ): Promise<DatabaseSnapshotInternal | DatabaseChildSnapshotResultInternal>;
+  get(path: string, modifiers: DatabaseQueryModifier[]): Promise<DatabaseSnapshotInternal>;
   on(props: DatabaseListenPropsInternal): void;
   off(queryKey: string, eventRegistrationKey: string): void | Promise<void>;
   keepSynced(
@@ -223,6 +224,7 @@ export interface QueryWithSubscriptionMethodsInternal extends Query {
     failureCallbackContext?: ((error: Error) => void) | null,
     context?: ListenOptions,
   ): Promise<DataSnapshot>;
+  _get(): Promise<DataSnapshot>;
 }
 
 /** Query constraint instance that can apply itself to a query. */

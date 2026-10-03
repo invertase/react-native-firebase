@@ -141,6 +141,10 @@ namespace facebook::react {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "once", @selector(once:dbURL:path:modifiers:eventType:resolve:reject:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_get(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "get", @selector(get:dbURL:path:modifiers:resolve:reject:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_on(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "on", @selector(on:dbURL:props:), args, count);
     }
@@ -157,6 +161,9 @@ namespace facebook::react {
     : ObjCTurboModule(params) {
       
         methodMap_["once"] = MethodMetadata {5, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_once};
+        
+        
+        methodMap_["get"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_get};
         
         
         methodMap_["on"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_on};

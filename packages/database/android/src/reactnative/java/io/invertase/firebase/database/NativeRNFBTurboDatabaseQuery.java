@@ -29,6 +29,7 @@ import com.google.firebase.database.*;
 import io.invertase.firebase.common.RNFBHandleCollisionException;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.UniversalFirebasePreferences;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -374,6 +375,88 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
     }
   }
 
+  // Static because the SDK keeps keepSynced registrations across a JS reload.
+  private static final RNFBDatabaseKeepSyncedRegistry keepSyncedRegistry =
+      new RNFBDatabaseKeepSyncedRegistry();
+
+  // reference.toString() is the full URL, so a null dbURL and the default URL give the same key.
+  private static String locationKey(String app, DatabaseReference reference) {
+    return app + "|" + reference;
+  }
+
+  private static final java.util.regex.Pattern PERMISSION_DENIED_REASON =
+      java.util.regex.Pattern.compile(
+          "permission.?denied", java.util.regex.Pattern.CASE_INSENSITIVE);
+
+  /**
+   * Single request/response read backing modular get(). Offline, Query.get() waits for the
+   * connection, like once(). It uses once() instead when:
+   *
+   * <ul>
+   *   <li>disk persistence is on: Query.get() then resolves from disk after 3s, even online;
+   *   <li>RTDB debug logging is on: a get in flight when the socket drops is resent on reconnect
+   *       only because PersistentConnectionImpl.sendGet's early return sits inside {@code if
+   *       (logger.logsDebug())};
+   *   <li>the app keeps anything at this location synced (see RNFBDatabaseKeepSyncedRegistry).
+   * </ul>
+   */
+  @Override
+  public void get(String app, String dbURL, String path, ReadableArray modifiers, Promise promise) {
+    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+    ReactNativeFirebaseDatabaseQuery databaseQuery = getDatabaseQueryInstance(reference, modifiers);
+
+    UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
+    String location = locationKey(app, reference);
+    if (modifiers.size() > 0
+        || preferences.getBooleanValue(UniversalDatabaseStatics.DATABASE_PERSISTENCE_ENABLED, false)
+        || preferences.getBooleanValue(UniversalDatabaseStatics.DATABASE_LOGGING_ENABLED, false)
+        || !keepSyncedRegistry.beginNativeGet(location)) {
+      addOnceValueEventListener(databaseQuery, promise);
+      return;
+    }
+
+    databaseQuery
+        .query
+        .get()
+        .addOnCompleteListener(
+            getTask -> {
+              keepSyncedRegistry.endNativeGet(location);
+              if (!getTask.isSuccessful()) {
+                Exception exception = getTask.getException();
+                // Query.get() surfaces a server error as a plain Exception carrying only the
+                // reply's reason text. Map a denial to the error once() gives, so callers see the
+                // same code and DatabaseQuery._get need not re-ask the server.
+                if (exception != null
+                    && exception.getMessage() != null
+                    && PERMISSION_DENIED_REASON.matcher(exception.getMessage()).find()) {
+                  rejectPromiseDatabaseException(
+                      promise,
+                      new UniversalDatabaseException(
+                          DatabaseError.PERMISSION_DENIED, exception.getMessage(), exception));
+                  return;
+                }
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, exception);
+                return;
+              }
+              DataSnapshot dataSnapshot = getTask.getResult();
+              // Serialise off the main thread, as addOnceValueEventListener does.
+              try {
+                Tasks.call(turboSupport.getExecutor(), () -> snapshotToMap(dataSnapshot))
+                    .addOnCompleteListener(
+                        task -> {
+                          if (task.isSuccessful()) {
+                            promise.resolve(task.getResult());
+                          } else {
+                            ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                                promise, task.getException());
+                          }
+                        });
+              } catch (java.util.concurrent.RejectedExecutionException e) {
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(promise, e);
+              }
+            });
+  }
+
   @Override
   public void on(String app, String dbURL, ReadableMap props) {
     String key = props.getString("key");
@@ -414,7 +497,9 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
       boolean enabled,
       Promise promise) {
     DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
-    getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(enabled);
+    Query query = getDatabaseQueryInstance(key, reference, modifiers).query;
+    keepSyncedRegistry.keepSynced(
+        locationKey(app, reference), key, enabled, () -> query.keepSynced(enabled));
     promise.resolve(null);
   }
 }

@@ -19,7 +19,7 @@ const MAIN_METHODS = [
 
 const REFERENCE_METHODS = ['set', 'update', 'setWithPriority', 'remove', 'setPriority'] as const;
 
-const QUERY_METHODS = ['once', 'on', 'off', 'keepSynced'] as const;
+const QUERY_METHODS = ['once', 'get', 'on', 'off', 'keepSynced'] as const;
 
 const ON_DISCONNECT_METHODS = [
   'onDisconnectCancel',
@@ -77,13 +77,13 @@ describe('TurboModule wrapper contract (NewArch-AD-17.1)', function () {
 
   it('asserts merged Database spec method names are unique (NewArch-AD-11)', function () {
     expect(new Set(ALL_SPEC_METHODS).size).toBe(ALL_SPEC_METHODS.length);
-    expect(ALL_SPEC_METHODS).toHaveLength(22);
+    expect(ALL_SPEC_METHODS).toHaveLength(23);
   });
 
   it('asserts per-host method counts match ALL_SPEC_METHODS grouping', function () {
     expect(MAIN_METHODS).toHaveLength(6);
     expect(REFERENCE_METHODS).toHaveLength(5);
-    expect(QUERY_METHODS).toHaveLength(4);
+    expect(QUERY_METHODS).toHaveLength(5);
     expect(ON_DISCONNECT_METHODS).toHaveLength(5);
     expect(TRANSACTION_METHODS).toHaveLength(2);
     expect(HOST_METHOD_GROUPS).toHaveLength(5);

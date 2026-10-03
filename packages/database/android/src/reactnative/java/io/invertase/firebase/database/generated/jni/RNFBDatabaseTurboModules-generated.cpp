@@ -89,6 +89,11 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_o
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "once", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Ljava/lang/String;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
 }
 
+static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_get(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "get", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+}
+
 static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_on(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, VoidKind, "on", "(Ljava/lang/String;Ljava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)V", args, count, cachedMethodId);
@@ -107,6 +112,7 @@ static facebook::jsi::Value __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_k
 NativeRNFBTurboDatabaseQuerySpecJSI::NativeRNFBTurboDatabaseQuerySpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
   methodMap_["once"] = MethodMetadata {5, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_once};
+  methodMap_["get"] = MethodMetadata {4, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_get};
   methodMap_["on"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_on};
   methodMap_["off"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_off};
   methodMap_["keepSynced"] = MethodMetadata {6, __hostFunction_NativeRNFBTurboDatabaseQuerySpecJSI_keepSynced};
