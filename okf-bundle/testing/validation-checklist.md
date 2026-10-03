@@ -167,7 +167,7 @@ Frozen review is [report/check-only except revert `.only`](change-authoring-work
 
 ## RN CLI prebuilt RNCore iOS compile (not e2e)
 
-Workspace fixture `test-rn-bare/`: **`yarn test-rn-bare:ios:build`** then **`yarn test-rn-bare:ios:launch-smoke`** (iOS 27 UIScene gate; CI runs both) — [agent command policy](agent-command-policy.md). Not Detox; not the Expo link/launch closers; do not add `yarn tests:ios:*` or ad-hoc `pod` / `xcodebuild` / `simctl` as those closers. App package: [packages/app](../packages/app/index.md).
+Workspace fixture `test-rn-bare/`: **`yarn test-rn-bare:ios:build`** then **`yarn test-rn-bare:ios:launch-smoke`** (iOS 27 UIScene gate; CI runs both, and again for the dynamic Firebase probe with facade-reference, framework-load, and configure assertions — [probe launch smoke](agent-command-policy.md#dynamic-firebase-probe-launch-smoke)) — [agent command policy](agent-command-policy.md). Not Detox; not the Expo link/launch closers; do not add `yarn tests:ios:*` or ad-hoc `pod` / `xcodebuild` / `simctl` as those closers. App package: [packages/app](../packages/app/index.md).
 
 ## E2e with coverage
 
