@@ -28,9 +28,9 @@ import {
 import {
   FirebaseModule,
   getOrCreateModularInstance,
+  getReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
-import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import { UTILS_NATIVE_MODULE } from '@react-native-firebase/app/dist/module/internal/constants';
 import './types/internal';
 import type { FirebaseApp } from '@react-native-firebase/app';

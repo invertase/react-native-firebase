@@ -26,8 +26,11 @@ import {
   isOther,
 } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseModule, type ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import {
+  FirebaseModule,
+  type ModuleConfig,
+  setReactNativeModule,
+} from '@react-native-firebase/app/dist/module/internal';
 import CollectionReferenceClass from './FirestoreCollectionReference';
 import DocumentReferenceClass from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';

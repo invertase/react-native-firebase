@@ -23,6 +23,7 @@ export * from './NativeModules';
 export * from './registry/app';
 export * from './registry/modular';
 export * from './registry/nativeModule';
+export { getReactNativeModule, setReactNativeModule } from './nativeModule';
 export { default as SharedEventEmitter } from './SharedEventEmitter';
 export { Logger } from './logger';
 export type { ModuleConfig } from '../types/internal';
