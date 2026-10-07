@@ -105,6 +105,16 @@ module.exports = {
       },
     },
     {
+      name: 'satellites-no-platform-split-subpath',
+      severity: 'error',
+      comment:
+        "Import getReactNativeModule / setReactNativeModule from '@react-native-firebase/app/dist/module/internal', " +
+        "not '.../internal/nativeModule'. A package exports target is an exact file, so bundlers that apply exports " +
+        '(Re.Pack / webpack) load the web nativeModule.js instead of nativeModule.android.js / nativeModule.ios.js.',
+      from: { path: '^packages/[^/]+/lib/', pathNot: '^packages/app/lib/' },
+      to: { path: '^packages/app/lib/internal/nativeModule\\.ts$' },
+    },
+    {
       name: 'satellites-only-hub-require',
       severity: 'error',
       comment:

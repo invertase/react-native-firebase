@@ -15,7 +15,7 @@
  *
  */
 
-import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal';
 import type { LogLevel } from '../types/firestore';
 
 const FIRESTORE_MAIN_NATIVE_MODULE = 'NativeRNFBTurboFirestore';

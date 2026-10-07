@@ -20,13 +20,13 @@ import type { FirebaseApp } from '@react-native-firebase/app';
 import {
   FirebaseModule,
   getOrCreateModularInstance,
+  setReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import './types/internal';
 import { HttpsError, type NativeError } from './HttpsError';
 import type { FunctionsInternal } from './types/internal';
 import { version } from './version';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
 import type {
   HttpsCallableOptions,

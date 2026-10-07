@@ -28,11 +28,11 @@ import type { FirebaseApp } from '@react-native-firebase/app';
 import {
   FirebaseModule,
   getOrCreateModularInstance,
+  setReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import './types/internal';
 import { Platform } from 'react-native';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
 import type {

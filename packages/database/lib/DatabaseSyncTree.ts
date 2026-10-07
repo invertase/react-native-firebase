@@ -18,7 +18,7 @@
 import { isString } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import SharedEventEmitter from '@react-native-firebase/app/dist/module/internal/SharedEventEmitter';
-import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import type {
   DatabaseChildSnapshotResultInternal,

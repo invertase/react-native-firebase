@@ -19,9 +19,9 @@ import { isBoolean, isString } from '@react-native-firebase/app/dist/module/comm
 import {
   FirebaseModule,
   getOrCreateModularInstance,
+  setReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import './types/internal';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type { InAppMessaging } from './types/in-app-messaging';
