@@ -10,6 +10,7 @@ import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Path
 import type { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { PluginConfigType } from '../pluginConfig';
+import { findSceneDelegateFile, infoPlistDeclaresSceneManifest } from './sceneLifecycle';
 
 export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
   config: ExpoConfig,
@@ -64,6 +65,20 @@ export function withOpenUrlFixForAppDelegate({
 
   const newContents = modifyAppDelegate(contents, language);
   if (newContents === null) {
+    // Under the UIScene life cycle (Xcode 27+) UIKit stops calling `application(_:open:options:)` and the
+    // template drops the method. `withIosCaptchaSceneDelegateFix` patches `SceneDelegate.swift` instead.
+    const platformProjectRoot = config.modRequest.platformProjectRoot;
+    if (findSceneDelegateFile(platformProjectRoot) !== null) {
+      return config;
+    }
+    if (infoPlistDeclaresSceneManifest(platformProjectRoot)) {
+      // Scene life cycle declared but no SceneDelegate.swift to patch: neither plugin can apply the fix.
+      WarningAggregator.addWarningIOS(
+        '@react-native-firebase/auth',
+        'Skipping iOS openURL fix because Info.plist declares UIApplicationSceneManifest but no SceneDelegate.swift was found. Firebase Auth reCAPTCHA redirect URLs may be forwarded to your router.',
+      );
+      return config;
+    }
     if (configValue === true) {
       throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
     } else {

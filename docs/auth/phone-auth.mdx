@@ -45,6 +45,8 @@ To use phone auth in an expo app, add the `@react-native-firebase/auth` config p
 
 The `@react-native-firebase/auth` config plugin is not required for all auth providers, but it is required to use phone auth. The plugin [will set up reCAPTCHA](https://firebase.google.com/docs/auth/ios/phone-auth#set-up-recaptcha-verification) verification for you on iOS.
 
+On Expo SDK 58+ (UIScene life cycle), the plugin patches `SceneDelegate` so Firebase Auth can handle reCAPTCHA redirect URLs with `Auth.auth().canHandle(_:)` before they reach Expo Router. That matches Firebase’s documented `scene(_:openURLContexts:)` path for an in-app reCAPTCHA return; Auth does not require a cold-start `willConnectTo` handler for this flow.
+
 The recommendation is to use a [custom development client](https://docs.expo.dev/develop/development-builds/introduction/#use-libraries-with-native-code-that-arent). For more info on using Expo with React Native Firebase, see our [Expo docs](/#installation-for-expo-projects).
 
 # Sign-in
