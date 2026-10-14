@@ -18,7 +18,7 @@ Out of scope (explicitly rejected — see [ADR](architecture-decisions.md)): Tur
 
 ## Related repository files
 
-- [`lerna.json`](../../../lerna.json) — versioning + publish config (unchanged by this work)
+- [`lerna.json`](../../../lerna.json) — versioning + publish config (includes `createRelease: github` per [MonoTool-AD-2](architecture-decisions.md#monotool-ad-2--keep-lerna-for-versioning-and-publish--accepted))
 - [`package.json`](../../../package.json) — root scripts, workspaces, `lerna:prepare`
 - [`tsconfig.packages.base.json`](../../../tsconfig.packages.base.json) — shared package compiler options (17 of 19 packages extend it)
 - [`.github/workflows/linting.yml`](../../../.github/workflows/linting.yml) — CI lint job (target for `lint:deps` + `.nx/cache`)

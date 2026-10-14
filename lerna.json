@@ -5,6 +5,7 @@
     "version": {
       "allowBranch": ["main", "release-v*"],
       "conventionalCommits": true,
+      "createRelease": "github",
       "exact": true,
       "gitRemote": "origin",
       "message": "chore(release): release packages"
