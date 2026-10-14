@@ -11,7 +11,7 @@ jobs:
     runs-on: xcode-27
     permissions:
       id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
-      contents: read
+      contents: write # Lerna createRelease: github (tags + GitHub Release objects)
     env:
       # xcode-27 runner (macOS 27) + 27.0 pin matches tests_e2e_ios.yml; needed for CocoaPods in scripts/version.js
       XCODE_VERSION: '27.0'
@@ -90,7 +90,9 @@ jobs:
         env:
           # Packages are configured on npmjs.com as OIDC Trusted Publisher for this workflow.
           # org admin Github Token required for the changelog/tag commit+push
-          # to work via an exception to branch protection rules
+          # to work via an exception to branch protection rules.
+          # Lerna createRelease: github reads process.env.GH_TOKEN specifically.
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
   deploy-api-reference:
