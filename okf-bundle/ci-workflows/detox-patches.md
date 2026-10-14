@@ -8,9 +8,11 @@ timestamp: 2026-08-26T00:00:00Z
 
 # Detox yarn patches
 
-E2E runs on **Detox 20.51.0** (`tests/package.json`), applied via Yarn Berry patch:
+E2E runs on **Detox 20.51.0** (`tests/package.json`). This file inventories the **Yarn Berry** patch:
 
 `.yarn/patches/detox-npm-20.51.0-3e13b6e309.patch`
+
+**Not this file:** iOS neutral-slot exact-base-or-fail allocation is [`tests/patches/detox+20.51.0.patch`](../../tests/patches/detox+20.51.0.patch) via `tests` `prepare` (`patch-package`). Contract: [running e2e § iOS slot simulators](../testing/running-e2e.md#ios-slot-simulators). Do not add that hunk here.
 
 Patches are in-repo. Prefer direct patch-file edits or headless workflow; `yarn patch-commit` may prompt and fail in non-interactive shells.
 

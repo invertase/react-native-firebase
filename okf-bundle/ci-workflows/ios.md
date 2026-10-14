@@ -46,7 +46,7 @@ On GHA macOS runners, `simctl list` can show `Booted` before the simulator is te
 
 | Phase | What happens |
 |--------|----------------|
-| `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17` or `RNFB E2E iOS slot-N`) |
+| `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17` or `RN E2E iOS slot-N`) |
 | `resolve_udid` | `rnfb_ensure_ios_simulator_udid` on `RNFB_IOS_SIM_RUNTIME` (default iOS 27.0); export `RNFB_IOS_SIMULATOR_UDID` |
 | `kill_resolved` | Kill Device Hub (or legacy Simulator.app), terminate app, `simctl shutdown` the resolved UDID |
 | `boot_command` | `xcrun simctl boot <udid>` |

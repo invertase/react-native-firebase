@@ -1,0 +1,51 @@
+diff --git a/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js b/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js
+index 291d739..c8e4f2a 100644
+--- a/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js
++++ b/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js
+@@ -12,6 +12,8 @@
+ 
+ const SimulatorQuery = require('./SimulatorQuery');
+ 
++const RN_E2E_SLOT_BASE_NAME = /^RN E2E iOS slot-[0-7]$/;
++
+ /**
+  * @implements {AllocationDriverBase}
+  */
+@@ -126,6 +128,23 @@
+     const { free, taken } = await this._groupDevicesByStatus(deviceQuery);
+ 
+     if (_.isEmpty(free)) {
++      if (RN_E2E_SLOT_BASE_NAME.test(deviceQuery.byName)) {
++        if (_.isEmpty(taken)) {
++          throw new DetoxRuntimeError({
++            message: `The neutral iOS slot ${deviceQuery.byName} was not found`,
++            hint: `Run yarn tests:e2e:setup-ios-sims to create the exact base simulator. ` +
++              `Detox will not create a suffixed -Detox clone for a neutral slot.`
++          });
++        }
++        throw new DetoxRuntimeError({
++          message: `The neutral iOS slot ${deviceQuery.byName} is already allocated`,
++          hint: `Detox will not create a suffixed clone for a neutral slot. ` +
++            `Confirm Mellifera/manual ownership and release the owning run before retrying. ` +
++            `If no owner is active, inspect ~/Library/Detox/device.registry.json for a stale allocation; ` +
++            `do not reset the registry while another run is active.`
++        });
++      }
++
+       const prototypeDevice = taken[0];
+       udid = this._applesimutils.create(prototypeDevice);
+       await this._runScreenshotWorkaround(udid);
+@@ -184,6 +203,13 @@
+     );
+ 
+     if (_.isEmpty(result)) {
++      if (RN_E2E_SLOT_BASE_NAME.test(deviceQuery.byName)) {
++        throw new DetoxRuntimeError({
++          message: `The neutral iOS slot ${deviceQuery.byName} was not found`,
++          hint: `Run yarn tests:e2e:setup-ios-sims to create the exact base simulator. ` +
++            `Detox will not create a suffixed -Detox clone for a neutral slot.`
++        });
++      }
+       throw new DetoxRuntimeError({
+         message: `Failed to find a device ${deviceQuery}`,
+         hint: `Run 'applesimutils --list' to list your supported devices. ` +
