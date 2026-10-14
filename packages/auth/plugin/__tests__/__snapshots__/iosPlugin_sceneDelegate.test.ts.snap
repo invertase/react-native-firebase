@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Config Plugin iOS Tests - sceneDelegate patching inserts Auth.auth().canHandle openURLContexts override into the SDK 58 SceneDelegate 1`] = `
+"internal import Expo
+import FirebaseAuth
+
+@objc(SceneDelegate)
+class SceneDelegate: ExpoAppSceneDelegate {
+// @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY)
+  // Warm path only: Auth reCAPTCHA returns via openURLContexts while the app is running.
+  // Cold-start scene connection is intentionally not patched (see sceneDelegateWarmPathContract).
+  override func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    // Let Firebase Auth handle owned URLs (reCAPTCHA); forward the rest to Expo / RCTLinkingManager.
+    let forwardedContexts = Set(URLContexts.filter { !Auth.auth().canHandle($0.url) })
+    guard !forwardedContexts.isEmpty else {
+      return
+    }
+    super.scene(scene, openURLContexts: forwardedContexts)
+  }
+// @generated end @react-native-firebase/auth-openURL
+  // Extension point for config plugins.
+}
+"
+`;

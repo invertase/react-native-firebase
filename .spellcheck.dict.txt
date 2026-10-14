@@ -292,6 +292,7 @@ typings
 UI
 uid
 UIKit
+UIScene
 UIViewController
 Unactivated
 uncomment
