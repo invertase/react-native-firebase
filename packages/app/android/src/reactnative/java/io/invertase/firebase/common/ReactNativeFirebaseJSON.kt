@@ -25,7 +25,13 @@ import org.json.JSONObject
 import java.util.ArrayList
 
 class ReactNativeFirebaseJSON private constructor() {
-  private var jsonObject: JSONObject? = JSONObject(BuildConfig.FIREBASE_JSON_RAW)
+  private var jsonObject: JSONObject? =
+    try {
+      JSONObject(BuildConfig.FIREBASE_JSON_RAW)
+    } catch (_: JSONException) {
+      // JSON is validated as part of gradle build - should never error
+      null
+    }
 
   fun contains(key: String?): Boolean = jsonObject?.has(key) ?: false
 
