@@ -78,8 +78,36 @@ describe('get() (DatabaseQuery._get)', function () {
         expect(once).not.toHaveBeenCalled();
       });
 
-      it("retries as once('value') when the native read fails otherwise", async function () {
+      it('does not retry once when native get already used the observer path', async function () {
+        // Android addOnceValueEventListener cancellations are UniversalDatabaseException codes
+        // (e.g. disconnected), not Query.get()'s database/unknown ExceptionMap path.
+        const cancelled = Object.assign(new Error('disconnected'), {
+          code: 'database/disconnected',
+        });
+        const { self, once } = fakeQuery(() => Promise.reject(cancelled));
+
+        await expect(run(self)).rejects.toBe(cancelled);
+        expect(once).not.toHaveBeenCalled();
+      });
+
+      it("retries as once('value') when Query.get() fails without an observer code", async function () {
         const { self, once } = fakeQuery(() => Promise.reject(new Error('Internal error')));
+
+        await expect(run(self)).resolves.toBe('once-snapshot');
+        expect(once).toHaveBeenCalledWith('value');
+      });
+
+      it("retries as once('value') when the native rejection is not an error object", async function () {
+        const { self, once } = fakeQuery(() => Promise.reject(null));
+
+        await expect(run(self)).resolves.toBe('once-snapshot');
+        expect(once).toHaveBeenCalledWith('value');
+      });
+
+      it("retries as once('value') when Query.get() fails as database/unknown", async function () {
+        // SharedUtils.getExceptionMap marks plain Query.get() failures as code "unknown".
+        const unknown = Object.assign(new Error('Internal error'), { code: 'database/unknown' });
+        const { self, once } = fakeQuery(() => Promise.reject(unknown));
 
         await expect(run(self)).resolves.toBe('once-snapshot');
         expect(once).toHaveBeenCalledWith('value');
