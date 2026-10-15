@@ -60,7 +60,8 @@ type MessagingInternals = ReturnType<typeof getMessaging> & {
 function createMessagingInstance(isInstallationIdEnabled: boolean): MessagingInternals {
   const existing = getMessaging() as MessagingInternals;
   const Base = existing.constructor as new (...args: unknown[]) => MessagingInternals;
-  const native = { getConstants: () => ({ isInstallationIdEnabled }) };
+  // Mirror the flattened Turbo constant surface exposed by the app native-module wrapper.
+  const native = { isInstallationIdEnabled };
   class FreshMessaging extends Base {}
   Object.defineProperty(FreshMessaging.prototype, 'native', { get: () => native });
   return new FreshMessaging(

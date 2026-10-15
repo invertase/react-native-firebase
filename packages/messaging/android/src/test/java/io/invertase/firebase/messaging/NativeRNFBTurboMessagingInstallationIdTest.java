@@ -109,6 +109,38 @@ public class NativeRNFBTurboMessagingInstallationIdTest {
   }
 
   @Test
+  public void constants_installationIdEnabled_whenManifestFlagStringTrue() throws Exception {
+    Bundle metaData = new Bundle();
+    metaData.putString(META_KEY, "true");
+    setManifestMetaData(metaData);
+    assertEquals(Boolean.TRUE, installationIdConstant());
+  }
+
+  @Test
+  public void constants_installationIdEnabled_whenManifestFlagStringOne() throws Exception {
+    Bundle metaData = new Bundle();
+    metaData.putString(META_KEY, "1");
+    setManifestMetaData(metaData);
+    assertEquals(Boolean.TRUE, installationIdConstant());
+  }
+
+  @Test
+  public void constants_installationIdEnabled_whenManifestFlagIntOne() throws Exception {
+    Bundle metaData = new Bundle();
+    metaData.putInt(META_KEY, 1);
+    setManifestMetaData(metaData);
+    assertEquals(Boolean.TRUE, installationIdConstant());
+  }
+
+  @Test
+  public void constants_installationIdDisabled_whenManifestFlagStringFalse() throws Exception {
+    Bundle metaData = new Bundle();
+    metaData.putString(META_KEY, "false");
+    setManifestMetaData(metaData);
+    assertEquals(Boolean.FALSE, installationIdConstant());
+  }
+
+  @Test
   public void constants_installationIdDisabled_whenManifestFlagFalse() throws Exception {
     Bundle metaData = new Bundle();
     metaData.putBoolean(META_KEY, false);

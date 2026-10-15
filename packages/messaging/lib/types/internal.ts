@@ -31,6 +31,8 @@ export interface NativeRNFBTurboMessaging {
   isAutoInitEnabled?: boolean;
   isDeliveryMetricsExportToBigQueryEnabled?: boolean;
   isRegisteredForRemoteNotifications?: boolean;
+  /** Flattened Turbo constant (preferred over getConstants on the routing proxy). */
+  isInstallationIdEnabled?: boolean;
   setAutoInitEnabled(enabled: boolean): Promise<void>;
   getInitialNotification(): Promise<RemoteMessage | null>;
   getDidOpenSettingsForNotification(): Promise<boolean>;
