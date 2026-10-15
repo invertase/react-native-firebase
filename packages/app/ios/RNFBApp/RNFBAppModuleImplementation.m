@@ -17,7 +17,6 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBAppModuleImplementation.h"
-#import "RNFBInitializeAppArguments.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
@@ -170,11 +169,12 @@ void RNFBAppModuleCompleteInitializeApp(id firApp, NSString *authDomain, NSStrin
   // Only apply when provided, so an omitted key keeps the SDK / Info.plist default (as Android).
   // Pass normalizedAppConfig so a null sentinel has already become @NO. Pinned by
   // RNFBInitializeAppArgumentsTests + RNFBAppModuleLifecycleTests.
-  NSNumber *automaticDataCollectionEnabled = [RNFBInitializeAppArguments
-      automaticDataCollectionEnabledFromAppConfig:appConfig];
+  NSNumber *automaticDataCollectionEnabled =
+      [RNFBInitializeAppArguments automaticDataCollectionEnabledFromAppConfig:appConfig];
   if (automaticDataCollectionEnabled != nil) {
-    [RNFBAppModuleFirebase setDataCollectionDefaultEnabled:[automaticDataCollectionEnabled boolValue]
-                                                    forApp:firApp];
+    [RNFBAppModuleFirebase
+        setDataCollectionDefaultEnabled:[automaticDataCollectionEnabled boolValue]
+                                 forApp:firApp];
   }
   resolve([RNFBSharedUtils firAppToDictionary:firApp]);
 }
