@@ -92,13 +92,37 @@ export interface SafetySetting {
  * @public
  */
 export interface GenerationConfig {
+  /**
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
+   */
   candidateCount?: number;
   stopSequences?: string[];
   maxOutputTokens?: number;
+  /**
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
+   */
   temperature?: number;
+  /**
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
+   */
   topP?: number;
+  /**
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
+   */
   topK?: number;
+  /**
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
+   */
   presencePenalty?: number;
+  /**
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
+   */
   frequencyPenalty?: number;
   /**
    * Output response MIME type of the generated candidate text.
@@ -312,6 +336,9 @@ export interface LiveGenerationConfig {
    * Controls the degree of randomness in token selection. A `temperature` value of 0 means that the highest
    * probability tokens are always selected. In this case, responses for a given prompt are mostly
    * deterministic, but a small amount of variation is still possible.
+   *
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
    */
   temperature?: number;
   /**
@@ -320,6 +347,9 @@ export interface LiveGenerationConfig {
    * value. For example, if tokens A, B, and C have probabilities of 0.3, 0.2, and 0.1 respectively
    * and the `topP` value is 0.5, then the model will select either A or B as the next token by using
    * the `temperature` and exclude C as a candidate. Defaults to 0.95 if unset.
+   *
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
    */
   topP?: number;
   /**
@@ -328,14 +358,23 @@ export interface LiveGenerationConfig {
    * the next token is selected from among the 3 most probably using probabilities sampled. Tokens
    * are then further filtered with the highest selected `temperature` sampling. Defaults to 40
    * if unspecified.
+   *
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
    */
   topK?: number;
   /**
    * Positive penalties.
+   *
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
    */
   presencePenalty?: number;
   /**
    * Frequency penalties.
+   *
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
    */
   frequencyPenalty?: number;
   /**
