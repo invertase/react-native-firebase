@@ -24,6 +24,7 @@
 		RNFB00001A2026092200000021 /* RNFBJSONImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */; };
 		RNFB00001A2026092200000031 /* RNFBMetaStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */; };
 		RNFB00001A2026092200000041 /* RNFBNullSentinelDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */; };
+		RNFB00001A2026101500000141 /* RNFBInitializeAppArguments.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026101500000142 /* RNFBInitializeAppArguments.swift */; };
 		RNFB00001A2026092200000051 /* RNFBSharedUtilsFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */; };
 		RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */; };
 		RNFB00001A2026092300000071 /* RNFBSharedUtilsPromiseRejection.swift in Sources */ = {isa = PBXBuildFile; fileRef = RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */; };
@@ -86,6 +87,7 @@
 		RNFB00001A2026092200000022 /* RNFBJSONImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBJSONImplementation.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092200000032 /* RNFBMetaStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBMetaStorage.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBNullSentinelDecoding.swift; sourceTree = "<group>"; };
+		RNFB00001A2026101500000142 /* RNFBInitializeAppArguments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBInitializeAppArguments.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092200000052 /* RNFBSharedUtilsFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsFormatting.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092300000062 /* RNFBSharedUtilsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsConfig.swift; sourceTree = "<group>"; };
 		RNFB00001A2026092300000072 /* RNFBSharedUtilsPromiseRejection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBSharedUtilsPromiseRejection.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				RNFB00001A2025011100000003 /* RNFBNullSentinelInterceptor.h */,
 				RNFB00001A2025011100000002 /* RNFBNullSentinelInterceptor.m */,
 				RNFB00001A2026092200000042 /* RNFBNullSentinelDecoding.swift */,
+				RNFB00001A2026101500000142 /* RNFBInitializeAppArguments.swift */,
 				RNFB00001A2026082000000003 /* RNFBHandleMap.h */,
 				RNFB00001A2026082000000002 /* RNFBHandleMap.m */,
 				RNFB00001A2026092200000002 /* RNFBHandleMapStorage.swift */,
@@ -265,6 +268,7 @@
 				RNFB00001A2026092200000021 /* RNFBJSONImplementation.swift in Sources */,
 				RNFB00001A2026092200000031 /* RNFBMetaStorage.swift in Sources */,
 				RNFB00001A2026092200000041 /* RNFBNullSentinelDecoding.swift in Sources */,
+				RNFB00001A2026101500000141 /* RNFBInitializeAppArguments.swift in Sources */,
 				RNFB00001A2026092200000051 /* RNFBSharedUtilsFormatting.swift in Sources */,
 				RNFB00001A2026092300000061 /* RNFBSharedUtilsConfig.swift in Sources */,
 				RNFB00001A2026092300000071 /* RNFBSharedUtilsPromiseRejection.swift in Sources */,

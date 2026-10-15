@@ -72,6 +72,9 @@ describe('database().ref().setPriority()', function () {
       const snapshot = await get(dbRef);
       snapshot.val().should.eql(jet.contextify({ a: 1 }));
       should.equal(snapshot.getPriority(), null);
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+      JSON.stringify(snapshot.getPriority()).should.not.containEql('__rnfbNull');
+      JSON.stringify(snapshot.exportVal()).should.not.containEql('__rnfbNull');
     });
 
     it('throws if setting priority on non-existent node', async function () {
