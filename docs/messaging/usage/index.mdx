@@ -76,6 +76,10 @@ You may also use the new messaging APIs to get and set the notification delegati
 ## Installation ID messaging (optional)
 
 Firebase Installation ID (FID) registration (`register` / `onRegistered`) is available but **off by default**.
+For the migration path (API mapping, opt-in, error codes, checklist), see
+[Migrating to Installation ID](/messaging/migrating-to-installation-id).
+Deep usage samples (native keys, Expo plugin, listeners): [Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
 For bare React Native, opt in via `firebase.json`:
 
 ```json
@@ -535,7 +539,8 @@ Refer to [UNNotificationPresentationOptions](https://developer.apple.com/documen
 ## Auto initialization
 
 Firebase generates an Instance ID, which FCM uses to generate a registration token (or, when Installation ID messaging is
-enabled, to register via FID, see [Installation ID messaging](/messaging/server-integration#installation-id-messaging))
+enabled, to register via FID — see [Migrating to Installation ID](/messaging/migrating-to-installation-id) and
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging))
 and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
 you do not need to change this behavior.
