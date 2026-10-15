@@ -91,8 +91,7 @@ public class JsonConvertTest {
     ReadableMapKeySetIterator iterator = mock(ReadableMapKeySetIterator.class);
     when(map.keySetIterator()).thenReturn(iterator);
     when(iterator.hasNextKey()).thenReturn(true, true, true, true, true, true, false);
-    when(iterator.nextKey())
-        .thenReturn("n", "b", "num", "s", "m", "a");
+    when(iterator.nextKey()).thenReturn("n", "b", "num", "s", "m", "a");
     when(map.getType("n")).thenReturn(ReadableType.Null);
     when(map.getType("b")).thenReturn(ReadableType.Boolean);
     when(map.getType("num")).thenReturn(ReadableType.Number);
