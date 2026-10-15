@@ -2456,9 +2456,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@docs.page/cli@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@docs.page/cli@npm:2.1.0"
+"@docs.page/cli@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@docs.page/cli@npm:2.2.0"
   dependencies:
     "@clack/prompts": "npm:^1.5.1"
     chalk: "npm:^5.3.0"
@@ -2479,7 +2479,7 @@ __metadata:
   bin:
     docs: dist/cli.js
     docs.page: dist/cli.js
-  checksum: 10/6fb02176adb367c82283a8120ba3ac61d7069d90c8f044db2207978612a50d24f3753b803bf59402fa02293e2f0e5fd429c3321530063afbb55da53e866b96d6
+  checksum: 10/5a106e9240e7a5527ea32137d237b10b8a5316bbf51c41cd6cce0be7fecc7333547afb42cdd8894b1e8f143f6972d92e60fd4963073392f01618de9d15c6ef63
   languageName: node
   linkType: hard
 
@@ -24468,7 +24468,7 @@ __metadata:
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@babel/plugin-transform-class-properties": "npm:^7.28.6"
     "@babel/preset-env": "npm:^7.29.3"
-    "@docs.page/cli": "npm:2.1.0"
+    "@docs.page/cli": "npm:2.2.0"
     "@eslint/eslintrc": "npm:^3.3.5"
     "@eslint/js": "npm:^10.0.1"
     "@firebase/rules-unit-testing": "npm:^5.0.0"

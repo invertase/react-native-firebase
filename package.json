@@ -109,7 +109,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-class-properties": "^7.28.6",
     "@babel/preset-env": "^7.29.3",
-    "@docs.page/cli": "2.1.0",
+    "@docs.page/cli": "2.2.0",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^10.0.1",
     "@firebase/rules-unit-testing": "^5.0.0",
