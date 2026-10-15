@@ -18,12 +18,12 @@ package io.invertase.firebase.database;
  */
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.rejectPromiseDatabaseException;
 
 import com.facebook.fbreact.specs.NativeRNFBTurboDatabaseOnDisconnectSpec;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.Map;
 
 public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabaseOnDisconnectSpec {
@@ -44,8 +44,7 @@ public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabase
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
+                rejectPromiseDatabaseException(promise, task.getException());
               }
             });
   }
@@ -59,8 +58,7 @@ public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabase
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
+                rejectPromiseDatabaseException(promise, task.getException());
               }
             });
   }
@@ -75,8 +73,7 @@ public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabase
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
+                rejectPromiseDatabaseException(promise, task.getException());
               }
             });
   }
@@ -92,8 +89,7 @@ public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabase
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
+                rejectPromiseDatabaseException(promise, task.getException());
               }
             });
   }
@@ -110,8 +106,7 @@ public class NativeRNFBTurboDatabaseOnDisconnect extends NativeRNFBTurboDatabase
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
               } else {
-                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
-                    promise, task.getException());
+                rejectPromiseDatabaseException(promise, task.getException());
               }
             });
   }

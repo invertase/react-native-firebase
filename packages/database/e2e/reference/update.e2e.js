@@ -100,5 +100,19 @@ describe('database().ref().update()', function () {
       snapshot.val().should.eql(jet.contextify({ a: 4, nested: { d: 3 } }));
       JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
     });
+
+    it('throws if permission defined', async function () {
+      const { getDatabase, ref, update } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, 'nope/foo');
+
+      try {
+        await update(dbRef, { bar: Date.now() });
+        return Promise.reject(new Error('Did not throw error.'));
+      } catch (error) {
+        error.code.includes('database/permission-denied').should.be.true();
+        return Promise.resolve();
+      }
+    });
   });
 });

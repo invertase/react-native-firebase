@@ -98,6 +98,26 @@ describe('database().ref().onDisconnect().setWithPriority()', function () {
       snapshot.exportVal()['.priority'].should.eql(3);
     });
 
+    it('sets value with string priority when disconnected', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, `${TEST_PATH}/stringPriority`);
+
+      const value = Date.now();
+
+      await onDisconnect(dbRef).setWithPriority(value, 'high');
+      goOffline(db);
+      goOnline(db);
+
+      const snapshot = await get(dbRef);
+      snapshot.exportVal()['.value'].should.eql(value);
+      snapshot.exportVal()['.priority'].should.eql('high');
+    });
+
     // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
     it('does not store a child that is set to null when disconnected (#9339)', async function () {
       if (Platform.android) {
@@ -135,6 +155,23 @@ describe('database().ref().onDisconnect().setWithPriority()', function () {
       await set(dbRef, 'foo');
 
       await onDisconnect(dbRef).setWithPriority('bar', 2, callback);
+      goOffline(db);
+      goOnline(db);
+
+      callback.should.be.calledOnce();
+    });
+
+    it('calls back to the onComplete function with string priority', async function () {
+      const { getDatabase, ref, onDisconnect, set, goOffline, goOnline } = databaseModular;
+      const db = getDatabase();
+
+      const callback = sinon.spy();
+      const dbRef = ref(db, `${TEST_PATH}/stringPriorityCallback`);
+
+      await set(dbRef, 'foo');
+
+      // Exercises Android String setWithPriority overload (success CompletionListener).
+      await onDisconnect(dbRef).setWithPriority('bar', 'high', callback);
       goOffline(db);
       goOnline(db);
 

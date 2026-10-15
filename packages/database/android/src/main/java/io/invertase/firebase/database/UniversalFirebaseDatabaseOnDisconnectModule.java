@@ -21,6 +21,7 @@ import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.get
 
 import android.content.Context;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.OnDisconnect;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import java.util.Map;
@@ -32,33 +33,125 @@ public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFireba
   }
 
   Task<Void> onDisconnectCancel(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().cancel();
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
+
+    onDisconnect.cancel(
+        (databaseError, databaseReference) -> {
+          if (databaseError != null) {
+            taskCompletionSource.setException(
+                new UniversalDatabaseException(
+                    databaseError.getCode(),
+                    databaseError.getMessage(),
+                    databaseError.toException()));
+          } else {
+            taskCompletionSource.setResult(null);
+          }
+        });
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> onDisconnectRemove(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().removeValue();
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
+
+    onDisconnect.removeValue(
+        (databaseError, databaseReference) -> {
+          if (databaseError != null) {
+            taskCompletionSource.setException(
+                new UniversalDatabaseException(
+                    databaseError.getCode(),
+                    databaseError.getMessage(),
+                    databaseError.toException()));
+          } else {
+            taskCompletionSource.setResult(null);
+          }
+        });
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> onDisconnectSet(String appName, String dbURL, String path, Object value) {
-    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().setValue(value);
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
+
+    onDisconnect.setValue(
+        value,
+        (databaseError, databaseReference) -> {
+          if (databaseError != null) {
+            taskCompletionSource.setException(
+                new UniversalDatabaseException(
+                    databaseError.getCode(),
+                    databaseError.getMessage(),
+                    databaseError.toException()));
+          } else {
+            taskCompletionSource.setResult(null);
+          }
+        });
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> onDisconnectSetWithPriority(
       String appName, String dbURL, String path, Object value, Object priority) {
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
     OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
 
     if (priority instanceof String) {
-      return onDisconnect.setValue(value, (String) priority);
+      onDisconnect.setValue(
+          value,
+          (String) priority,
+          (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+              taskCompletionSource.setException(
+                  new UniversalDatabaseException(
+                      databaseError.getCode(),
+                      databaseError.getMessage(),
+                      databaseError.toException()));
+            } else {
+              taskCompletionSource.setResult(null);
+            }
+          });
     } else {
-      return onDisconnect.setValue(value, (double) priority);
+      onDisconnect.setValue(
+          value,
+          (double) priority,
+          (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+              taskCompletionSource.setException(
+                  new UniversalDatabaseException(
+                      databaseError.getCode(),
+                      databaseError.getMessage(),
+                      databaseError.toException()));
+            } else {
+              taskCompletionSource.setResult(null);
+            }
+          });
     }
+
+    return taskCompletionSource.getTask();
   }
 
   Task<Void> onDisconnectUpdate(
       String appName, String dbURL, String path, Map<String, Object> values) {
-    return getDatabaseForApp(appName, dbURL)
-        .getReference(path)
-        .onDisconnect()
-        .updateChildren(values);
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
+
+    onDisconnect.updateChildren(
+        values,
+        (databaseError, databaseReference) -> {
+          if (databaseError != null) {
+            taskCompletionSource.setException(
+                new UniversalDatabaseException(
+                    databaseError.getCode(),
+                    databaseError.getMessage(),
+                    databaseError.toException()));
+          } else {
+            taskCompletionSource.setResult(null);
+          }
+        });
+
+    return taskCompletionSource.getTask();
   }
 }
