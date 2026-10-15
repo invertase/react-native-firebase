@@ -484,6 +484,71 @@ e2e_listener_pids() {
   lsof -nP -iTCP:"${port}" -sTCP:LISTEN -t 2>/dev/null || true
 }
 
+# True when cmdline looks like a Metro / react-native packager (not qemu/netsimd).
+e2e_cmdline_is_metro_packager() {
+  local cmd=$1
+  [[ -n "$cmd" ]] || return 1
+  if [[ "$cmd" == *react-native* || "$cmd" == *'/cli.js'* || "$cmd" == *metro* ]]; then
+    return 0
+  fi
+  return 1
+}
+
+# Echo process cmdline for pid (empty if gone). Overridable in tests.
+e2e_process_cmdline() {
+  local pid=$1
+  ps -p "$pid" -o args= 2>/dev/null || true
+}
+
+# Echo process cwd for pid (empty if gone). Overridable in tests.
+e2e_process_cwd() {
+  local pid=$1
+  lsof -a -p "$pid" -d cwd 2>/dev/null | awk '/cwd/ { print $NF; exit }'
+}
+
+# PIDs whose cmdline matches Metro/react-native start — LISTEN not required
+# (covers cold dual-start before either port binds). Overridable in tests.
+e2e_metro_packager_candidate_pids() {
+  local line pid cmd
+  while IFS= read -r line; do
+    [[ -z "${line// /}" ]] && continue
+    line="${line#"${line%%[![:space:]]*}"}"
+    pid="${line%%[[:space:]]*}"
+    [[ "$pid" =~ ^[0-9]+$ ]] || continue
+    cmd="${line#"$pid"}"
+    cmd="${cmd#"${cmd%%[![:space:]]*}"}"
+    if e2e_cmdline_is_metro_packager "$cmd"; then
+      echo "$pid"
+    fi
+  done < <(ps -ax -o pid= -o command= 2>/dev/null || true)
+}
+
+# True when a sibling Metro/react-native packager (cwd == metro_root, metro-like
+# cmdline) is live and is not a listener on our_port. Scans packager candidates
+# via ps (in-flight before LISTEN counts) so android∥ios cold dual-start does not
+# both watch-del. Re-checks cmdline so qemu/netsimd with cwd under tests/ never
+# count. Call after kill_port_listeners; still excludes our_port listeners.
+e2e_sibling_metro_owns_root() {
+  local metro_root=$1
+  local our_port=$2
+  local pid cwd cmd our_pids_space
+  our_pids_space=" $(e2e_listener_pids "$our_port" | tr '\n' ' ') "
+  while IFS= read -r pid; do
+    [[ -z "$pid" || ! "$pid" =~ ^[0-9]+$ ]] && continue
+    case "$our_pids_space" in
+      *" $pid "*) continue ;;
+    esac
+    cmd="$(e2e_process_cmdline "$pid")"
+    e2e_cmdline_is_metro_packager "$cmd" || continue
+    cwd="$(e2e_process_cwd "$pid")"
+    [[ -z "$cwd" ]] && continue
+    if [[ "$cwd" == "$metro_root" ]]; then
+      return 0
+    fi
+  done < <(e2e_metro_packager_candidate_pids)
+  return 1
+}
+
 e2e_android_app_running() {
   local serial=$1 pkg=$2
   adb -s "$serial" shell pidof "$pkg" >/dev/null 2>&1

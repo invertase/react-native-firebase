@@ -101,7 +101,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 4. **Backward compatibility:** unset slotted env preserves serial defaults (ports `:8081` / `:8090` / …, process `io.invertase.testing`).
 5. **Local slotted e2e is the serial runbook plus slot env.** Same commands as [running e2e § Rules](running-e2e.md#rules). The **only** required difference is selecting the slot’s ports + device identities (`yarn tests:e2e:export-slot-env` / `RNFB_*`). No second workflow (no rsync, no cloning trees, no host flock, no Metro-after-build). A 3×3 wave is **9 overlapping cells** (android + ios + macos `:test-cover`, qemu included). Do not serialize Android. Tolerate CI-like latency with higher Detox/launch timeouts rather than shrinking concurrency ([running e2e § slot lifecycle](running-e2e.md#slot-lifecycle)).
 6. **Each concurrent instance is a normal git checkout / git worktree.** Populate it with `git worktree add` (or clone) + `yarn` in **that** tree. Mutagen/rsync is **remote worker snapshot only** (laptop → worker) — **not** local same-Mac slot trees.
-7. **Watchman:** packager start drops a stale watch for **this Metro project root** and watches an **allowlist** of trees Metro would reload — not a blocklist over a whole-monorepo watch. Tolerance lives in packager `/status` wait, not a parallel-only recipe.
+7. **Watchman:** packager start **conditionally** `watch-del`s **this Metro project root** (skips when a sibling Metro/react-native process already owns that cwd — so android∥ios dual `tests/` packagers on distinct ports stay alive; `RNFB_METRO_FORCE_WATCHMAN_RESET=1` forces del) and always `watch-project`s an **allowlist** of trees Metro would reload. Never `watch-del` the repo root. Not a blocklist over a whole-monorepo watch. Tolerance lives in packager `/status` wait, not a parallel-only recipe.
 8. **Apple `:build` stays representative.** iOS → `tests/ios/build`; macOS → `tests-macos/macos/build`. Do not set `SWIFT_ENABLE_EXPLICIT_MODULES=NO` (or similar) for e2e. If PCM races return, isolate the **actual** shared module-cache directory with [negative + positive tests](running-e2e.md#e2e-infrastructure-change-bar).
 
 ## Resource inventory (detail)
@@ -141,7 +141,7 @@ After the `tests-macos/` split, **iOS/Android** Metro lives in `tests/` and **ma
 | Mode | Metro | When |
 |------|-------|------|
 | **Serial default** | One Metro on `:8081` **per packager root** — mobile (`tests/`) **or** macOS (`tests-macos/`), not both at once | Unslotted local iteration |
-| **Proven slotted** | **Distinct Metro listen port per platform×slot** (`RNFB_{PLATFORM}_METRO_PORT`, process-local `RCT_METRO_PORT`). A full slot that runs android/ios **and** macos starts **two** packagers (`yarn tests:packager:jet` vs `yarn tests:macos:packager:jet`) | Parallel waves / multi-worktree — avoids babel/cache contention and matches `export-slot-env` |
+| **Proven slotted** | **Distinct Metro listen port per platform×slot** (`RNFB_{PLATFORM}_METRO_PORT`, process-local `RCT_METRO_PORT`). A full slot that runs android/ios **and** macos starts **three** Metros: two `yarn tests:packager:jet` on `tests/` (android + ios ports) plus `yarn tests:macos:packager:jet` on `tests-macos/`. Dual `tests/` is safe because packager **skips** `watch-del` when a sibling owns that root ([running e2e § packager](running-e2e.md#packager-reset-cache-eaddrinuse)) | Parallel waves / multi-worktree — avoids babel/cache contention and matches `export-slot-env` |
 
 Cross-worktree: two worktrees **must not** share one Metro (different `packages/**` / harness).
 
@@ -402,7 +402,7 @@ Deliverables:
 | Item | Notes |
 |------|-------|
 | dflockd (or resleased) + coordinator | Docker-compose or brew-style one-liner for dev hosts |
-| `run-worktree-parallel.sh` | **Two Metros** when macos is in the wave (`tests/` + `tests-macos/`), distinct listen port per platform×slot (+ Jet/emulators); three `:test-cover` parallel |
+| `run-worktree-parallel.sh` | **Three Metros** when android+ios+macos are in the wave (two on `tests/` + one on `tests-macos/`), distinct listen port per platform×slot (+ Jet/emulators); sibling-safe Watchman skip-del; three `:test-cover` parallel |
 | Future coordinator client | Reserve → [slot lifecycle](running-e2e.md#slot-lifecycle) `yarn tests:*` → release (EXIT trap). Not a second e2e runbook. |
 | Pre-flight | Per-platform scoped probes |
 
