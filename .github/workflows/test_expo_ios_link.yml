@@ -42,6 +42,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -79,4 +80,19 @@ jobs:
         run: yarn test-expo:ios:link
 
       - name: test-expo iOS launch smoke
+        id: launch-smoke
         run: yarn test-expo:ios:launch-smoke
+
+      # Paths match defaults in test-expo-ios-launch-smoke.sh (APP_LOG / METRO_LOG / XCODEBUILD_LOG).
+      - name: Upload launch-smoke logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        continue-on-error: true
+        if: failure() && steps.launch-smoke.outcome == 'failure'
+        with:
+          name: test-expo-ios-launch-smoke-logs
+          path: |
+            /tmp/test-expo-launch-smoke.log
+            /tmp/test-expo-launch-smoke-metro.log
+            /tmp/test-expo-launch-smoke-xcodebuild.log
+          if-no-files-found: ignore
