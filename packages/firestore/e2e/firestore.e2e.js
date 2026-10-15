@@ -222,57 +222,12 @@ describe('firestore()', function () {
     });
 
     describe('wait for pending writes', function () {
-      xit('waits for pending writes', async function () {
-        const { getFirestore, disableNetwork, doc, setDoc, waitForPendingWrites, enableNetwork } =
-          firestoreModular;
-
-        const waitForPromiseMs = 500;
-        const testTimeoutMs = 10000;
+      it('resolves when there are no pending writes', async function () {
+        // Exercises TurboModule waitForPendingWrites wiring (iOS .mm / Android native).
+        // Offline + auth-revocation races are SDK-specific and were historically flaky (xit).
+        const { getFirestore, waitForPendingWrites } = firestoreModular;
         const db = getFirestore();
-
-        await disableNetwork(db);
-
-        //set up a pending write
-
-        const id = 'foobar';
-        const ref = doc(db, `v6/${id}`);
-        setDoc(ref, { foo: 'bar' });
-
-        //waitForPendingWrites should never resolve, but unfortunately we can only
-        //test that this is not returning within X ms
-
-        let rejected = false;
-        const timedOutWithNetworkDisabled = await Promise.race([
-          waitForPendingWrites(db).then(
-            () => false,
-            () => {
-              rejected = true;
-            },
-          ),
-          Utils.sleep(waitForPromiseMs).then(() => true),
-        ]);
-
-        should(timedOutWithNetworkDisabled).equal(true);
-        should(rejected).equal(false);
-
-        //if we sign in as a different user then it should reject the promise
-        const { getAuth, signOut, signInAnonymously } = authModular;
-        const auth = getAuth();
-        try {
-          await signOut(auth);
-        } catch (_) {}
-        await signInAnonymously(auth);
-        should(rejected).equal(true);
-
-        //now if we enable the network then waitForPendingWrites should return immediately
-        await enableNetwork(db);
-
-        const timedOutWithNetworkEnabled = await Promise.race([
-          waitForPendingWrites(db).then(() => false),
-          Utils.sleep(testTimeoutMs).then(() => true),
-        ]);
-
-        should(timedOutWithNetworkEnabled).equal(false);
+        await waitForPendingWrites(db);
       });
     });
 

@@ -37,8 +37,13 @@
 
 static RNFBFirestoreTransactionRegistry *transactions;
 static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transaction_event";
+static void (^sTransactionGetAfterEligibleHook)(void);
 
 @implementation RNFBFirestoreTransactionModuleHelper
+
++ (void)setTransactionGetAfterEligibleHook:(void (^)(void))hook {
+  sTransactionGetAfterEligibleHook = [hook copy];
+}
 
 + (void)ensureRegistry {
   static dispatch_once_t onceToken;
@@ -50,6 +55,7 @@ static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transactio
 + (void)invalidate {
   [self ensureRegistry];
   [transactions abortAll];
+  sTransactionGetAfterEligibleHook = nil;
 }
 
 #pragma mark Firebase Firestore Methods
@@ -207,6 +213,10 @@ static NSString *const RNFB_FIRESTORE_TRANSACTION_EVENT = @"firestore_transactio
   if (ineligible != nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[ineligible mutableCopy]];
     return;
+  }
+
+  if (sTransactionGetAfterEligibleHook != nil) {
+    sTransactionGetAfterEligibleHook();
   }
 
   @synchronized(attempt) {
