@@ -16,7 +16,7 @@ Knowledge for FCM messaging native behavior: the iOS `UNUserNotificationCenter` 
 
 | Item | Value |
 |------|-------|
-| **Opt-in flag** | Android manifest meta-data `firebase_messaging_installation_id_enabled`; iOS `Info.plist` `FirebaseMessagingInstallationIdEnabled`; Expo plugin prop `installationIdEnabled` (writes both). **Off by default**; the library does not set it. |
+| **Opt-in flag** | `firebase.json` `messaging_installation_id_enabled` (preferred bare RN; Android `build.gradle` → manifest placeholder, iOS `ios_config.sh` → Info.plist); or Android manifest meta-data `firebase_messaging_installation_id_enabled`; iOS `Info.plist` `FirebaseMessagingInstallationIdEnabled`; Expo plugin prop `installationIdEnabled` (writes both). **Off by default**. |
 | **Native → JS** | `getConstants().isInstallationIdEnabled`, read once when the JS module is created ([`lib/index.ts`](../../../packages/messaging/lib/index.ts)) |
 | **Flag off** | `register` / `unregister` reject and `onRegistered` / `onUnregistered` throw `messaging/installation-id-not-enabled`. Token APIs keep working. |
 | **Flag on** | Token APIs (`getToken`, `deleteToken`, `onTokenRefresh`) reject or throw `messaging/token-api-disabled`. |

@@ -161,7 +161,11 @@ describe('Config Plugin iOS Tests - installationIdEnabled', () => {
 
       const application = await runAndroidManifestMod(config);
       expect(application['meta-data']).toContainEqual({
-        $: { 'android:name': INSTALLATION_ID_ANDROID_META, 'android:value': 'true' },
+        $: {
+          'android:name': INSTALLATION_ID_ANDROID_META,
+          'android:value': 'true',
+          'tools:replace': 'android:value',
+        },
       });
     });
 
@@ -205,7 +209,11 @@ describe('Config Plugin iOS Tests - installationIdEnabled', () => {
         },
       });
       expect(application['meta-data']).toContainEqual({
-        $: { 'android:name': INSTALLATION_ID_ANDROID_META, 'android:value': 'true' },
+        $: {
+          'android:name': INSTALLATION_ID_ANDROID_META,
+          'android:value': 'true',
+          'tools:replace': 'android:value',
+        },
       });
     });
   });

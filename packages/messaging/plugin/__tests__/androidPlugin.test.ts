@@ -245,6 +245,7 @@ describe('Config Plugin Android Tests', function () {
         $: {
           'android:name': 'firebase_messaging_installation_id_enabled',
           'android:value': 'true',
+          'tools:replace': 'android:value',
         },
       });
     });

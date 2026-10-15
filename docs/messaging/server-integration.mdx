@@ -86,17 +86,36 @@ so it's important to ensure that we store all tokens in the database.
 Upstream Firebase SDKs prefer Firebase Installation ID (FID) registration over FCM registration tokens.
 React Native Firebase exposes `register`, `unregister`, `onRegistered`, and `onUnregistered` for that path.
 
-**The FID flag is off by default.** The library does not set it in its AndroidManifest or a default iOS plist.
-You must opt in:
+**The FID flag is off by default.** Opt in via `firebase.json` (preferred for bare React Native), or set the
+native keys / Expo plugin prop directly:
 
-### Bare React Native
+### Bare React Native (`firebase.json`)
 
-**Android**: in your app `AndroidManifest.xml` `<application>`:
+```json
+// <projectRoot>/firebase.json
+{
+  "react-native": {
+    "messaging_installation_id_enabled": true
+  }
+}
+```
+
+This maps to Android meta-data `firebase_messaging_installation_id_enabled` and iOS Info.plist
+`FirebaseMessagingInstallationIdEnabled` (same pattern as `messaging_auto_init_enabled`).
+
+### Bare React Native (manual native keys)
+
+If you prefer not to use `firebase.json`, set the keys yourself:
+
+**Android**: in your app `AndroidManifest.xml` (library Manifest already emits this key
+defaulting to `false`; use `tools:replace` so your value wins):
 
 ```xml
+<!-- add xmlns:tools="http://schemas.android.com/tools" on the <manifest> root if missing -->
 <meta-data
   android:name="firebase_messaging_installation_id_enabled"
-  android:value="true" />
+  android:value="true"
+  tools:replace="android:value" />
 ```
 
 **iOS**: in `Info.plist`:
