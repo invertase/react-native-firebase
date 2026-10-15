@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Documentation site maintenance
-description: Canonical maintenance for docs.page (docs.json) and TypeDoc (reference.rnfirebase.io), including legacy redirect audits.
+description: Canonical maintenance for docs.page (docs.json) and TypeDoc (reference.rnfirebase.io), including legacy redirect audits and the docs.page link check in CI.
 tags: [okf, documentation, typedoc, docs-page, redirects]
 timestamp: 2026-07-02T00:00:00Z
 ---
@@ -76,13 +76,11 @@ Removed packages (e.g. Dynamic Links) have no TypeDoc module — fall back to `m
 
 `yarn lint:docs-links` runs `@docs.page/cli` `check` (pinned in root `package.json`, **≥ 2.2.0** for per-host severity overrides) and is a step in `.github/workflows/docs.yml`. The yarn script is `docs check .` — CLI defaults plus the `docs.json` `check` block; no severity flags on the command line. Fresh CLI publishes younger than the repo `npmMinimalAgeGate` (7d) must be listed in `.yarnrc.yml` `npmPreapprovedPackages`.
 
-External checks stay **error** for real breakage (**404**, **5xx**, DNS, timeout). Bot-gated HTTP statuses (**401 / 403 / 405 / 429**) are reported as **warnings** so CI stays green while still surfacing hosts that refuse automated clients (npmjs, Stack Overflow, and similar). Do **not** add `--external-links warn` or `--ignore-external-hosts` here — that would hide TypeDoc rot on `reference.rnfirebase.io`.
+**Severity:** external **404**, **5xx**, DNS, and timeout failures are **errors**. Bot-gated HTTP statuses (**401 / 403 / 405 / 429**) are **warnings** so CI stays green while still surfacing hosts that refuse automated clients (npmjs, Stack Overflow, and similar). Do **not** add `--external-links warn` or `--ignore-external-hosts` — that would hide TypeDoc rot on `reference.rnfirebase.io`.
 
-`docs.json` `check.severityOverrideHosts` pins `rnfirebase.io` to **error**. Matching includes subdomains, so `reference.rnfirebase.io` is covered, and the override applies to every failure — bot-gate statuses included — so a rate-limited or broken TypeDoc link cannot downgrade to a warning. Do not add `warn` overrides for first-party hosts; add an `error` entry when another first-party host must never downgrade.
+**Host overrides:** `docs.json` `check.severityOverrideHosts` pins `rnfirebase.io` to **error**. Matching includes subdomains, so `reference.rnfirebase.io` is covered, and the override applies to every failure — bot-gate statuses included — so a rate-limited or broken TypeDoc link cannot downgrade to a warning. Do not add `warn` overrides for first-party hosts; add an `error` entry when another first-party host must never downgrade.
 
-**Agents** ([validation checklist § docs.page link check](testing/validation-checklist.md#docs-page-link-check)): fix every **error**; the **only** acceptable non-fix is an **external** **warn** from bot/WAF gate statuses — do not rewrite those links or relax other check severities.
-
-Sweep real 404s before enabling the CI step on a branch so the first green run stays bisectable.
+What agents must fix vs may leave: [validation checklist § docs.page link check](testing/validation-checklist.md#docs-page-link-check).
 
 ## docs.json edits (non-TypeDoc)
 
