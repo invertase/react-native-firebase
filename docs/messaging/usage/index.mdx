@@ -76,7 +76,19 @@ You may also use the new messaging APIs to get and set the notification delegati
 ## Installation ID messaging (optional)
 
 Firebase Installation ID (FID) registration (`register` / `onRegistered`) is available but **off by default**.
-Opt in with the Expo plugin:
+For bare React Native, opt in via `firebase.json`:
+
+```json
+// <projectRoot>/firebase.json
+{
+  "react-native": {
+    "messaging_installation_id_enabled": true
+  }
+}
+```
+
+For Expo, use the plugin prop (or set the Android / iOS keys manually — see
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging)):
 
 ```json
 {
@@ -97,9 +109,8 @@ Opt in with the Expo plugin:
 }
 ```
 
-`installationIdEnabled: true` writes Android meta-data `firebase_messaging_installation_id_enabled` and iOS
-`FirebaseMessagingInstallationIdEnabled`. Omitted or `false` writes nothing. See
-[Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+`messaging_installation_id_enabled` / `installationIdEnabled: true` map to Android meta-data
+`firebase_messaging_installation_id_enabled` and iOS `FirebaseMessagingInstallationIdEnabled`.
 
 # Platform support and New Architecture
 

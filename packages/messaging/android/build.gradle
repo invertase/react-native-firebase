@@ -70,6 +70,9 @@ String dataCollectionEnabled = 'true'
 
 String notificationDelegationEnabled = 'false'
 
+// FID messaging opt-in; off by default (mutual exclusion with token APIs when enabled)
+String installationIdEnabled = 'false'
+
 if (rootProject.ext && rootProject.ext.firebaseJson) {
   /* groovylint-disable-next-line NoDef, VariableTypeRequired */
   def rnfbConfig = rootProject.ext.firebaseJson
@@ -95,6 +98,10 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
   if (rnfbConfig.isFlagEnabled('messaging_android_notification_delegation_enabled', false)) {
     notificationDelegationEnabled = 'true'
   }
+
+  if (rnfbConfig.isFlagEnabled('messaging_installation_id_enabled', false)) {
+    installationIdEnabled = 'true'
+  }
 }
 
 android {
@@ -108,6 +115,7 @@ android {
     manifestPlaceholders = [
       firebaseJsonDeliveryMetricsExportEnabled: deliveryMetricsExportEnabled,
       firebaseJsonAutoInitEnabled: dataCollectionEnabled,
+      firebaseJsonInstallationIdEnabled: installationIdEnabled,
       firebaseJsonNotificationChannelId: notificationChannelId,
       firebaseJsonNotificationColor: notificationColor,
       firebaseJsonNotificationDelegationEnabled: notificationDelegationEnabled

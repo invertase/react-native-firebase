@@ -90,6 +90,10 @@
           "description": "Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection. When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases, you do not need to change this behavior. \nIf you prefer to prevent Instance ID auto-generation, disable auto initialization for FCM and Analytics",
           "type": "boolean"
         },
+        "messaging_installation_id_enabled": {
+          "description": "Opt in to Firebase Installation ID (FID) messaging APIs (`register` / `unregister` / `onRegistered` / `onUnregistered`). Off by default. When enabled, FCM token APIs (`getToken` / `deleteToken` / `onTokenRefresh`) are disabled (mutual exclusion). Maps to Android meta-data `firebase_messaging_installation_id_enabled` and iOS Info.plist `FirebaseMessagingInstallationIdEnabled`.",
+          "type": "boolean"
+        },
         "messaging_android_headless_task_timeout": {
           "description": "On Android, a background event sent to setBackgroundMessageHandler has 60 seconds to resolve before it is automatically canceled to free up device resources. If you wish to override this value, set the number of milliseconds in your config.",
           "type": "number",
