@@ -226,11 +226,18 @@ static SEL PHAssetFetchSelector(void) {
   XCTAssertEqual(self.fetchedIdentifiers.count, 0);
 }
 
-- (void)testRealPhotoLibraryReturnsNilForUnknownIdentifiers {
-  // No stub: the unauthorised / empty host library resolves nothing for either lookup branch.
+- (void)testUnknownIdentifiersReturnNilWhenPhotoKitFindsNothing {
+  // Hostless macOS XCTest has no NSPhotoLibraryUsageDescription; never touch live PhotoKit.
+  // Stub an empty fetch for both lookup branches (`ph://` and `file://?id=`).
+  [self stubPhotoLibraryReturning:[self fetchResultContaining:nil]];
+
   XCTAssertNil([RNFBUtilsModule fetchAssetForPath:@"ph://missing-local-identifier"]);
   XCTAssertNil(
       [RNFBUtilsModule fetchAssetForPath:@"file:///asset.jpg?id=missing-local-identifier"]);
+  XCTAssertEqualObjects(self.fetchedIdentifiers, (@[
+                          @[ @"missing-local-identifier" ],
+                          @[ @"missing-local-identifier" ],
+                        ]));
 }
 
 #pragma mark - PhotoKit stubbing
