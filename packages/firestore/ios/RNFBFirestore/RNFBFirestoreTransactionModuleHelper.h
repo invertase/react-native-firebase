@@ -24,6 +24,13 @@
 // TurboModule .mm free of Firebase imports.
 @interface RNFBFirestoreTransactionModuleHelper : NSObject
 
+/**
+ * XCTest seam: invoked after the first ineligible-get check in `transactionGetDocument`
+ * and before the synchronized re-check, so tests can force the TOCTOU reject path.
+ * Pass nil to clear.
+ */
++ (void)setTransactionGetAfterEligibleHook:(void (^_Nullable)(void))hook;
+
 + (void)invalidate;
 
 + (void)transactionBegin:(NSString *)appName

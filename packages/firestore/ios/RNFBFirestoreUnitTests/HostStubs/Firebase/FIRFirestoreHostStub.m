@@ -2,6 +2,7 @@
  * Host-only stub for macOS XCTest. Not shipped in the production pod.
  */
 #import <Firebase/Firebase.h>
+#import <unistd.h>
 
 NSString *const FIRFirestoreErrorDomain = @"FIRFirestoreErrorDomain";
 
@@ -441,13 +442,36 @@ static NSMutableArray *sRecordedOperations;
 @end
 
 @implementation FIRTransaction
+static NSError *sTxnGetDocumentError;
+static FIRDocumentSnapshot *sTxnGetDocumentSnapshot;
+
++ (NSError *)getDocumentError {
+  return sTxnGetDocumentError;
+}
++ (void)setGetDocumentError:(NSError *)getDocumentError {
+  sTxnGetDocumentError = getDocumentError;
+}
++ (FIRDocumentSnapshot *)getDocumentSnapshot {
+  return sTxnGetDocumentSnapshot;
+}
++ (void)setGetDocumentSnapshot:(FIRDocumentSnapshot *)getDocumentSnapshot {
+  sTxnGetDocumentSnapshot = getDocumentSnapshot;
+}
++ (void)resetTestState {
+  sTxnGetDocumentError = nil;
+  sTxnGetDocumentSnapshot = nil;
+}
+
 - (FIRDocumentSnapshot *)getDocument:(FIRDocumentReference *)document
                                error:(NSError *_Nullable *_Nullable)error {
   (void)document;
   if (error) {
-    *error = nil;
+    *error = sTxnGetDocumentError;
   }
-  return [[FIRDocumentSnapshot alloc] init];
+  if (sTxnGetDocumentError != nil) {
+    return nil;
+  }
+  return sTxnGetDocumentSnapshot ?: [[FIRDocumentSnapshot alloc] init];
 }
 - (void)deleteDocument:(FIRDocumentReference *)document {
   (void)document;
@@ -488,6 +512,8 @@ static NSInteger sLastEmulatorPort;
 static NSError *sOperationError;
 static NSError *sLoadBundleError;
 static FIRLoadBundleTaskState sLoadBundleState = FIRLoadBundleTaskStateSuccess;
+static NSInteger sTransactionUpdateBlockInvokeCount = 1;
+static NSUInteger sTransactionRetryDelayUSec = 50000;
 
 + (FIRFirestore *)testInstance {
   return sTestInstance;
@@ -539,6 +565,18 @@ static FIRLoadBundleTaskState sLoadBundleState = FIRLoadBundleTaskStateSuccess;
 + (void)setLoadBundleState:(FIRLoadBundleTaskState)loadBundleState {
   sLoadBundleState = loadBundleState;
 }
++ (NSInteger)transactionUpdateBlockInvokeCount {
+  return sTransactionUpdateBlockInvokeCount;
+}
++ (void)setTransactionUpdateBlockInvokeCount:(NSInteger)transactionUpdateBlockInvokeCount {
+  sTransactionUpdateBlockInvokeCount = MAX(transactionUpdateBlockInvokeCount, (NSInteger)1);
+}
++ (NSUInteger)transactionRetryDelayUSec {
+  return sTransactionRetryDelayUSec;
+}
++ (void)setTransactionRetryDelayUSec:(NSUInteger)transactionRetryDelayUSec {
+  sTransactionRetryDelayUSec = transactionRetryDelayUSec;
+}
 
 + (void)resetTestState {
   sTestInstance = nil;
@@ -549,10 +587,13 @@ static FIRLoadBundleTaskState sLoadBundleState = FIRLoadBundleTaskStateSuccess;
   sOperationError = nil;
   sLoadBundleError = nil;
   sLoadBundleState = FIRLoadBundleTaskStateSuccess;
+  sTransactionUpdateBlockInvokeCount = 1;
+  sTransactionRetryDelayUSec = 50000;
   [FIRPersistentCacheIndexManager resetTestState];
   [FIRConfiguration resetTestState];
   [FIRQuery resetTestState];
   [FIRDocumentReference resetTestState];
+  [FIRTransaction resetTestState];
   [FIRWriteBatch resetTestState];
   [FIRAggregateQuery resetTestState];
 }
@@ -617,21 +658,63 @@ static FIRLoadBundleTaskState sLoadBundleState = FIRLoadBundleTaskStateSuccess;
   }
   return [[FIRListenerRegistrationStub alloc] init];
 }
+- (void)rnfb_invokeTransactionBlock:(id (^)(FIRTransaction *, NSError **))block
+                         completion:(void (^)(id _Nullable, NSError *_Nullable))completion {
+  if (block == nil) {
+    if (completion) {
+      completion(nil, nil);
+    }
+    return;
+  }
+
+  if (sTransactionUpdateBlockInvokeCount <= 1) {
+    NSError *error = nil;
+    id result = block([[FIRTransaction alloc] init], &error);
+    if (completion) {
+      completion(result, error);
+    }
+    return;
+  }
+
+  // Concurrent second invocation mimics an SDK retry while the first update block is still
+  // waiting — the first wait then observes a replaced semaphore (stale).
+  dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  dispatch_group_t group = dispatch_group_create();
+  __block id finalResult = nil;
+  __block NSError *finalError = nil;
+
+  dispatch_group_async(group, queue, ^{
+    NSError *error = nil;
+    id result = block([[FIRTransaction alloc] init], &error);
+    @synchronized(self) {
+      finalResult = result;
+      finalError = error;
+    }
+  });
+  dispatch_group_async(group, queue, ^{
+    usleep((useconds_t)sTransactionRetryDelayUSec);
+    NSError *error = nil;
+    id result = block([[FIRTransaction alloc] init], &error);
+    @synchronized(self) {
+      finalResult = result;
+      finalError = error;
+    }
+  });
+  dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+  if (completion) {
+    completion(finalResult, finalError);
+  }
+}
+
 - (void)runTransactionWithBlock:(id (^)(FIRTransaction *, NSError **))block
                      completion:(void (^)(id _Nullable, NSError *_Nullable))completion {
-  (void)block;
-  if (completion) {
-    completion(nil, nil);
-  }
+  [self rnfb_invokeTransactionBlock:block completion:completion];
 }
 - (void)runTransactionWithOptions:(FIRTransactionOptions *)options
                             block:(id (^)(FIRTransaction *, NSError **))block
                        completion:(void (^)(id _Nullable, NSError *_Nullable))completion {
   (void)options;
-  (void)block;
-  if (completion) {
-    completion(nil, nil);
-  }
+  [self rnfb_invokeTransactionBlock:block completion:completion];
 }
 - (void)getQueryNamed:(NSString *)name completion:(void (^)(FIRQuery *_Nullable))completion {
   sLastNamedQueryName = [name copy];
