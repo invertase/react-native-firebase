@@ -42,9 +42,11 @@ final class RNFBDatabaseKeepSyncedRegistry {
   private final Map<String, List<Runnable>> deferred = new HashMap<>();
 
   /**
-   * Records keepSynced for the query with this key at the location, and runs {@code apply} (the SDK
-   * call) now, or after the location's native gets complete. A native get only starts while nothing
-   * at the location is kept synced, so the SDK has no keepSynced there in the meantime.
+   * Records keepSynced for the query with this key at the location, and runs {@code apply} now, or
+   * after the location's native gets complete (call order preserved). {@code apply} is the SDK
+   * {@code Query.keepSynced} call and any caller completion that must wait for it (for example
+   * settling a TurboModule Promise). A native get only starts while nothing at the location is kept
+   * synced, so the SDK has no keepSynced there in the meantime.
    */
   synchronized void keepSynced(String location, String queryKey, boolean enabled, Runnable apply) {
     Set<String> queryKeys = keptSynced.get(location);

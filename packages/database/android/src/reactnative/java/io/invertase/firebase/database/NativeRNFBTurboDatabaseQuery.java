@@ -498,8 +498,14 @@ public class NativeRNFBTurboDatabaseQuery extends NativeRNFBTurboDatabaseQuerySp
       Promise promise) {
     DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
     Query query = getDatabaseQueryInstance(key, reference, modifiers).query;
+    // Resolve only after the SDK apply runs (now, or after endNativeGet when deferred).
     keepSyncedRegistry.keepSynced(
-        locationKey(app, reference), key, enabled, () -> query.keepSynced(enabled));
-    promise.resolve(null);
+        locationKey(app, reference),
+        key,
+        enabled,
+        () -> {
+          query.keepSynced(enabled);
+          promise.resolve(null);
+        });
   }
 }
