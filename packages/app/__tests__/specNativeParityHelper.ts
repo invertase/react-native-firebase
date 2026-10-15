@@ -14,7 +14,6 @@ export const MIGRATED_TURBO_PACKAGES = [
   'perf',
   'in-app-messaging',
   'app-distribution',
-  'ml',
   'app-check',
   'remote-config',
   'analytics',
