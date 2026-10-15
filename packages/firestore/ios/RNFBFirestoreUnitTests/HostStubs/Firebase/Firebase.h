@@ -190,6 +190,9 @@ FOUNDATION_EXPORT NSString *const FIRFirestoreErrorDomain;
 @end
 
 @interface FIRTransaction : NSObject
+@property(class, nonatomic, strong, nullable) NSError *getDocumentError;
+@property(class, nonatomic, strong, nullable) FIRDocumentSnapshot *getDocumentSnapshot;
++ (void)resetTestState;
 - (FIRDocumentSnapshot *)getDocument:(FIRDocumentReference *)document
                                error:(NSError *_Nullable *_Nullable)error;
 - (void)deleteDocument:(FIRDocumentReference *)document;
@@ -218,6 +221,10 @@ FOUNDATION_EXPORT NSString *const FIRFirestoreErrorDomain;
 @property(class, nonatomic, strong, nullable) NSError *operationError;
 @property(class, nonatomic, strong, nullable) NSError *loadBundleError;
 @property(class, nonatomic, assign) FIRLoadBundleTaskState loadBundleState;
+/** How many times `runTransaction*` invokes the update block (1 = once, 2 = concurrent retry). */
+@property(class, nonatomic, assign) NSInteger transactionUpdateBlockInvokeCount;
+/** Delay before the concurrent retry invocation when invoke count > 1 (microseconds). */
+@property(class, nonatomic, assign) NSUInteger transactionRetryDelayUSec;
 + (void)resetTestState;
 
 - (void)disableNetworkWithCompletion:(void (^)(NSError *_Nullable error))completion;

@@ -27,6 +27,8 @@ NSString *const RNFBFirestoreTransactionRejectCodeInternalError = @"internal-err
 NSString *const RNFBFirestoreTransactionMissingIdMessage =
     @"An internal error occurred whilst attempting to find a native transaction by id.";
 
+static int64_t sDefaultWaitTimeoutOverrideNSec = -1;
+
 @implementation RNFBFirestoreTransactionAttempt {
   dispatch_semaphore_t _semaphore;
   BOOL _aborted;
@@ -35,8 +37,15 @@ NSString *const RNFBFirestoreTransactionMissingIdMessage =
   id _nativeTransaction;
 }
 
++ (void)setDefaultWaitTimeoutOverrideNSec:(int64_t)nanoseconds {
+  sDefaultWaitTimeoutOverrideNSec = nanoseconds;
+}
+
 + (dispatch_time_t)defaultWaitTimeout {
-  return dispatch_time(DISPATCH_TIME_NOW, RNFBFirestoreTransactionWaitTimeoutNSec);
+  int64_t nanoseconds = sDefaultWaitTimeoutOverrideNSec >= 0
+                            ? sDefaultWaitTimeoutOverrideNSec
+                            : RNFBFirestoreTransactionWaitTimeoutNSec;
+  return dispatch_time(DISPATCH_TIME_NOW, nanoseconds);
 }
 
 - (BOOL)aborted {
