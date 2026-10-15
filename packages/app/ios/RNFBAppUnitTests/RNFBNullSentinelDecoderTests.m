@@ -280,6 +280,104 @@
   XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], expected);
 }
 
+#pragma mark - BRDA matrix (compound / short-circuit arms)
+
+// Line 41: `!isDict && !isArray` — both polarities of each operand.
+- (void)testDecode_line41_notDictNotArray_returnsPrimitive {
+  NSDate *date = [NSDate dateWithTimeIntervalSince1970:0];
+  NSData *data = [NSData data];
+  XCTAssertTrue([RNFBNullSentinelDecoder decodeNullSentinels:date] == date);
+  XCTAssertTrue([RNFBNullSentinelDecoder decodeNullSentinels:data] == data);
+}
+
+- (void)testDecode_line41_notDictIsArray_doesNotEarlyReturn {
+  NSArray *input = @[ @1 ];
+  id decoded = [RNFBNullSentinelDecoder decodeNullSentinels:input];
+  XCTAssertEqualObjects(decoded, input);
+  XCTAssertTrue([decoded isKindOfClass:[NSMutableArray class]]);
+  XCTAssertTrue(decoded != input);
+}
+
+- (void)testDecode_line41_isDict_shortCircuitsSecondCheck {
+  NSDictionary *input = @{@"k" : @"v"};
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], input);
+}
+
+// Line 49: `count == 1 && isNumber && boolValue` — each && operand true and false.
+- (void)testDecode_line49_countNotOne_shortCircuits {
+  NSDictionary *input = @{@"__rnfbNull" : @YES, @"extra" : @0};
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], input);
+}
+
+- (void)testDecode_line49_countOneNonNumber_shortCircuitsBoolValue {
+  NSDictionary *input = @{@"__rnfbNull" : @"yes"};
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], input);
+}
+
+- (void)testDecode_line49_countOneNumberFalse_notSentinel {
+  NSDictionary *nestedFalse = @{@"__rnfbNull" : @NO};
+  NSDictionary *nestedZero = @{@"__rnfbNull" : @(0)};
+  NSDictionary *input = @{@"a" : nestedFalse, @"b" : nestedZero};
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], input);
+}
+
+- (void)testDecode_line49_countOneNumberTrue_isSentinel {
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:@{@"__rnfbNull" : @YES}],
+                        [NSNull null]);
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:@{@"__rnfbNull" : @(1)}],
+                        [NSNull null]);
+}
+
+// Line 93: `isDict && isNullSentinel(root)` — array skips sentinel check; dict takes both.
+- (void)testDecode_line93_rootArray_skipsSentinelCheck {
+  NSArray *input = @[ [self nullSentinel], @NO ];
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input],
+                        (@[ [NSNull null], @NO ]));
+}
+
+- (void)testDecode_line93_rootDictSentinel_returnsNSNull {
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:[self nullSentinel]],
+                        [NSNull null]);
+}
+
+- (void)testDecode_line93_rootDictNotSentinel_continues {
+  NSDictionary *input = @{@"keep" : @1};
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], input);
+}
+
+// Line 100: root mutable is dict vs array (else).
+- (void)testDecode_line100_rootMutableDictionaryAndArray {
+  id dictDecoded = [RNFBNullSentinelDecoder decodeNullSentinels:@{@"a" : @1}];
+  id arrayDecoded = [RNFBNullSentinelDecoder decodeNullSentinels:@[ @1, @2 ]];
+  XCTAssertTrue([dictDecoded isKindOfClass:[NSMutableDictionary class]]);
+  XCTAssertTrue([arrayDecoded isKindOfClass:[NSMutableArray class]]);
+}
+
+// Lines 70 / 83 / 120: child is-array vs primitive; parent dict vs array; frame dict vs array.
+- (void)testDecode_lines70_83_120_childAndParentTypeMatrix {
+  NSDictionary *input = @{
+    @"dictChild" : @{@"k" : @1},
+    @"arrayChild" : @[ @"leaf", @[ @2 ], [self nullSentinel], [NSNull null] ],
+    @"primitiveChild" : @"text",
+    @"nullChild" : [NSNull null]
+  };
+  NSArray *arrayRoot = @[
+    @{@"inner" : [self nullSentinel]}, @[ @"nested" ], @3, [self nullSentinel], [NSNull null]
+  ];
+
+  NSDictionary *expectedDict = @{
+    @"dictChild" : @{@"k" : @1},
+    @"arrayChild" : @[ @"leaf", @[ @2 ], [NSNull null], [NSNull null] ],
+    @"primitiveChild" : @"text",
+    @"nullChild" : [NSNull null]
+  };
+  NSArray *expectedArray =
+      @[ @{@"inner" : [NSNull null]}, @[ @"nested" ], @3, [NSNull null], [NSNull null] ];
+
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:input], expectedDict);
+  XCTAssertEqualObjects([RNFBNullSentinelDecoder decodeNullSentinels:arrayRoot], expectedArray);
+}
+
 #pragma mark - Depth
 
 - (void)testDecode_deeplyNestedDictionaries_decodedWithoutRecursion {
