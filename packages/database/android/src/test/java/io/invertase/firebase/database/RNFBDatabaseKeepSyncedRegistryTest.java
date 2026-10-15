@@ -85,6 +85,27 @@ public class RNFBDatabaseKeepSyncedRegistryTest {
   }
 
   @Test
+  public void keepSynced_disableWhenNothingKept_stillApplies() {
+    keepSynced(LOCATION, "plain", false);
+    assertEquals(Collections.singletonList("plain=false"), applied);
+    assertTrue(registry.beginNativeGet(LOCATION));
+  }
+
+  @Test
+  public void keepSynced_noNativeGetInFlight_runsApplyBeforeCallerCompletion() {
+    List<String> order = new ArrayList<>();
+    registry.keepSynced(
+        LOCATION,
+        "plain",
+        true,
+        () -> {
+          order.add("sdk");
+          order.add("promise");
+        });
+    assertEquals(Arrays.asList("sdk", "promise"), order);
+  }
+
+  @Test
   public void keepSynced_nativeGetInFlight_waitsForItInCallOrder() {
     registry.beginNativeGet(LOCATION);
     keepSynced(LOCATION, "plain", true);
@@ -94,6 +115,32 @@ public class RNFBDatabaseKeepSyncedRegistryTest {
 
     registry.endNativeGet(LOCATION);
     assertEquals(Arrays.asList("plain=true", "limitToLast(1)=true", "plain=false"), applied);
+  }
+
+  @Test
+  public void keepSynced_nativeGetInFlight_runsEachApplyBeforeItsCallerCompletion() {
+    List<String> order = new ArrayList<>();
+    registry.beginNativeGet(LOCATION);
+    registry.keepSynced(
+        LOCATION,
+        "plain",
+        true,
+        () -> {
+          order.add("sdk-true");
+          order.add("promise-true");
+        });
+    registry.keepSynced(
+        LOCATION,
+        "plain",
+        false,
+        () -> {
+          order.add("sdk-false");
+          order.add("promise-false");
+        });
+    assertTrue(order.isEmpty());
+
+    registry.endNativeGet(LOCATION);
+    assertEquals(Arrays.asList("sdk-true", "promise-true", "sdk-false", "promise-false"), order);
   }
 
   @Test
