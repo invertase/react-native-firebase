@@ -62,6 +62,13 @@ public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
     return executorService.getExecutor();
   }
 
+  /**
+   * Reads {@code firebase_messaging_installation_id_enabled} from application meta-data.
+   *
+   * <p>Manifest {@code android:value="true"} may be stored as a boolean, string, or integer
+   * depending on aapt/merge behaviour; {@link Bundle#getBoolean} alone returns the default when the
+   * value is not a boolean, so accept boolean, {@code "true"}, and {@code 1}.
+   */
   private boolean readInstallationIdEnabled() {
     try {
       ReactApplicationContext context = getReactApplicationContext();
@@ -70,8 +77,22 @@ public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
               .getPackageManager()
               .getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
       Bundle metaData = applicationInfo.metaData;
-      return metaData != null && metaData.getBoolean(META_INSTALLATION_ID_ENABLED, false);
-    } catch (PackageManager.NameNotFoundException exception) {
+      if (metaData == null || !metaData.containsKey(META_INSTALLATION_ID_ENABLED)) {
+        return false;
+      }
+      Object value = metaData.get(META_INSTALLATION_ID_ENABLED);
+      if (value instanceof Boolean) {
+        return (Boolean) value;
+      }
+      if (value instanceof String) {
+        return "true".equalsIgnoreCase((String) value) || "1".equals(value);
+      }
+      if (value instanceof Number) {
+        return ((Number) value).intValue() == 1;
+      }
+      return false;
+    } catch (PackageManager.NameNotFoundException | RuntimeException exception) {
+      Log.w(TAG, "Unable to read " + META_INSTALLATION_ID_ENABLED + " meta-data", exception);
       return false;
     }
   }

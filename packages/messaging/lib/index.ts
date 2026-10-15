@@ -94,7 +94,9 @@ class FirebaseMessagingModule extends FirebaseModule<typeof nativeModuleName> im
         : true;
     this._isNotificationDelegationEnabled =
       this.native.getConstants?.()?.isNotificationDelegationEnabled ?? false;
-    this._isInstallationIdEnabled = this.native.getConstants?.()?.isInstallationIdEnabled ?? false;
+    // Turbo constants are flattened onto `this.native`; `getConstants` is not on the routing proxy.
+    this._isInstallationIdEnabled =
+      this.native.isInstallationIdEnabled != null ? this.native.isInstallationIdEnabled : false;
     this._cachedInstallationId = null;
 
     // The FID cache only matters in installation-id mode; token mode skips these subscriptions.
