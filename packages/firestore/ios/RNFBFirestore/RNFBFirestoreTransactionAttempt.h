@@ -52,6 +52,11 @@ typedef NS_ENUM(NSInteger, RNFBFirestoreTransactionWaitResult) {
 @property(nonatomic, readonly, nullable) id nativeTransaction;
 
 + (dispatch_time_t)defaultWaitTimeout;
+/**
+ * XCTest seam: when >= 0, `defaultWaitTimeout` uses this many nanoseconds instead of
+ * `RNFBFirestoreTransactionWaitTimeoutNSec`. Pass a negative value to clear.
+ */
++ (void)setDefaultWaitTimeoutOverrideNSec:(int64_t)nanoseconds;
 - (NSError *)timeoutError;
 
 /**
