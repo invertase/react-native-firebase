@@ -7290,17 +7290,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/ml@npm:26.4.0, @react-native-firebase/ml@workspace:packages/ml":
-  version: 0.0.0-use.local
-  resolution: "@react-native-firebase/ml@workspace:packages/ml"
-  dependencies:
-    "@react-native-firebase/app": "npm:26.4.0"
-    react-native-builder-bob: "npm:^0.41.0"
-  peerDependencies:
-    "@react-native-firebase/app": 26.4.0
-  languageName: unknown
-  linkType: soft
-
 "@react-native-firebase/perf@npm:26.4.0, @react-native-firebase/perf@workspace:packages/perf":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/perf@workspace:packages/perf"
@@ -24369,7 +24358,6 @@ __metadata:
     "@react-native-firebase/in-app-messaging": "npm:26.4.0"
     "@react-native-firebase/installations": "npm:26.4.0"
     "@react-native-firebase/messaging": "npm:26.4.0"
-    "@react-native-firebase/ml": "npm:26.4.0"
     "@react-native-firebase/perf": "npm:26.4.0"
     "@react-native-firebase/phone-number-verification": "npm:26.4.0"
     "@react-native-firebase/remote-config": "npm:26.4.0"
@@ -24422,7 +24410,6 @@ __metadata:
     "@react-native-firebase/in-app-messaging": "npm:26.4.0"
     "@react-native-firebase/installations": "npm:26.4.0"
     "@react-native-firebase/messaging": "npm:26.4.0"
-    "@react-native-firebase/ml": "npm:26.4.0"
     "@react-native-firebase/perf": "npm:26.4.0"
     "@react-native-firebase/phone-number-verification": "npm:26.4.0"
     "@react-native-firebase/remote-config": "npm:26.4.0"
