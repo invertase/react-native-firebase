@@ -217,7 +217,7 @@ const config: PackageConfig = {
     {
       name: 'linkWithRedirect',
       reason:
-        'iOS/Android: resolves immediately with UserCredential. Other/Hermes: not applicable (no DOM). Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
+        'iOS/Android: resolves with UserCredential once the native in-app provider flow completes (no pending redirect result). Other/Hermes: not applicable (no DOM). Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
     },
     {
       name: 'reauthenticateWithRedirect',
@@ -227,7 +227,7 @@ const config: PackageConfig = {
     {
       name: 'signInWithRedirect',
       reason:
-        'iOS/Android: resolves immediately with UserCredential. Other/Hermes: not applicable. Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
+        'iOS/Android: resolves with UserCredential once the native in-app provider flow completes (no pending redirect result). Other/Hermes: not applicable. Other/Web: not delegated yet; firebase-js-sdk redirect flow is possible.',
     },
     {
       name: 'OAuthProvider',

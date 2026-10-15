@@ -1,13 +1,34 @@
 ---
 title: Screen Tracking
-description: Setup Firebase Analytics to track your in-app screen flow.
+description: 'Track Analytics screen views with logScreenView() and ScreenViewParameters via React Navigation or React Native Navigation listeners.'
 previous: /analytics/usage
 next: /app-check/usage
 ---
 
-Standard React Native applications run inside a single `Activity`/`ViewController`, meaning any screen changes won't be
-tracked by the native Firebase SDKs. There are a number of ways to implement navigation within React Native apps,
-therefore there is no "one fits all" solution to screen tracking.
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/analytics` installed per [Analytics usage](/analytics/usage) (native config completed, New Architecture required from v26).
+- A navigation library if you want automatic screen-name wiring: [React Navigation](https://reactnavigation.org/) or [`wix/react-native-navigation`](https://github.com/wix/react-native-navigation). Manual `logScreenView` calls work without either.
+- Disable automatic native screen reporting in `firebase.json` when you want only your manual `screen_view` events (see [Disable screenview tracking](/analytics/usage#disable-screenview-tracking)).
+
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/analytics.tsx
+
+# Manual screen views
+
+Standard React Native applications run inside a single `Activity`/`ViewController`, so native Firebase SDKs do not see JavaScript navigation screen changes automatically. Call `logScreenView` with `ScreenViewParameters` (`screen_name`, `screen_class`) whenever the visible route changes. It logs a `screen_view` event, so `logEvent(getAnalytics(), 'screen_view', { screen_name, screen_class })` is equivalent. When `screen_class` is not set, Analytics sets a default value based on the `UIViewController` or `Activity` in focus, which is the same native class for every JavaScript screen. The firebase-js-sdk `setCurrentScreen` function is not exported by React Native Firebase; use `logScreenView` instead.
+
+```js
+import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
+
+async function trackAnalyticsScreen(screenName, screenClass) {
+  await logScreenView(getAnalytics(), {
+    screen_name: screenName,
+    screen_class: screenClass,
+  });
+}
+
+await trackAnalyticsScreen('ProductDetails', 'ProductDetails');
+```
 
 # React Navigation
 
@@ -17,6 +38,9 @@ access to the current navigation state when a screen changes, allowing you to us
 method the Analytics library provides:
 
 ```jsx
+// codeblock-ignore: imports @react-navigation/native, a third-party package that is not a dependency of React Native Firebase
+import React from 'react';
+import { Text } from 'react-native';
 import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -42,7 +66,7 @@ const App = () => {
         routeNameRef.current = currentRouteName;
       }}
     >
-      ...
+      <Text>Replace with your root navigator</Text>
     </NavigationContainer>
   );
 };
@@ -60,6 +84,7 @@ for React Native apps. To manually track screens, you need to setup a `component
 [`logScreenView`](https://invertase.github.io/react-native-firebase/_react-native-firebase/analytics/modular/logScreenView.html) method the Analytics library provides:
 
 ```js
+// codeblock-ignore: imports react-native-navigation, a third-party package that is not a dependency of React Native Firebase
 import { getAnalytics, logScreenView } from '@react-native-firebase/analytics';
 import { Navigation } from 'react-native-navigation';
 

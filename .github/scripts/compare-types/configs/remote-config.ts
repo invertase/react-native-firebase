@@ -7,10 +7,10 @@
  * fail so that new drift is caught and deliberately acknowledged.
  *
  * Sections:
- *  nameMapping     — exports that exist in both packages but under different names
- *  missingInRN     — firebase-js-sdk exports absent from RN Firebase
- *  extraInRN       — RN Firebase exports not present in the firebase-js-sdk
- *  differentShape  — exports present in both but with differing signatures/members
+ *  nameMapping     - exports that exist in both packages but under different names
+ *  missingInRN     - firebase-js-sdk exports absent from RN Firebase
+ *  extraInRN       - RN Firebase exports not present in the firebase-js-sdk
+ *  differentShape  - exports present in both but with differing signatures/members
  */
 
 import type { PackageConfig } from '../src/types';
@@ -26,8 +26,8 @@ const config: PackageConfig = {
     {
       name: 'FirebaseRolloutMetadata',
       reason:
-        'firebase-js-sdk added rollout metadata typing for the web fetch-response path. ' +
-        'RN Firebase does not yet surface Remote Config rollouts on the modular fetch-response type.',
+        'firebase-js-sdk types rollout metadata for the web fetch-response path. ' +
+        'RN Firebase does not surface Remote Config rollouts on the modular fetch-response type.',
     },
   ],
   // ---------------------------------------------------------------------------
@@ -66,8 +66,8 @@ const config: PackageConfig = {
     {
       name: 'FetchResponse',
       reason:
-        'firebase-js-sdk FetchResponse now includes optional `rollouts` metadata. RN Firebase ' +
-        'has not yet added that field to its modular FetchResponse declaration.',
+        'firebase-js-sdk FetchResponse includes optional `rollouts` metadata. RN Firebase ' +
+        'does not declare that field on its modular FetchResponse.',
     },
     {
       name: 'FetchStatus',
@@ -76,7 +76,7 @@ const config: PackageConfig = {
         '(`no_fetch_yet`, `throttled`) returned by the iOS/Android Remote Config SDKs and ' +
         'used by the long-standing namespaced API. Aligning to firebase-js-sdk hyphen literals ' +
         '(`no-fetch-yet`, `throttle`) would be a breaking change for existing comparisons and ' +
-        'cannot be normalized without native/bridge churn; not planned for compare-types parity.',
+        'cannot be normalized without native/bridge churn.',
     },
     {
       name: 'ValueSource',

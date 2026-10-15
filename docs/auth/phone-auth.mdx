@@ -1,39 +1,39 @@
 ---
 title: Phone Authentication
-description: Sign-in users with their phone number.
+description: 'Phone number authentication: iOS/Android reCAPTCHA and Play Integrity setup, Expo config, signInWithPhoneNumber(), verifyPhoneNumber() with PhoneAuthListener / PhoneAuthState / PhoneAuthSnapshot / PhoneAuthError, test phone numbers, linking a phone number, updatePhoneNumber(), re-authenticating with a phone credential, and the throwing linkWithPhoneNumber() / reauthenticateWithPhoneNumber() helpers.'
 next: /auth/email-link-auth
 previous: /auth/social-auth
 ---
 
-Phone authentication allows users to sign in to Firebase using their phone as the authenticator. An SMS message is sent
-to the user via their phone number containing a unique code. Once the code has been authorized, the user is able to sign
-in to Firebase.
+## Prerequisites
 
-Phone numbers that end users provide for authentication will be sent and stored by Google to improve our spam and abuse
-prevention across Google services, including but not limited to Firebase. Developers should ensure they have appropriate
-end-user consent prior to using the Firebase Authentication phone number sign-in service.
+- `@react-native-firebase/app` and `@react-native-firebase/auth` installed and native config completed per [Authentication usage](/auth/usage) / [Getting Started](/). From v26, New Architecture is required for packages with a native bridge.
+- **Phone** sign-in provider enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
+- Platform app verification completed (reCAPTCHA / APNs / Play Integrity) per the sections below. Firebase Phone Auth is not available in every country; see Firebase [FAQs](https://firebase.google.com/support/faq/#develop).
 
-> Firebase Phone Auth is not supported in all countries. Please see their [FAQs](https://firebase.google.com/support/faq/#develop) for more information.
+Phone authentication lets users sign in with an SMS code. Phone numbers that end users provide for authentication are sent and stored by Google to improve spam and abuse prevention across Google services, including Firebase. Obtain appropriate end-user consent before using phone number sign-in.
 
-Ensure the "Phone" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
+Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/phone.tsx (connects to the Auth emulator).
 
 # iOS Setup
 
-Ensure that all parts of step 1 and 2 from [the official firebase iOS phone auth docs](https://firebase.google.com/docs/auth/ios/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed, noting in particular that you may need to re-download your firebase GoogleService-Info.plist file and for the reCAPTCHA flow to work you must make sure you have added your custom URL scheme to your project plist file.
+Complete steps 1 and 2 from the [Firebase iOS phone auth docs](https://firebase.google.com/docs/auth/ios/phone-auth#enable-phone-number-sign-in-for-your-firebase-project). Re-download `GoogleService-Info.plist` when instructed, and add your custom URL scheme to the project plist so the reCAPTCHA flow can return to the app.
 
-Phone auth requires app verification, and the automatic app verification process uses data-only firebase cloud messages to the app. Data-only cloud messaging only works on real devices where the app has background refresh enabled. If background refresh disabled, or if using the Simulator, app verification uses the fallback reCAPTCHA flow allowing you to check if it is configured correctly.
+Phone auth requires app verification. Automatic verification uses data-only Firebase Cloud Messaging. Data-only FCM needs a physical device with background refresh enabled. On Simulator, or when background refresh is disabled, Auth falls back to reCAPTCHA. Use that path to confirm reCAPTCHA is configured.
 
-For reliable automated testing, you may want to disable both automatic and fallback reCAPTCHA app verification for your app. To do this, [you may disable app verification in AuthSettings](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) prior to calling any phone auth methods.
+For automated testing you can disable app verification via [`AuthSettings.appVerificationDisabledForTesting`](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) before any phone auth methods.
 
 # Android Setup
 
-Ensure that all parts of step 1 and 2 from [the official firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed.
+Complete steps 1 and 2 from the [Firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project).
 
-To bypass Play Integrity for manual testing, you may [force reCAPTCHA to be used](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) prior to calling [`verifyPhoneNumber`](https://reference.rnfirebase.io/_react-native-firebase/auth/verifyPhoneNumber.html).
+To force reCAPTCHA instead of Play Integrity during manual testing, set [`appVerificationDisabledForTesting`](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) before [`verifyPhoneNumber`](https://reference.rnfirebase.io/_react-native-firebase/auth/verifyPhoneNumber.html).
 
 # Expo Setup
 
-To use phone auth in an expo app, add the `@react-native-firebase/auth` config plug-in to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) section of your `app.json`. This is in addition to the `@react-native-firebase/app` plugin.
+Phone auth needs the `@react-native-firebase/auth` config plugin (in addition to `@react-native-firebase/app`). That plugin is required for phone auth; it is not required for every Auth provider. It [sets up reCAPTCHA](https://firebase.google.com/docs/auth/ios/phone-auth#set-up-recaptcha-verification) on iOS.
+
+File: `app.json` (or `app.config.js`). Add the plugins, then create a [development build](https://docs.expo.dev/develop/development-builds/introduction/#use-libraries-with-native-code-that-arent) (Expo Go cannot host this native config). See [Expo install](/#installation-for-expo-projects).
 
 ```json
 {
@@ -43,20 +43,12 @@ To use phone auth in an expo app, add the `@react-native-firebase/auth` config p
 }
 ```
 
-The `@react-native-firebase/auth` config plugin is not required for all auth providers, but it is required to use phone auth. The plugin [will set up reCAPTCHA](https://firebase.google.com/docs/auth/ios/phone-auth#set-up-recaptcha-verification) verification for you on iOS.
-
-The recommendation is to use a [custom development client](https://docs.expo.dev/develop/development-builds/introduction/#use-libraries-with-native-code-that-arent). For more info on using Expo with React Native Firebase, see our [Expo docs](/#installation-for-expo-projects).
-
 # Sign-in
 
-The module provides a `signInWithPhoneNumber` method which accepts a phone number. Firebase sends an SMS message to the
-user with a code, which they must then confirm. The `signInWithPhoneNumber` method returns a confirmation method which accepts
-a code. Based on whether the code is correct for the device, the method rejects or resolves.
-
-The example below demonstrates how you could setup such a flow within your own application:
+`signInWithPhoneNumber` accepts a phone number, sends an SMS code, and returns a confirmation object. Call `confirm(code)` with the SMS code.
 
 ```jsx
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native';
 import { getAuth, onAuthStateChanged, signInWithPhoneNumber } from '@react-native-firebase/auth';
 
@@ -64,25 +56,22 @@ function PhoneSignIn() {
   // If null, no SMS has been sent
   const [confirm, setConfirm] = useState(null);
 
-  // verification code (OTP - One-Time-Passcode)
+  // verification code (OTP)
   const [code, setCode] = useState('');
 
-  // Handle login
   function handleAuthStateChanged(user) {
     if (user) {
-      // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
-      // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
-      // In this function, make sure you hide the component(s) for entering the code and/or navigate away from this screen.
-      // It is also recommended to display a message to the user informing him/her that he/she has successfully logged in.
+      // Some Android devices auto-retrieve the SMS code and complete sign-in
+      // without the user typing it. Hide the code UI and navigate away when
+      // this fires; entering the same code again will fail because it was used.
     }
   }
 
   useEffect(() => {
     const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    return subscriber;
   }, []);
 
-  // Handle the button press
   async function handleSignInWithPhoneNumber(phoneNumber) {
     const confirmation = await signInWithPhoneNumber(getAuth(), phoneNumber);
     setConfirm(confirmation);
@@ -91,7 +80,7 @@ function PhoneSignIn() {
   async function confirmCode() {
     try {
       await confirm.confirm(code);
-    } catch (error) {
+    } catch {
       console.log('Invalid code.');
     }
   }
@@ -114,26 +103,74 @@ function PhoneSignIn() {
 }
 ```
 
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners receive the signed-in user.
+
+# Native phone verification listener
+
+`verifyPhoneNumber` is an RN Firebase-specific iOS/Android helper. It returns a `PhoneAuthListener` (promise-like, with `.on('state_changed', …)`). Snapshot payloads use `PhoneAuthSnapshot` (`state`, `verificationId`, `code`, `error`). State string values match `PhoneAuthState` (`CODE_SENT` / `AUTO_VERIFY_TIMEOUT` / `AUTO_VERIFIED` / `ERROR`). Error callbacks receive `PhoneAuthError`. Other platforms should use `signInWithPhoneNumber` / `PhoneAuthProvider` via the firebase-js-sdk bridge instead.
+
+Awaiting the listener resolves at different points per platform. On iOS it resolves with the `CODE_SENT` snapshot. On Android it resolves when auto-retrieval completes (`AUTO_VERIFIED`) or times out (`AUTO_VERIFY_TIMEOUT`, 60 seconds by default), not when the SMS is sent. To show the code input as soon as the SMS leaves, listen for `PhoneAuthState.CODE_SENT` in `.on('state_changed', …)` instead of awaiting.
+
+```js
+import {
+  PhoneAuthProvider,
+  PhoneAuthState,
+  getAuth,
+  signInWithCredential,
+  verifyPhoneNumber,
+} from '@react-native-firebase/auth';
+
+async function signInWithVerifyPhoneNumberListener(phoneNumber) {
+  const listener = verifyPhoneNumber(getAuth(), phoneNumber);
+
+  listener.on(
+    'state_changed',
+    snapshot => {
+      switch (snapshot.state) {
+        case PhoneAuthState.CODE_SENT:
+          console.log('SMS sent', snapshot.verificationId);
+          break;
+        case PhoneAuthState.AUTO_VERIFIED:
+          console.log('Instant verification', snapshot.code);
+          break;
+        case PhoneAuthState.AUTO_VERIFY_TIMEOUT:
+          console.log('Auto-retrieval timed out');
+          break;
+        case PhoneAuthState.ERROR:
+          console.log('Phone auth error state', snapshot.error);
+          break;
+        default:
+          break;
+      }
+    },
+    error => {
+      console.log('PhoneAuthError', error.code, error.message, error.verificationId);
+    },
+  );
+
+  const snapshot = await listener;
+  if (!snapshot.verificationId) {
+    throw new Error('No verificationId from verifyPhoneNumber');
+  }
+
+  // Prompt the user for the SMS code when auto-verification did not complete.
+  const code = snapshot.code ?? '123456';
+  const credential = PhoneAuthProvider.credential(snapshot.verificationId, code);
+  return signInWithCredential(getAuth(), credential);
+}
+
+await signInWithVerifyPhoneNumberListener('+1 650-555-3434');
+```
 
 # Testing
 
-Firebase provides support for locally testing phone numbers. For local testing to work, you must have ensured your local
-machine SHA1 debug key was added whilst creating your application on the Firebase Console. View the [Getting Started](/)
-guide on how to set this up.
+For local test numbers, add your machine's SHA-1 debug key in the Firebase Console (see [Getting Started](/)).
 
-On the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers), select the "Phone" authentication provider and click on the
-"Phone numbers for testing" dropdown.
-
-Enter a new phone number (e.g. `+44 7444 555666`) and a test code (e.g. `123456`).
-
-Once added, the number can be used with the `signInWithPhoneNumber` method, and entering the code specified will
-cause a successful sign-in.
+In the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers), open the Phone provider → **Phone numbers for testing**. Add a number (for example `+44 7444 555666`) and a test code (for example `123456`). `signInWithPhoneNumber` with that number and code completes sign-in without sending SMS.
 
 # MFA-like Account Creation
 
-After successfully creating a user with an email and password (see Authentication/Usage/Email/Password sign-in), use the `verifyPhoneNumber` method to send a verification code to a user's phone number and if the user enters the correct code, link the phone number to the authenticated user's account. This creates a MFA-like authentication flow for account creation. However, to implement MFA with firebase, your app must call additional methods and use Google Cloud Identity Platform, which is a paid service, details available in this guide https://cloud.google.com/identity-platform/docs/web/mfa
+After creating a user with email/password, use `verifyPhoneNumber` and `linkWithCredential` to attach a phone number. That is an MFA-like account-creation flow only. Full MFA requires Identity Platform and the flows on [Multi-factor Auth](/auth/multi-factor-auth); see also [Identity Platform MFA](https://cloud.google.com/identity-platform/docs/web/mfa).
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -144,30 +181,30 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   verifyPhoneNumber,
+  linkWithCredential,
 } from '@react-native-firebase/auth';
 
-export default function PhoneVerification() {
-  // Set an initializing state whilst Firebase connects
+function PhoneVerification() {
   const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
-  // If null, no SMS has been sent
-  const [confirm, setConfirm] = useState(null);
-
+  const [user, setUser] = useState(
+    /** @type {import('@react-native-firebase/auth').User | null} */ (null),
+  );
+  // PhoneAuthSnapshot from verifyPhoneNumber (not a ConfirmationResult)
+  const [snapshot, setSnapshot] = useState(null);
   const [code, setCode] = useState('');
 
-  // Handle user state changes
-  function handleAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
+  function handleAuthStateChanged(nextUser) {
+    setUser(nextUser);
+    if (initializing) {
+      setInitializing(false);
+    }
   }
 
   useEffect(() => {
     const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    return subscriber;
   }, []);
 
-  // Handle create account button press
   async function createAccount() {
     try {
       await createUserWithEmailAndPassword(
@@ -188,20 +225,24 @@ export default function PhoneVerification() {
     }
   }
 
-  // Handle the verify phone button press
   async function handlePhoneNumberVerification(phoneNumber) {
-    const confirmation = await verifyPhoneNumber(getAuth(), phoneNumber);
-    setConfirm(confirmation);
+    setSnapshot(await verifyPhoneNumber(getAuth(), phoneNumber));
   }
 
-  // Handle confirm code button press
   async function confirmCode() {
     try {
-      const credential = PhoneAuthProvider.credential(confirm.verificationId, code);
-      let userData = await getAuth().currentUser.linkWithCredential(credential);
-      setUser(userData.user);
+      const currentUser = getAuth().currentUser;
+      if (!currentUser) {
+        throw new Error('No user is signed in');
+      }
+      if (!snapshot?.verificationId) {
+        throw new Error('No verificationId from verifyPhoneNumber');
+      }
+      const credential = PhoneAuthProvider.credential(snapshot.verificationId, code);
+      const userCredential = await linkWithCredential(currentUser, credential);
+      setUser(userCredential.user);
     } catch (error) {
-      if (error.code == 'auth/invalid-verification-code') {
+      if (error.code === 'auth/invalid-verification-code') {
         console.log('Invalid code.');
       } else {
         console.log('Account linking error');
@@ -213,14 +254,14 @@ export default function PhoneVerification() {
 
   if (!user) {
     return <Button title="Login" onPress={() => createAccount()} />;
-  } else if (!user.phoneNumber) {
-    if (!confirm) {
+  }
+
+  if (!user.phoneNumber) {
+    if (!snapshot) {
       return (
         <Button
           title="Verify Phone Number"
-          onPress={() =>
-            handlePhoneNumberVerification('ENTER A VALID TESTING OR REAL PHONE NUMBER HERE')
-          }
+          onPress={() => handlePhoneNumberVerification('+1 650-555-3434')}
         />
       );
     }
@@ -230,12 +271,73 @@ export default function PhoneVerification() {
         <Button title="Confirm Code" onPress={() => confirmCode()} />
       </>
     );
-  } else {
-    return (
-      <Text>
-        Welcome! {user.phoneNumber} linked with {user.email}
-      </Text>
-    );
   }
+
+  return (
+    <Text>
+      Welcome! {user.phoneNumber} linked with {user.email}
+    </Text>
+  );
 }
 ```
+
+# Update or re-authenticate with a phone number
+
+`updatePhoneNumber(user, credential)` replaces the phone number on the signed-in user with the number the credential was verified for. `reauthenticateWithCredential(user, credential)` accepts the same phone credential when a sensitive operation needs a recent sign-in. Both take a `PhoneAuthProvider.credential(verificationId, smsCode)` credential, and both reject when no user is signed in.
+
+The flow is the same for both: start `verifyPhoneNumber` for the number, wait for `PhoneAuthState.CODE_SENT` to get the `verificationId`, then build the credential from the SMS code the user enters.
+
+```js
+import {
+  PhoneAuthProvider,
+  PhoneAuthState,
+  getAuth,
+  reauthenticateWithCredential,
+  updatePhoneNumber,
+  verifyPhoneNumber,
+} from '@react-native-firebase/auth';
+
+/** @returns {Promise<string>} */
+function sendSmsCode(phoneNumber) {
+  return new Promise((resolve, reject) => {
+    verifyPhoneNumber(getAuth(), phoneNumber).on(
+      'state_changed',
+      snapshot => {
+        if (snapshot.state === PhoneAuthState.CODE_SENT && snapshot.verificationId) {
+          resolve(snapshot.verificationId);
+        }
+      },
+      error => reject(error),
+    );
+  });
+}
+
+async function updateSignedInUserPhoneNumber(verificationId, smsCode) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const credential = PhoneAuthProvider.credential(verificationId, smsCode);
+  await updatePhoneNumber(user, credential);
+}
+
+async function reauthenticateWithSmsCode(verificationId, smsCode) {
+  const user = getAuth().currentUser;
+  if (!user) {
+    throw new Error('No user is signed in');
+  }
+
+  const credential = PhoneAuthProvider.credential(verificationId, smsCode);
+  return reauthenticateWithCredential(user, credential);
+}
+
+// Request a new SMS code for each operation.
+const updateVerificationId = await sendSmsCode('+1 650-555-3434');
+await updateSignedInUserPhoneNumber(updateVerificationId, '123456');
+
+const reauthVerificationId = await sendSmsCode('+1 650-555-3434');
+await reauthenticateWithSmsCode(reauthVerificationId, '654321');
+```
+
+The firebase-js-sdk helpers `linkWithPhoneNumber` and `reauthenticateWithPhoneNumber` throw on React Native Firebase. To attach a phone number to an existing user, follow [MFA-like Account Creation](#mfa-like-account-creation) and call `linkWithCredential`; to re-authenticate, use `reauthenticateWithCredential` as above.

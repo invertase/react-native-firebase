@@ -199,7 +199,8 @@
         { "title": "iOS Permissions", "href": "/messaging/ios-permissions" },
         { "title": "Notifications", "href": "/messaging/notifications" },
         { "title": "iOS Notification Images", "href": "/messaging/ios-notification-images" },
-        { "title": "Server Integration", "href": "/messaging/server-integration" }
+        { "title": "Server Integration", "href": "/messaging/server-integration" },
+        { "title": "Messaging with XMPP", "href": "/messaging/usage/messaging-with-xmpp" }
       ]
     },
     {
@@ -224,6 +225,7 @@
       "icon": "//firebase.google.com/static/images/products/icons/run_crashlytics.svg",
       "pages": [
         { "title": "Usage", "href": "/crashlytics/usage" },
+        { "title": "Android Setup", "href": "/crashlytics/android-setup" },
         { "title": "Viewing crash reports", "href": "/crashlytics/crash-reports" }
       ]
     },

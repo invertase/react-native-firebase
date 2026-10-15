@@ -1,37 +1,35 @@
 ---
 title: Writing & Deploying Cloud Functions
-description: Learn how to write, test & deploy Cloud Functions to your Firebase project.
+description: 'Write and deploy callable Cloud Functions for React Native Firebase: firebase-tools setup, onCall functions, request data and auth, streaming with sendChunk, HttpsError, App Check enforcement, emulator testing, and deployment.'
 next: /messaging/usage
 previous: /functions/usage
 ---
 
-Cloud Functions are a powerful asset to a developers workflow, allowing you to build complex backend tasks with
-minimal maintenance overhead. The following page outlines the steps required for writing, testing & deploying Cloud Functions to your Firebase project.
+Cloud Functions let you run backend code without managing servers. This page covers writing an HTTPS callable function with the `firebase-functions` Node.js SDK, testing it with the Local Emulator Suite, deploying it, and calling it from a React Native app with `@react-native-firebase/functions`. For the client API, see [Cloud Functions usage](/functions/usage).
+
+Deploying functions requires a Firebase project on the Blaze pricing plan. Functions can be emulated on any project. For the full guide, see [Call functions from your app](https://firebase.google.com/docs/functions/callable) and [Get started with Cloud Functions](https://firebase.google.com/docs/functions/get-started).
 
 ## Environment Setup
 
-Firebase provides a CLI which is required to build and deploy Cloud Functions. To install the CLI, install the `firebase-tools` package globally on your computer from your terminal:
+Firebase provides a CLI which is required to build and deploy Cloud Functions. It needs a supported Node.js version (Node.js 20 and 22 per the official guide). To install the CLI, install the `firebase-tools` package globally from your terminal:
 
 ```bash
 npm install -g firebase-tools
 ```
 
-Once installed, login to Firebase with the CLI. This process will automatically open a browser instance giving you the ability to login to your Firebase account.
+Once installed, log in to Firebase with the CLI. This opens a browser window where you sign in to your Firebase account.
 
 ```bash
 firebase login
 ```
 
-Once logged in, create a new directory on your development environment. This will be used as our working directory
-where our Cloud Functions will be written and deployed from. Within this directory, run the following command from your
-terminal to initialize a new project structure:
+Go to your Firebase project directory and initialize Cloud Functions:
 
 ```bash
 firebase init functions
 ```
 
-You will be offered two options for language support, for this tutorial select JavaScript. Allow the CLI to install
-dependencies using NPM. Once complete your project structure will look like this:
+Choose JavaScript when the CLI asks for the language, and let it install dependencies with npm. Once complete, your project structure looks like this:
 
 ```
 myproject
@@ -54,41 +52,35 @@ myproject
 
 ## Writing a Function
 
-The Firebase CLI has created a project structure and also installed a number of dependencies which will be used to build our Cloud Functions.
+The Firebase CLI creates the project structure and installs `firebase-functions` and `firebase-admin`. Firebase uses [named exports](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export) to identify functions. The export name becomes the function name that your React Native app passes to `httpsCallable`.
 
-To enable us to mock some fake data to use in the deployed functions, lets use the [`@faker-js/faker`](https://www.npmjs.com/package/@faker-js/faker)
-library to create mock data.
+To generate mock data for the sample, install [`@faker-js/faker`](https://www.npmjs.com/package/@faker-js/faker) in the `functions` directory:
 
 ```bash
 cd functions/
 npm install @faker-js/faker
 ```
 
-Now it's time to write our Cloud Function. Open up the generated `functions/index.js` file in your chosen editor.
-The CLI has already imported the `firebase-functions` package required to build a Cloud Function. Firebase uses
-[named exports](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export) to help identify
-functions. These exports are used to build the API endpoint name which will be accessible from our React Native application.
-
-For this tutorial, we are creating a product listing API. Go ahead and create a new HTTPS callable named function called `listProducts`:
+Open the generated `functions/index.js` and create an HTTPS callable named `listProducts`. A callable is created with `onCall` from `firebase-functions/https`. Its handler receives a `request` object and returns any value that can be encoded as JSON (or a Promise that resolves with one):
 
 ```js
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
 // functions/index.js
-const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/https');
 
-exports.listProducts = functions.https.onCall((data, context) => {
-  // ...
+exports.listProducts = onCall(request => {
+  return [];
 });
 ```
 
-The `onCall` callback returns two objects:
+The `request` object carries the payload from the client in `request.data` and the authentication state in `request.auth`. Return a value (or a Promise that resolves with one), otherwise the function can end before a result reaches the client.
 
-We can now return an array of products, generated from the `faker` library. As we are mocking a data set, it's important
-to keep consistent results for each request. The data should be generated before the request is received, rather than a
-new data set being generated on each request:
+To return an array of products, generate the data once when the function instance starts, rather than on every request, so results are consistent between calls:
 
 ```js
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
 // functions/index.js
-const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/https');
 const { faker } = require('@faker-js/faker');
 
 // Initialize products array
@@ -105,63 +97,20 @@ for (let i = 0; i < LIMIT; i++) {
   });
 }
 
-exports.listProducts = functions.https.onCall((data, context) => {
+exports.listProducts = onCall(request => {
   return products;
 });
 ```
-
-### Testing your function
-
-Before deploying our functions project, we can run the `serve` command which builds a locally accessible instance of our
-Cloud Functions. Run the following command from within the `functions/` directory:
-
-```bash
-cd functions/
-npm run serve
-```
-
-Once booted, the CLI will be provide a local web server with the products endpoint openly available, e.g:
-
-```
-functions: listProducts: http://localhost:5000/rnfirebase-demo/us-central1/listProducts
-```
-
-In your terminal (or browser), access the endpoint provided. Our list of generated products is ready for use.
-
-```
-curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d '{"data":{}}' http://localhost:5000/rnfirebase-demo/us-central1/listProducts
-```
-
-### Security
-
-By default the endpoint will be publicly accessible when deployed. Firebase offers an out-of-the-box solution for handling
-authentication, which integrates with the [Authentication](/auth) module. To secure our endpoint for authenticated users only, check whether the `auth`
-property exists on the function execution context:
-
-```js
-exports.listProducts = functions.https.onCall((data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'Endpoint requires authentication!');
-  }
-
-  return products;
-});
-```
-
-When calling the function without authentication, an error response will be returned to the caller.
-
-If the user is authenticated, we can access the users data via the `context.auth` property. For example their unique user identifier will be available by accessing `context.auth.uid`.
 
 ### Handling function arguments
 
-A common requirement for endpoints is calling the endpoint with custom parameters. For example, rather than returning a list
-of 1000 products, we can paginate the data by passing in arguments when calling our function.
-
-These arguments can be accessed via the `data` property when the function is executed, let's update our function code to support pagination arguments:
+A common requirement is calling the endpoint with custom parameters. For example, rather than returning all products, the function can paginate the data from arguments the client passes. The arguments arrive in `request.data`:
 
 ```js
-exports.listProducts = functions.https.onCall((data, context) => {
-  const { page = 1, limit = 10 } = data;
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
+// functions/index.js
+exports.listProducts = onCall(request => {
+  const { page = 1, limit = 10 } = request.data;
 
   const startAt = (page - 1) * limit;
   const endAt = startAt + limit;
@@ -170,18 +119,129 @@ exports.listProducts = functions.https.onCall((data, context) => {
 });
 ```
 
-## Deploying Functions
+### Security
 
-Once your functions are ready to be deployed, the project provides a `deploy` script which will upload all of your code
-onto the Firebase infrastructure and automatically provision production ready endpoints. Within the project, run the
-`deploy` script from the `functions` directory:
+By default a callable is reachable by any client that knows its name. Callable functions automatically receive the Firebase Authentication token of the signed-in user (see [Authentication](/auth)). To allow only signed-in users, check `request.auth` and throw an `HttpsError` when it is missing:
 
-```bash
-cd functions/
-npm run deploy
+```js
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
+// functions/index.js
+const { onCall, HttpsError } = require('firebase-functions/https');
+
+exports.listProducts = onCall(request => {
+  if (!request.auth) {
+    throw new HttpsError('failed-precondition', 'The function must be called while authenticated.');
+  }
+
+  return products;
+});
 ```
 
-Once complete, your Cloud Function will also be available from a publicly accessible endpoint if required, for example:
+When the user is signed in, `request.auth.uid` holds their unique user identifier.
+
+To reject requests that do not carry a valid App Check token, set `enforceAppCheck: true` in the callable options. For replay protection, also set `consumeAppCheckToken: true` and set `limitedUseAppCheckTokens: true` on the client `httpsCallable` options (see [Enable App Check enforcement for Cloud Functions](https://firebase.google.com/docs/app-check/cloud-functions)):
+
+```js
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
+// functions/index.js
+const { onCall } = require('firebase-functions/https');
+
+exports.listProducts = onCall(
+  {
+    enforceAppCheck: true, // Reject requests with missing or invalid App Check tokens.
+    consumeAppCheckToken: true, // Consume the token after verification (replay protection).
+  },
+  request => {
+    return products;
+  },
+);
+```
+
+### Errors
+
+To give the client useful error details, throw an `HttpsError` from the callable. It takes a `code` (one of the standard Cloud Functions error codes, in lowercase hyphenated form such as `invalid-argument`), a `message`, and optional `details`. The client rejects with an `HttpsError` carrying the same `code`, `message`, and `details`. Any other error thrown by your function reaches the client with the code `internal`:
+
+```js
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
+// functions/index.js
+const { onCall, HttpsError } = require('firebase-functions/https');
+
+exports.addMessage = onCall(request => {
+  const text = request.data.text;
+  if (typeof text !== 'string' || text.length === 0) {
+    throw new HttpsError(
+      'invalid-argument',
+      'The function must be called with one argument "text" containing the message text to add.',
+    );
+  }
+
+  return { text };
+});
+```
+
+### Streaming results
+
+A callable can stream results to clients that call it with `.stream()`. Check `request.acceptsStreaming`, and call `response.sendChunk()` for each piece of data. The handler's return value is the final payload that the client receives through `data`. When the client does not request streaming, `response.sendChunk()` does nothing and the client receives the full return value:
+
+```js
+// codeblock-ignore: Node.js server sample for firebase-functions, not part of the React Native app
+// functions/index.js
+const { onCall, HttpsError } = require('firebase-functions/https');
+
+exports.getForecast = onCall(async (request, response) => {
+  if (!request.data?.locations?.length) {
+    throw new HttpsError('invalid-argument', 'Missing locations to forecast');
+  }
+
+  const allRequests = request.data.locations.map(async ({ latitude, longitude }) => {
+    const forecast = await weatherForecastApi(latitude, longitude);
+    const result = { latitude, longitude, forecast };
+
+    // Clients that support streaming receive each forecast as it completes.
+    if (request.acceptsStreaming) {
+      response.sendChunk(result);
+    }
+    return result;
+  });
+
+  // The full set of data is returned to all clients.
+  return Promise.all(allRequests);
+});
+```
+
+`weatherForecastApi` stands for your own data source. The client side of this callable is shown in [Streaming results](/functions/usage#streaming-results).
+
+### Testing your function
+
+Before deploying, run the Local Emulator Suite from your project directory:
+
+```bash
+firebase emulators:start --only functions
+```
+
+The command output includes the emulator URL for each function. It has the form `http://localhost:5001/PROJECT_ID/us-central1/listProducts`, where the Functions emulator listens on port `5001` by default and your project ID and function region replace the other parts. You can call a callable endpoint with the callable protocol: send a `POST` request with a JSON body that wraps the payload in a `data` field:
+
+```bash
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d '{"data":{}}' http://localhost:5001/PROJECT_ID/us-central1/listProducts
+```
+
+To call the emulator from your app, use `connectFunctionsEmulator` (see [Emulator](/functions/usage#emulator)).
+
+## Deploying Functions
+
+When your functions are ready, deploy them from the project directory:
+
+```bash
+firebase deploy --only functions
+```
+
+To deploy a single callable, name it with `--only`:
+
+```bash
+firebase deploy --only functions:listProducts
+```
+
+Once deployed, the callable is available to the client SDK by name. Deployed HTTPS endpoints also have a public URL, for example:
 
 ```
 https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/listProducts
@@ -189,16 +249,16 @@ https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/listProducts
 
 ### Calling your function
 
-Once your function has been deployed you can now call it through the React Native Firebase Functions SDK in your application:
+Once the function is deployed, call it from your app with the React Native Firebase Functions SDK:
 
 ```js
 import { getFunctions, httpsCallable } from '@react-native-firebase/functions';
 
-const { data } = await httpsCallable(
-  getFunctions(),
-  'listProducts',
-)({
-  page: 1,
-  limit: 15,
-});
+async function loadProducts() {
+  const listProducts = httpsCallable(getFunctions(), 'listProducts');
+  const { data } = await listProducts({ page: 1, limit: 15 });
+  console.log('Products page:', data);
+}
 ```
+
+If the function is deployed to a region other than `us-central1`, pass that region to `getFunctions` (see [Region-specific Functions](/functions/usage#region-specific-functions)).

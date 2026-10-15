@@ -1,9 +1,15 @@
 ---
 title: ML
-description: Installation and getting started with ML.
+description: 'Legacy Firebase ML module shell: getML and SDK_VERSION only. Cloud Vision and custom-model APIs are gone; prefer Google ML Kit, Cloud Vision, or @react-native-firebase/ai for new work.'
 next: /remote-config/usage
 previous: /installations/usage
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- Install ML: `npm install --save @react-native-firebase/ml` or `yarn add @react-native-firebase/ml`, then rebuild native apps (`cd ios && pod install` on iOS).
+- Treat this package as a **legacy shell**. Firebase ML is deprecated upstream and scheduled to shut down on **15 June 2027**. Projects that never used Firebase ML cannot start using it. React Native Firebase no longer exposes Cloud Vision helpers or custom-model download APIs from this module.
 
 # Installation
 
@@ -21,38 +27,86 @@ yarn add @react-native-firebase/ml
 cd ios/ && pod install
 ```
 
-> **This package is mostly discontinued** since these APIs are no longer available in the latest Firebase SDKs.
-> To call the Cloud Vision API from your app the recommended approach is using Firebase
-> Authentication and Functions, which gives you a managed, serverless gateway to Google Cloud Vision APIs. For an example
-> Functions project see the [vision-annotate-images](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images) sample project.
+> **This package is mostly discontinued.** Upstream Firebase ML Cloud Vision and custom-model hosting APIs are deprecated. To host TensorFlow Lite models, Firebase recommends Cloud Storage (see [Migrate TensorFlow Lite models from Firebase ML to Cloud Storage](https://firebase.google.com/docs/ml/migrate-to-cloud-storage?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=ml)). For on-device models use [Google ML Kit](https://developers.google.com/ml-kit) (for example via [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit)). For generative image understanding use [`@react-native-firebase/ai`](/ai/usage). For Cloud Vision REST from your backend, prefer Firebase Authentication plus Cloud Functions (see the [vision-annotate-images](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images) sample). Do **not** use the deprecated `@react-native-firebase/vertexai` package; that package only points at `@react-native-firebase/ai`.
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/ml/usage/installation/ios) and [Android](/ml/usage/installation/android).
+The manual installation pages for [iOS](/ml/usage/installation/ios) and [Android](/ml/usage/installation/android) are legacy and only apply to React Native 0.59 and earlier. For a supported setup, use the autolinking steps above and [Getting Started](/).
 
 # Platform support and New Architecture
 
-|                      |                                                                                                |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| **Platforms**        | Android, iOS (native Firebase SDK)                                                             |
+{/* prettier-ignore */}
+| | |
+| --- | --- |
+| **Platforms** | Android, iOS (native TurboModule shell; no firebase-js-sdk modular API) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-> **React Native only:** There is no firebase-js-sdk web equivalent for the legacy Firebase ML custom-model API.
+**Platform notes:** The firebase-js-sdk does not ship a modular public API for this product (`firebase/ml` does not exist). Every export below is React Native Firebase only. There is no ML emulator and no `connect*Emulator` helper for this package.
+
+React Native Firebase exports runtime `getML` and `SDK_VERSION`, plus the TypeScript types `FirebaseApp` and `FirebaseML`. Each runtime export is explained in the section that uses it. The type-only exports are for typing only and are not demonstrated on the Expo screen.
+
+## Official Firebase docs and what this page leaves out
+
+Related official pages:
+
+- [Firebase ML overview](https://firebase.google.com/docs/ml?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=ml) (deprecated product status and migration pointers)
+- [Use a custom TensorFlow Lite model on Android](https://firebase.google.com/docs/ml/android/use-custom-models?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=ml)
+- [Use a custom TensorFlow Lite model on Apple platforms](https://firebase.google.com/docs/ml/ios/use-custom-models?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=ml)
+- The standalone [ML Kit](https://developers.google.com/ml-kit) documentation for on-device models
+
+Left out of this page (each with a reason):
+
+- **Custom model deploy, the model download classes (`FirebaseModelDownloader` on Android, `ModelDownloader` on Apple platforms) and the TensorFlow Lite interpreter** (Android and Apple guides): native Firebase ML model download APIs. React Native Firebase does not export download or interpreter helpers from `@react-native-firebase/ml`. Firebase recommends moving hosted TensorFlow Lite models to Cloud Storage, and the [migration guide](https://firebase.google.com/docs/ml/migrate-to-cloud-storage?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=ml) says the hosting service shuts down on June 15, 2027.
+- **Cloud Vision text recognition, image labeling, landmark recognition**: not exported by this package's modular surface. Firebase recommends either [`@react-native-firebase/ai`](/ai/usage) to analyze images or modifying your apps to access the Cloud Vision API endpoints directly.
+- **Automated custom image labeling (Vision Edge)**: never supported by this React Native Firebase module.
+- **Remote Config / A/B Testing model serving** workflows on the Firebase ML hosting path: console and native SDK workflows with no modular RN entry point here.
+- **Migration to Cloud Storage for model hosting** and **direct Cloud Vision API** ops guides: project migration and backend topics, not client modular APIs on this package.
+- **Standalone Google ML Kit** API catalogs (barcode, face, pose, translation, and so on): a different product. Use ML Kit native SDKs or community React Native wrappers, not `@react-native-firebase/ml`.
+- **Firebase AI Logic / Gemini image analysis**: use [`@react-native-firebase/ai`](/ai/usage). Do not document Vertex AI under this package.
 
 # What does it do
 
-All Firebase ML services are cloud-based, with on-device APIs handled by the new, separate [Google MLKit](https://developers.google.com/ml-kit/) (Usable in react-native
-as a set of [react-native-mlkit modules](https://www.npmjs.com/org/react-native-mlkit))
+Historically, Firebase ML wrapped Cloud Vision and custom TensorFlow Lite model hosting for mobile apps. Upstream Firebase ML is deprecated. In React Native Firebase this package remains as a TurboModule **shell** so existing installs keep a stable modular entry point:
 
-Firebase has introduced a custom model downloading API, but the module does not have support for it yet. PRs always welcome!
+- `getML(app?)` returns a `FirebaseML` service instance for the default or given app (exposes `app` only)
+- `SDK_VERSION` reports the React Native Firebase ML package version string
 
-## Support table
+There is no public Cloud Vision or custom-model API on this module. The namespaced `firebase.ml()` API was removed in v26; see [Migrating to v26](/migrating-to-v26#machine-learning-ml).
 
-The table below outlines the current module support for each available service, and their support status here
-
-| API                      | Status |
-| ------------------------ | ------ |
-| Custom Model Downloading | ❌     |
+{/* prettier-ignore */}
+| API | Status in `@react-native-firebase/ml` |
+| --- | --- |
+| `getML` / `SDK_VERSION` | Available (service handle + package version) |
+| Custom model downloading | Not implemented |
+| Cloud Vision (text / labels / landmarks) | Removed / not exported |
 
 # Usage
 
-Current no public APIs
+## Package version
+
+`SDK_VERSION` is the React Native Firebase ML package version string exported from `@react-native-firebase/ml`. The firebase-js-sdk does not export `SDK_VERSION` from a `firebase/ml` entry point (that modular product does not exist).
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/ml';
+
+console.log('ML package version:', SDK_VERSION);
+```
+
+## Get an ML instance
+
+`getML(app?)` returns the `FirebaseML` instance for the default app, or for the `FirebaseApp` you pass. The public instance exposes `app` only. There are no vision or model-download methods on this handle.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getML } from '@react-native-firebase/ml';
+
+function readMlInstance() {
+  const ml = getML();
+  const sameDefaultApp = getML(getApp());
+  console.log('Default app name:', ml.app.name);
+  console.log('Same instance for default app:', sameDefaultApp === ml);
+  return ml;
+}
+```
+
+## Types only (not runtime)
+
+`FirebaseApp` and `FirebaseML` are TypeScript types re-exported from `@react-native-firebase/ml` for annotating the values returned by `getApp` / `getML`. They have no runtime value. Keep them out of the Expo example screen; import them with `import type` only when you need annotations in TypeScript source.

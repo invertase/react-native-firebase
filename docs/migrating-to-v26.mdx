@@ -1,6 +1,6 @@
 ---
 title: Migrating to v26
-description: Migrate to React Native Firebase v26 — namespaced API removal.
+description: 'Migrate to v26: namespaced API removal from App, ML, In-App Messaging, Installations, Cloud Messaging, App Distribution and Cloud Functions, plus the New Architecture requirement and iOS APNs ARM64 Simulator Promise-rejection changes.'
 previous: /migrating-to-v25
 next: /migrating-to-v27
 ---
@@ -199,6 +199,7 @@ The namespaced API for `@react-native-firebase/app` has been **removed**. This p
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 
@@ -208,6 +209,7 @@ firebase.utils().FilePath.DOCUMENT_DIRECTORY;
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getApp, initializeApp, getUtils, FilePath } from '@react-native-firebase/app';
 
@@ -223,6 +225,7 @@ FilePath.DOCUMENT_DIRECTORY;
 On Android, `makePlayServicesAvailable()` now rejects when the Play Services availability task is canceled or fails. Previously, the call always resolved even when the update flow was not completed. Update callers to handle rejection:
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 import { getUtils } from '@react-native-firebase/app';
 
 try {
@@ -247,6 +250,7 @@ The namespaced API for `@react-native-firebase/ml` has been **removed**. This pa
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import ml from '@react-native-firebase/ml';
@@ -282,6 +286,7 @@ There is no `firebase/in-app-messaging` entry in the firebase-js-sdk modular sur
 ## Example: suppressing messages during setup
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import inAppMessaging from '@react-native-firebase/in-app-messaging';
@@ -329,6 +334,7 @@ Modular `getInstallations()` returns a firebase-js-sdk-shaped `Installations` ob
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import installations from '@react-native-firebase/installations';
@@ -339,6 +345,7 @@ const id = await installations().getId();
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getInstallations, getId } from '@react-native-firebase/installations';
 
@@ -368,6 +375,7 @@ Modular `getMessaging()` returns a firebase-js-sdk-shaped `Messaging` object. Pr
 ## Example: foreground messages
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import messaging from '@react-native-firebase/messaging';
@@ -393,6 +401,7 @@ onMessage(getMessaging(), message => {
 ## Example: delivery metrics to BigQuery
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
 ```
@@ -473,6 +482,7 @@ The namespaced API for `@react-native-firebase/app-distribution` has been **remo
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import appDistribution from '@react-native-firebase/app-distribution';
@@ -505,6 +515,7 @@ The namespaced API for `@react-native-firebase/functions` has been **removed**. 
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import functions from '@react-native-firebase/functions';
@@ -580,6 +591,7 @@ Analytics supports only the **default Firebase app** (same as before). Calling `
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
@@ -627,6 +639,7 @@ Modular `getRemoteConfig()` returns a firebase-js-sdk-shaped `RemoteConfig` obje
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import remoteConfig from '@react-native-firebase/remote-config';
@@ -636,6 +649,7 @@ const value = firebase.remoteConfig().getValue('key').asString();
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getRemoteConfig, fetchAndActivate, getValue } from '@react-native-firebase/remote-config';
 
@@ -720,6 +734,7 @@ The namespaced API for `@react-native-firebase/auth` has been **removed**. This 
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
@@ -767,6 +782,7 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
