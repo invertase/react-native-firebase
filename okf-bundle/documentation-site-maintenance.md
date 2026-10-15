@@ -74,9 +74,11 @@ Removed packages (e.g. Dynamic Links) have no TypeDoc module — fall back to `m
 
 <a id="docs-page-link-check-ci"></a>
 
-`yarn lint:docs-links` runs `@docs.page/cli` `check` (pinned in root `package.json`, **≥ 2.1.0** for bot-gate-as-warn) and is a step in `.github/workflows/docs.yml`. The yarn script is `docs check .` — CLI defaults, no severity overrides. Fresh CLI publishes younger than the repo `npmMinimalAgeGate` (7d) must be listed in `.yarnrc.yml` `npmPreapprovedPackages`.
+`yarn lint:docs-links` runs `@docs.page/cli` `check` (pinned in root `package.json`, **≥ 2.2.0** for per-host severity overrides) and is a step in `.github/workflows/docs.yml`. The yarn script is `docs check .` — CLI defaults plus the `docs.json` `check` block; no severity flags on the command line. Fresh CLI publishes younger than the repo `npmMinimalAgeGate` (7d) must be listed in `.yarnrc.yml` `npmPreapprovedPackages`.
 
-External checks stay **error** for real breakage (**404**, **5xx**, DNS, timeout). Bot-gated HTTP statuses (**401 / 403 / 405 / 429**) are reported as **warnings** so CI stays green while still surfacing hosts that refuse automated clients (npmjs, Stack Overflow, and similar). Do **not** add `--external-links warn` or `--ignore-external-hosts` here — that would hide TypeDoc rot on `reference.rnfirebase.io`. Optional per-host skips exist in the CLI/`docs.json` for other projects that need them; RNFB does not use them.
+External checks stay **error** for real breakage (**404**, **5xx**, DNS, timeout). Bot-gated HTTP statuses (**401 / 403 / 405 / 429**) are reported as **warnings** so CI stays green while still surfacing hosts that refuse automated clients (npmjs, Stack Overflow, and similar). Do **not** add `--external-links warn` or `--ignore-external-hosts` here — that would hide TypeDoc rot on `reference.rnfirebase.io`.
+
+`docs.json` `check.severityOverrideHosts` pins `rnfirebase.io` to **error**. Matching includes subdomains, so `reference.rnfirebase.io` is covered, and the override applies to every failure — bot-gate statuses included — so a rate-limited or broken TypeDoc link cannot downgrade to a warning. Do not add `warn` overrides for first-party hosts; add an `error` entry when another first-party host must never downgrade.
 
 **Agents** ([validation checklist § docs.page link check](testing/validation-checklist.md#docs-page-link-check)): fix every **error**; the **only** acceptable non-fix is an **external** **warn** from bot/WAF gate statuses — do not rewrite those links or relax other check severities.
 
