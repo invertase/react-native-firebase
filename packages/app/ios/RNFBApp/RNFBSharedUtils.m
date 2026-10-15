@@ -19,6 +19,7 @@
 #import "RNFBAppModule.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
+#import "RNFBNullSentinelDecoder.h"
 #import "RNFBPreferences.h"
 #import "RNFBRCTEventEmitter.h"
 
