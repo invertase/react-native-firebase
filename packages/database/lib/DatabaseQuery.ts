@@ -49,6 +49,17 @@ const eventTypes = [
 /** `.info/*` is client-local metadata that only the listener path serves. */
 const INFO_PATH = /^\/?\.info(\/|$)/;
 
+/**
+ * True when native/web get already produced an observer-shaped `database/*` code.
+ * Android Query.get() non-denial failures use SharedUtils.getExceptionMap → `database/unknown`;
+ * those still fall through to `once('value')`. Specific codes mean once already ran (or a
+ * denial was mapped to once's code) — do not ask the server again.
+ */
+function isObserverShapedDatabaseError(error: unknown): boolean {
+  const code = (error as { code?: string } | null | undefined)?.code;
+  return typeof code === 'string' && code.startsWith('database/') && code !== 'database/unknown';
+}
+
 type DatabaseReferenceConstructor = new (
   database: DatabaseInternal,
   path: string,
@@ -327,9 +338,13 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
    * `RNFBDatabaseQueryHelper get:`.
    *
    * Callers keep `once('value')` semantics, with one exception noted below:
-   * - A permission denial passes straight through: Android maps the reply to the code and message
-   *   `once` gives, and iOS failures already are `once`'s. Any other Android or web failure retries
-   *   as `once('value')`, which reports the SDK's own error code.
+   * - iOS failures pass straight through (native get already is `once`).
+   * - On Android / web, an error whose code is already a specific `database/*` value (anything
+   *   other than `database/unknown`) passes through: Android maps Query.get() permission denials
+   *   to the same code `once` gives, and when native get already used `addOnceValueEventListener`
+   *   (persistence, logging, keepSynced) its cancellations are those codes too — do not call
+   *   `once('value')` again. Only a plain Query.get() failure is rejected as `database/unknown`
+   *   (SharedUtils.getExceptionMap); that path still retries as `once('value')`.
    * - Queries (any orderBy / limit / range modifier) use `once('value')`: `get()` parity for
    *   unindexed queries is unverified.
    * - `.info/*` paths use `once('value')`: the one-shot reads go to the server tree, not the
@@ -348,10 +363,12 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
 
     return this._database.native.get(this.path, modifiers).then(
       result => new DatabaseDataSnapshot(this.ref, result),
-      error =>
-        isIOS || (error as { code?: string })?.code === 'database/permission-denied'
-          ? Promise.reject(error)
-          : this.once('value'),
+      error => {
+        if (isIOS || isObserverShapedDatabaseError(error)) {
+          return Promise.reject(error);
+        }
+        return this.once('value');
+      },
     );
   }
 
