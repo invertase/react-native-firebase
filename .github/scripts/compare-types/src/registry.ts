@@ -26,7 +26,6 @@ import analyticsConfig from '../configs/analytics';
 import crashlyticsConfig from '../configs/crashlytics';
 import inAppMessagingConfig from '../configs/in-app-messaging';
 import appDistributionConfig from '../configs/app-distribution';
-import mlConfig from '../configs/ml';
 import functionsConfig from '../configs/functions';
 import messagingConfig from '../configs/messaging';
 import phoneNumberVerificationConfig from '../configs/phone-number-verification';
@@ -372,15 +371,6 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('app-distribution'), 'types', 'internal.d.ts'),
     ],
     config: appDistributionConfig,
-  }),
-  rnOnlyPackage({
-    name: 'ml',
-    rnFirebaseModularFiles: [
-      path.join(rnDist('ml'), 'index.d.ts'),
-      path.join(rnDist('ml'), 'types', 'ml.d.ts'),
-    ],
-    rnFirebaseSupportFiles: [path.join(rnDist('ml'), 'types', 'internal.d.ts')],
-    config: mlConfig,
   }),
   {
     name: 'functions',

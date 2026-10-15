@@ -70,7 +70,6 @@ import '@react-native-firebase/firestore/pipelines';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
-import '@react-native-firebase/ml';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import * as modular from '@react-native-firebase/app';
@@ -89,7 +88,6 @@ import * as databaseModular from '@react-native-firebase/database';
 import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging';
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
-import * as mlModular from '@react-native-firebase/ml';
 import * as pnvModular from '@react-native-firebase/phone-number-verification';
 
 import { Platform } from 'react-native';
@@ -491,12 +489,6 @@ Object.defineProperty(global, 'firestoreModular', {
 Object.defineProperty(global, 'firestorePipelinesModular', {
   get() {
     return firestorePipelinesModular;
-  },
-});
-
-Object.defineProperty(global, 'mlModular', {
-  get() {
-    return mlModular;
   },
 });
 

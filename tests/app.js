@@ -68,7 +68,6 @@ if (!Platform.other) {
   platformSupportedModules.push('installations');
   platformSupportedModules.push('appCheck');
   platformSupportedModules.push('appDistribution');
-  platformSupportedModules.push('ml');
   platformSupportedModules.push('phoneNumberVerification');
   platformSupportedModules.push('ai');
 }
@@ -223,10 +222,6 @@ function loadTests(_) {
     if (platformSupportedModules.includes('messaging')) {
       const messagingTests = require.context('../packages/messaging/e2e', true, /\.e2e\.js$/);
       messagingTests.keys().forEach(messagingTests);
-    }
-    if (platformSupportedModules.includes('ml')) {
-      const mlTests = require.context('../packages/ml/e2e', true, /\.e2e\.js$/);
-      mlTests.keys().forEach(mlTests);
     }
     if (platformSupportedModules.includes('inAppMessaging')) {
       const inAppMessagingTests = require.context(

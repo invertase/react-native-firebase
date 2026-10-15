@@ -1,6 +1,6 @@
 ---
 title: Migrating to v27
-description: Migrate to React Native Firebase v27 - Firebase JS SDK 12.18.0, messaging corrections, Imagen API removal, and App iOS behavior/header changes.
+description: Migrate to React Native Firebase v27 — Firebase JS SDK 12.18.0, messaging corrections, Imagen API removal, App iOS behavior/header changes, and ML package removal.
 previous: /migrating-to-v26
 next: /typescript
 ---
@@ -11,6 +11,7 @@ Version 27 bundles several **breaking behavior corrections** and dependency bump
 - **Cloud Messaging** — four documented runtime contracts are enforced after previous accidental shapes ([#9246](https://github.com/invertase/react-native-firebase/pull/9246), [#9247](https://github.com/invertase/react-native-firebase/pull/9247), [#9252](https://github.com/invertase/react-native-firebase/pull/9252), [#9254](https://github.com/invertase/react-native-firebase/pull/9254)).
 - **Imagen API removed** from `@react-native-firebase/ai` after Google shut down the Imagen models as a service on **2026-08-17**. Generate images with a Gemini image model through `getGenerativeModel()` instead.
 - **App (iOS)** — `initializeApp` reads `automaticDataCollectionEnabled` as a real boolean, and public App headers no longer re-export FirebaseCore / Photos ([#9337](https://github.com/invertase/react-native-firebase/pull/9337)).
+- **ML package removed** — `@react-native-firebase/ml` is discontinued and no longer published with v27.
 
 If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating-to-v26) first — the namespaced API removal and New Architecture requirement still apply.
 
@@ -28,6 +29,7 @@ If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating
 - [App (iOS)](/migrating-to-v27#app-ios)
   - [`automaticDataCollectionEnabled` is a boolean](/migrating-to-v27#automaticdatacollectionenabled-is-a-boolean)
   - [Public headers no longer import FirebaseCore / Photos](/migrating-to-v27#public-headers-no-longer-import-firebasecore--photos)
+- [Removed ML package](/migrating-to-v27#removed-ml-package)
 - [Automated migration checklist](/migrating-to-v27#automated-migration-checklist)
 
 ## Agent-assisted migration
@@ -278,6 +280,17 @@ These public App headers **no longer** import FirebaseCore or Photos. Forward de
 #import <Photos/Photos.h>
 ```
 
+# Removed ML package
+
+`@react-native-firebase/ml` is **removed** in v27. The package had already been mostly discontinued: Firebase no longer ships the legacy ML APIs this module wrapped, and the React Native Firebase surface exposed no public APIs.
+
+### Migration actions
+
+1. Remove `@react-native-firebase/ml` from your dependencies (`yarn remove @react-native-firebase/ml` or equivalent).
+2. Delete any imports of `@react-native-firebase/ml` (for example `getML`) — they no longer resolve.
+3. For on-device ML Kit features, use [Google ML Kit](https://developers.google.com/ml-kit/) via the community [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit) modules.
+4. To call Cloud Vision from your app, prefer Firebase Authentication and Cloud Functions as a managed gateway. See the [vision-annotate-images](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images) Functions sample.
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades from v26 → v27.
@@ -296,16 +309,17 @@ Confirm the lockfiles resolve **firebase** / firebase-js-sdk **12.18.0+**.
 
 For each area you use, search the listed symbols and apply the replacements:
 
-| Area                      | Search for                                                                             | Replace with / action                                                                         |
-| ------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Functions (web/macOS)     | `e.message ===`, `error.message ===` on callable failures                              | Tolerate trailing ` [<digits>]`; optionally read `customData.url` on `Platform.other` only    |
-| Messaging sound           | `notification.sound` (string APNs sound)                                               | `notification.ios.sound`                                                                      |
-| Messaging `sentTime`      | string/`parseInt`/`* 1000` on `sentTime` (iOS)                                         | Use numeric epoch-ms directly                                                                 |
-| Messaging badge           | numeric use of `notification.ios.badge`                                                | Parse string (`Number(...)`) when a number is required                                        |
-| Messaging `onMessageSent` | `({ messageId })` / `.messageId` in the listener                                       | Use the string argument directly                                                              |
-| AI Imagen                 | `getImagenModel`, `getTemplateImagenModel`, `ImagenModel`, `Imagen*`, `generateImages` | `getGenerativeModel` / `getTemplateGenerativeModel` with `responseModalities` + `imageConfig` |
-| App iOS data collection   | `automaticDataCollectionEnabled` in `initializeApp` options                            | Use an explicit boolean; `false` / `0` / `null` / absent now disable collection               |
-| App iOS native headers    | compile errors for `FIRApp` / `FIROptions` / `PHAsset` after including RNFB headers    | `#import <FirebaseCore/FirebaseCore.h>` and/or `#import <Photos/Photos.h>` at the call site   |
+| Area                      | Search for                                                                             | Replace with / action                                                                                                                                                                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions (web/macOS)     | `e.message ===`, `error.message ===` on callable failures                              | Tolerate trailing ` [<digits>]`; optionally read `customData.url` on `Platform.other` only                                                                                                                                                                 |
+| Messaging sound           | `notification.sound` (string APNs sound)                                               | `notification.ios.sound`                                                                                                                                                                                                                                   |
+| Messaging `sentTime`      | string/`parseInt`/`* 1000` on `sentTime` (iOS)                                         | Use numeric epoch-ms directly                                                                                                                                                                                                                              |
+| Messaging badge           | numeric use of `notification.ios.badge`                                                | Parse string (`Number(...)`) when a number is required                                                                                                                                                                                                     |
+| Messaging `onMessageSent` | `({ messageId })` / `.messageId` in the listener                                       | Use the string argument directly                                                                                                                                                                                                                           |
+| AI Imagen                 | `getImagenModel`, `getTemplateImagenModel`, `ImagenModel`, `Imagen*`, `generateImages` | `getGenerativeModel` / `getTemplateGenerativeModel` with `responseModalities` + `imageConfig`                                                                                                                                                              |
+| App iOS data collection   | `automaticDataCollectionEnabled` in `initializeApp` options                            | Use an explicit boolean; `false` / `0` / `null` / absent now disable collection                                                                                                                                                                            |
+| App iOS native headers    | compile errors for `FIRApp` / `FIROptions` / `PHAsset` after including RNFB headers    | `#import <FirebaseCore/FirebaseCore.h>` and/or `#import <Photos/Photos.h>` at the call site                                                                                                                                                                |
+| ML package                | `@react-native-firebase/ml`, `getML`                                                   | Remove the dependency; use [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit) or Cloud Vision via Functions ([sample](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images)) |
 
 ## 3. Validate
 
