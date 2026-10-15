@@ -89,7 +89,8 @@ public class ReactNativeFirebaseMessagingSerializerTest {
     WritableMap errorMap = mock(WritableMap.class);
     Exception sendError = new Exception("send failed");
     try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
-      // SharedUtils.getExceptionMap also calls Arguments.createMap() — second stub is the error map.
+      // SharedUtils.getExceptionMap also calls Arguments.createMap() — second stub is the error
+      // map.
       when(Arguments.createMap()).thenReturn(body, errorMap);
 
       ReactNativeFirebaseEvent event =
@@ -399,8 +400,7 @@ public class ReactNativeFirebaseMessagingSerializerTest {
     when(notification.getVisibility()).thenReturn(null);
 
     try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
-      when(Arguments.createMap())
-          .thenReturn(messageMap, dataMap, notificationMap, androidMap);
+      when(Arguments.createMap()).thenReturn(messageMap, dataMap, notificationMap, androidMap);
 
       ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
 
