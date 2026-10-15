@@ -400,6 +400,74 @@ e2e_listener_pids 13005
   });
 });
 
+describe('e2e_sibling_metro_owns_root', function () {
+  it('e2e_cmdline_is_metro_packager accepts RN/metro and rejects qemu', function () {
+    const out = bashSnippet(`
+e2e_cmdline_is_metro_packager 'node /repo/node_modules/react-native/cli.js start' && echo RN
+e2e_cmdline_is_metro_packager 'yarn react-native start --port 12107' && echo YARN
+e2e_cmdline_is_metro_packager 'node /repo/node_modules/metro/src/cli.js' && echo METRO
+e2e_cmdline_is_metro_packager 'qemu-system-x86_64 -netdev user' && echo QEMU || echo NO_QEMU
+e2e_cmdline_is_metro_packager 'netsimd --port 5554' && echo NET || echo NO_NET
+`);
+    expect(out).toMatch(/^RN$/m);
+    expect(out).toMatch(/^YARN$/m);
+    expect(out).toMatch(/^METRO$/m);
+    expect(out).toMatch(/^NO_QEMU$/m);
+    expect(out).toMatch(/^NO_NET$/m);
+  });
+
+  it('returns true for sibling node metro cwd match (LISTEN not required)', function () {
+    const out = bashSnippet(`
+e2e_listener_pids() { echo 100; }
+e2e_metro_packager_candidate_pids() { echo 100; echo 200; }
+e2e_process_cmdline() {
+  case "$1" in
+    100) echo 'node /x/react-native/cli.js start --port 8081' ;;
+    200) echo 'node /x/react-native/cli.js start --port 12107' ;;
+  esac
+}
+e2e_process_cwd() {
+  case "$1" in
+    100|200) echo /repo/tests ;;
+  esac
+}
+e2e_sibling_metro_owns_root /repo/tests 8081 && echo SIBLING || echo ALONE
+`);
+    expect(out.trim()).toBe('SIBLING');
+  });
+
+  it('excludes our_port listeners even when cwd and cmdline match', function () {
+    const out = bashSnippet(`
+e2e_listener_pids() { echo 100; }
+e2e_metro_packager_candidate_pids() { echo 100; }
+e2e_process_cmdline() { echo 'node /x/react-native/cli.js start'; }
+e2e_process_cwd() { echo /repo/tests; }
+e2e_sibling_metro_owns_root /repo/tests 8081 && echo SIBLING || echo ALONE
+`);
+    expect(out.trim()).toBe('ALONE');
+  });
+
+  it('rejects qemu-like LISTEN cwd match without metro cmdline', function () {
+    const out = bashSnippet(`
+e2e_listener_pids() { true; }
+e2e_metro_packager_candidate_pids() { echo 999; }
+e2e_process_cmdline() { echo 'qemu-system-x86_64 -cwd /repo/tests'; }
+e2e_process_cwd() { echo /repo/tests; }
+e2e_sibling_metro_owns_root /repo/tests 8081 && echo SIBLING || echo ALONE
+`);
+    expect(out.trim()).toBe('ALONE');
+  });
+
+  it('returns false when alone (no candidates)', function () {
+    const out = bashSnippet(`
+e2e_listener_pids() { true; }
+e2e_metro_packager_candidate_pids() { true; }
+e2e_sibling_metro_owns_root /repo/tests 8081 && echo SIBLING || echo ALONE
+`);
+    expect(out.trim()).toBe('ALONE');
+  });
+});
+
 describe('e2e_abort_if_emulator_suite_ports_busy', function () {
   it('exits 1 and names the busy hub when a mock listener is bound', function () {
     let err = '';
