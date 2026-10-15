@@ -120,12 +120,14 @@ Future improvement (Proposed): emit `.d.ts` with `.js` extension suffixes in rel
 
 <a id="types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted"></a>
 
-## Types-AD-5 — Pack ignores nested iOS unit-test build trees — **Accepted**
+## Types-AD-5 — attw packs an allowlisted stage — **Accepted**
 
-`yarn attw:check` packs each published package (`yarn pack`). A package `.npmignore` line of **`ios/build` does not** ignore `ios/RNFB*UnitTests/build/` (in-package XCTest derived data, including xcresult trees). Those trees are volatile and must not be walked by pack/attw.
+`yarn attw:check` must not pack from the live package tree. Yarn still **walks** ignored directories during pack (known), so `.npmignore` alone does not keep nested XCTest `ios/**/build` trees (volatile derived data) out of the pack walk when those trees exist beside published sources.
 
-**Required ignore:** `ios/**/build` on package `.npmignore` files (in addition to `ios/build`).
+**Required for attw / Expo plugin smoke:** stage a temp directory containing **only if present** these roots — `package.json`, `dist/`, `lib/`, `app.plugin.js`, `plugin/build/` — then `yarn pack` with `cwd` set to that stage (include-not-exclude). Shared helper for both attw and Expo smoke packs.
 
-**Not** the required fix: adding a `package.json` `files` allowlist.
+**Still required for real publish packs:** package `.npmignore` includes `ios/**/build` (in addition to `ios/build`). That remains the publish-path exclude; it is not a substitute for attw staging.
 
-`yarn attw:check` **may stay parallel** with `yarn tests:ios:unit` in `scripts/run-full-tests.sh`. The ignore pattern is what keeps pack safe; do not treat serializing those steps as the contract.
+**Not** the required attw fix: `package.json` `files` allowlists on every package, or serializing attw vs `yarn tests:ios:unit`.
+
+`yarn attw:check` **may stay parallel** with `yarn tests:ios:unit` in `scripts/run-full-tests.sh`. Allowlist staging is what keeps pack safe under concurrency; do not treat serializing those steps as the contract.

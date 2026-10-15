@@ -38,7 +38,7 @@ yarn lerna:prepare                    # after packages/*/lib/** edits — transp
 yarn tsc:compile
 yarn tsc:compile:consumer
 yarn tsc:compile:test-expo         # when test-expo/** TS in the diff — [agent command policy](agent-command-policy.md); never `cd test-expo && tsc`
-yarn attw:check                    # scoped attw + Expo plugin smoke; pack ignore — [Types-AD](architecture-decisions.md)
+yarn attw:check                    # scoped attw + Expo plugin smoke; allowlisted pack stage — [Types-AD](architecture-decisions.md)
 ```
 
 `yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**`→`dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
