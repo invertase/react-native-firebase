@@ -29,10 +29,12 @@ static NSString *const UIApplicationLaunchOptionsRemoteNotificationKey =
 @interface UIApplication : NSObject
 + (UIApplication *)sharedApplication;
 @property(nonatomic, weak) id<UIApplicationDelegate> delegate;
-@property(nonatomic, readonly) UIApplicationState applicationState;
-@property(nonatomic, readonly, getter=isRegisteredForRemoteNotifications)
+@property(nonatomic, assign) UIApplicationState applicationState;
+@property(nonatomic, assign, getter=isRegisteredForRemoteNotifications)
     BOOL registeredForRemoteNotifications;
+@property(nonatomic, assign) NSUInteger unregisterForRemoteNotificationsCallCountForTesting;
 - (void)registerForRemoteNotifications;
 - (void)unregisterForRemoteNotifications;
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)identifier;
+- (void)resetForTesting;
 @end
