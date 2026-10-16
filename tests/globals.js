@@ -94,7 +94,7 @@ import * as pnvModular from '@react-native-firebase/phone-number-verification';
 
 import { Platform } from 'react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
-import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import { getReactNativeModule } from '@react-native-firebase/app/lib/internal';
 import { getE2eTestProject } from '@react-native-firebase/app/e2e/helpers';
 
 global.should = shouldMatchers;
