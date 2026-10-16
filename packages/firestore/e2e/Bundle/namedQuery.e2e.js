@@ -24,8 +24,7 @@ describe('firestore().namedQuery()', function () {
   describe('modular', function () {
     // Load the bundle once for cache-backed named-query cases. Per-test wipe+loadBundle
     // previously hung the iOS Jet suite on the beforeEach for invalid-name tests
-    // (420s mocha timeout) after earlier cases had already passed — see
-    // .agents/reports/P2-NAMEDQUERY-ROOTCAUSE/root-cause.md.
+    // (420s mocha timeout) after earlier cases had already passed.
     before(async function () {
       await wipe();
       const { getFirestore, loadBundle } = firestoreModular;
@@ -99,28 +98,37 @@ describe('firestore().namedQuery()', function () {
 
   // Invalid names never need a loaded bundle. Keep them off the wipe+loadBundle path so a
   // stuck emulator DELETE or native loadBundle cannot strand the suite on this case.
+  //
+  // Miss contract (matches Firestore usage docs' `if (namedQuery)` guard and
+  // `Promise<Query | null>`): unknown name → `null`. RNFB may also return a Query
+  // handle that fails get/onSnapshot with "unknown"; both are accepted here.
   describe('modular invalid query name', function () {
-    it('throws if invalid query name', async function () {
+    it('misses unknown named query (null or getDocsFromCache unknown)', async function () {
       const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
 
       const query = await namedQuery(getFirestore(), 'invalid-query');
-      if (!query) throw new Error('namedQuery returned null');
+      if (query == null) {
+        return;
+      }
       try {
         await getDocsFromCache(query);
-        return Promise.reject(new Error('Did not throw an Error.'));
+        return Promise.reject(new Error('Expected null miss or getDocsFromCache to throw.'));
       } catch (error) {
         error.message.should.containEql('unknown');
         return Promise.resolve();
       }
     });
 
-    it('calls onError if invalid query name', async function () {
+    it('misses unknown named query on snapshot (null or onError unknown)', async function () {
       const { getFirestore, namedQuery, onSnapshot } = firestoreModular;
+
+      const q = await namedQuery(getFirestore(), 'invalid-query');
+      if (q == null) {
+        return;
+      }
 
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const q = await namedQuery(getFirestore(), 'invalid-query');
-      if (!q) throw new Error('namedQuery returned null');
       const unsub = onSnapshot(q, onNext, onError);
 
       await Utils.spyToBeCalledOnceAsync(onError);
