@@ -21,13 +21,17 @@ describe('firestore().namedQuery()', function () {
     return;
   }
 
-  beforeEach(async function () {
-    await wipe();
-    const { getFirestore, loadBundle } = firestoreModular;
-    return await loadBundle(getFirestore(), getBundle());
-  });
-
   describe('modular', function () {
+    // Load the bundle once for cache-backed named-query cases. Per-test wipe+loadBundle
+    // previously hung the iOS Jet suite on the beforeEach for invalid-name tests
+    // (420s mocha timeout) after earlier cases had already passed — see
+    // .agents/reports/P2-NAMEDQUERY-ROOTCAUSE/root-cause.md.
+    before(async function () {
+      await wipe();
+      const { getFirestore, loadBundle } = firestoreModular;
+      await loadBundle(getFirestore(), getBundle());
+    });
+
     it('returns bundled QuerySnapshot', async function () {
       const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
 
@@ -91,7 +95,11 @@ describe('firestore().namedQuery()', function () {
       // onNext.args[0][0].docs[0].data().number.should.eql(4);
       unsub();
     });
+  });
 
+  // Invalid names never need a loaded bundle. Keep them off the wipe+loadBundle path so a
+  // stuck emulator DELETE or native loadBundle cannot strand the suite on this case.
+  describe('modular invalid query name', function () {
     it('throws if invalid query name', async function () {
       const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
 
