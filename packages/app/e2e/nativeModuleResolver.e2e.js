@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal';
 
 describe('getReactNativeModule resolver', function () {
   it('throws for an unknown module name', function () {
