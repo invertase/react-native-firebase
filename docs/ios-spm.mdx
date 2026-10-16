@@ -44,12 +44,26 @@ for what dynamic linkage does and does not give you.
 
 ## Google Sign-In caveat
 
-A Google Sign-In release compatible with Firebase 13 via SPM may not be
-available yet. If your app uses `@react-native-google-signin/google-signin`
-(or another Google Sign-In native dependency) alongside Firebase 13 SPM,
-package resolution can fail until GoogleSignIn-iOS ships an App Check 12 /
-Firebase 13–compatible release. Track upstream Google Sign-In releases if
-you hit SPM resolve errors involving GoogleSignIn or App Check.
+Firebase Apple SDK **13** depends on App Check **12**. GoogleSignIn and
+Firebase 13 in the same app can fail App Check resolution until GoogleSignIn
+(and any React Native wrapper that pins it) allow App Check 12. The SPM and
+CocoaPods paths are separate:
+
+- **SPM:** Tagged GoogleSignIn **10.0.0** still declares App Check
+  `from: "11.0.0"` (11.x). [google/GoogleSignIn-iOS #626](https://github.com/google/GoogleSignIn-iOS/pull/626)
+  (merged on main) widens the **SPM** App Check range to
+  `11.0.0 ..< 13.0.0`. That change is **not in a tagged release yet**. An
+  SPM resolve can succeed only after a GoogleSignIn tag that includes #626
+  (or an equivalent App Check 12-capable SPM range).
+- **CocoaPods:** The GoogleSignIn podspec on main and in **10.0.0** still
+  declares `AppCheckCore ~> 11.0`. #626 did **not** change the CocoaPods
+  dependency. CocoaPods graphs that pull GoogleSignIn alongside Firebase 13
+  stay blocked until a **podspec** bump allows App Check 12 and
+  `@react-native-google-signin/google-signin` (or your Podfile pin) picks up
+  that release.
+
+Track GoogleSignIn-iOS releases and the React Native Google Sign-In package
+for both paths. SPM progress alone does not unblock CocoaPods consumers.
 
 ## Expo projects
 

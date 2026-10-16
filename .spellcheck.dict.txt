@@ -162,6 +162,7 @@ JS
 JSDoc
 JSON
 JWT
+KSP
 lastDocument
 launchProperties
 learnt
