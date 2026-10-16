@@ -23,6 +23,10 @@
 		M10000000000000000000024 /* FIRMessagingHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000025 /* FIRMessagingHostStub.m */; };
 		M10000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */; };
 		M10000000000000000000028 /* RCTConvertHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000029 /* RCTConvertHostStub.m */; };
+		M10000000000000000000040 /* RNFBMessagingWindowSelectorGuardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000041 /* RNFBMessagingWindowSelectorGuardTests.m */; };
+		M10000000000000000000042 /* UIApplicationHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000043 /* UIApplicationHostStub.m */; };
+		M10000000000000000000044 /* GULAppDelegateSwizzlerHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000045 /* GULAppDelegateSwizzlerHostStub.m */; };
+		M10000000000000000000046 /* RNFBRCTEventEmitterHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000047 /* RNFBRCTEventEmitterHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +51,10 @@
 		M10000000000000000000025 /* FIRMessagingHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRMessagingHostStub.m; path = HostStubs/Firebase/FIRMessagingHostStub.m; sourceTree = "<group>"; };
 		M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
 		M10000000000000000000029 /* RCTConvertHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RCTConvertHostStub.m; path = HostStubs/React/RCTConvertHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000041 /* RNFBMessagingWindowSelectorGuardTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingWindowSelectorGuardTests.m; sourceTree = "<group>"; };
+		M10000000000000000000043 /* UIApplicationHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIApplicationHostStub.m; path = HostStubs/UIKit/UIApplicationHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000045 /* GULAppDelegateSwizzlerHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GULAppDelegateSwizzlerHostStub.m; path = HostStubs/GoogleUtilities/GULAppDelegateSwizzlerHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000047 /* RNFBRCTEventEmitterHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitterHostStub.m; path = HostStubs/RNFBApp/RNFBRCTEventEmitterHostStub.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,9 +104,13 @@
 				C10000000000000000000009 /* RNFBMessagingTestDoubles.mm */,
 				C10000000000000000000016 /* RNFBMessagingFIRMessagingDelegateTests.m */,
 				C10000000000000000000018 /* RNFBMessagingModuleInstallationIdTests.m */,
+				M10000000000000000000041 /* RNFBMessagingWindowSelectorGuardTests.m */,
 				M10000000000000000000025 /* FIRMessagingHostStub.m */,
 				M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
+				M10000000000000000000047 /* RNFBRCTEventEmitterHostStub.m */,
 				M10000000000000000000029 /* RCTConvertHostStub.m */,
+				M10000000000000000000043 /* UIApplicationHostStub.m */,
+				M10000000000000000000045 /* GULAppDelegateSwizzlerHostStub.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -166,13 +178,17 @@
 				M10000000000000000000010 /* UNNotificationHostStub.m in Sources */,
 				M10000000000000000000024 /* FIRMessagingHostStub.m in Sources */,
 				M10000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */,
+				M10000000000000000000046 /* RNFBRCTEventEmitterHostStub.m in Sources */,
 				M10000000000000000000028 /* RCTConvertHostStub.m in Sources */,
+				M10000000000000000000042 /* UIApplicationHostStub.m in Sources */,
+				M10000000000000000000044 /* GULAppDelegateSwizzlerHostStub.m in Sources */,
 				M1000000000000000000000C /* RNFBMessagingSerializerStorageTests.swift in Sources */,
 				M1000000000000000000000E /* RNFBMessagingSerializerFacadeTests.m in Sources */,
 				C1000000000000000000000A /* RNFBMessaging+FIRMessagingDelegate.m in Sources */,
 				C1000000000000000000000F /* RNFBMessagingFIRMessagingDelegateTests.m in Sources */,
 				C10000000000000000000017 /* RNFBMessagingModuleInstallationIdTests.m in Sources */,
 				M10000000000000000000022 /* RNFBMessagingHelperHostStubTests.m in Sources */,
+				M10000000000000000000040 /* RNFBMessagingWindowSelectorGuardTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

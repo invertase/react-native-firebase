@@ -44,7 +44,7 @@ typedef void (^FIRMessagingTopicOperationCompletion)(NSError *_Nullable error);
 - (void)subscribeToTopic:(NSString *)topic
               completion:(FIRMessagingTopicOperationCompletion)completion;
 - (void)unsubscribeFromTopic:(NSString *)topic
-              completion:(FIRMessagingTopicOperationCompletion)completion;
+                  completion:(FIRMessagingTopicOperationCompletion)completion;
 - (void)registerWithCompletion:(void (^)(NSError *_Nullable error))completion;
 - (void)unregisterWithCompletion:(void (^)(NSError *_Nullable error))completion;
 

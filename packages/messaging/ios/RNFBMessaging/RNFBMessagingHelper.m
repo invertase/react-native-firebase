@@ -201,8 +201,7 @@
   return [FIRMessaging messaging].isInstallationIdEnabled;
 }
 
-+ (void)registerWithResolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject {
++ (void)registerWithResolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [[FIRMessaging messaging] registerWithCompletion:^(NSError *_Nullable error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
@@ -212,8 +211,7 @@
   }];
 }
 
-+ (void)unregisterWithResolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject {
++ (void)unregisterWithResolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
   [[FIRMessaging messaging] unregisterWithCompletion:^(NSError *_Nullable error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
