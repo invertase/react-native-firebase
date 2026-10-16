@@ -26,12 +26,9 @@ import {
   AIModel,
   getAI,
   getGenerativeModel,
-  ChatSession,
   ChatSessionBase,
-  TemplateChatSession,
   TemplateGenerativeModel,
   GoogleAIBackend,
-  VertexAIBackend,
   AgentPlatformBackend,
   // Types that exist - imported for type checking
   Part,
@@ -125,7 +122,7 @@ describe('AI', function () {
     // Runtime value exports (constants, classes, functions)
     it('`BackendType` constant is properly exposed to end user', function () {
       expect(BackendType).toBeDefined();
-      expect(BackendType.VERTEX_AI).toBeDefined();
+      expect(BackendType.AGENT_PLATFORM).toBeDefined();
       expect(BackendType.GOOGLE_AI).toBeDefined();
     });
 
@@ -165,16 +162,8 @@ describe('AI', function () {
       expect(getGenerativeModel).toBeDefined();
     });
 
-    it('`ChatSession` class is properly exposed to end user', function () {
-      expect(ChatSession).toBeDefined();
-    });
-
     it('`ChatSessionBase` class is properly exposed to end user', function () {
       expect(ChatSessionBase).toBeDefined();
-    });
-
-    it('`TemplateChatSession` class is properly exposed to end user', function () {
-      expect(TemplateChatSession).toBeDefined();
     });
 
     it('`TemplateGenerativeModel` class is properly exposed to end user', function () {
@@ -183,10 +172,6 @@ describe('AI', function () {
 
     it('`GoogleAIBackend` class is properly exposed to end user', function () {
       expect(GoogleAIBackend).toBeDefined();
-    });
-
-    it('`VertexAIBackend` class is properly exposed to end user', function () {
-      expect(VertexAIBackend).toBeDefined();
     });
 
     it('`AgentPlatformBackend` class is properly exposed to end user', function () {
@@ -199,7 +184,7 @@ describe('AI', function () {
 
     // Type exports - test that they can be used as types
     it('`Part` type is properly exposed to end user', function () {
-      const _typeCheck: Part = { text: 'test' };
+      const _typeCheck: Part = { type: 'text', text: 'test' };
       expect(typeof _typeCheck).toBe('object');
     });
 
@@ -327,7 +312,7 @@ describe('AI', function () {
       const _typeCheck: FunctionResponse = {
         name: 'getWeather',
         response: { temperature: 72 },
-        parts: [{ text: 'Weather lookup complete.' }],
+        parts: [{ type: 'text', text: 'Weather lookup complete.' }],
       };
       expect(typeof _typeCheck).toBe('object');
     });

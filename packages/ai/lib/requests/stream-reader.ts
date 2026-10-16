@@ -21,16 +21,17 @@ import {
   GenerateContentCandidate,
   GenerateContentResponse,
   GenerateContentStreamResult,
-  Part,
   AIErrorCode,
   URLContextMetadata,
 } from '../types';
 import { AIError } from '../errors';
 import { createEnhancedContentResponse } from './response-helpers';
+import { assignPartType } from './request-helpers';
 import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
 import * as GoogleAIMapper from '../googleai-mappers';
 import { GoogleAIGenerateContentResponse } from '../types/googleai';
+import type { UnknownPart } from '../types';
 
 const responseLineRE = /^data\: (.*)(?:\n\n|\r\r|\r\n\r\n)/;
 
@@ -228,28 +229,22 @@ export function aggregateResponses(responses: GenerateContentResponse[]): Genera
               parts: [],
             };
           }
-          const newPart: Partial<Part> = {};
           for (const part of candidate.content.parts) {
-            if (part.text !== undefined) {
-              // The backend can send empty text parts. If these are sent back
-              // (e.g. in chat history), the backend will respond with an error.
-              // To prevent this, ignore empty text parts.
-              if (part.text === '') {
-                continue;
-              }
-              newPart.text = part.text;
+            const typed = assignPartType(part as UnknownPart);
+            // The backend can send empty text parts. If these are sent back
+            // (e.g. in chat history), the backend will respond with an error.
+            // To prevent this, ignore empty text parts.
+            if (typed.type === 'text' && typed.text === '') {
+              continue;
             }
-            if (part.functionCall) {
-              newPart.functionCall = part.functionCall;
-            }
-            if (Object.keys(newPart).length === 0) {
+            if (!('type' in typed) || !typed.type) {
               throw new AIError(
                 AIErrorCode.INVALID_CONTENT,
                 'Part should have at least one property, but there are none. This is likely caused ' +
                   'by a malformed response from the backend.',
               );
             }
-            aggregatedResponse.candidates[i].content.parts.push(newPart as Part);
+            aggregatedResponse.candidates[i].content.parts.push(typed);
           }
         }
       }

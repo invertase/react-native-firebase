@@ -65,6 +65,7 @@ export type {
   DocumentData,
   PartialWithFieldValue,
   UnionToIntersection,
+  ChildTypes,
   AddPrefixToKeys,
   ChildUpdateFields,
   NestedUpdateFields,

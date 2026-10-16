@@ -88,15 +88,12 @@ jobs:
             }
 
             // we want to test debug and release - they generate different code
+            // Firebase Apple SDK 13+ is SPM-only (CocoaPods Firebase removed)
             let buildmode = ['debug', 'release'];
-
-            // Test both SPM and CocoaPods dependency resolution modes
-            let depResolution = ['spm', 'cocoapods'];
 
             return {
               "iteration": iterationArray,
-              "buildmode": buildmode,
-              "dep-resolution": depResolution
+              "buildmode": buildmode
             }
       - name: Debug Output
         run: echo "${{ steps.build-matrix.outputs.result }}"
@@ -104,7 +101,7 @@ jobs:
   # This uses the matrix generated from the matrix-prep stage
   # it will run unit tests on whatever OS combinations are desired
   ios:
-    name: iOS (${{ matrix.buildmode }}, ${{ matrix.dep-resolution }}, ${{ matrix.iteration }})
+    name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
     runs-on: xcode-27
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
@@ -201,7 +198,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v4-xcode27 # bust ccache polluted by Xcode 27.1 beta / prior majors
+          key: ${{ runner.os }}-${{ matrix.buildmode }}-ios-v5-xcode27 # v5: SPM-only (no cocoapods matrix leg)
           save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
@@ -253,7 +250,7 @@ jobs:
         run: yarn tests:ios:unit
 
       - name: Verify Firebase SPM Ruby helpers
-        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
+        if: matrix.buildmode == 'debug'
         # Canonical entrypoint — discovers all *_test.rb; shape/embed run for real here.
         run: yarn tests:ios:ruby
 
@@ -265,11 +262,8 @@ jobs:
         with:
           path: tests/ios/Pods
           # Hermes CONFIG is handled by tests/patches/react-native+0.88.0-rc.3.patch (#59116); Pods cache is shared across buildmode again.
-          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v6-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v6
-
-      - name: Configure Dependency Resolution Mode
-        run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
+          key: ${{ runner.os }}-ios-pods-v7-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-ios-pods-v7
 
       - name: Pod Install
         # https://github.com/nick-fields/retry/releases
@@ -536,7 +530,7 @@ jobs:
 
       - name: Upload Codecov iOS Ruby
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        if: matrix.buildmode == 'debug' && matrix.dep-resolution == 'spm'
+        if: matrix.buildmode == 'debug'
         continue-on-error: true
         with:
           files: coverage/ios-ruby/lcov.info
@@ -610,7 +604,7 @@ jobs:
   # bundle is actually loadable. See .github/workflows/scripts/verify-ios-release-archive.sh
   # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
   ios-release-archive:
-    name: iOS Release Archive (${{ matrix.dep-resolution }})
+    name: iOS Release Archive
     runs-on: xcode-27
     timeout-minutes: 45
     env:
@@ -621,10 +615,6 @@ jobs:
       CCACHE_LIMIT_MULTIPLE: 0.95
       XCODE_VERSION: '27.0'
       RNFB_CI_REQUIRE_IOS_SIM_RUNTIME: '0'
-    strategy:
-      fail-fast: false
-      matrix:
-        dep-resolution: ['spm', 'cocoapods']
     steps:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -653,7 +643,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-archive-${{ matrix.dep-resolution }}-ios-v2-xcode27
+          key: ${{ runner.os }}-archive-ios-v3-xcode27
           save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
@@ -691,11 +681,8 @@ jobs:
         with:
           path: tests/ios/Pods
           # Hermes CONFIG is handled by tests/patches/react-native+0.88.0-rc.3.patch (#59116); Pods cache is shared across buildmode again.
-          key: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v6-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.dep-resolution }}-ios-pods-v6
-
-      - name: Configure Dependency Resolution Mode
-        run: .github/workflows/scripts/configure-ios-dep-resolution.sh "${{ matrix.dep-resolution }}"
+          key: ${{ runner.os }}-ios-pods-v7-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-ios-pods-v7
 
       - name: Pod Install
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -727,7 +714,7 @@ jobs:
         continue-on-error: true
         if: failure()
         with:
-          name: ios-release-archive-${{ matrix.dep-resolution }}
+          name: ios-release-archive
           path: tests/ios/build/testing.xcarchive/Products/Applications/*/Info.plist
           if-no-files-found: ignore
 

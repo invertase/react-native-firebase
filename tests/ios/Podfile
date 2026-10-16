@@ -14,8 +14,8 @@ Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$Fireba
 # Everything will be static with `use_frameworks!`, but you can set it manually for testing if desired
 # $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
-# SPM mode: SPM dependency resolution enabled (no $RNFirebaseDisableSPM flag)
-# Works with dynamic linkage. For static linkage, set $RNFirebaseDisableSPM = true
+# Firebase Apple SDK 13+ is SPM-only with dynamic linkage.
+# Do not set $RNFirebaseDisableSPM = true — pod install fails loud (no CocoaPods Firebase).
 
 # Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
@@ -78,14 +78,11 @@ target 'testing' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Use pre-compiled firestore frameworks to optimize compile time -- CocoaPods-only mode only.
-  # Under SPM (the default -- see packages/app/firebase_spm.rb), Firebase's own SPM package
-  # already ships precompiled binaries for the compile-time-heavy parts of Firestore
-  # (FirebaseFirestoreBinary, the GRPC/Abseil binaries, etc.), so this pod is unneeded there,
-  # and mixing it in would additionally pull in its own CocoaPods copies of
-  # FirebaseCore/FirebaseCoreExtension/FirebaseCoreInternal/FirebaseSharedSwift alongside the
-  # SPM-resolved copies of those same frameworks -- which made Xcode's Archive action fail with
-  # "Multiple commands produce '.../FirebaseCore.framework'".
+  # Historical CocoaPods-Firebase-only Firestore frameworks shortcut. Unreachable under
+  # Firebase Apple SDK 13+ (`$RNFirebaseDisableSPM` / `rnfirebase_spm_disabled?` fails loud;
+  # SPM already ships precompiled Firestore binaries). Not a supported path: mixing this
+  # pod with SPM caused dual FirebaseCore copies and Archive failures
+  # ("Multiple commands produce '.../FirebaseCore.framework'").
   if rnfirebase_spm_disabled?
     pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
   end

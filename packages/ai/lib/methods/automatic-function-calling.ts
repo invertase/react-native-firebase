@@ -87,7 +87,10 @@ export async function generateContentWithAutomaticFunctionCalling(
     remainingFunctionCalls -= 1;
     const functionResponseContent: Content = {
       role: 'function',
-      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+      parts: functionResponses.map(functionResponse => ({
+        type: 'functionResponse' as const,
+        functionResponse,
+      })),
     };
     addedContents.push(responseContent, functionResponseContent);
     currentParams = {
@@ -132,7 +135,10 @@ export async function templateGenerateContentWithAutomaticFunctionCalling(
     remainingFunctionCalls -= 1;
     const functionResponseContent: Content = {
       role: 'function',
-      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+      parts: functionResponses.map(functionResponse => ({
+        type: 'functionResponse' as const,
+        functionResponse,
+      })),
     };
     addedContents.push(responseContent, functionResponseContent);
     currentParams = {
@@ -187,7 +193,10 @@ export async function generateContentStreamWithAutomaticFunctionCalling(
     remainingFunctionCalls -= 1;
     const functionResponseContent: Content = {
       role: 'function',
-      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+      parts: functionResponses.map(functionResponse => ({
+        type: 'functionResponse' as const,
+        functionResponse,
+      })),
     };
     addedContents.push(responseContent, functionResponseContent);
     currentParams = {
@@ -237,7 +246,10 @@ export async function templateGenerateContentStreamWithAutomaticFunctionCalling(
     remainingFunctionCalls -= 1;
     const functionResponseContent: Content = {
       role: 'function',
-      parts: functionResponses.map(functionResponse => ({ functionResponse })),
+      parts: functionResponses.map(functionResponse => ({
+        type: 'functionResponse' as const,
+        functionResponse,
+      })),
     };
     addedContents.push(responseContent, functionResponseContent);
     currentParams = {

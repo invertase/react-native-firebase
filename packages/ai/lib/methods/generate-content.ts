@@ -26,6 +26,7 @@ import {
 } from '../types';
 import { Task, makeRequest, ServerPromptTemplateTask } from '../requests/request';
 import { createEnhancedContentResponse } from '../requests/response-helpers';
+import { cleanGenerateContentRequestForWire } from '../requests/request-helpers';
 import { processStream } from '../requests/stream-reader';
 import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
@@ -76,7 +77,7 @@ export async function generateContentStream(
       stream: true,
       requestOptions,
     },
-    JSON.stringify(params),
+    JSON.stringify(cleanGenerateContentRequestForWire(params)),
   );
   return processStream(response, apiSettings);
 }
@@ -109,7 +110,7 @@ export async function generateContent(
       stream: false,
       requestOptions,
     },
-    JSON.stringify(params),
+    JSON.stringify(cleanGenerateContentRequestForWire(params)),
   );
   const generateContentResponse = await processGenerateContentResponse(response, apiSettings);
   const enhancedResponse = createEnhancedContentResponse(generateContentResponse);

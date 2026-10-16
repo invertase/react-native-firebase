@@ -50,10 +50,6 @@ const OUTPUT_PATHS = {
     android: 'android/src/main/java/io/invertase/firebase/appdistribution/generated',
     ios: 'ios/generated',
   },
-  ml: {
-    android: 'android/src/reactnative/java/io/invertase/firebase/ml/generated',
-    ios: 'ios/generated',
-  },
   'app-check': {
     android: 'android/src/main/java/io/invertase/firebase/appcheck/generated',
     ios: 'ios/generated',

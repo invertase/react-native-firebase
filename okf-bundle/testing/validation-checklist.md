@@ -165,7 +165,7 @@ Frozen review is [report/check-only except revert `.only`](change-authoring-work
 
 ### `yarn lint:docs-links` — fix failures; bot-gate warnings only
 
-When `docs/**` is in the diff, **`yarn lint:docs-links` exit code 0** is blocking ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)). Which failures are errors vs warnings, and the `rnfirebase.io` override: [documentation site maintenance § Docs.page link check](../documentation-site-maintenance.md#docs-page-link-check-ci).
+When `docs/**` is in the diff, **`yarn lint:docs-links` exit code 0** is blocking ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)). Record it during `documentation` and re-confirm on frozen `independent-review` — [change authoring § work types](change-authoring-workflow.md#work-types); missing that evidence when `docs/**` was touched is **serious**. Which failures are errors vs warnings, and the `rnfirebase.io` override: [documentation site maintenance § Docs.page link check](../documentation-site-maintenance.md#docs-page-link-check-ci).
 
 **Agents must fix every `error` line** (internal links, assets, MDX render, metadata, true external 404s). Do not hand off or close gates while errors remain.
 

@@ -42,7 +42,7 @@ export async function countTokens(
       const mappedParams = GoogleAIMapper.mapCountTokensRequest(params, model);
       body = JSON.stringify(mappedParams);
       break;
-    case BackendType.VERTEX_AI:
+    case BackendType.AGENT_PLATFORM:
     default:
       body = JSON.stringify(params);
       break;

@@ -3,7 +3,7 @@
  * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -41,21 +41,42 @@ export type Part =
   | CodeExecutionResultPart;
 
 /**
- * Content part interface if the part represents a text string.
- * @public
+ * Content part interface representing a raw, untagged part before being tagged with a `type`,
+ * such as a part received from the model wire API or provided by a caller.
+ *
+ * @internal
  */
-export interface TextPart {
-  text: string;
-  inlineData?: never;
-  functionCall?: never;
-  functionResponse?: never;
+export interface UnknownPart {
+  text?: string;
+  inlineData?: GenerativeContentBlob;
+  functionCall?: FunctionCall;
+  functionResponse?: FunctionResponse;
+  fileData?: FileData;
+  executableCode?: ExecutableCode;
+  codeExecutionResult?: CodeExecutionResult;
   thought?: boolean;
   /**
    * @internal
    */
   thoughtSignature?: string;
-  executableCode?: never;
-  codeExecutionResult?: never;
+  /**
+   * Applicable if `inlineData` is a video.
+   */
+  videoMetadata?: VideoMetadata;
+}
+
+/**
+ * Content part interface if the part represents a text string.
+ * @public
+ */
+export interface TextPart {
+  type: 'text';
+  text: string;
+  thought?: boolean;
+  /**
+   * @internal
+   */
+  thoughtSignature?: string;
 }
 
 /**
@@ -63,21 +84,13 @@ export interface TextPart {
  * @public
  */
 export interface InlineDataPart {
-  text?: never;
+  type: 'inlineData';
   inlineData: GenerativeContentBlob;
-  functionCall?: never;
-  functionResponse?: never;
   /**
    * Applicable if `inlineData` is a video.
    */
   videoMetadata?: VideoMetadata;
   thought?: boolean;
-  /**
-   * @internal
-   */
-  thoughtSignature?: never;
-  executableCode?: never;
-  codeExecutionResult?: never;
 }
 
 /**
@@ -102,17 +115,9 @@ export interface VideoMetadata {
  * @public
  */
 export interface FunctionCallPart {
-  text?: never;
-  inlineData?: never;
+  type: 'functionCall';
   functionCall: FunctionCall;
-  functionResponse?: never;
   thought?: boolean;
-  /**
-   * @internal
-   */
-  thoughtSignature?: never;
-  executableCode?: never;
-  codeExecutionResult?: never;
 }
 
 /**
@@ -120,17 +125,9 @@ export interface FunctionCallPart {
  * @public
  */
 export interface FunctionResponsePart {
-  text?: never;
-  inlineData?: never;
-  functionCall?: never;
+  type: 'functionResponse';
   functionResponse: FunctionResponse;
   thought?: boolean;
-  /**
-   * @internal
-   */
-  thoughtSignature?: never;
-  executableCode?: never;
-  codeExecutionResult?: never;
 }
 
 /**
@@ -138,18 +135,9 @@ export interface FunctionResponsePart {
  * @public
  */
 export interface FileDataPart {
-  text?: never;
-  inlineData?: never;
-  functionCall?: never;
-  functionResponse?: never;
+  type: 'fileData';
   fileData: FileData;
   thought?: boolean;
-  /**
-   * @internal
-   */
-  thoughtSignature?: never;
-  executableCode?: never;
-  codeExecutionResult?: never;
 }
 
 /**
@@ -219,47 +207,27 @@ export interface FileData {
 /**
  * Represents the code that is executed by the model.
  *
- * @beta
+ * @public
  */
 export interface ExecutableCodePart {
-  text?: never;
-  inlineData?: never;
-  functionCall?: never;
-  functionResponse?: never;
-  fileData: never;
-  thought?: never;
-  /**
-   * @internal
-   */
-  thoughtSignature?: never;
-  executableCode?: ExecutableCode;
-  codeExecutionResult?: never;
+  type: 'executableCode';
+  executableCode: ExecutableCode;
 }
 
 /**
  * Represents the code execution result from the model.
  *
- * @beta
+ * @public
  */
 export interface CodeExecutionResultPart {
-  text?: never;
-  inlineData?: never;
-  functionCall?: never;
-  functionResponse?: never;
-  fileData: never;
-  thought?: never;
-  /**
-   * @internal
-   */
-  thoughtSignature?: never;
-  executableCode?: never;
-  codeExecutionResult?: CodeExecutionResult;
+  type: 'codeExecutionResult';
+  codeExecutionResult: CodeExecutionResult;
 }
 
 /**
  * An interface for executable code returned by the model.
  *
- * @beta
+ * @public
  */
 export interface ExecutableCode {
   /**
@@ -275,7 +243,7 @@ export interface ExecutableCode {
 /**
  * The results of code execution run by the model.
  *
- * @beta
+ * @public
  */
 export interface CodeExecutionResult {
   /**

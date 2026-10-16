@@ -38,7 +38,6 @@ import {
   _LiveClientSetup,
   _LiveClientToolResponse,
 } from '../types/live-responses';
-import { ReadableStream } from 'web-streams-polyfill';
 import { ApiSettings } from '../types/internal';
 import { WebSocketUrl } from '../requests/request';
 
@@ -381,72 +380,6 @@ export class LiveSession {
     if (!this.isClosed) {
       this.isClosed = true;
       await this._webSocketHandler!.close(1000, 'Client closed session.');
-    }
-  }
-
-  /**
-   * Sends realtime input to the server.
-   *
-   * @deprecated Use `sendTextRealtime()`, `sendAudioRealtime()`, and `sendVideoRealtime()` instead.
-   *
-   * @param mediaChunks - The media chunks to send.
-   * @throws If this session has been closed.
-   *
-   * @beta
-   */
-  async sendMediaChunks(mediaChunks: GenerativeContentBlob[]): Promise<void> {
-    if (this.isClosed) {
-      throw new AIError(
-        AIErrorCode.REQUEST_ERROR,
-        'This LiveSession has been closed and cannot be used.',
-      );
-    }
-
-    // The backend does not support sending more than one mediaChunk in one message.
-    // Work around this limitation by sending mediaChunks in separate messages.
-    mediaChunks.forEach(mediaChunk => {
-      const message: _LiveClientRealtimeInput = {
-        realtimeInput: { mediaChunks: [mediaChunk] },
-      };
-      this._webSocketHandler!.send(JSON.stringify(message));
-    });
-  }
-
-  /**
-   * @deprecated Use `sendTextRealtime()`, `sendAudioRealtime()`, and `sendVideoRealtime()` instead.
-   *
-   * Sends a stream of {@link GenerativeContentBlob}.
-   *
-   * @param mediaChunkStream - The stream of {@link GenerativeContentBlob} to send.
-   * @throws If this session has been closed.
-   *
-   * @beta
-   */
-  async sendMediaStream(mediaChunkStream: ReadableStream<GenerativeContentBlob>): Promise<void> {
-    if (this.isClosed) {
-      throw new AIError(
-        AIErrorCode.REQUEST_ERROR,
-        'This LiveSession has been closed and cannot be used.',
-      );
-    }
-
-    const reader = mediaChunkStream.getReader();
-    while (true) {
-      try {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          break;
-        } else if (!value) {
-          throw new Error('Missing chunk in reader, but reader is not done.');
-        }
-
-        await this.sendMediaChunks([value]);
-      } catch (e) {
-        // Re-throw any errors that occur during stream consumption or sending.
-        const message = e instanceof Error ? e.message : 'Error processing media stream.';
-        throw new AIError(AIErrorCode.REQUEST_ERROR, message);
-      }
     }
   }
 }

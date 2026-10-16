@@ -9,12 +9,13 @@ next: /ios-spm
 
 By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform:
 
-| Platform | Minimum Version            |
-| -------- | -------------------------- |
-| Android  | 6.0 (API 23 / Marshmallow) |
-| iOS      | 15.0                       |
+| Platform | Minimum Version       |
+| -------- | --------------------- |
+| Android  | 7.0 (API 24 / Nougat) |
+| iOS      | 15.0                  |
+| macOS    | 11.0                  |
 
-**Important** - To compile your application for Android, you will need a minimum JDK (Java Development Kit) version of `>= 17`.
+**Important** - To compile your application for Android, you will need a minimum JDK (Java Development Kit) version of `>= 17`, and a Kotlin Gradle plugin of `>= 2.4.0` (Firebase Android BoM 35 / `firebase-auth` 25 ships Kotlin **2.4.0** metadata). For ecosystem workarounds (unsupported older Kotlin, AsyncStorage KSP, Google Sign-In), see [Migrating to v27 § Ecosystem compatibility tips](/migrating-to-v27#ecosystem-compatibility-tips).
 
 However, for platforms that we don't provide a Native Module for, React Native Firebase instead implements a fallback Firebase JS SDK implementation to support
 these 'Other' platforms, e.g.;
@@ -41,7 +42,6 @@ Below is a table outlining which Firebase modules are supported on each platform
 | in-app-messaging          |   ✅    | ✅  |  ❌   |
 | installations             |   ✅    | ✅  |  ❌   |
 | messaging                 |   ✅    | ✅  |  ❌   |
-| ml                        |   ✅    | ✅  |  ❌   |
 | perf                      |   ✅    | ✅  |  ❌   |
 | phone-number-verification |   ✅    | ❌  |  ❌   |
 | remote-config             |   ✅    | ✅  |  ✅   |

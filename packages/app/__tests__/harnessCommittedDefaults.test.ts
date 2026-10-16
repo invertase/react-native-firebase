@@ -40,7 +40,6 @@ const COMMITTED_NATIVE_PLATFORM_MODULES = [
   'installations',
   'appCheck',
   'appDistribution',
-  'ml',
   'phoneNumberVerification',
   'ai',
 ] as const;
