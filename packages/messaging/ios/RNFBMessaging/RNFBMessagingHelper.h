@@ -66,10 +66,8 @@
 
 + (BOOL)isInstallationIdEnabled;
 
-+ (void)registerWithResolve:(RCTPromiseResolveBlock)resolve
-                     reject:(RCTPromiseRejectBlock)reject;
++ (void)registerWithResolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
-+ (void)unregisterWithResolve:(RCTPromiseResolveBlock)resolve
-                       reject:(RCTPromiseRejectBlock)reject;
++ (void)unregisterWithResolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
 @end
