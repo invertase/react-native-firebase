@@ -15,20 +15,13 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseInstallations/FirebaseInstallations.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseInstallations/FirebaseInstallations.h>
-#else
-@import FirebaseCore;
-@import FirebaseInstallations;
-#endif
-#import <React/RCTUtils.h>
-
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+// This module intentionally has no Firebase imports — see RNFBInstallationsHelper.h /
+// okf-bundle/ios-spm-native-imports.md. Every Firebase Installations SDK call is routed
+// through the plain Objective-C RNFBInstallationsHelper class instead, which can safely
+// use the CocoaPods/SPM dual-import (including `@import`) because it compiles as ObjC,
+// not ObjC++.
 #import "RNFBInstallationsModule.h"
+#import "RNFBInstallationsHelper.h"
 
 @implementation RNFBInstallationsModule
 
@@ -49,84 +42,23 @@ RCT_EXPORT_MODULE(NativeRNFBTurboInstallations)
 - (void)deleteInstallations:(NSString *)appName
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-  FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
-  [installations deleteWithCompletion:^(NSError *_Nullable error) {
-    if (error != nil) {
-      DLog(@"Unable to delete Installations ID: %@", error);
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"delete-error",
-                                          @"message" : [error localizedDescription],
-                                        }];
-      return;
-    }
-
-    resolve([NSNull null]);
-  }];
+  [RNFBInstallationsHelper deleteInstallations:appName resolve:resolve reject:reject];
 }
 
 - (void)getId:(NSString *)appName
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-  FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
-  [installations installationIDWithCompletion:^(NSString *_Nullable id, NSError *_Nullable error) {
-    if (error != nil) {
-      DLog(@"Unable to retrieve Installations ID: %@", error);
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"id-error",
-                                          @"message" : [error localizedDescription],
-                                        }];
-      return;
-    }
-    if (id == nil) {
-      DLog(@"Unable to retrieve Installations ID.");
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"id-null",
-                                          @"message" : @"no id fetched",
-                                        }];
-      return;
-    }
-
-    resolve(id);
-  }];
+  [RNFBInstallationsHelper getId:appName resolve:resolve reject:reject];
 }
 
 - (void)getToken:(NSString *)appName
     forceRefresh:(BOOL)forceRefresh
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-  FIRInstallations *installations = [FIRInstallations installationsWithApp:firebaseApp];
-  [installations authTokenForcingRefresh:forceRefresh
-                              completion:^(FIRInstallationsAuthTokenResult *_Nullable token,
-                                           NSError *_Nullable error) {
-                                if (error != nil) {
-                                  DLog(@"Unable to retrieve Installations auth token: %@", error);
-                                  [RNFBSharedUtils
-                                      rejectPromiseWithUserInfo:reject
-                                                       userInfo:(NSMutableDictionary *)@{
-                                                         @"code" : @"token-error",
-                                                         @"message" : [error localizedDescription],
-                                                       }];
-                                  return;
-                                }
-                                if (token == nil) {
-                                  DLog(@"Unable to retrieve Installations auth token.");
-                                  [RNFBSharedUtils
-                                      rejectPromiseWithUserInfo:reject
-                                                       userInfo:(NSMutableDictionary *)@{
-                                                         @"code" : @"token-null",
-                                                         @"message" : @"no token fetched",
-                                                       }];
-                                  return;
-                                }
-
-                                resolve(token.authToken);
-                              }];
+  [RNFBInstallationsHelper getToken:appName
+                       forceRefresh:forceRefresh
+                            resolve:resolve
+                             reject:reject];
 }
 
 @end
