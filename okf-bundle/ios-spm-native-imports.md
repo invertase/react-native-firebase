@@ -147,6 +147,13 @@ its queue and constants from `RNFBDatabaseCommon`.
 | Database | `RNFBDatabase*Helper` classes, plus Firebase-free queue/constants headers |
 | Installations | `RNFBInstallationsHelper` |
 | App Distribution | `RNFBAppDistributionHelper` |
+| Analytics | `RNFBAnalyticsHelper` |
+| App Check | `RNFBAppCheckHelper` |
+| Crashlytics | `RNFBCrashlyticsHelper` |
+| Messaging | `RNFBMessagingHelper` |
+| Functions | `RNFBFunctionsHelper` |
+| Firestore | `RNFBFirestore*Helper` classes (module, document, collection, transaction) |
+| Perf | `RNFBPerfHelper` |
 
 Installations still publishes Objective-C product headers
 (`FirebaseInstallations/FirebaseInstallations.h`), but

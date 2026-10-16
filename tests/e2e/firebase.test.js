@@ -1211,12 +1211,20 @@ async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } 
   let timer;
 
   try {
+    const launchConfig = {
+      newInstance: true,
+      delete: deleteApp,
+      launchArgs,
+    };
+    // iOS Simulator: UNUserNotificationCenter requestAuthorization completion
+    // never fires while the system prompt is pending (main stays idle). Detox
+    // launchApp permissions uses applesimutils so messaging e2e requestPermission
+    // can settle without a human tap. Android ignores this key.
+    if (device.getPlatform() === 'ios') {
+      launchConfig.permissions = { notifications: 'YES' };
+    }
     await Promise.race([
-      device.launchApp({
-        newInstance: true,
-        delete: deleteApp,
-        launchArgs,
-      }),
+      device.launchApp(launchConfig),
       new Promise((_, reject) => {
         timer = setTimeout(() => {
           const err = new Error(

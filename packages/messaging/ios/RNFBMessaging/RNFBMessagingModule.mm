@@ -227,26 +227,32 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
     options |= UNAuthorizationOptionProvidesAppNotificationSettings;
   }
 
-  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  [center requestAuthorizationWithOptions:options
-                        completionHandler:^(BOOL granted, NSError *_Nullable error) {
-                          if (error) {
-                            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                          } else {
+  // TurboModule methods run off-main (NewArch-AD-9). On ARM64 iOS Simulator,
+  // requestAuthorizationWithOptions invoked from the JS thread can leave the
+  // completionHandler unfired forever while main stays idle in CFRunLoop.
+  // Dispatch async — never RCTUnsafeExecuteOnMainQueueSync from JS.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:options
+                          completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                            if (error) {
+                              [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+                            } else {
 #if TARGET_IPHONE_SIMULATOR && TARGET_CPU_ARM64
-                            // Intentional: do not call UIKit registerForRemoteNotifications on
-                            // ARM64 Simulator — it can wedge main indefinitely. See
-                            // registerForRemoteNotifications:reject: for the same policy.
-                            DLog(@"RNFBMessaging requestPermission - ARM64 Simulator detected, "
-                                 @"skipping UIKit registerForRemoteNotifications.");
+                              // Intentional: do not call UIKit registerForRemoteNotifications on
+                              // ARM64 Simulator — it can wedge main indefinitely. See
+                              // registerForRemoteNotifications:reject: for the same policy.
+                              DLog(@"RNFBMessaging requestPermission - ARM64 Simulator detected, "
+                                   @"skipping UIKit registerForRemoteNotifications.");
 #else
           dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] registerForRemoteNotifications];
           });
 #endif
-                            [self hasPermission:resolve reject:reject];
-                          }
-                        }];
+                              [self hasPermission:resolve reject:reject];
+                            }
+                          }];
+  });
 }
 
 - (void)registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve
@@ -343,27 +349,29 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 }
 
 - (void)hasPermission:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  [[UNUserNotificationCenter currentNotificationCenter]
-      getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-        NSNumber *authorizedStatus = @-1;
-        if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
-          authorizedStatus = @-1;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-          authorizedStatus = @0;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-          authorizedStatus = @1;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
-          authorizedStatus = @2;
-        }
-
-        if (@available(iOS 14.0, macCatalyst 14.0, *)) {
-          if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
-            authorizedStatus = @3;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+          NSNumber *authorizedStatus = @-1;
+          if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
+            authorizedStatus = @-1;
+          } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
+            authorizedStatus = @0;
+          } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+            authorizedStatus = @1;
+          } else if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+            authorizedStatus = @2;
           }
-        }
 
-        resolve(authorizedStatus);
-      }];
+          if (@available(iOS 14.0, macCatalyst 14.0, *)) {
+            if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
+              authorizedStatus = @3;
+            }
+          }
+
+          resolve(authorizedStatus);
+        }];
+  });
 }
 
 - (void)sendMessage:(NSDictionary *)remoteMessageMap
