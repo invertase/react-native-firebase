@@ -19,7 +19,8 @@ not consumer setup. Consumer configuration and troubleshooting live in
 
 ## Decision summary
 
-1. Native Firebase imports must compile with both CocoaPods and SPM.
+1. Native Firebase imports keep defensive CocoaPods/SPM dual-include headers
+   (Firebase 13+ resolves via SPM only; the CocoaPods umbrella branch is inert).
 2. Objective-C++ (`.mm`) files must not import Firebase products whose usable
    Objective-C interface is generated from Swift.
 3. Do not enable `-fcxx-modules`; it fixes Firebase module imports but breaks
@@ -216,11 +217,14 @@ With `use_frameworks! :linkage => :dynamic` (required for RNFB SPM mode):
 - runtime can log duplicate `FIRApp` / related classes;
 - `FirebaseApp.configure()` in the app does not configure another pod's copy.
 
-| RNFB                                       | Other native dependency | Shared FirebaseCore? |
-| ------------------------------------------ | ----------------------- | -------------------- |
-| SPM                                        | SPM (`spm_dependency`)  | No                   |
-| SPM                                        | CocoaPods Firebase pods | No (dual resolution) |
-| CocoaPods (`$RNFirebaseDisableSPM = true`) | CocoaPods Firebase pods | Yes                  |
+| RNFB | Other native dependency | Shared FirebaseCore? |
+| ---- | ----------------------- | -------------------- |
+| SPM  | SPM (`spm_dependency`)  | No                   |
+| SPM  | CocoaPods Firebase pods | No (dual resolution; other pods must not declare Firebase CocoaPods — Firebase 13+ is SPM-only) |
+
+`$RNFirebaseDisableSPM = true` / Expo `disableSPM: true` **fail** `pod install` /
+prebuild — CocoaPods Firebase is gone with Firebase Apple SDK 13+. There is no
+supported opt-out that restores shared CocoaPods FirebaseCore.
 
 SPM + static pods is rejected by `rnfirebase_fail_if_spm_static_linkage!`:
 per-pod copies collide at link time (`duplicate symbol`). Static linkage is
@@ -239,8 +243,8 @@ the multi-pod sharing failure.
 
 ## Exact SPM Firebase iOS SDK version
 
-CocoaPods already pins Firebase pods with an exact `version`
-(`spec.dependency pod, version` from `sdkVersions.ios.firebase`). SPM used
+Before Firebase 13, CocoaPods pinned Firebase pods with an exact `version`
+(`spec.dependency pod, version` from `sdkVersions.ios.firebase`) while SPM used
 `{ kind: 'upToNextMajorVersion', minimumVersion: version }` in both
 `firebase_dependency` (RN `spm_dependency` → Pods project) and
 `rnfirebase_add_spm_core_to_app_target` (user-project `package_references`).
@@ -248,8 +252,8 @@ Xcode could therefore resolve a newer 12.x than the RNFB pin.
 
 SPM package requirement is `{ kind: 'exactVersion', version: version }` —
 the hash RN's `spm_dependency` and xcodeproj accept for an exact pin, equal
-to `sdkVersions.ios.firebase`. Do not change the CocoaPods Firebase pod
-version path.
+to `sdkVersions.ios.firebase`. Legacy CocoaPods Firebase `spec.dependency`
+pins are removed (fail-loud); do not reintroduce them.
 
 Reusing an existing user-project `package_references` entry, including the
 already-linked FirebaseCore healing path, must rewrite a leftover
@@ -468,8 +472,9 @@ package unconditionally links `GoogleAdsOnDeviceConversion` (from the
 *separate* `googleads/google-ads-on-device-conversion-ios-sdk` package) as a
 dependency of `GoogleAppMeasurementTarget`, completely independent of
 RNFBAnalytics's own *optional* `spm_dependency` call for it (gated behind
-`$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`, which turns out
-to only matter for CocoaPods-only resolution). None of this shows up as a
+`$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`, which only
+mattered for legacy CocoaPods-only resolution — removed with Firebase 13+).
+None of this shows up as a
 reference in our own podspecs or pbxprojs — it only turned up by inspecting
 the actual checked-out `Package.swift` manifests under
 `DerivedData/.../SourcePackages/checkouts`. Fixing one binary artifact just
@@ -499,7 +504,7 @@ failing `pod install` outright.
 
 ## Expo precompiled module linkage repair
 
-Expo's prebuilt RNCore path activates a CocoaPods pre-install hook that changes React-Core-dependent pod targets to static libraries during `pod install`, even when the Podfile specifies `use_frameworks! :linkage => :dynamic` and SPM is active (`$RNFirebaseDisableSPM` is not set to true).
+Expo's prebuilt RNCore path activates a CocoaPods pre-install hook that changes React-Core-dependent pod targets to static libraries during `pod install`, even when the Podfile specifies `use_frameworks! :linkage => :dynamic` (required for Firebase SPM).
 
 The issue is a mutual-incompatibility between two separate mechanisms:
 
@@ -533,9 +538,9 @@ immediately before CocoaPods reads pod target build types to generate products
 and link inputs. This timing catches autolinking downgrades that happened in
 Expo's pre-install hook. The helper redefines the `build_type` method on each
 RNFB static target to return `dynamic_framework` instead, restoring those
-targets to dynamic linkage and eliminating the embedded SPM duplicate. Bare
-CocoaPods (no SPM), source-built Expo, non-Expo apps, and already-dynamic
-targets are unaffected.
+targets to dynamic linkage and eliminating the embedded SPM duplicate. When SPM is inactive, source-built Expo, non-Expo apps, and already-dynamic
+targets are unaffected (Firebase 13+ always activates SPM; DisableSPM fails
+loud and never reaches this restore).
 
 If CocoaPods no longer exposes `generate_pods_project`, RNFB cannot install
 the restore at the required boundary. Expo-precompiled installs warn once per
@@ -577,8 +582,7 @@ invariants:
   Firebase-bearing shared header in a `.mm` translation unit;
 - no `-fcxx-modules` build setting;
 - no private/transitive Firebase target added as if it were a public product;
-- SPM mode still adds exactly one app framework-embedding phase and CocoaPods
-  mode does not require it;
+- SPM mode still adds exactly one app framework-embedding phase;
 - user-project SPM helpers (`rnfirebase_add_spm_core_to_app_target`, RNFB
   embed phase) still run from `post_integrate` (after `[CP] Embed Pods
   Frameworks` exists), not from `post_install`, except the older-CocoaPods
@@ -593,7 +597,7 @@ invariants:
   version: version }` equal to `sdkVersions.ios.firebase` in both
   `firebase_dependency` and app-target `package_references`; reusing an
   existing package reference still rewrites leftover `upToNextMajorVersion`.
-  CocoaPods Firebase pod versions stay exact `spec.dependency` pins;
+  CocoaPods Firebase `spec.dependency` pins stay removed (fail-loud);
 - `rnfirebase_apply_spm_build_settings` still adds `-ObjC` to user-project
   native targets **and** every RNFB pod target (so `RNFBAnalytics` keeps
   Measurement categories); do not add CocoaPods-only `IdentitySupport` on
@@ -604,14 +608,14 @@ invariants:
   `Frameworks/` directory;
 - docs/comments must not claim firebase-ios-sdk SPM products use
   `.library(type: .dynamic)`; products are automatic libraries, and multi-pod
-  FirebaseCore sharing under SPM is unsupported (CocoaPods mode is the
-  supported path when another native pod must share `FirebaseApp`);
+  FirebaseCore sharing under SPM is unsupported (there is no CocoaPods Firebase
+  fallback — `$RNFirebaseDisableSPM` fails loud);
 - if a Firebase/Google SPM package adds a new `.binaryTarget` xcframework to
   the resolved graph (e.g. a firebase-ios-sdk version bump),
   `RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES` is re-checked against a clean
   `-resolvePackageDependencies` run rather than assumed still complete;
-- Debug and Release builds cover SPM and CocoaPods, and the real-device archive
-  job verifies that every `@rpath` framework dependency is embedded;
+- Debug and Release builds are SPM-only, and the real-device archive job
+  verifies that every `@rpath` framework dependency is embedded;
 - when Expo precompiled modules are active, `rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!`
   still restores RNFB targets from static back to dynamic if Expo's pre-install
   hook downgraded them, and `yarn test-expo:ios:link` still passes with every

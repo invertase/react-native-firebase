@@ -12,11 +12,11 @@ timestamp: 2026-08-26T00:00:00Z
 
 <a id="metro-bundler-cache"></a>
 
-**Metro bundler cache** (debug legs only) — restore key `${{ runner.os }}-ios-metro-v2-<hashFiles(…)>` (same content inputs as Android Metro; restore-keys prefix `…-ios-metro-v2-`). Save only when debug + `dep-resolution == 'spm'` + `matrix.iteration == 0` + `main` + exact restore miss (`cache-hit != 'true'`). Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
+**Metro bundler cache** (debug legs only) — restore key `${{ runner.os }}-ios-metro-v2-<hashFiles(…)>` (same content inputs as Android Metro; restore-keys prefix `…-ios-metro-v2-`). Save only when debug + `matrix.iteration == 0` + `main` + exact restore miss (`cache-hit != 'true'`). Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
 
 <a id="xcode-ccache"></a>
 
-**Xcode ccache** — `hendrikmuhs/ccache-action` with `append-timestamp: false` and content-hash keys (`yarn.lock`, podspecs, `packages/*/ios/**`, `tests/ios/Podfile.lock`). iOS e2e key includes `buildmode` + `dep-resolution` (`…-e2e-…-ios-v5-xcode27-…`); archive key includes `dep-resolution` (`…-e2e-archive-…-ios-v3-xcode27-…`); Expo iOS link probe (`test_expo_ios_link.yml`) uses a distinct `expo-link` key (`…-expo-link-ios-v1-xcode27-…` over `yarn.lock`, `test-expo/**`, app iOS/plugin inputs); RN CLI bare iOS probe (`test_rn_bare_ios_build.yml`) uses distinct `rn-bare` / `rn-bare-dynfb` keys (`…-rn-bare-ios-v1-xcode27-…` / `…-rn-bare-dynfb-ios-v1-xcode27-…` over `yarn.lock`, `test-rn-bare/**`, app iOS/plugin/ruby inputs; dynfb also hashes `packages/app/package.json`). ccache wrappers must be passed as xcodebuild build settings `CC=clang CPLUSPLUS=clang++` (job env `CC`/`CPLUSPLUS` alone is not imported by xcodebuild; keep job env only as documentation/fallback). Never set `LD`/`LDPLUSPLUS` (Xcode 27 trap). Never share spm/cocoapods caches. Save on `main` only; e2e also requires `matrix.iteration == 0`. Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
+**Xcode ccache** — `hendrikmuhs/ccache-action` with `append-timestamp: false` and content-hash keys (`yarn.lock`, podspecs, `packages/*/ios/**`, `tests/ios/Podfile.lock`). iOS e2e key includes `buildmode` only (`…-e2e-…-ios-v5-xcode27-…`; SPM-only matrix, no cocoapods leg); archive key is SPM-only (`…-e2e-archive-ios-v3-xcode27-…`); Expo iOS link probe (`test_expo_ios_link.yml`) uses a distinct `expo-link` key (`…-expo-link-ios-v1-xcode27-…` over `yarn.lock`, `test-expo/**`, app iOS/plugin inputs); RN CLI bare iOS probe (`test_rn_bare_ios_build.yml`) uses distinct `rn-bare` / `rn-bare-dynfb` keys (`…-rn-bare-ios-v1-xcode27-…` / `…-rn-bare-dynfb-ios-v1-xcode27-…` over `yarn.lock`, `test-rn-bare/**`, app iOS/plugin/ruby inputs; dynfb also hashes `packages/app/package.json`). ccache wrappers must be passed as xcodebuild build settings `CC=clang CPLUSPLUS=clang++` (job env `CC`/`CPLUSPLUS` alone is not imported by xcodebuild; keep job env only as documentation/fallback). Never set `LD`/`LDPLUSPLUS` (Xcode 27 trap). Save on `main` only; e2e also requires `matrix.iteration == 0`. Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
 
 ## Apple CI toolchain (Xcode 27)
 
@@ -557,8 +557,9 @@ See also [coverage design — e2e TypeScript coverage](../testing/coverage-desig
 
 The simulator Release build does not exercise Xcode's real-device Archive
 action or its install-style post-processing. This job therefore runs an
-unsigned `generic/platform=iOS` Release archive for both SPM and CocoaPods. It
-requires no signing identity or simulator.
+unsigned `generic/platform=iOS` Release archive (SPM-only; CocoaPods Firebase
+is not supported with Firebase Apple SDK 13+). It requires no signing identity
+or simulator.
 
 After archiving, `.github/workflows/scripts/verify-ios-release-archive.sh`
 checks each embedded binary's `@rpath` framework dependencies against the
@@ -588,7 +589,6 @@ from this job is a known Xcode Archive bug, not a regression — see
 | `.github/workflows/scripts/wait-for-load-settle.sh` | `RNFB_LOAD_SETTLE_MAX_LOAD` (default **20**), `RNFB_LOAD_SETTLE_MAX_WAIT_SEC`, `RNFB_LOAD_SETTLE_POLL_SEC` | Poll host load immediately before Detox |
 | `.github/workflows/scripts/resource-monitor.sh` | `RNFB_RESOURCE_MONITOR_INTERVAL_SEC` (default 10), `RNFB_RESOURCE_MONITOR_LOG` | Background `uptime` + `ps` snapshots during Detox |
 | `.github/workflows/scripts/flake-summary.sh` | `RNFB_DETOX_LOG`, `RNFB_FLAKE_SUMMARY_OUT` | Post-run `rg` digest → `flake-summary.txt` |
-| `.github/workflows/scripts/configure-ios-dep-resolution.sh <spm\|cocoapods> [podfile-dir]` | — | Grep-verified `tests/ios/Podfile` patch for the `dep-resolution` matrix leg; shared by the `ios` job and `ios-release-archive` job so they can't drift apart |
 | `.github/workflows/scripts/configure-apple-ci.sh` | `XCODE_VERSION` / `RNFB_CI_XCODE_SELECTOR`, `RNFB_IOS_SIM_RUNTIME`, `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME` | Post-`setup-xcode` gate: stable Xcode major 27 + optional iOS 27 runtime pin |
 
 Detox steps use `tee detox-step.log` and `exit ${PIPESTATUS[0]}` so the artifact preserves full output while the step still fails correctly.
