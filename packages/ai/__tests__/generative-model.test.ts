@@ -19,8 +19,8 @@ import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { GenerativeModel } from '../lib/models/generative-model';
 import { AI, FunctionCallingMode, ThinkingLevel } from '../lib/public-types';
 import * as request from '../lib/requests/request';
-import { BackendName, getMockResponse } from './test-utils/mock-response';
-import { VertexAIBackend } from '../lib/backend';
+import { BackendName, getMockResponse, getMockResponseStreaming } from './test-utils/mock-response';
+import { AgentPlatformBackend } from '../lib/backend';
 import { GenerateContentResponse } from '../lib';
 
 const fakeAI: AI = {
@@ -33,7 +33,7 @@ const fakeAI: AI = {
       appId: 'my-appid',
     },
   } as ReactNativeFirebase.FirebaseApp,
-  backend: new VertexAIBackend('us-central1'),
+  backend: new AgentPlatformBackend('us-central1'),
   location: 'us-central1',
 };
 
@@ -59,11 +59,11 @@ describe('GenerativeModel', () => {
         { urlContext: {} },
       ],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be friendly' }] },
     });
     expect(genModel.tools?.length).toBe(4);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -103,11 +103,11 @@ describe('GenerativeModel', () => {
         },
       ],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be friendly' }] },
     });
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -255,6 +255,32 @@ describe('GenerativeModel', () => {
     makeRequestStub.mockRestore();
   });
 
+  it('passes params through to generateContentStream', async () => {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      systemInstruction: 'be friendly',
+    });
+    const mockResponse = getMockResponseStreaming(
+      BackendName.VertexAI,
+      'streaming-success-basic-reply-short.txt',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const result = await genModel.generateContentStream('hello');
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.STREAM_GENERATE_CONTENT,
+        stream: true,
+      }),
+      expect.stringMatching(/hello|be friendly/),
+    );
+    const aggregated = await result.response;
+    expect(aggregated.text().length).toBeGreaterThan(0);
+    makeRequestStub.mockRestore();
+  });
+
   it('merges per-call request options over model request options for countTokens', async () => {
     const controller = new AbortController();
     const genModel = new GenerativeModel(
@@ -296,7 +322,7 @@ describe('GenerativeModel', () => {
       model: 'my-model',
       systemInstruction: 'be friendly',
     });
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -332,11 +358,11 @@ describe('GenerativeModel', () => {
         },
       ],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be friendly' }] },
     });
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -345,14 +371,14 @@ describe('GenerativeModel', () => {
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
     await genModel.generateContent({
-      contents: [{ role: 'user', parts: [{ text: 'hello' }] }],
+      contents: [{ role: 'user', parts: [{ type: 'text', text: 'hello' }] }],
       tools: [
         {
           functionDeclarations: [{ name: 'otherfunc', description: 'otherdesc' }],
         },
       ],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.AUTO } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be formal' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be formal' }] },
     });
     expect(makeRequestStub).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -394,6 +420,7 @@ describe('GenerativeModel', () => {
                 role: 'model',
                 parts: [
                   {
+                    type: 'functionCall',
                     functionCall: {
                       id: 'call-1',
                       name: 'getWeather',
@@ -413,7 +440,7 @@ describe('GenerativeModel', () => {
               index: 0,
               content: {
                 role: 'model',
-                parts: [{ text: 'It is 72 degrees.' }],
+                parts: [{ type: 'text', text: 'It is 72 degrees.' }],
               },
             },
           ],
@@ -487,6 +514,7 @@ describe('GenerativeModel', () => {
             role: 'model',
             parts: [
               {
+                type: 'functionCall',
                 functionCall: {
                   name: 'getWeather',
                   args: { city: 'London' },
@@ -547,11 +575,11 @@ describe('GenerativeModel', () => {
       model: 'my-model',
       tools: [{ functionDeclarations: [{ name: 'myfunc', description: 'mydesc' }] }],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be friendly' }] },
     });
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -600,6 +628,7 @@ describe('GenerativeModel', () => {
                 role: 'model',
                 parts: [
                   {
+                    type: 'functionCall',
                     functionCall: {
                       name: 'getWeather',
                       args: { city: 'London' },
@@ -618,7 +647,7 @@ describe('GenerativeModel', () => {
               index: 0,
               content: {
                 role: 'model',
-                parts: [{ text: 'It is 72 degrees.' }],
+                parts: [{ type: 'text', text: 'It is 72 degrees.' }],
               },
             },
           ],
@@ -635,12 +664,13 @@ describe('GenerativeModel', () => {
     expect(history).toEqual([
       {
         role: 'user',
-        parts: [{ text: 'weather in London' }],
+        parts: [{ type: 'text', text: 'weather in London' }],
       },
       {
         role: 'model',
         parts: [
           {
+            type: 'functionCall',
             functionCall: {
               name: 'getWeather',
               args: { city: 'London' },
@@ -652,6 +682,7 @@ describe('GenerativeModel', () => {
         role: 'function',
         parts: [
           {
+            type: 'functionResponse',
             functionResponse: {
               name: 'getWeather',
               response: { temperature: 72 },
@@ -661,7 +692,7 @@ describe('GenerativeModel', () => {
       },
       {
         role: 'model',
-        parts: [{ text: 'It is 72 degrees.' }],
+        parts: [{ type: 'text', text: 'It is 72 degrees.' }],
       },
     ]);
     makeRequestStub.mockRestore();
@@ -676,7 +707,7 @@ describe('GenerativeModel', () => {
         { codeExecution: {} },
       ],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be friendly' }] },
       generationConfig: { topK: 1 },
     });
     expect(genModel.tools?.length).toBe(3);
@@ -710,7 +741,7 @@ describe('GenerativeModel', () => {
       model: 'my-model',
       systemInstruction: 'be friendly',
     });
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -737,11 +768,11 @@ describe('GenerativeModel', () => {
       model: 'my-model',
       tools: [{ functionDeclarations: [{ name: 'myfunc', description: 'mydesc' }] }],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
-      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be friendly' }] },
     });
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
-    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    expect((genModel.systemInstruction?.parts[0] as { text: string }).text).toBe('be friendly');
     const mockResponse = getMockResponse(
       BackendName.VertexAI,
       'unary-success-basic-reply-short.json',
@@ -759,7 +790,7 @@ describe('GenerativeModel', () => {
         toolConfig: {
           functionCallingConfig: { mode: FunctionCallingMode.AUTO },
         },
-        systemInstruction: { role: 'system', parts: [{ text: 'be formal' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be formal' }] },
       })
       .sendMessage('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(

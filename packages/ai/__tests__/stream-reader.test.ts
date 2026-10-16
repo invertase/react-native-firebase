@@ -39,14 +39,22 @@ import {
 } from '../lib/types';
 import { AIError } from '../lib/errors';
 import { ApiSettings } from '../lib/types/internal';
-import { VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend, GoogleAIBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
   appId: 'my-appid',
   location: 'us-central1',
-  backend: new VertexAIBackend(),
+  backend: new AgentPlatformBackend(),
+};
+
+const fakeGoogleAIApiSettings: ApiSettings = {
+  apiKey: 'key',
+  project: 'my-project',
+  appId: 'my-appid',
+  location: 'us-central1',
+  backend: new GoogleAIBackend(),
 };
 
 describe('stream-reader', () => {
@@ -56,7 +64,10 @@ describe('stream-reader', () => {
     });
 
     it('two lines', async () => {
-      const src = [{ text: 'A' }, { text: 'B' }];
+      const src = [
+        { type: 'text', text: 'A' },
+        { type: 'text', text: 'B' },
+      ];
       const inputStream = getChunkedStream(
         src
           .map(v => JSON.stringify(v))
@@ -174,6 +185,62 @@ describe('stream-reader', () => {
       }
       expect(numChunks).toBe(2);
     });
+
+    it('maps Google AI streaming responses', async () => {
+      const fakeResponse = getMockResponseStreaming(
+        BackendName.GoogleAI,
+        'streaming-success-basic-reply-short.txt',
+      );
+      const result = processStream(fakeResponse as Response, fakeGoogleAIApiSettings);
+      let streamed = '';
+      for await (const chunk of result.stream) {
+        streamed += chunk.text();
+      }
+      expect(streamed.length).toBeGreaterThan(0);
+      const aggregatedResponse = await result.response;
+      expect(aggregatedResponse.text().length).toBeGreaterThan(0);
+    });
+
+    it('skips empty candidate chunks without finish metadata', async () => {
+      const emptyChunk = 'data: {"candidates":[{"index":0}]}\r\n\r\n';
+      const textChunk =
+        'data: {"candidates":[{"index":0,"content":{"role":"model","parts":[{"text":"hi"}]},"finishReason":"STOP"}]}\r\n\r\n';
+      const result = processStream(
+        { body: getChunkedStream(emptyChunk + textChunk) } as Response,
+        fakeApiSettings,
+      );
+      const texts: string[] = [];
+      for await (const response of result.stream) {
+        texts.push(response.text());
+      }
+      expect(texts.join('')).toContain('hi');
+    });
+  });
+
+  describe('getResponseStream parse errors', () => {
+    it('errors when the stream ends with leftover incomplete JSON', async () => {
+      const decodeStream = new ReadableStream<string>({
+        start(controller) {
+          controller.enqueue('data: {"incomplete":');
+          controller.close();
+        },
+      });
+      const responseStream = getResponseStream(decodeStream);
+      const reader = responseStream.getReader();
+      await expect(reader.read()).rejects.toThrow(AIError);
+    });
+
+    it('errors when a complete SSE line contains invalid JSON', async () => {
+      const decodeStream = new ReadableStream<string>({
+        start(controller) {
+          controller.enqueue('data: {not-json}\r\n\r\n');
+          controller.close();
+        },
+      });
+      const responseStream = getResponseStream(decodeStream);
+      const reader = responseStream.getReader();
+      await expect(reader.read()).rejects.toThrow(/Error parsing JSON response/);
+    });
   });
 
   describe('aggregateResponses', () => {
@@ -206,7 +273,7 @@ describe('stream-reader', () => {
                 index: 0,
                 content: {
                   role: 'user',
-                  parts: [{ text: 'hello.' }],
+                  parts: [{ type: 'text', text: 'hello.' }],
                 },
                 finishReason: FinishReason.STOP,
                 finishMessage: 'something',
@@ -234,7 +301,7 @@ describe('stream-reader', () => {
                 index: 0,
                 content: {
                   role: 'user',
-                  parts: [{ text: 'angry stuff' }],
+                  parts: [{ type: 'text', text: 'angry stuff' }],
                 },
                 finishReason: FinishReason.STOP,
                 finishMessage: 'something',
@@ -272,7 +339,7 @@ describe('stream-reader', () => {
                 index: 0,
                 content: {
                   role: 'user',
-                  parts: [{ text: '...more stuff' }],
+                  parts: [{ type: 'text', text: '...more stuff' }],
                 },
                 finishReason: FinishReason.MAX_TOKENS,
                 finishMessage: 'too many tokens',
@@ -316,11 +383,9 @@ describe('stream-reader', () => {
 
       it('aggregates text across responses', () => {
         expect(response.candidates?.length).toBe(1);
-        expect(response.candidates?.[0]!.content.parts.map(({ text }) => text)).toEqual([
-          'hello.',
-          'angry stuff',
-          '...more stuff',
-        ]);
+        expect(
+          response.candidates?.[0]!.content.parts.map(part => (part as { text?: string }).text),
+        ).toEqual(['hello.', 'angry stuff', '...more stuff']);
       });
 
       it("takes the last response's promptFeedback", () => {
@@ -356,7 +421,7 @@ describe('stream-reader', () => {
             candidates: [
               {
                 index: 0,
-                content: { role: 'model', parts: [{ text: 'Grounded answer' }] },
+                content: { role: 'model', parts: [{ type: 'text', text: 'Grounded answer' }] },
                 finishReason: FinishReason.STOP,
                 groundingMetadata: {
                   searchEntryPoint: { renderedContent: '<div>Search entry</div>' },
@@ -431,7 +496,7 @@ describe('stream-reader', () => {
             candidates: [
               {
                 index: 0,
-                content: { role: 'user', parts: [{ text: 'chunk1' }] },
+                content: { role: 'user', parts: [{ type: 'text', text: 'chunk1' }] },
                 finishReason: FinishReason.STOP,
                 urlContextMetadata: {
                   urlMetadata: [
@@ -452,7 +517,7 @@ describe('stream-reader', () => {
             candidates: [
               {
                 index: 0,
-                content: { role: 'user', parts: [{ text: 'chunk2' }] },
+                content: { role: 'user', parts: [{ type: 'text', text: 'chunk2' }] },
                 finishReason: FinishReason.STOP,
                 // urlContextMetadata omitted (undefined) in later chunk
               },

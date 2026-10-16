@@ -150,7 +150,7 @@ describe('Firestore pipeline native parity', function () {
     const iosFn = extractSwiftFunction(
       iosSource,
       'private func coerceDocumentPathValue(_ value: Any, fieldName: String) throws -> String {',
-      'private func buildParentExprBridge(referenceArg: ExprBridge) -> ExprBridge {',
+      'private func buildParentExprBridge(referenceArg: __ExprBridge) -> __ExprBridge {',
     );
 
     expect(androidFn).toContain('unwrapConstantValue(map, fieldName)');

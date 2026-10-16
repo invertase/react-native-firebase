@@ -25,7 +25,7 @@ import { AI } from '../lib/public-types';
 import { GenerativeModel } from '../lib/models/generative-model';
 
 import { AI_TYPE } from '../lib/constants';
-import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
+import { GoogleAIBackend, AgentPlatformBackend } from '../lib/backend';
 
 const fakeAI: AI = {
   app: {
@@ -36,7 +36,7 @@ const fakeAI: AI = {
       projectId: 'my-project',
     },
   } as ReactNativeFirebase.FirebaseApp,
-  backend: new VertexAIBackend('us-central1'),
+  backend: new AgentPlatformBackend('us-central1'),
   location: 'us-central1',
 };
 
@@ -55,7 +55,7 @@ const fakeGoogleAI: AI = {
 };
 
 describe('API tests', () => {
-  describe('getGenerativeModel() with VertexAIBackend', () => {
+  describe('getGenerativeModel() with AgentPlatformBackend', () => {
     it('should throw an error if no model is provided', () => {
       try {
         getGenerativeModel(fakeAI, {} as ModelParams);

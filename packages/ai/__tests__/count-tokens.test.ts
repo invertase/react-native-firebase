@@ -41,7 +41,7 @@ const fakeGoogleAIApiSettings: ApiSettings = {
 };
 
 const fakeRequestParams: CountTokensRequest = {
-  contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
+  contents: [{ parts: [{ type: 'text', text: 'hello' }], role: 'user' }],
 };
 
 describe('countTokens()', () => {
@@ -56,7 +56,6 @@ describe('countTokens()', () => {
       .mockResolvedValue(mockResponse as Response);
     const result = await countTokens(fakeApiSettings, 'model', fakeRequestParams);
     expect(result.totalTokens).toBe(6);
-    expect(result.totalBillableCharacters).toBe(16);
     expect(makeRequestStub).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'model',
@@ -80,7 +79,6 @@ describe('countTokens()', () => {
     const result = await countTokens(fakeApiSettings, 'model', fakeRequestParams);
 
     expect(result.totalTokens).toBe(1837);
-    expect(result.totalBillableCharacters).toBe(117);
     expect(result.promptTokensDetails?.[0]?.modality).toBe('IMAGE');
     expect(result.promptTokensDetails?.[0]?.tokenCount).toBe(1806);
     expect(makeRequestStub).toHaveBeenCalledWith(
@@ -105,7 +103,6 @@ describe('countTokens()', () => {
       .mockResolvedValue(mockResponse as Response);
     const result = await countTokens(fakeApiSettings, 'model', fakeRequestParams);
     expect(result.totalTokens).toBe(258);
-    expect(result).not.toHaveProperty('totalBillableCharacters');
     expect(makeRequestStub).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'model',

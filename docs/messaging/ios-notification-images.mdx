@@ -31,7 +31,7 @@ Ensure that your new extension has access to Firebase/Messaging pod by adding it
 - From the Navigator open the Podfile: **Pods > Podfile**
 - Scroll down to the bottom of the file and add
 
-> This CocoaPods + static recipe requires opting out of RNFB's default SPM mode (`$RNFirebaseDisableSPM = true`). See [iOS SPM Support](/ios-spm).
+> Notification Service Extension image recipes that previously relied on CocoaPods Firebase are incompatible with Firebase Apple SDK 13+ (SPM-only). Prefer an extension setup compatible with SPM, or keep the extension's Firebase pin aligned with RNFB's SPM version. See [iOS SPM Support](/ios-spm).
 
 ```Ruby
 target 'ImageNotification' do

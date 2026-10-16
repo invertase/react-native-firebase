@@ -21,11 +21,11 @@ final class RNFBFirestorePipelineBridgeFactory {
   private let nodeBuilder = RNFBFirestorePipelineNodeBuilder()
 
   private final class StageBridgeBox {
-    var stages: [StageBridge]?
+    var stages: [__StageBridge]?
   }
 
   private enum PendingStageBridge {
-    case ready(StageBridge)
+    case ready(__StageBridge)
     case union(StageBridgeBox)
   }
 
@@ -35,7 +35,7 @@ final class RNFBFirestorePipelineBridgeFactory {
       box: StageBridgeBox
     )
     case exit(
-      sourceStages: [StageBridge],
+      sourceStages: [__StageBridge],
       pendingStages: [PendingStageBridge],
       box: StageBridgeBox
     )
@@ -76,7 +76,7 @@ final class RNFBFirestorePipelineBridgeFactory {
   func buildStageBridges(
     firestore: Firestore,
     request: RNFBFirestoreParsedPipelineRequest
-  ) throws -> [StageBridge] {
+  ) throws -> [__StageBridge] {
     nodeBuilder.currentFirestore = firestore
     nodeBuilder.buildNestedPipelineSubquery = { [self] nestedFirestore, pipelineMap, scalar in
       RNFBFirestorePipelineDebug.log(
@@ -88,9 +88,9 @@ final class RNFBFirestorePipelineBridgeFactory {
         "buildNestedPipelineSubquery built \(nestedStages.count) stage bridge(s) kind=\(scalar ? "scalar" : "array")"
       )
       // Mirror the Firebase Swift SDK: `toScalarExpression()`/`toArrayExpression()` wrap the
-      // pipeline's stage bridges in a `PipelineExprBridge` then a `scalar`/`array` function bridge.
-      let pipelineExprBridge = PipelineExprBridge(stages: nestedStages)
-      return FunctionExprBridge(name: scalar ? "scalar" : "array", args: [pipelineExprBridge])
+      // pipeline's stage bridges in a `__PipelineExprBridge` then a `scalar`/`array` function bridge.
+      let pipelineExprBridge = __PipelineExprBridge(stages: nestedStages)
+      return __FunctionExprBridge(name: scalar ? "scalar" : "array", args: [pipelineExprBridge])
     }
 
     let rootBox = StageBridgeBox()
@@ -135,7 +135,7 @@ final class RNFBFirestorePipelineBridgeFactory {
             guard let childStages = childBox.stages else {
               throw PipelineValidationError("pipelineExecute() failed to build nested union pipeline.")
             }
-            stageBridges.append(UnionStageBridge(other: PipelineBridge(stages: childStages, db: firestore)))
+            stageBridges.append(__UnionStageBridge(other: __PipelineBridge(stages: childStages, db: firestore)))
           }
         }
 
@@ -153,7 +153,7 @@ final class RNFBFirestorePipelineBridgeFactory {
   private func buildSourceStageBridges(
     firestore: Firestore,
     source: RNFBFirestoreParsedPipelineSource
-  ) throws -> [StageBridge] {
+  ) throws -> [__StageBridge] {
     let sourceType = source.sourceType
 
     switch sourceType {
@@ -161,22 +161,22 @@ final class RNFBFirestorePipelineBridgeFactory {
       guard let path = source.path else {
         throw PipelineValidationError("pipelineExecute() expected pipeline.source.path to be a non-empty string.")
       }
-      return [CollectionSourceStageBridge(ref: firestore.collection(path), firestore: firestore, forceIndex: nil)]
+      return [__CollectionSourceStageBridge(ref: firestore.collection(path), firestore: firestore, forceIndex: nil)]
     case "collectionGroup":
       guard let collectionId = source.collectionId else {
         throw PipelineValidationError(
           "pipelineExecute() expected pipeline.source.collectionId to be a non-empty string.")
       }
-      return [CollectionGroupSourceStageBridge(collectionId: collectionId, forceIndex: nil)]
+      return [__CollectionGroupSourceStageBridge(collectionId: collectionId, forceIndex: nil)]
     case "database":
-      return [DatabaseSourceStageBridge()]
+      return [__DatabaseSourceStageBridge()]
     case "documents":
       guard !source.documents.isEmpty else {
         throw PipelineValidationError(
           "pipelineExecute() expected pipeline.source.documents to contain at least one document path.")
       }
       let refs = source.documents.map { firestore.document($0) }
-      return [DocumentsSourceStageBridge(documents: refs, firestore: firestore)]
+      return [__DocumentsSourceStageBridge(documents: refs, firestore: firestore)]
     case "query":
       guard let path = source.path else {
         throw PipelineValidationError("pipelineExecute() expected pipeline.source.path to be a non-empty string.")
@@ -201,12 +201,12 @@ final class RNFBFirestorePipelineBridgeFactory {
         throw PipelineValidationError("pipelineExecute() expected query source to be a valid query.")
       }
 
-      return PipelineBridge.createStageBridges(from: query)
+      return __PipelineBridge.createStageBridges(from: query)
     case "subcollection":
       guard let path = source.path else {
         throw PipelineValidationError("pipelineExecute() expected pipeline.source.path to be a non-empty string.")
       }
-      return [SubcollectionSourceStageBridge(path: path)]
+      return [__SubcollectionSourceStageBridge(path: path)]
     default:
       throw PipelineValidationError("pipelineExecute() received an unknown source type.")
     }
@@ -215,31 +215,31 @@ final class RNFBFirestorePipelineBridgeFactory {
   private func buildStageBridge(
     _ stage: RNFBFirestoreParsedPipelineStage,
     firestore: Firestore
-  ) throws -> StageBridge {
+  ) throws -> __StageBridge {
     switch stage {
     case let .whereStage(parsed):
-      return WhereStageBridge(
+      return __WhereStageBridge(
         expr: try nodeBuilder.coerceBooleanExpression(parsed.condition, fieldName: "stage.options.condition"))
     case let .selectStage(parsed):
-      return SelectStageBridge(
+      return __SelectStageBridge(
         selections: try nodeBuilder.coerceNamedSelectables(parsed.selections, fieldName: "stage.options.selections"))
     case let .addFieldsStage(parsed):
-      return AddFieldsStageBridge(
+      return __AddFieldsStageBridge(
         fields: try nodeBuilder.coerceNamedSelectables(parsed.fields, fieldName: "stage.options.fields"))
     case let .removeFieldsStage(parsed):
-      return RemoveFieldsStageBridge(
+      return __RemoveFieldsStageBridge(
         fields: parsed.fields)
     case let .sortStage(parsed):
-      return SortStageBridge(
+      return __SortStageBridge(
         orderings: try nodeBuilder.coerceOrderings(parsed.orderings, fieldName: "stage.options.orderings"))
     case let .limitStage(parsed):
-      return LimitStageBridge(limit: try nodeBuilder.coerceInt(parsed.limit, fieldName: "stage.options.limit"))
+      return __LimitStageBridge(limit: try nodeBuilder.coerceInt(parsed.limit, fieldName: "stage.options.limit"))
     case let .offsetStage(parsed):
-      return OffsetStageBridge(offset: try nodeBuilder.coerceInt(parsed.offset, fieldName: "stage.options.offset"))
+      return __OffsetStageBridge(offset: try nodeBuilder.coerceInt(parsed.offset, fieldName: "stage.options.offset"))
     case let .aggregateStage(parsed):
       return try buildAggregateStage(parsed)
     case let .distinctStage(parsed):
-      return DistinctStageBridge(
+      return __DistinctStageBridge(
         groups: try nodeBuilder.coerceNamedSelectables(parsed.groups, fieldName: "stage.options.groups"))
     case let .findNearestStage(parsed):
       return try buildFindNearestStage(parsed)
@@ -248,13 +248,13 @@ final class RNFBFirestorePipelineBridgeFactory {
     case let .defineStage(parsed):
       return try buildDefineStage(parsed)
     case let .replaceWithStage(parsed):
-      return ReplaceWithStageBridge(expr: try nodeBuilder.coerceExpression(parsed.value, fieldName: "stage.options.map"))
+      return __ReplaceWithStageBridge(expr: try nodeBuilder.coerceExpression(parsed.value, fieldName: "stage.options.map"))
     case let .sampleStage(parsed):
       if let documents = parsed.documents {
-        return SampleStageBridge(count: Int64(try nodeBuilder.coerceInt(documents, fieldName: "stage.options.documents")))
+        return __SampleStageBridge(count: Int64(try nodeBuilder.coerceInt(documents, fieldName: "stage.options.documents")))
       }
       if let percentage = parsed.percentage {
-        return SampleStageBridge(percentage: try coerceNumber(percentage, fieldName: "stage.options.percentage"))
+        return __SampleStageBridge(percentage: try coerceNumber(percentage, fieldName: "stage.options.percentage"))
       }
       throw PipelineValidationError("pipelineExecute() expected sample stage to include documents or percentage.")
     case .unionStage:
@@ -262,19 +262,19 @@ final class RNFBFirestorePipelineBridgeFactory {
     case let .unnestStage(parsed):
       let expression = try nodeBuilder.coerceExpression(parsed.selectable.expression, fieldName: "stage.options.selectable")
       let alias = nodeBuilder.coerceAlias(from: parsed.selectable) ?? "_unnest"
-      let indexExpr: ExprBridge?
+      let indexExpr: __ExprBridge?
       if let indexField = parsed.indexField {
         let indexFieldName = try nodeBuilder.coerceStageOptionFieldName(
           indexField,
           fieldName: "stage.options.indexField"
         )
-        indexExpr = indexFieldName.isEmpty ? nil : FieldBridge(name: indexFieldName)
+        indexExpr = indexFieldName.isEmpty ? nil : __FieldBridge(name: indexFieldName)
       } else {
         indexExpr = nil
       }
-      return UnnestStageBridge(field: expression, alias: FieldBridge(name: alias), indexField: indexExpr)
+      return __UnnestStageBridge(field: expression, alias: __FieldBridge(name: alias), indexField: indexExpr)
     case let .rawStage(parsed):
-      return RawStageBridge(
+      return __RawStageBridge(
         name: parsed.name,
         params: try nodeBuilder.coerceRawParams(parsed.params, fieldName: "stage.options.params"),
         options: try nodeBuilder.coerceRawOptions(parsed.options, fieldName: "stage.options.options")
@@ -282,8 +282,8 @@ final class RNFBFirestorePipelineBridgeFactory {
     }
   }
 
-  private func buildAggregateStage(_ stage: RNFBFirestoreParsedAggregateStage) throws -> StageBridge {
-    var accumulators: [String: AggregateFunctionBridge] = [:]
+  private func buildAggregateStage(_ stage: RNFBFirestoreParsedAggregateStage) throws -> __StageBridge {
+    var accumulators: [String: __AggregateFunctionBridge] = [:]
     for (index, accumulator) in stage.accumulators.enumerated() {
       let aggregate = try nodeBuilder.coerceAliasedAggregate(
         accumulator,
@@ -296,30 +296,30 @@ final class RNFBFirestorePipelineBridgeFactory {
       ? [:]
       : try nodeBuilder.coerceNamedSelectables(stage.groups, fieldName: "stage.options.groups")
 
-    return AggregateStageBridge(accumulators: accumulators, groups: groups)
+    return __AggregateStageBridge(accumulators: accumulators, groups: groups)
   }
 
-  private func buildFindNearestStage(_ stage: RNFBFirestoreParsedFindNearestStage) throws -> StageBridge {
+  private func buildFindNearestStage(_ stage: RNFBFirestoreParsedFindNearestStage) throws -> __StageBridge {
     let fieldPath = try nodeBuilder.coerceFieldPath(stage.field, fieldName: "stage.options.field")
     let vector = try nodeBuilder.coerceVector(stage.vectorValue, fieldName: "findNearest.vectorValue")
     let distanceMeasure = try normalizeDistanceMeasure(
       stage.distanceMeasure,
       fieldName: "stage.options.distanceMeasure"
     )
-    let distanceFieldExpr: ExprBridge?
+    let distanceFieldExpr: __ExprBridge?
     if let distanceField = stage.distanceField {
       let expression = try nodeBuilder.coerceExpression(
         distanceField,
         fieldName: "stage.options.distanceField"
       )
-      if expression is FieldBridge {
+      if expression is __FieldBridge {
         distanceFieldExpr = expression
       } else {
         let fieldName = try nodeBuilder.coerceStageOptionFieldName(
           distanceField,
           fieldName: "stage.options.distanceField"
         )
-        distanceFieldExpr = FieldBridge(name: fieldName)
+        distanceFieldExpr = __FieldBridge(name: fieldName)
       }
     } else {
       distanceFieldExpr = nil
@@ -331,8 +331,8 @@ final class RNFBFirestorePipelineBridgeFactory {
       limitNumber = nil
     }
 
-    return FindNearestStageBridge(
-      field: FieldBridge(name: fieldPath),
+    return __FindNearestStageBridge(
+      field: __FieldBridge(name: fieldPath),
       vectorValue: VectorValue(__array: vector.map { NSNumber(value: $0) }),
       distanceMeasure: distanceMeasure,
       limit: limitNumber,
@@ -340,38 +340,38 @@ final class RNFBFirestorePipelineBridgeFactory {
     )
   }
 
-  private func buildSearchStage(_ stage: RNFBFirestoreParsedSearchStage) throws -> StageBridge {
+  private func buildSearchStage(_ stage: RNFBFirestoreParsedSearchStage) throws -> __StageBridge {
     // Mirror FirebaseFirestore Search stage construction (Stages.swift): option values are
     // Sendable literals or Expression values converted through Constant/Expression.toBridge().
-    var options: [String: ExprBridge] = [:]
+    var options: [String: __ExprBridge] = [:]
     options["query"] = try buildSearchQueryBridge(from: stage.query)
 
     if let languageCode = stage.languageCode {
-      options["language_code"] = ConstantBridge(languageCode)
+      options["language_code"] = __ConstantBridge(languageCode)
     }
     if let retrievalDepth = stage.retrievalDepth {
-      options["retrieval_depth"] = ConstantBridge(retrievalDepth.intValue)
+      options["retrieval_depth"] = __ConstantBridge(retrievalDepth.intValue)
     }
     if let offset = stage.offset {
-      options["offset"] = ConstantBridge(offset.intValue)
+      options["offset"] = __ConstantBridge(offset.intValue)
     }
     if let limit = stage.limit {
-      options["limit"] = ConstantBridge(limit.intValue)
+      options["limit"] = __ConstantBridge(limit.intValue)
     }
 
-    var sortBridge: [OrderingBridge] = []
+    var sortBridge: [__OrderingBridge] = []
     if !stage.sort.isEmpty {
       sortBridge = try stage.sort.enumerated().map { index, ordering in
         try buildSearchOrderingBridge(ordering, fieldName: "stage.options.sort[\(index)]")
       }
     }
 
-    var addFields: [String: ExprBridge] = [:]
+    var addFields: [String: __ExprBridge] = [:]
     if !stage.addFields.isEmpty {
       addFields = try buildSearchAddFields(from: stage.addFields)
     }
 
-    return SearchStageBridge(
+    return __SearchStageBridge(
       options: options,
       addFields: addFields,
       select: [:],
@@ -379,7 +379,7 @@ final class RNFBFirestorePipelineBridgeFactory {
     )
   }
 
-  private func buildSearchQueryBridge(from expression: RNFBFirestoreParsedExpressionNode) throws -> ExprBridge {
+  private func buildSearchQueryBridge(from expression: RNFBFirestoreParsedExpressionNode) throws -> __ExprBridge {
     if case let .function(name, args) = expression,
        normalizePipelineFunctionName(name) == "documentmatches",
        args.count == 1 {
@@ -391,7 +391,7 @@ final class RNFBFirestorePipelineBridgeFactory {
         args[0],
         fieldName: "stage.options.query.args[0]"
       )
-      return FunctionExprBridge(name: "document_matches", args: [queryArg])
+      return __FunctionExprBridge(name: "document_matches", args: [queryArg])
     }
 
     return try nodeBuilder.coerceBooleanExpression(expression, fieldName: "stage.options.query")
@@ -416,11 +416,11 @@ final class RNFBFirestorePipelineBridgeFactory {
   private func buildSearchOrderingBridge(
     _ ordering: RNFBFirestoreParsedOrderingNode,
     fieldName: String
-  ) throws -> OrderingBridge {
+  ) throws -> __OrderingBridge {
     if case let .function(name, args) = ordering.expression,
        normalizePipelineFunctionName(name) == "score",
        args.isEmpty {
-      return OrderingBridge(
+      return __OrderingBridge(
         expr: Score().bridge,
         direction: ordering.descending ? "descending" : "ascending"
       )
@@ -431,8 +431,8 @@ final class RNFBFirestorePipelineBridgeFactory {
 
   private func buildSearchAddFields(
     from selectables: [RNFBFirestoreParsedSelectableNode]
-  ) throws -> [String: ExprBridge] {
-    var output: [String: ExprBridge] = [:]
+  ) throws -> [String: __ExprBridge] {
+    var output: [String: __ExprBridge] = [:]
 
     for (index, selectable) in selectables.enumerated() {
       guard let alias = selectable.alias, !alias.isEmpty else {
@@ -463,12 +463,12 @@ final class RNFBFirestorePipelineBridgeFactory {
       .replacingOccurrences(of: "-", with: "")
   }
 
-  private func buildDefineStage(_ stage: RNFBFirestoreParsedDefineStage) throws -> StageBridge {
+  private func buildDefineStage(_ stage: RNFBFirestoreParsedDefineStage) throws -> __StageBridge {
     let variables = try nodeBuilder.coerceNamedSelectables(
       stage.variables,
       fieldName: "stage.options.variables"
     )
-    return DefineStageBridge(variables: variables)
+    return __DefineStageBridge(variables: variables)
   }
 
   private func normalizeDistanceMeasure(_ value: String, fieldName: String) throws -> String {

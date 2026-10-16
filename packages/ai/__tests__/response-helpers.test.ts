@@ -17,7 +17,13 @@
 import { describe, expect, it, jest, afterEach } from '@jest/globals';
 import { addHelpers, formatBlockErrorMessage } from '../lib/requests/response-helpers';
 
-import { BlockReason, Content, FinishReason, GenerateContentResponse } from '../lib/types';
+import {
+  BlockReason,
+  Content,
+  FinishReason,
+  GenerateContentResponse,
+  FunctionCallPart,
+} from '../lib/types';
 
 const fakeResponseText: GenerateContentResponse = {
   candidates: [
@@ -25,7 +31,10 @@ const fakeResponseText: GenerateContentResponse = {
       index: 0,
       content: {
         role: 'model',
-        parts: [{ text: 'Some text' }, { text: ' and some more text' }],
+        parts: [
+          { type: 'text' as const, text: 'Some text' },
+          { type: 'text' as const, text: ' and some more text' },
+        ],
       },
     },
   ],
@@ -37,13 +46,17 @@ const fakeResponseThoughts: GenerateContentResponse = {
       index: 0,
       content: {
         role: 'model',
-        parts: [{ text: 'Some text' }, { text: 'and some thoughts', thought: true }],
+        parts: [
+          { type: 'text' as const, text: 'Some text' },
+          { type: 'text' as const, text: 'and some thoughts', thought: true },
+        ],
       },
     },
   ],
 };
 
-const functionCallPart1 = {
+const functionCallPart1: FunctionCallPart = {
+  type: 'functionCall',
   functionCall: {
     name: 'find_theaters',
     args: {
@@ -53,7 +66,8 @@ const functionCallPart1 = {
   },
 };
 
-const functionCallPart2 = {
+const functionCallPart2: FunctionCallPart = {
+  type: 'functionCall',
   functionCall: {
     name: 'find_times',
     args: {
@@ -94,7 +108,7 @@ const fakeResponseMixed1: GenerateContentResponse = {
       index: 0,
       content: {
         role: 'model',
-        parts: [{ text: 'some text' }, functionCallPart2],
+        parts: [{ type: 'text' as const, text: 'some text' }, functionCallPart2],
       },
     },
   ],
@@ -106,7 +120,7 @@ const fakeResponseMixed2: GenerateContentResponse = {
       index: 0,
       content: {
         role: 'model',
-        parts: [functionCallPart1, { text: 'some text' }],
+        parts: [functionCallPart1, { type: 'text' as const, text: 'some text' }],
       },
     },
   ],
@@ -118,7 +132,11 @@ const fakeResponseMixed3: GenerateContentResponse = {
       index: 0,
       content: {
         role: 'model',
-        parts: [{ text: 'some text' }, functionCallPart1, { text: ' and more text' }],
+        parts: [
+          { type: 'text' as const, text: 'some text' },
+          functionCallPart1,
+          { type: 'text' as const, text: ' and more text' },
+        ],
       },
     },
   ],
@@ -193,6 +211,90 @@ describe('response-helpers methods', () => {
       const enhancedResponse = addHelpers(badFakeResponse);
       expect(() => enhancedResponse.text()).toThrow('SAFETY');
       expect(() => enhancedResponse.thoughtSummary()).toThrow('SAFETY');
+      expect(() => enhancedResponse.functionCalls()).toThrow('SAFETY');
+      expect(() => enhancedResponse.inlineDataParts()).toThrow('SAFETY');
+    });
+
+    it('warns when multiple candidates are present', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const enhancedResponse = addHelpers({
+        candidates: [
+          fakeResponseText.candidates![0]!,
+          {
+            index: 1,
+            content: {
+              role: 'model',
+              parts: [{ type: 'text' as const, text: 'second' }],
+            },
+          },
+        ],
+      });
+      expect(enhancedResponse.text()).toBe('Some text and some more text');
+      warnSpy.mockRestore();
+    });
+
+    it('returns inlineDataParts when present', () => {
+      const enhancedResponse = addHelpers({
+        candidates: [
+          {
+            index: 0,
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  type: 'inlineData',
+                  inlineData: { mimeType: 'image/png', data: 'abc' },
+                },
+              ],
+            },
+          },
+        ],
+      });
+      expect(enhancedResponse.inlineDataParts()).toEqual([
+        {
+          type: 'inlineData',
+          inlineData: { mimeType: 'image/png', data: 'abc' },
+        },
+      ]);
+    });
+
+    it('returns undefined helpers when there are no candidates or promptFeedback', () => {
+      const enhancedResponse = addHelpers({});
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
+      expect(enhancedResponse.inlineDataParts()).toBeUndefined();
+      expect(enhancedResponse.functionCalls()).toBeUndefined();
+      expect(enhancedResponse.text()).toBe('');
+    });
+
+    it('returns undefined inlineDataParts when candidates have no inlineData parts', () => {
+      const enhancedResponse = addHelpers({
+        candidates: [
+          {
+            index: 0,
+            content: {
+              role: 'model',
+              parts: [{ type: 'text' as const, text: 'no images' }],
+            },
+          },
+        ],
+      });
+      expect(enhancedResponse.inlineDataParts()).toBeUndefined();
+    });
+
+    it('throws on bad finish reasons when reading text', () => {
+      const enhancedResponse = addHelpers({
+        candidates: [
+          {
+            index: 0,
+            finishReason: FinishReason.RECITATION,
+            content: {
+              role: 'model',
+              parts: [{ type: 'text' as const, text: 'copied' }],
+            },
+          },
+        ],
+      });
+      expect(() => enhancedResponse.text()).toThrow('RECITATION');
     });
   });
 

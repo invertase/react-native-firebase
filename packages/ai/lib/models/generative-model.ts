@@ -33,7 +33,7 @@ import {
   Tool,
   ToolConfig,
 } from '../types';
-import { ChatSession } from '../methods/chat-session';
+import { ChatSession, ChatSessionImpl } from '../methods/chat-session';
 import { countTokens } from '../methods/count-tokens';
 import { formatGenerateContentInput, formatSystemInstruction } from '../requests/request-helpers';
 import { mergeRequestOptions } from '../requests/request-options';
@@ -124,7 +124,7 @@ export class GenerativeModel extends AIModel {
    * multi-turn chats.
    */
   startChat(startChatParams?: StartChatParams): ChatSession {
-    return new ChatSession(
+    return new ChatSessionImpl(
       this._apiSettings,
       this.model,
       {

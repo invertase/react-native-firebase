@@ -108,27 +108,33 @@ const config: PackageConfig = {
     {
       name: 'BaseSpeechConfig',
       reason:
-        'Shared speech-config base type for multi/single-speaker TTS options newly exported by firebase-js-sdk. RN Firebase still uses the simpler VoiceConfig-based SpeechConfig shape.',
+        'Shared base for firebase-js-sdk single-/multi-speaker TTS configs. RN Firebase ' +
+        'AI still exposes the pre-union `{ voiceConfig?: VoiceConfig }` SpeechConfig shape ' +
+        'and does not model the split BaseSpeechConfig hierarchy.',
     },
     {
       name: 'MultiSpeakerSpeechConfig',
       reason:
-        'Multi-speaker speech config type added in firebase-js-sdk; not yet surfaced in React Native Firebase AI.',
+        'firebase-js-sdk multi-speaker TTS config. RN Firebase AI SpeechConfig remains the ' +
+        'legacy single VoiceConfig object; multi-speaker TTS request shaping is not implemented.',
     },
     {
       name: 'MultiSpeakerVoiceConfig',
       reason:
-        'Multi-speaker voice config type added in firebase-js-sdk; not yet surfaced in React Native Firebase AI.',
+        'firebase-js-sdk multi-speaker voice list type used by MultiSpeakerSpeechConfig. ' +
+        'RN Firebase AI has no multi-speaker TTS path, so this type is omitted.',
     },
     {
       name: 'SingleSpeakerSpeechConfig',
       reason:
-        'Single-speaker speech config type added in firebase-js-sdk; RN Firebase still uses the legacy VoiceConfig-based SpeechConfig object.',
+        'firebase-js-sdk single-speaker TTS config in the SpeechConfig union. RN Firebase ' +
+        'AI keeps the legacy `{ voiceConfig?: VoiceConfig }` object instead of the union arm.',
     },
     {
       name: 'SpeakerVoiceConfig',
       reason:
-        'Per-speaker voice config type added in firebase-js-sdk for multi-speaker TTS; not yet surfaced in React Native Firebase AI.',
+        'firebase-js-sdk per-speaker voice entry for multi-speaker TTS. RN Firebase AI has no ' +
+        'multi-speaker TTS path, so this type is omitted.',
     },
   ],
   extraInRN: [
@@ -141,6 +147,11 @@ const config: PackageConfig = {
       name: 'ObjectSchemaInterface',
       reason:
         'RN Firebase-specific schema helper interface used by the local schema-builder implementation and request typing.',
+    },
+    {
+      name: 'ChatSessionBase',
+      reason:
+        'RN Firebase exports the shared chat-session base class used by internal ChatSession / TemplateChatSession implementations. The JS SDK keeps this implementation detail private.',
     },
   ],
   differentShape: [
@@ -177,7 +188,9 @@ const config: PackageConfig = {
     {
       name: 'GenerationConfig',
       reason:
-        'firebase-js-sdk GenerationConfig gained optional `speechConfig` for TTS. RN Firebase has not yet added that field to GenerationConfig.',
+        'firebase-js-sdk GenerationConfig includes optional `speechConfig` for TTS. RN Firebase ' +
+        'GenerationConfig omits that field because SpeechConfig is still the legacy VoiceConfig ' +
+        'object and multi-speaker TTS request shaping is not implemented.',
     },
     {
       name: 'InferenceMode',
@@ -187,7 +200,9 @@ const config: PackageConfig = {
     {
       name: 'SpeechConfig',
       reason:
-        'firebase-js-sdk SpeechConfig is now a single-/multi-speaker union. RN Firebase still uses the legacy `{ voiceConfig?: VoiceConfig }` object shape.',
+        'firebase-js-sdk SpeechConfig is a SingleSpeakerSpeechConfig | MultiSpeakerSpeechConfig ' +
+        'union. RN Firebase keeps `{ voiceConfig?: VoiceConfig }` because multi-speaker TTS is ' +
+        'not implemented and existing callers use the VoiceConfig object.',
     },
     {
       name: 'URLRetrievalStatus',
