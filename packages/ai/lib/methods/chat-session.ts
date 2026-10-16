@@ -83,12 +83,47 @@ export class ChatSessionBase<ParamsType extends { history?: Content[] } = StartC
 }
 
 /**
- * ChatSession class that enables sending chat messages and stores
+ * Interface representing a `ChatSession` that enables sending
+ * chat messages and stores a history of sent and received messages so far.
+ *
+ * @public
+ */
+export interface ChatSession {
+  model: string;
+  params?: StartChatParams;
+  requestOptions?: RequestOptions;
+  /**
+   * Sends a chat message and receives a non-streaming
+   * {@link GenerateContentResult}
+   */
+  sendMessage(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentResult>;
+  /**
+   * Sends a chat message and receives the response as a
+   * {@link GenerateContentStreamResult} containing an iterable stream
+   * and a response promise.
+   */
+  sendMessageStream(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentStreamResult>;
+  /**
+   * Gets the chat history so far. Blocked prompts are not added to history.
+   * Neither blocked candidates nor the prompts that generated them are added
+   * to history.
+   */
+  getHistory(): Promise<Content[]>;
+}
+
+/**
+ * ChatSession implementation that enables sending chat messages and stores
  * history of sent and received messages so far.
  *
  * @public
  */
-export class ChatSession extends ChatSessionBase<StartChatParams> {
+export class ChatSessionImpl extends ChatSessionBase<StartChatParams> implements ChatSession {
   private _apiSettings: ApiSettings;
 
   constructor(
@@ -242,12 +277,36 @@ export class ChatSession extends ChatSessionBase<StartChatParams> {
 }
 
 /**
- * ChatSession class for server-side templates that enables sending chat
+ * Interface representing a `ChatSession` for use with server prompt templates
+ * that enables sending chat messages and stores history of sent and received
+ * messages so far.
+ *
+ * @beta
+ */
+export interface TemplateChatSession {
+  params: StartTemplateChatParams;
+  requestOptions?: RequestOptions;
+  sendMessage(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentResult>;
+  sendMessageStream(
+    request: string | Array<string | Part>,
+    singleRequestOptions?: SingleRequestOptions,
+  ): Promise<GenerateContentStreamResult>;
+  getHistory(): Promise<Content[]>;
+}
+
+/**
+ * ChatSession implementation for server-side templates that enables sending chat
  * messages and stores history of sent and received messages so far.
  *
  * @beta
  */
-export class TemplateChatSession extends ChatSessionBase<StartTemplateChatParams> {
+export class TemplateChatSessionImpl
+  extends ChatSessionBase<StartTemplateChatParams>
+  implements TemplateChatSession
+{
   private _apiSettings: ApiSettings;
 
   constructor(

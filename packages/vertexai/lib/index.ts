@@ -3,7 +3,7 @@
  * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -16,9 +16,14 @@
  */
 
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import { VertexAIBackend, AIModel, AIError, AIErrorCode } from '@react-native-firebase/ai';
+import { AgentPlatformBackend, AIModel, AIError, AIErrorCode } from '@react-native-firebase/ai';
 import { VertexAIOptions, VertexAI } from './public-types';
 
+/**
+ * Default location for the deprecated Vertex AI compat package.
+ * Agent Platform's SDK default is `global`; this compat wrapper keeps the
+ * historical Vertex default of `us-central1` when no location is passed.
+ */
 const DEFAULT_LOCATION = 'us-central1';
 
 /**
@@ -27,17 +32,12 @@ const DEFAULT_LOCATION = 'us-central1';
  * services. For migration details, see the {@link https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk | migration guide}.
  *
  * Returns a {@link VertexAI} instance for the given app, configured to use the
- * Vertex AI Gemini API. This instance will be
- * configured to use the Vertex AI Gemini API.
- *
- * Returns a <code>{@link VertexAI}</code> instance for the given app.
+ * Agent Platform Gemini API (formerly Vertex AI Gemini API).
  *
  * @public
  *
  * @param app - The {@link @FirebaseApp} to use.
  * @param options - The {@link VertexAIOptions} to use.
- * @param appCheck - The {@link @AppCheck} to use.
- * @param auth - The {@link @Auth} to use.
  */
 export function getVertexAI(
   app: ReactNativeFirebase.FirebaseApp = getApp(),
@@ -48,7 +48,7 @@ export function getVertexAI(
     location: options?.location || DEFAULT_LOCATION,
     appCheck: options?.appCheck || null,
     auth: options?.auth || null,
-    backend: new VertexAIBackend(options?.location || DEFAULT_LOCATION),
+    backend: new AgentPlatformBackend(options?.location || DEFAULT_LOCATION),
   };
 }
 
@@ -75,7 +75,7 @@ export const VertexAIModel = AIModel;
 export const VertexAIError = AIError;
 
 export { AIErrorCode as VertexAIErrorCode };
-export { VertexAIBackend, AIModel, AIError };
+export { AgentPlatformBackend, AIModel, AIError };
 
 export * from './public-types';
 export * from '@react-native-firebase/ai';

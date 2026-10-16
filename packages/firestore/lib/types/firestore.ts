@@ -293,27 +293,50 @@ export declare type UnionToIntersection<U> = (U extends unknown ? (k: U) => void
   ? I
   : never;
 
+/**
+ * For the given type, return a union type of T and the types of all child
+ * properties of T. Matches firebase-js-sdk UpdateData helper typing.
+ */
+export type ChildTypes<T> =
+  T extends Record<string, unknown>
+    ? { [K in keyof T & string]: ChildTypes<T[K]> }[keyof T & string] | T
+    : T;
+
+/**
+ * Returns a new map where every key is prefixed with the outer key appended
+ * to a dot. Index signatures widen via PartialWithFieldValue of ChildTypes.
+ */
 export type AddPrefixToKeys<Prefix extends string, T extends Record<string, unknown>> = {
-  // `string extends K` detects index signatures (e.g. `{[key: string]: bool}`).
-  // A field path like `foo.[string]` matches `foo.bar` or any sub-path, so we
-  // must widen to `any` to allow arbitrary sub-path property types.
-  [K in keyof T & string as `${Prefix}.${K}`]+?: string extends K ? any : T[K];
+  [K in keyof T & string as `${Prefix}.${K}`]+?: string extends K
+    ? PartialWithFieldValue<ChildTypes<T[K]>> | FieldValue
+    : T[K];
 };
 
 export type ChildUpdateFields<K extends string, V> =
   V extends Record<string, unknown> ? AddPrefixToKeys<K, UpdateData<V>> : never;
 
+/**
+ * For each field (e.g. 'bar'), find all nested keys (e.g. {'bar.baz': T1,
+ * 'bar.qux': T2}). Intersect them together to make a single map containing
+ * all possible keys that are all marked as optional.
+ */
 export type NestedUpdateFields<T extends {}> = UnionToIntersection<
   {
-    [K in keyof T & string]: ChildUpdateFields<K, T[K]>;
+    [K in keyof T & string]: string extends K ? never : ChildUpdateFields<K, T[K]>;
   }[keyof T & string]
 >;
 
+/**
+ * Update data (for use with updateDoc) that consists of field paths mapped to
+ * values. Index-signature fields widen via PartialWithFieldValue of ChildTypes.
+ */
 export type UpdateData<T> = T extends Primitive
   ? T
   : T extends {}
     ? {
-        [K in keyof T]?: UpdateData<T[K]> | FieldValue;
+        [K in keyof T]?: string extends K
+          ? PartialWithFieldValue<ChildTypes<T[K]>> | FieldValue
+          : UpdateData<T[K]> | FieldValue;
       } & NestedUpdateFields<T>
     : Partial<T>;
 

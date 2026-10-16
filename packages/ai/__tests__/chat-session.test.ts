@@ -17,18 +17,22 @@
 import { describe, expect, it, afterEach, jest } from '@jest/globals';
 
 import * as generateContentMethods from '../lib/methods/generate-content';
-import { EnhancedGenerateContentResponse, GenerateContentStreamResult } from '../lib/types';
-import { ChatSession } from '../lib/methods/chat-session';
+import {
+  BlockReason,
+  EnhancedGenerateContentResponse,
+  GenerateContentStreamResult,
+} from '../lib/types';
+import { ChatSessionImpl, TemplateChatSessionImpl } from '../lib/methods/chat-session';
 import { ApiSettings } from '../lib/types/internal';
 import { RequestOptions } from '../lib/types/requests';
-import { VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
   appId: 'my-appid',
   location: 'us-central1',
-  backend: new VertexAIBackend(),
+  backend: new AgentPlatformBackend(),
 };
 
 const requestOptions: RequestOptions = {
@@ -44,9 +48,22 @@ function streamResult(response: EnhancedGenerateContentResponse): GenerateConten
   };
 }
 
+const blockedResponse = {
+  candidates: [],
+  promptFeedback: { blockReason: BlockReason.SAFETY },
+} as unknown as EnhancedGenerateContentResponse;
+
 describe('ChatSession', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  describe('constructor', () => {
+    it('validates and stores provided history', async () => {
+      const history = [{ role: 'user' as const, parts: [{ type: 'text' as const, text: 'hi' }] }];
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', { history });
+      expect(await chatSession.getHistory()).toEqual(history);
+    });
   });
 
   describe('sendMessage()', () => {
@@ -55,7 +72,7 @@ describe('ChatSession', () => {
         .spyOn(generateContentMethods, 'generateContent')
         .mockRejectedValue('generateContent failed');
 
-      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
 
       await expect(chatSession.sendMessage('hello')).rejects.toMatch(/generateContent failed/);
 
@@ -72,7 +89,7 @@ describe('ChatSession', () => {
       const generateContentStub = jest
         .spyOn(generateContentMethods, 'generateContent')
         .mockResolvedValue({ response: { candidates: [] } } as any);
-      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
 
       await chatSession.sendMessage('hello', {
         timeout: 2000,
@@ -89,6 +106,45 @@ describe('ChatSession', () => {
         },
       );
     });
+
+    it('logs a warning when the response is blocked and does not update history', async () => {
+      const warnStub = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      jest.spyOn(generateContentMethods, 'generateContent').mockResolvedValue({
+        response: blockedResponse,
+      } as any);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
+
+      await chatSession.sendMessage('hello');
+
+      expect(warnStub).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.stringContaining('sendMessage() was unsuccessful'),
+      );
+      expect(await chatSession.getHistory()).toEqual([]);
+    });
+
+    it('defaults missing response role to model when updating history', async () => {
+      jest.spyOn(generateContentMethods, 'generateContent').mockResolvedValue({
+        response: {
+          candidates: [
+            {
+              index: 0,
+              content: {
+                parts: [{ type: 'text', text: 'hi back' }],
+              },
+            },
+          ],
+        },
+      } as any);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
+
+      await chatSession.sendMessage('hello');
+
+      expect(await chatSession.getHistory()).toEqual([
+        { role: 'user', parts: [{ type: 'text', text: 'hello' }] },
+        { role: 'model', parts: [{ type: 'text', text: 'hi back' }] },
+      ]);
+    });
   });
 
   describe('sendMessageStream()', () => {
@@ -98,7 +154,7 @@ describe('ChatSession', () => {
       const generateContentStreamStub = jest
         .spyOn(generateContentMethods, 'generateContentStream')
         .mockRejectedValue('generateContentStream failed');
-      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
       await expect(chatSession.sendMessageStream('hello')).rejects.toMatch(
         /generateContentStream failed/,
       );
@@ -120,7 +176,7 @@ describe('ChatSession', () => {
         .mockResolvedValue({
           response: Promise.resolve({ candidates: [] }),
         } as unknown as GenerateContentStreamResult);
-      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
 
       await chatSession.sendMessageStream('hello', {
         timeout: 2000,
@@ -148,6 +204,7 @@ describe('ChatSession', () => {
               role: 'model',
               parts: [
                 {
+                  type: 'functionCall',
                   functionCall: {
                     name: 'getWeather',
                     args: { city: 'London' },
@@ -165,7 +222,7 @@ describe('ChatSession', () => {
             index: 0,
             content: {
               role: 'model',
-              parts: [{ text: 'It is 72 degrees.' }],
+              parts: [{ type: 'text', text: 'It is 72 degrees.' }],
             },
           },
         ],
@@ -175,7 +232,7 @@ describe('ChatSession', () => {
         .spyOn(generateContentMethods, 'generateContentStream')
         .mockResolvedValueOnce(streamResult(functionCallResponse))
         .mockResolvedValueOnce(streamResult(finalResponse));
-      const chatSession = new ChatSession(
+      const chatSession = new ChatSessionImpl(
         fakeApiSettings,
         'a-model',
         {
@@ -203,12 +260,13 @@ describe('ChatSession', () => {
       expect(history).toEqual([
         {
           role: 'user',
-          parts: [{ text: 'weather in London' }],
+          parts: [{ type: 'text', text: 'weather in London' }],
         },
         {
           role: 'model',
           parts: [
             {
+              type: 'functionCall',
               functionCall: {
                 name: 'getWeather',
                 args: { city: 'London' },
@@ -220,6 +278,7 @@ describe('ChatSession', () => {
           role: 'function',
           parts: [
             {
+              type: 'functionResponse',
               functionResponse: {
                 name: 'getWeather',
                 response: { temperature: 72 },
@@ -229,7 +288,7 @@ describe('ChatSession', () => {
         },
         {
           role: 'model',
-          parts: [{ text: 'It is 72 degrees.' }],
+          parts: [{ type: 'text', text: 'It is 72 degrees.' }],
         },
       ]);
     });
@@ -240,7 +299,7 @@ describe('ChatSession', () => {
       const generateContentStreamStub = jest
         .spyOn(generateContentMethods, 'generateContentStream')
         .mockResolvedValue({} as unknown as GenerateContentStreamResult);
-      const chatSession = new ChatSession(fakeApiSettings, 'a-model', {}, requestOptions);
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
       await chatSession.sendMessageStream('hello');
       expect(generateContentStreamStub).toHaveBeenCalledWith(
         fakeApiSettings,
@@ -252,5 +311,202 @@ describe('ChatSession', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
       expect(consoleStub).toHaveBeenCalledTimes(1);
     });
+
+    it('logs a warning when the stream response is blocked and does not update history', async () => {
+      const warnStub = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      jest
+        .spyOn(generateContentMethods, 'generateContentStream')
+        .mockResolvedValue(streamResult(blockedResponse));
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
+
+      const result = await chatSession.sendMessageStream('hello');
+      await result.response;
+      expect(await chatSession.getHistory()).toEqual([]);
+
+      expect(warnStub).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.stringContaining('sendMessageStream() was unsuccessful'),
+      );
+    });
+
+    it('defaults missing stream response role to model when updating history', async () => {
+      const response = {
+        candidates: [
+          {
+            index: 0,
+            content: {
+              parts: [{ type: 'text', text: 'streamed' }],
+            },
+          },
+        ],
+      } as EnhancedGenerateContentResponse;
+      jest
+        .spyOn(generateContentMethods, 'generateContentStream')
+        .mockResolvedValue(streamResult(response));
+      const chatSession = new ChatSessionImpl(fakeApiSettings, 'a-model', {}, requestOptions);
+
+      const result = await chatSession.sendMessageStream('hello');
+      await result.response;
+
+      expect(await chatSession.getHistory()).toEqual([
+        { role: 'user', parts: [{ type: 'text', text: 'hello' }] },
+        { role: 'model', parts: [{ type: 'text', text: 'streamed' }] },
+      ]);
+    });
+  });
+});
+
+describe('TemplateChatSession', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('validates and stores provided history', async () => {
+    const history = [{ role: 'user' as const, parts: [{ type: 'text' as const, text: 'hi' }] }];
+    const chatSession = new TemplateChatSessionImpl(fakeApiSettings, {
+      templateId: 'tmpl',
+      templateVariables: {},
+      history,
+    });
+    expect(await chatSession.getHistory()).toEqual(history);
+  });
+
+  it('logs a warning when template sendMessage is blocked', async () => {
+    const warnStub = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const templateGenerateContentStub = jest
+      .spyOn(generateContentMethods, 'templateGenerateContent')
+      .mockResolvedValue({ response: blockedResponse } as any);
+    const chatSession = new TemplateChatSessionImpl(
+      fakeApiSettings,
+      // Runtime may omit templateVariables; exercise the no-inputs request branch.
+      { templateId: 'tmpl', templateVariables: undefined as unknown as Record<string, unknown> },
+      requestOptions,
+    );
+
+    await chatSession.sendMessage('hello');
+
+    expect(templateGenerateContentStub).toHaveBeenCalledWith(
+      fakeApiSettings,
+      'tmpl',
+      expect.objectContaining({
+        contents: [{ role: 'user', parts: [{ type: 'text', text: 'hello' }] }],
+      }),
+      requestOptions,
+    );
+    expect(templateGenerateContentStub.mock.calls[0]?.[2]).not.toHaveProperty('inputs');
+    expect(warnStub).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.stringContaining('sendMessage() was unsuccessful'),
+    );
+    expect(await chatSession.getHistory()).toEqual([]);
+  });
+
+  it('defaults missing template response role to model when updating history', async () => {
+    jest.spyOn(generateContentMethods, 'templateGenerateContent').mockResolvedValue({
+      response: {
+        candidates: [
+          {
+            index: 0,
+            content: {
+              parts: [{ type: 'text', text: 'templated' }],
+            },
+          },
+        ],
+      },
+    } as any);
+    const chatSession = new TemplateChatSessionImpl(fakeApiSettings, {
+      templateId: 'tmpl',
+      templateVariables: { name: 'Ada' },
+    });
+
+    await chatSession.sendMessage('hello');
+
+    expect(await chatSession.getHistory()).toEqual([
+      { role: 'user', parts: [{ type: 'text', text: 'hello' }] },
+      { role: 'model', parts: [{ type: 'text', text: 'templated' }] },
+    ]);
+  });
+
+  it('logs a warning when template sendMessageStream is blocked', async () => {
+    const warnStub = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest
+      .spyOn(generateContentMethods, 'templateGenerateContentStream')
+      .mockResolvedValue(streamResult(blockedResponse));
+    const chatSession = new TemplateChatSessionImpl(fakeApiSettings, {
+      templateId: 'tmpl',
+      templateVariables: {},
+    });
+
+    const result = await chatSession.sendMessageStream('hello');
+    await result.response;
+    expect(await chatSession.getHistory()).toEqual([]);
+
+    expect(warnStub).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.stringContaining('sendMessageStream() was unsuccessful'),
+    );
+  });
+
+  it('template generateContentStream errors should be catchable without logging', async () => {
+    jest.useFakeTimers();
+    const consoleStub = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest
+      .spyOn(generateContentMethods, 'templateGenerateContentStream')
+      .mockRejectedValue('templateGenerateContentStream failed');
+    const chatSession = new TemplateChatSessionImpl(
+      fakeApiSettings,
+      { templateId: 'tmpl', templateVariables: {} },
+      requestOptions,
+    );
+
+    await expect(chatSession.sendMessageStream('hello')).rejects.toMatch(
+      /templateGenerateContentStream failed/,
+    );
+    jest.runAllTimers();
+    expect(consoleStub).not.toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  it('template downstream sendPromise errors should log but not throw', async () => {
+    const consoleStub = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest
+      .spyOn(generateContentMethods, 'templateGenerateContentStream')
+      .mockResolvedValue({} as unknown as GenerateContentStreamResult);
+    const chatSession = new TemplateChatSessionImpl(fakeApiSettings, {
+      templateId: 'tmpl',
+      templateVariables: {},
+    });
+
+    await chatSession.sendMessageStream('hello');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(consoleStub).toHaveBeenCalledTimes(1);
+  });
+
+  it('defaults missing template stream response role to model when updating history', async () => {
+    const response = {
+      candidates: [
+        {
+          index: 0,
+          content: {
+            parts: [{ type: 'text', text: 'streamed template' }],
+          },
+        },
+      ],
+    } as EnhancedGenerateContentResponse;
+    jest
+      .spyOn(generateContentMethods, 'templateGenerateContentStream')
+      .mockResolvedValue(streamResult(response));
+    const chatSession = new TemplateChatSessionImpl(fakeApiSettings, {
+      templateId: 'tmpl',
+      templateVariables: {},
+    });
+
+    const result = await chatSession.sendMessageStream('hello');
+    await result.response;
+
+    expect(await chatSession.getHistory()).toEqual([
+      { role: 'user', parts: [{ type: 'text', text: 'hello' }] },
+      { role: 'model', parts: [{ type: 'text', text: 'streamed template' }] },
+    ]);
   });
 });

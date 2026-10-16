@@ -15,9 +15,14 @@
  * limitations under the License.
  */
 import { describe, expect, it, afterEach, jest, beforeEach } from '@jest/globals';
-import { BackendName, getMockResponse } from './test-utils/mock-response';
+import { BackendName, getMockResponse, getMockResponseStreaming } from './test-utils/mock-response';
 import * as request from '../lib/requests/request';
-import { generateContent } from '../lib/methods/generate-content';
+import {
+  generateContent,
+  generateContentStream,
+  templateGenerateContent,
+  templateGenerateContentStream,
+} from '../lib/methods/generate-content';
 import {
   GenerateContentRequest,
   HarmBlockMethod,
@@ -25,21 +30,23 @@ import {
   HarmCategory,
   Language,
   Outcome,
+  ThinkingLevel,
   // RequestOptions,
 } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
-import { Task } from '../lib/requests/request';
-import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
+import { ServerPromptTemplateTask, Task } from '../lib/requests/request';
+import { GoogleAIBackend, AgentPlatformBackend } from '../lib/backend';
 import { SpiedFunction } from 'jest-mock';
 import { AIError } from '../lib/errors';
 import { mapGenerateContentRequest } from '../lib/googleai-mappers';
+import { cleanGenerateContentRequestForWire } from '../lib/requests/request-helpers';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
   appId: 'my-appid',
   location: 'us-central1',
-  backend: new VertexAIBackend(),
+  backend: new AgentPlatformBackend(),
 };
 
 const fakeGoogleAIApiSettings: ApiSettings = {
@@ -51,7 +58,7 @@ const fakeGoogleAIApiSettings: ApiSettings = {
 };
 
 const fakeRequestParams: GenerateContentRequest = {
-  contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
+  contents: [{ parts: [{ type: 'text', text: 'hello' }], role: 'user' }],
   generationConfig: {
     topK: 16,
   },
@@ -65,7 +72,7 @@ const fakeRequestParams: GenerateContentRequest = {
 };
 
 const fakeGoogleAIRequestParams: GenerateContentRequest = {
-  contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
+  contents: [{ parts: [{ type: 'text', text: 'hello' }], role: 'user' }],
   generationConfig: {
     topK: 16,
   },
@@ -141,10 +148,11 @@ describe('generateContent()', () => {
           role: 'function',
           parts: [
             {
+              type: 'functionResponse',
               functionResponse: {
                 name: 'getWeather',
                 response: { temperature: 72 },
-                parts: [{ text: 'Weather lookup complete.' }],
+                parts: [{ type: 'text', text: 'Weather lookup complete.' }],
               },
             },
           ],
@@ -230,8 +238,20 @@ describe('generateContent()', () => {
     jest.spyOn(request, 'makeRequest').mockResolvedValue(mockResponse as Response);
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     const parts = result.response.candidates?.[0]?.content?.parts;
-    expect(parts?.some(part => part.codeExecutionResult?.outcome === Outcome.OK)).toBe(true);
-    expect(parts?.some(part => part.executableCode?.language === Language.PYTHON)).toBe(true);
+    expect(
+      parts?.some(
+        part =>
+          (part as { codeExecutionResult?: { outcome?: Outcome } }).codeExecutionResult?.outcome ===
+          Outcome.OK,
+      ),
+    ).toBe(true);
+    expect(
+      parts?.some(
+        part =>
+          (part as { executableCode?: { language?: Language } }).executableCode?.language ===
+          Language.PYTHON,
+      ),
+    ).toBe(true);
   });
 
   it('blocked prompt', async () => {
@@ -369,7 +389,7 @@ describe('generateContent()', () => {
       makeRequestStub.mockResolvedValue(mockResponse as Response);
 
       const requestParamsWithMethod: GenerateContentRequest = {
-        contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
+        contents: [{ parts: [{ type: 'text', text: 'hello' }], role: 'user' }],
         safetySettings: [
           {
             category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
@@ -403,8 +423,162 @@ describe('generateContent()', () => {
           stream: false,
           requestOptions: undefined,
         }),
-        JSON.stringify(mapGenerateContentRequest(fakeGoogleAIRequestParams)),
+        JSON.stringify(
+          cleanGenerateContentRequestForWire(mapGenerateContentRequest(fakeGoogleAIRequestParams)),
+        ),
       );
     });
+  });
+});
+
+describe('generateContentStream()', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('streams a short response', async () => {
+    const mockResponse = getMockResponseStreaming(
+      BackendName.VertexAI,
+      'streaming-success-basic-reply-short.txt',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const result = await generateContentStream(fakeApiSettings, 'model', fakeRequestParams);
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'model',
+        task: Task.STREAM_GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: true,
+      }),
+      expect.stringContaining('contents'),
+    );
+    const chunks: string[] = [];
+    for await (const item of result.stream) {
+      const text = item.text();
+      if (text) {
+        chunks.push(text);
+      }
+    }
+    expect(chunks.join('').length).toBeGreaterThan(0);
+    const aggregated = await result.response;
+    expect(aggregated.text().length).toBeGreaterThan(0);
+  });
+
+  it('maps Google AI streaming requests', async () => {
+    const mockResponse = getMockResponseStreaming(
+      BackendName.GoogleAI,
+      'streaming-success-basic-reply-short.txt',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    await generateContentStream(fakeGoogleAIApiSettings, 'model', fakeGoogleAIRequestParams);
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'model',
+        task: Task.STREAM_GENERATE_CONTENT,
+        apiSettings: fakeGoogleAIApiSettings,
+        stream: true,
+      }),
+      JSON.stringify(
+        cleanGenerateContentRequestForWire(mapGenerateContentRequest(fakeGoogleAIRequestParams)),
+      ),
+    );
+  });
+
+  it('rejects when thinkingBudget and thinkingLevel are both set', async () => {
+    await expect(
+      generateContentStream(fakeApiSettings, 'model', {
+        ...fakeRequestParams,
+        generationConfig: {
+          thinkingConfig: {
+            thinkingBudget: 100,
+            thinkingLevel: ThinkingLevel.HIGH,
+          },
+        },
+      }),
+    ).rejects.toThrow('Cannot set both thinkingBudget and thinkingLevel in a config.');
+  });
+});
+
+describe('templateGenerateContent()', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('calls makeRequest with template task and returns text', async () => {
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const templateParams = {
+      inputs: { city: 'Boston' },
+      toolConfig: { retrievalConfig: { languageCode: 'en-US' } },
+    };
+    const result = await templateGenerateContent(
+      fakeApiSettings,
+      'weather-assistant-template',
+      templateParams,
+    );
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        task: ServerPromptTemplateTask.TEMPLATE_GENERATE_CONTENT,
+        templateId: 'weather-assistant-template',
+        apiSettings: fakeApiSettings,
+        stream: false,
+      }),
+      JSON.stringify(templateParams),
+    );
+    expect(await result.response.text()).toContain('Mountain View, California');
+  });
+
+  it('maps Google AI template unary responses', async () => {
+    const mockResponse = getMockResponse(
+      BackendName.GoogleAI,
+      'unary-success-basic-reply-short.txt',
+    );
+    jest.spyOn(request, 'makeRequest').mockResolvedValue(mockResponse as Response);
+    const result = await templateGenerateContent(fakeGoogleAIApiSettings, 'tmpl', {
+      inputs: { q: 'hi' },
+    });
+    expect((await result.response.text()).length).toBeGreaterThan(0);
+  });
+});
+
+describe('templateGenerateContentStream()', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('calls makeRequest with template stream task', async () => {
+    const mockResponse = getMockResponseStreaming(
+      BackendName.VertexAI,
+      'streaming-success-basic-reply-short.txt',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const templateParams = { inputs: { city: 'Boston' } };
+    const result = await templateGenerateContentStream(
+      fakeApiSettings,
+      'weather-assistant-template',
+      templateParams,
+    );
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        task: ServerPromptTemplateTask.TEMPLATE_STREAM_GENERATE_CONTENT,
+        templateId: 'weather-assistant-template',
+        apiSettings: fakeApiSettings,
+        stream: true,
+      }),
+      JSON.stringify(templateParams),
+    );
+    const aggregated = await result.response;
+    expect(aggregated.text().length).toBeGreaterThan(0);
   });
 });

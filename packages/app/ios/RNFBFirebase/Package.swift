@@ -15,7 +15,7 @@ let package = Package(
   name: "RNFBFirebase",
   platforms: [
     .iOS(.v15),
-    .macOS(.v10_15),
+    .macOS(.v11),
     .tvOS(.v15),
   ],
   products: [
@@ -28,7 +28,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/firebase/firebase-ios-sdk.git",
-      exact: "12.19.0"
+      exact: "13.0.0"
     ),
   ],
   targets: [
