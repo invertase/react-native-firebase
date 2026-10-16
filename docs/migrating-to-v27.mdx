@@ -16,7 +16,7 @@ Version 27 is a **native and JS SDK major** plus several earlier breaking correc
 | JS       | `firebase` **13.0.0**             | AI Logic API removals / renames (see below)                                |
 
 - **Android** — BoM 35 requires API 24+. Update `minSdkVersion` / `sdkVersions` overrides to **24**. Raise the Kotlin Gradle plugin to **≥ 2.4.0** (`firebase-auth` 25 ships Kotlin 2.4.0 metadata). See [Platforms](/platforms).
-- **Apple** — Firebase 13 is distributed only via Swift Package Manager. Remove `$RNFirebaseDisableSPM` / Expo `disableSPM`. Use `use_frameworks! :linkage => :dynamic`. See [iOS SPM Support](/ios-spm). Google Sign-In + Firebase 13 SPM may not resolve until upstream ships a compatible GoogleSignIn release.
+- **Apple** — Firebase 13 is distributed only via Swift Package Manager. Remove `$RNFirebaseDisableSPM` / Expo `disableSPM`. Use `use_frameworks! :linkage => :dynamic`. See [iOS SPM Support](/ios-spm). Google Sign-In + Firebase 13 may still hit App Check resolve conflicts — see [Ecosystem compatibility tips](/migrating-to-v27#ecosystem-compatibility-tips) and [iOS SPM Support § Google Sign-In caveat](/ios-spm#google-sign-in-caveat).
 - **JS / AI** — Align with Firebase JS SDK 13 / `@firebase/ai@3`: use `AgentPlatformBackend` (default location **`global`**) instead of removed `VertexAIBackend`; template `generateContent` takes a `TemplateRequest`; remove `LiveSession.sendMediaChunks` / `sendMediaStream` (use realtime senders); drop `totalBillableCharacters` and related removed fields.
 
 ### Other v27 breaks (already on this line)
@@ -46,6 +46,11 @@ If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating
   - [`automaticDataCollectionEnabled` is a boolean](/migrating-to-v27#automaticdatacollectionenabled-is-a-boolean)
   - [Public headers no longer import FirebaseCore / Photos](/migrating-to-v27#public-headers-no-longer-import-firebasecore--photos)
 - [Removed ML package](/migrating-to-v27#removed-ml-package)
+- [Ecosystem compatibility tips](/migrating-to-v27#ecosystem-compatibility-tips)
+  - [Kotlin ≥ 2.4.0 (supported)](/migrating-to-v27#kotlin--240-supported)
+  - [Unsupported older-Kotlin workaround](/migrating-to-v27#unsupported-older-kotlin-workaround)
+  - [AsyncStorage / KSP](/migrating-to-v27#asyncstorage--ksp)
+  - [Google Sign-In + Firebase 13 SPM](/migrating-to-v27#google-sign-in--firebase-13-spm)
 - [Automated migration checklist](/migrating-to-v27#automated-migration-checklist)
 
 # Upstream SDK majors
@@ -343,6 +348,51 @@ These public App headers **no longer** import FirebaseCore or Photos. Forward de
 2. Delete any imports of `@react-native-firebase/ml` (for example `getML`) — they no longer resolve.
 3. For on-device ML Kit features, use [Google ML Kit](https://developers.google.com/ml-kit/) via the community [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit) modules.
 4. To call Cloud Vision from your app, prefer Firebase Authentication and Cloud Functions as a managed gateway. See the [vision-annotate-images](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images) Functions sample.
+
+# Ecosystem compatibility tips
+
+Third-party native modules and host toolchain pins sometimes need small adjustments when moving to BoM 35 / Firebase Apple 13. The **supported** Android path is Kotlin **≥ 2.4.0** ([Platforms](/platforms)). The items below collect common ecosystem notes and unsupported workarounds — React Native Firebase does **not** ship these flags or property overrides for you.
+
+## Kotlin ≥ 2.4.0 (supported)
+
+Firebase Android BoM **35** / `firebase-auth` **25** ships Kotlin **2.4.0** metadata. Raise the Kotlin Gradle plugin to **≥ 2.4.0** so the compiler can read that metadata. This is the supported path; see [Platforms](/platforms).
+
+## Unsupported older-Kotlin workaround
+
+> **Unsupported.** Prefer Kotlin **≥ 2.4.0**. The `-Xskip-metadata-version-check` approach below is **not recommended**, may break if your app or another module calls Firebase Auth **Kotlin** APIs, and React Native Firebase offers **no support** for failures that follow from it. React Native Firebase does **not** ship this compiler flag.
+
+If you must stay on an older Kotlin compiler temporarily, add the flag on the **auth** module's `KotlinCompile` tasks from the **app** `android/build.gradle` (preferred over patching `node_modules`):
+
+```groovy
+// android/build.gradle — UNSUPPORTED workaround; prefer Kotlin ≥ 2.4.0
+subprojects { subproject ->
+  def n = subproject.name
+  if (n.contains('react-native-firebase_auth') || n.contains('@react-native-firebase_auth')) {
+    subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+      kotlinOptions.freeCompilerArgs += ['-Xskip-metadata-version-check']
+    }
+  }
+}
+```
+
+Autolinking project names vary (`react-native-firebase_auth`, `@react-native-firebase_auth`). Adjust the `name` match if your Gradle project path differs. As a last resort you can drop an equivalent `tasks.withType(...KotlinCompile)` block into `node_modules/@react-native-firebase/auth/android/build.gradle` and persist it with [patch-package](https://www.npmjs.com/package/patch-package) — prefer the app-level `subprojects` pattern so you do not patch `node_modules` when avoidable.
+
+## AsyncStorage / KSP
+
+`@react-native-async-storage/async-storage` **3.1.1** (and similar releases) may lack a KSP mapping for Kotlin **2.4.0**. Until upstream maps 2.4.0, pin a known KSP in the app's `android/gradle.properties`:
+
+```properties
+AsyncStorage_kspVersion=2.3.12
+```
+
+Other native modules that use KSP may need analogous overrides until their maintainers publish mappings for Kotlin 2.4.0.
+
+## Google Sign-In + Firebase 13 SPM
+
+Google Sign-In alongside Firebase 13 can fail App Check resolution on SPM and
+CocoaPods for different reasons. See
+[iOS SPM Support § Google Sign-In caveat](/ios-spm#google-sign-in-caveat)
+for current upstream status on each path.
 
 # Automated migration checklist
 
