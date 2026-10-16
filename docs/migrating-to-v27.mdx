@@ -11,11 +11,11 @@ Version 27 is a **native and JS SDK major** plus several earlier breaking correc
 
 | Platform | Pin                               | Floor / install change                                                     |
 | -------- | --------------------------------- | -------------------------------------------------------------------------- |
-| Android  | Firebase BoM **35.0.0**           | `minSdk` **24** (was 23)                                                   |
+| Android  | Firebase BoM **35.0.0**           | `minSdk` **24** (was 23); Kotlin Gradle plugin **≥ 2.4.0**                 |
 | Apple    | Firebase iOS SDK **13.0.0** (SPM) | macOS **11.0** (was 10.15); **SPM-only** Firebase (CocoaPods path removed) |
 | JS       | `firebase` **13.0.0**             | AI Logic API removals / renames (see below)                                |
 
-- **Android** — BoM 35 requires API 24+. Update `minSdkVersion` / `sdkVersions` overrides to **24**. See [Platforms](/platforms).
+- **Android** — BoM 35 requires API 24+. Update `minSdkVersion` / `sdkVersions` overrides to **24**. Raise the Kotlin Gradle plugin to **≥ 2.4.0** (`firebase-auth` 25 ships Kotlin 2.4.0 metadata). See [Platforms](/platforms).
 - **Apple** — Firebase 13 is distributed only via Swift Package Manager. Remove `$RNFirebaseDisableSPM` / Expo `disableSPM`. Use `use_frameworks! :linkage => :dynamic`. See [iOS SPM Support](/ios-spm). Google Sign-In + Firebase 13 SPM may not resolve until upstream ships a compatible GoogleSignIn release.
 - **JS / AI** — Align with Firebase JS SDK 13 / `@firebase/ai@3`: use `AgentPlatformBackend` (default location **`global`**) instead of removed `VertexAIBackend`; template `generateContent` takes a `TemplateRequest`; remove `LiveSession.sendMediaChunks` / `sendMediaStream` (use realtime senders); drop `totalBillableCharacters` and related removed fields.
 
@@ -53,7 +53,7 @@ If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating
 ### Migration actions
 
 1. Bump all `@react-native-firebase/*` packages to v27 together.
-2. Android: set `minSdkVersion` / any `react-native` `versions.android.minSdk` override to **24**.
+2. Android: set `minSdkVersion` / any `react-native` `versions.android.minSdk` override to **24**; set `kotlinVersion` / the Kotlin Gradle plugin to **≥ 2.4.0**.
 3. iOS: remove `$RNFirebaseDisableSPM = true` and Expo `ios.disableSPM`; ensure `use_frameworks! :linkage => :dynamic` (or Expo `useFrameworks: "dynamic"`); raise macOS deployment target to **11.0** if you ship macOS.
 4. JS: ensure the app resolves `firebase@13` (RNFB pins it on `@react-native-firebase/app`).
 5. AI: apply the [AI Logic breaking removals](/migrating-to-v27#ai-logic-breaking-removals) below.
@@ -365,6 +365,7 @@ For each area you use, search the listed symbols and apply the replacements:
 | Area                      | Search for                                                                             | Replace with / action                                                                                                                                                                                                                                      |
 | ------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Android floor             | `minSdkVersion` / `minSdk` **23** (or lower)                                           | **24**                                                                                                                                                                                                                                                     |
+| Android Kotlin            | `kotlinVersion` / Kotlin Gradle plugin below **2.4.0**                                 | **≥ 2.4.0** (BoM 35 / `firebase-auth` 25 metadata)                                                                                                                                                                                                         |
 | iOS DisableSPM            | `$RNFirebaseDisableSPM`, Expo `disableSPM: true`                                       | Remove; use SPM + `use_frameworks! :linkage => :dynamic`                                                                                                                                                                                                   |
 | Functions (web/macOS)     | `e.message ===`, `error.message ===` on callable failures                              | Tolerate trailing ` [<digits>]`; optionally read `customData.url` on `Platform.other` only                                                                                                                                                                 |
 | Messaging sound           | `notification.sound` (string APNs sound)                                               | `notification.ios.sound`                                                                                                                                                                                                                                   |

@@ -93,7 +93,7 @@ export interface SafetySetting {
  */
 export interface GenerationConfig {
   /**
-   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this sampling parameter.
+   * @deprecated Gemini 3.x and 4.x (latest general-use) models do not support this parameter.
    * Omit it for Gemini 3/4; retained for compatibility with older models. Do not remove the field from this type.
    */
   candidateCount?: number;
