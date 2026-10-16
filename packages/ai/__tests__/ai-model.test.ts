@@ -19,7 +19,7 @@ import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI, AIErrorCode } from '../lib/public-types';
 import { AIModel } from '../lib/models/ai-model';
 import { AIError } from '../lib/errors';
-import { VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend } from '../lib/backend';
 
 /**
  * A class that extends AIModel that allows us to test the protected constructor.
@@ -40,7 +40,7 @@ const fakeAI: AI = {
       appId: 'my-appid',
     },
   } as ReactNativeFirebase.FirebaseApp,
-  backend: new VertexAIBackend('us-central1'),
+  backend: new AgentPlatformBackend('us-central1'),
   location: 'us-central1',
 };
 
@@ -78,7 +78,7 @@ describe('AIModel', () => {
           projectId: 'my-project',
         },
       } as ReactNativeFirebase.FirebaseApp,
-      backend: new VertexAIBackend('us-central1'),
+      backend: new AgentPlatformBackend('us-central1'),
       location: 'us-central1',
     };
     expect(() => {
@@ -100,7 +100,7 @@ describe('AIModel', () => {
           apiKey: 'key',
         },
       } as ReactNativeFirebase.FirebaseApp,
-      backend: new VertexAIBackend('us-central1'),
+      backend: new AgentPlatformBackend('us-central1'),
       location: 'us-central1',
     };
     expect(() => {
@@ -123,7 +123,7 @@ describe('AIModel', () => {
           projectId: 'my-project',
         },
       } as ReactNativeFirebase.FirebaseApp,
-      backend: new VertexAIBackend('us-central1'),
+      backend: new AgentPlatformBackend('us-central1'),
       location: 'us-central1',
     };
     expect(() => {

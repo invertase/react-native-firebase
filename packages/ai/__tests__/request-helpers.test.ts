@@ -15,8 +15,17 @@
  * limitations under the License.
  */
 import { describe, expect, it } from '@jest/globals';
-import { Content } from '../lib/types';
-import { formatGenerateContentInput } from '../lib/requests/request-helpers';
+import { Content, AIErrorCode } from '../lib/types';
+import { AIError } from '../lib/errors';
+import {
+  assignPartType,
+  cleanContentForWire,
+  cleanGenerateContentRequestForWire,
+  formatGenerateContentInput,
+  formatNewContent,
+  formatSystemInstruction,
+  stripPartType,
+} from '../lib/requests/request-helpers';
 
 describe('request formatting methods', () => {
   describe('formatGenerateContentInput', () => {
@@ -26,7 +35,7 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'some text content' }],
+            parts: [{ type: 'text', text: 'some text content' }],
           },
         ],
       });
@@ -38,31 +47,43 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txt1' }, { text: 'txt2' }],
+            parts: [
+              { type: 'text', text: 'txt1' },
+              { type: 'text', text: 'txt2' },
+            ],
           },
         ],
       });
     });
 
     it('formats an array of Parts into a request', () => {
-      const result = formatGenerateContentInput([{ text: 'txt1' }, { text: 'txtB' }]);
+      const result = formatGenerateContentInput([
+        { type: 'text', text: 'txt1' },
+        { type: 'text', text: 'txtB' },
+      ]);
       expect(result).toEqual({
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txt1' }, { text: 'txtB' }],
+            parts: [
+              { type: 'text', text: 'txt1' },
+              { type: 'text', text: 'txtB' },
+            ],
           },
         ],
       });
     });
 
     it('formats a mixed array into a request', () => {
-      const result = formatGenerateContentInput(['txtA', { text: 'txtB' }]);
+      const result = formatGenerateContentInput(['txtA', { type: 'text', text: 'txtB' }]);
       expect(result).toEqual({
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }, { text: 'txtB' }],
+            parts: [
+              { type: 'text', text: 'txtA' },
+              { type: 'text', text: 'txtB' },
+            ],
           },
         ],
       });
@@ -73,7 +94,7 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
         generationConfig: { topK: 100 },
@@ -82,7 +103,7 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
         generationConfig: { topK: 100 },
@@ -94,7 +115,7 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
         systemInstruction: 'be excited',
@@ -103,10 +124,10 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { role: 'system', parts: [{ text: 'be excited' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be excited' }] },
       });
     });
 
@@ -115,19 +136,19 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { text: 'be excited' },
+        systemInstruction: { type: 'text', text: 'be excited' },
       });
       expect(result).toEqual({
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { role: 'system', parts: [{ text: 'be excited' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be excited' }] },
       });
     });
 
@@ -136,19 +157,19 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { parts: [{ text: 'be excited' }] } as Content,
+        systemInstruction: { parts: [{ type: 'text', text: 'be excited' }] } as Content,
       });
       expect(result).toEqual({
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { role: 'system', parts: [{ text: 'be excited' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be excited' }] },
       });
     });
 
@@ -157,19 +178,19 @@ describe('request formatting methods', () => {
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { role: 'system', parts: [{ text: 'be excited' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be excited' }] },
       });
       expect(result).toEqual({
         contents: [
           {
             role: 'user',
-            parts: [{ text: 'txtA' }],
+            parts: [{ type: 'text', text: 'txtA' }],
           },
         ],
-        systemInstruction: { role: 'system', parts: [{ text: 'be excited' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'be excited' }] },
       });
     });
 
@@ -177,6 +198,7 @@ describe('request formatting methods', () => {
       const result = formatGenerateContentInput([
         'What is this?',
         {
+          type: 'fileData' as const,
           fileData: {
             mimeType: 'image/jpeg',
             fileUri: 'gs://sample.appspot.com/image.jpeg',
@@ -188,8 +210,9 @@ describe('request formatting methods', () => {
           {
             role: 'user',
             parts: [
-              { text: 'What is this?' },
+              { type: 'text', text: 'What is this?' },
               {
+                type: 'fileData',
                 fileData: {
                   mimeType: 'image/jpeg',
                   fileUri: 'gs://sample.appspot.com/image.jpeg',
@@ -198,6 +221,157 @@ describe('request formatting methods', () => {
             ],
           },
         ],
+      });
+    });
+
+    it('assigns missing Part type discriminators for user Part kinds', () => {
+      const result = formatGenerateContentInput([
+        { inlineData: { mimeType: 'image/png', data: 'abc' } } as any,
+        { fileData: { mimeType: 'text/plain', fileUri: 'gs://b/f' } } as any,
+        { executableCode: { language: 'PYTHON', code: 'print(1)' } } as any,
+        { codeExecutionResult: { outcome: 'OUTCOME_OK', output: '1' } } as any,
+      ]);
+      expect(result.contents[0].role).toBe('user');
+      expect(result.contents[0].parts.map(p => p.type)).toEqual([
+        'inlineData',
+        'fileData',
+        'executableCode',
+        'codeExecutionResult',
+      ]);
+    });
+
+    it('assigns missing functionResponse type into a function-role message', () => {
+      const result = formatGenerateContentInput([
+        { functionResponse: { name: 'fn', response: { ok: true } } } as any,
+      ]);
+      expect(result.contents[0]).toEqual({
+        role: 'function',
+        parts: [
+          { type: 'functionResponse', functionResponse: { name: 'fn', response: { ok: true } } },
+        ],
+      });
+    });
+
+    it('rejects mixing functionResponse with other Part kinds', () => {
+      expect(() =>
+        formatGenerateContentInput([
+          'hello',
+          { functionResponse: { name: 'fn', response: { ok: true } } } as any,
+        ]),
+      ).toThrow(AIError);
+      try {
+        formatGenerateContentInput([
+          'hello',
+          { functionResponse: { name: 'fn', response: { ok: true } } } as any,
+        ]);
+      } catch (e) {
+        expect((e as AIError).code).toBe(AIErrorCode.INVALID_CONTENT);
+      }
+    });
+
+    it('rejects empty Part arrays', () => {
+      expect(() => formatGenerateContentInput([])).toThrow(/No Content is provided/);
+    });
+  });
+
+  describe('assignPartType / stripPartType', () => {
+    it('returns already-typed parts unchanged', () => {
+      const part = { type: 'text' as const, text: 'hi' };
+      expect(assignPartType(part)).toBe(part);
+    });
+
+    it('infers type from untyped Part fields', () => {
+      expect(assignPartType({ text: 'hi' } as any).type).toBe('text');
+      expect(assignPartType({ inlineData: { mimeType: 'image/png', data: 'x' } } as any).type).toBe(
+        'inlineData',
+      );
+      expect(assignPartType({ functionCall: { name: 'f', args: {} } } as any).type).toBe(
+        'functionCall',
+      );
+      expect(assignPartType({ functionResponse: { name: 'f', response: {} } } as any).type).toBe(
+        'functionResponse',
+      );
+      expect(
+        assignPartType({ fileData: { mimeType: 'text/plain', fileUri: 'gs://b/f' } } as any).type,
+      ).toBe('fileData');
+      expect(
+        assignPartType({ executableCode: { language: 'PYTHON', code: 'x' } } as any).type,
+      ).toBe('executableCode');
+      expect(
+        assignPartType({ codeExecutionResult: { outcome: 'OUTCOME_OK', output: 'x' } } as any).type,
+      ).toBe('codeExecutionResult');
+    });
+
+    it('strips type and nested functionResponse part types for the wire', () => {
+      const wire = stripPartType({
+        type: 'functionResponse',
+        functionResponse: {
+          name: 'fn',
+          response: { ok: true },
+          parts: [{ type: 'text', text: 'nested' }],
+        },
+      } as any);
+      expect(wire).not.toHaveProperty('type');
+      expect((wire as any).functionResponse.parts[0]).toEqual({ text: 'nested' });
+    });
+
+    it('copies untyped parts when stripping for the wire', () => {
+      expect(stripPartType({ text: 'hi' } as any)).toEqual({ text: 'hi' });
+      expect(
+        stripPartType({
+          functionResponse: { name: 'fn', response: { ok: true } },
+        } as any),
+      ).toEqual({
+        functionResponse: { name: 'fn', response: { ok: true } },
+      });
+    });
+
+    it('cleans content and generateContent requests for the wire', () => {
+      const cleaned = cleanContentForWire({
+        role: 'user',
+        parts: [{ type: 'text', text: 'hi' }],
+      });
+      expect(cleaned.parts[0]).toEqual({ text: 'hi' });
+      expect(cleanContentForWire({ role: 'user' } as any)).toEqual({ role: 'user' });
+      expect(
+        cleanGenerateContentRequestForWire({
+          contents: [{ role: 'user', parts: [{ type: 'text', text: 'hi' }] }],
+          systemInstruction: { type: 'text', text: 'sys' } as any,
+        }).contents[0].parts[0],
+      ).toEqual({ text: 'hi' });
+    });
+  });
+
+  describe('formatSystemInstruction / formatNewContent', () => {
+    it('returns undefined for nullish or unrecognized system instructions', () => {
+      expect(formatSystemInstruction(undefined)).toBeUndefined();
+      expect(formatSystemInstruction(null as any)).toBeUndefined();
+      expect(formatSystemInstruction({ role: 'system' } as any)).toBeUndefined();
+    });
+
+    it('formats Part-shaped system instructions without role', () => {
+      expect(formatSystemInstruction({ text: 'be brief' } as any)).toEqual({
+        role: 'system',
+        parts: [{ type: 'text', text: 'be brief' }],
+      });
+    });
+
+    it('formats Content system instructions that already have a role', () => {
+      expect(
+        formatSystemInstruction({
+          role: 'system',
+          parts: [{ text: 'be brief' } as any],
+        }),
+      ).toEqual({
+        role: 'system',
+        parts: [{ type: 'text', text: 'be brief' }],
+      });
+    });
+
+    it('builds user content from a string via formatNewContent', () => {
+      expect(formatNewContent('hello')).toEqual({
+        role: 'user',
+        parts: [{ type: 'text', text: 'hello' }],
       });
     });
   });

@@ -3,7 +3,7 @@
  * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -20,7 +20,9 @@ import { AIError } from '../errors';
 
 // https://ai.google.dev/api/rest/v1beta/Content#part
 
-const VALID_PART_FIELDS: Array<keyof Part> = [
+type PartField = Part['type'] | 'thought' | 'thoughtSignature';
+
+const VALID_PART_FIELDS: PartField[] = [
   'text',
   'inlineData',
   'functionCall',
@@ -29,8 +31,8 @@ const VALID_PART_FIELDS: Array<keyof Part> = [
   'thoughtSignature',
 ];
 
-const VALID_PARTS_PER_ROLE: { [key in Role]: Array<keyof Part> } = {
-  user: ['text', 'inlineData'],
+const VALID_PARTS_PER_ROLE: { [key in Role]: PartField[] } = {
+  user: ['text', 'inlineData', 'functionResponse'],
   function: ['functionResponse'],
   model: ['text', 'functionCall', 'thought', 'thoughtSignature'],
   // System instructions shouldn't be in history anyway.
@@ -67,7 +69,7 @@ export function validateChatHistory(history: Content[]): void {
     if (!Array.isArray(parts)) {
       throw new AIError(
         AIErrorCode.INVALID_CONTENT,
-        `Content should have 'parts' but property with an array of Parts`,
+        `Content should have 'parts' property with an array of Parts`,
       );
     }
 
@@ -75,22 +77,41 @@ export function validateChatHistory(history: Content[]): void {
       throw new AIError(AIErrorCode.INVALID_CONTENT, `Each Content should have at least one part`);
     }
 
-    const countFields: Record<keyof Part, number> = {
+    const countFields: Record<PartField, number> = {
       text: 0,
       inlineData: 0,
       functionCall: 0,
       functionResponse: 0,
       thought: 0,
       thoughtSignature: 0,
+      fileData: 0,
       executableCode: 0,
       codeExecutionResult: 0,
     };
 
     for (const part of parts) {
-      for (const key of VALID_PART_FIELDS) {
-        if (key in part) {
-          countFields[key] += 1;
+      if (part.type) {
+        countFields[part.type] += 1;
+      } else {
+        for (const key of [
+          'text',
+          'inlineData',
+          'functionCall',
+          'functionResponse',
+          'fileData',
+          'executableCode',
+          'codeExecutionResult',
+        ] as const) {
+          if (key in part) {
+            countFields[key] += 1;
+          }
         }
+      }
+      if ('thought' in part && (part as { thought?: unknown }).thought) {
+        countFields.thought += 1;
+      }
+      if ('thoughtSignature' in part && (part as { thoughtSignature?: unknown }).thoughtSignature) {
+        countFields.thoughtSignature += 1;
       }
     }
     const validParts = VALID_PARTS_PER_ROLE[role];

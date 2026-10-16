@@ -45,6 +45,7 @@ backoff
 barcode
 Barcode
 barcodes
+BoM
 bridgeless
 BUGFIX
 callables
@@ -80,6 +81,7 @@ Detox
 DEVEX
 DeviceCheck
 Diarmid
+DisableSPM
 Distribution
 DOM
 dropdown
@@ -115,6 +117,7 @@ firestore
 Firestore
 flat-namespace
 freeform
+FunctionsError
 GDPR
 GDPR-compliant
 geospatial
@@ -123,6 +126,8 @@ getIdToken
 getters
 github
 globals
+GoogleSignIn
+GoogleSignIn-iOS
 gradle
 Gradle
 headlessJS
@@ -194,7 +199,6 @@ onwards
 OpenID
 parsers
 passwordless
-project-config
 perf
 Perf
 performant
@@ -220,6 +224,7 @@ preloaded
 prepended
 preprocessor
 programmatically
+project-config
 PRs
 PubSub
 qa
@@ -245,12 +250,12 @@ Salakar
 scalable
 screenview
 scrollable
-SendGrid
 SDK
 SDK.
 SDK51
 SDKs
 SDKs.
+SendGrid
 serverless
 setBackgroundMessageHandler
 SHA
@@ -265,6 +270,7 @@ SMTP
 SNS
 SPII
 SPM
+SPM-compatible
 SPM-only
 src
 SSV

@@ -39,10 +39,10 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       )
       RNFBFirestorePipelineDebug.log("execute bridges=\(RNFBFirestorePipelineDebug.describeStages(stageBridges))")
 
-      // FirebaseFirestoreInternal currently exposes only PipelineBridge.executeWithCompletion() and
+      // FirebaseFirestoreInternal currently exposes only __PipelineBridge.executeWithCompletion() and
       // source-stage initializers without execute/source options. Reject these inputs on iOS until
       // the native SDK exposes an options-bearing pipeline execution/source API.
-      let bridge = PipelineBridge(stages: stageBridges, db: firestore)
+      let bridge = __PipelineBridge(stages: stageBridges, db: firestore)
 
       RNFBFirestorePipelineDebug.log("execute calling bridge.execute()")
       bridge.execute { snapshot, error in
@@ -109,11 +109,11 @@ enum RNFBFirestorePipelineDebug {
     NSLog("[RNFB-Pipeline] %@", message)
   }
 
-  static func describeExpr(_ expr: ExprBridge) -> String {
+  static func describeExpr(_ expr: __ExprBridge) -> String {
     String(describing: expr)
   }
 
-  static func describeStages(_ stages: [StageBridge]) -> String {
+  static func describeStages(_ stages: [__StageBridge]) -> String {
     stages.enumerated().map { index, stage in
       "\(index):\(String(describing: type(of: stage)))"
     }.joined(separator: " -> ")

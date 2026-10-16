@@ -358,13 +358,11 @@ function App() {
 }
 ```
 
-## Count tokens & billable characters
+## Count tokens
 
 Generative AI models break down data into units called tokens for processing. Each Gemini model has a [maximum number of tokens](https://firebase.google.com/docs/ai-logic/models) that it can handle in a prompt and response.
 
-The below shows you how to get an estimate of token count and the number of billable characters for a request.
-
-On newer Gemini models (for example, `gemini-3.1-flash-lite`), `totalBillableCharacters` may be **undefined**. Check for its presence before logging or billing on that field.
+The below shows you how to get an estimate of token count for a request. Use `totalTokens` — `totalBillableCharacters` was removed in Firebase JS SDK 13 / React Native Firebase v27.
 
 ```js
 import React from 'react';
@@ -376,33 +374,25 @@ function App() {
   return (
     <View>
       <Button
-        title="count tokens and billable characters"
+        title="count tokens"
         onPress={async () => {
           const app = getApp();
           const ai = getAI(app);
           const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
-          // Count tokens & billable character for text input
-          const { totalTokens, totalBillableCharacters } = await model.countTokens(
-            'Write a story about a magic backpack.',
-          );
+          // Count tokens for text input
+          const { totalTokens } = await model.countTokens('Write a story about a magic backpack.');
           console.log(`Total tokens: ${totalTokens}`);
-          if (totalBillableCharacters !== undefined) {
-            console.log(`Total billable characters: ${totalBillableCharacters}`);
-          }
 
-          // Count tokens & billable character for multi-modal input
+          // Count tokens for multi-modal input
           const prompt = "What's in this picture?";
           const imageAsBase64 = '...base64 string image';
-          const imagePart = { inlineData: { mimeType: 'image/jpeg', data: imageAsBase64 } };
+          const imagePart = {
+            type: 'inlineData',
+            inlineData: { mimeType: 'image/jpeg', data: imageAsBase64 },
+          };
 
-          const { totalTokens, totalBillableCharacters } = await model.countTokens([
-            prompt,
-            imagePart,
-          ]);
-          console.log(`Total tokens: ${totalTokens}`);
-          if (totalBillableCharacters !== undefined) {
-            console.log(`Total billable characters: ${totalBillableCharacters}`);
-          }
+          const { totalTokens: multimodalTokens } = await model.countTokens([prompt, imagePart]);
+          console.log(`Total tokens: ${multimodalTokens}`);
         }}
       />
     </View>
@@ -691,7 +681,7 @@ await session.connectionPromise;
 
 ## Template models and retrieval config
 
-`TemplateGenerativeModel` executes server-side prompt templates. You can pass an optional `templateToolConfig` with `retrievalConfig` to `generateContent()`, `generateContentStream()`, or `startChat()`.
+`TemplateGenerativeModel` executes server-side prompt templates. Pass a `TemplateRequest` with `templateId`, `templateVariables`, and an optional `toolConfig` (for example `retrievalConfig`) to `generateContent()` or `generateContentStream()`. For multi-turn chats, pass the same fields via `startChat()`.
 
 ```js
 import React from 'react';
@@ -709,17 +699,16 @@ function App() {
           const ai = getAI(app);
           const templateModel = getTemplateGenerativeModel(ai);
 
-          const result = await templateModel.generateContent(
-            'weather-assistant-template',
-            { city: 'Boston' },
-            undefined,
-            {
+          const result = await templateModel.generateContent({
+            templateId: 'weather-assistant-template',
+            templateVariables: { city: 'Boston' },
+            toolConfig: {
               retrievalConfig: {
                 latLng: { latitude: 42.3601, longitude: -71.0589 },
                 languageCode: 'en-US',
               },
             },
-          );
+          });
 
           console.log(result.response.text());
         }}

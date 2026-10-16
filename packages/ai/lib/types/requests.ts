@@ -430,8 +430,32 @@ export interface StartTemplateChatParams extends Omit<StartChatParams, 'tools'> 
   /**
    * A key-value map of variables to populate the template with.
    */
-  templateVariables?: Record<string, unknown>;
+  templateVariables: Record<string, unknown>;
   tools?: TemplateTool[];
+}
+
+/**
+ * Request parameters for using a server prompt template with
+ * {@link TemplateGenerativeModel.generateContent} and
+ * {@link TemplateGenerativeModel.generateContentStream}.
+ *
+ * @beta
+ */
+export interface TemplateRequest {
+  /**
+   * The ID of the server prompt template to use.
+   */
+  templateId: string;
+  /**
+   * A key-value map of variables to populate the template with.
+   */
+  templateVariables: Record<string, unknown>;
+  /**
+   * Optional tool configuration for this request. Only retrieval/grounding
+   * configs are supported for server prompt templates with unary and streaming
+   * `generateContent`.
+   */
+  toolConfig?: TemplateToolConfig;
 }
 
 /**
@@ -576,17 +600,11 @@ export interface GoogleSearch {}
 /**
  * Specifies the Google Maps configuration.
  *
+ * @remarks Currently, this is an empty object, but it's reserved for future configuration options.
+ *
  * @public
  */
-export interface GoogleMaps {
-  /**
-   * @deprecated The `enableWidget` feature has been deprecated by the Grounding for Google Maps
-   * service.
-   *
-   * If true, include the widget context token in the response.
-   */
-  enableWidget?: boolean;
-}
+export interface GoogleMaps {}
 
 /**
  * A tool that allows a Gemini model to connect to Google Maps to access and incorporate

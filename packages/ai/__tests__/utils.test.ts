@@ -18,7 +18,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 import { getUtils, type ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI, AIErrorCode } from '../lib/public-types';
 import { AIError } from '../lib/errors';
-import { VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend } from '../lib/backend';
 import { AIService } from '../lib/service';
 import { initApiSettings } from '../lib/models/utils';
 
@@ -42,7 +42,7 @@ const fakeAI: AI = {
       appId: 'my-appid',
     },
   } as ReactNativeFirebase.FirebaseApp,
-  backend: new VertexAIBackend('us-central1'),
+  backend: new AgentPlatformBackend('us-central1'),
   location: 'us-central1',
 };
 
@@ -106,7 +106,7 @@ describe('initApiSettings', function () {
           projectId: 'my-project',
         },
       } as ReactNativeFirebase.FirebaseApp,
-      backend: new VertexAIBackend('us-central1'),
+      backend: new AgentPlatformBackend('us-central1'),
       location: 'us-central1',
     };
 
@@ -130,7 +130,7 @@ describe('initApiSettings', function () {
           apiKey: 'key',
         },
       } as ReactNativeFirebase.FirebaseApp,
-      backend: new VertexAIBackend('us-central1'),
+      backend: new AgentPlatformBackend('us-central1'),
       location: 'us-central1',
     };
 
@@ -155,7 +155,7 @@ describe('initApiSettings', function () {
           projectId: 'my-project',
         },
       } as ReactNativeFirebase.FirebaseApp,
-      backend: new VertexAIBackend('us-central1'),
+      backend: new AgentPlatformBackend('us-central1'),
       location: 'us-central1',
     };
 

@@ -27,6 +27,7 @@ import {
 } from '../types';
 import { AIError } from '../errors';
 import { logger } from '../logger';
+import { assignPartType } from './request-helpers';
 
 /**
  * Check that at least one candidate exists and does not have a bad
@@ -75,6 +76,14 @@ export function createEnhancedContentResponse(
     response.candidates[0]!.index = 0;
   }
 
+  if (response.candidates) {
+    for (const candidate of response.candidates) {
+      if (candidate.content?.parts) {
+        candidate.content.parts = candidate.content.parts.map(assignPartType);
+      }
+    }
+  }
+
   const responseWithHelpers = addHelpers(response);
   return responseWithHelpers;
 }
@@ -86,7 +95,7 @@ export function createEnhancedContentResponse(
 export function addHelpers(response: GenerateContentResponse): EnhancedGenerateContentResponse {
   (response as EnhancedGenerateContentResponse).text = () => {
     if (hasValidCandidates(response)) {
-      return getText(response, part => !part.thought);
+      return getText(response, part => !('thought' in part && part.thought));
     } else if (response.promptFeedback) {
       throw new AIError(
         AIErrorCode.RESPONSE_ERROR,
@@ -100,7 +109,7 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
   };
   (response as EnhancedGenerateContentResponse).thoughtSummary = () => {
     if (hasValidCandidates(response)) {
-      const result = getText(response, part => !!part.thought);
+      const result = getText(response, part => !!('thought' in part && part.thought));
       return result === '' ? undefined : result;
     } else if (response.promptFeedback) {
       throw new AIError(
@@ -160,7 +169,7 @@ export function getText(
   const textStrings = [];
   if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0]?.content?.parts) {
-      if (part.text && partFilter(part)) {
+      if (part.type === 'text' && part.text && partFilter(part)) {
         textStrings.push(part.text);
       }
     }
@@ -179,7 +188,7 @@ export function getFunctionCalls(response: GenerateContentResponse): FunctionCal
   const functionCalls: FunctionCall[] = [];
   if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0]?.content?.parts) {
-      if (part.functionCall) {
+      if (part.type === 'functionCall') {
         functionCalls.push(part.functionCall);
       }
     }
@@ -203,7 +212,7 @@ export function getInlineDataParts(
 
   if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0]?.content?.parts) {
-      if (part.inlineData) {
+      if (part.type === 'inlineData') {
         data.push(part);
       }
     }
