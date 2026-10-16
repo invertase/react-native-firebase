@@ -1,0 +1,59 @@
+name: Scorecard
+
+on:
+  # Branch-Protection check (default branch only).
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
+  branch_protection_rule:
+  schedule:
+    # Weekly: keep the Maintained check current.
+    - cron: '30 1 * * 6'
+  push:
+    branches:
+      - main
+
+# Least privilege at workflow scope. Publish-results forbids workflow-level write.
+# Do not add top-level env or defaults (scorecard-action publish_results restriction).
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # SARIF upload to GitHub code scanning
+      security-events: write
+      # OIDC for publish_results (public API / badge)
+      id-token: write
+    steps:
+      # https://github.com/actions/checkout/releases
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # https://github.com/ossf/scorecard-action/releases
+      - name: Run analysis
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Public repo: publish to OpenSSF API (also required for the badge).
+          # pull_request is experimental in scorecard-action and is omitted.
+          publish_results: true
+
+      # https://github.com/actions/upload-artifact/releases
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      # https://github.com/github/codeql-action/releases
+      - name: Upload to code-scanning
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
+        with:
+          sarif_file: results.sarif
