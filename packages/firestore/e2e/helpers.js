@@ -30,9 +30,14 @@ exports.wipe = async function wipe(debug = false, databaseId = '(default)', retr
     getE2eTestProject() +
     `/databases/${databaseId}/documents`;
 
+  // Emulator DELETE can hang under load; never wait for the full mocha suite timeout.
+  const WIPE_FETCH_TIMEOUT_MS = 15000;
+
   let lastError;
 
   for (let attempt = 1; attempt <= retries; attempt++) {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), WIPE_FETCH_TIMEOUT_MS) : null;
     try {
       if (debug) {
         console.time('wipe');
@@ -44,6 +49,7 @@ exports.wipe = async function wipe(debug = false, databaseId = '(default)', retr
           // Undocumented, but necessary - from Emulator UI network requests
           Authorization: 'Bearer owner',
         },
+        ...(controller ? { signal: controller.signal } : {}),
       });
 
       if (!response.ok) {
@@ -58,10 +64,17 @@ exports.wipe = async function wipe(debug = false, databaseId = '(default)', retr
       return;
     } catch (e) {
       lastError = e;
-      const message = e?.message || String(e);
+      const aborted = e?.name === 'AbortError';
+      const message = aborted
+        ? `Firestore wipe timed out after ${WIPE_FETCH_TIMEOUT_MS}ms`
+        : e?.message || String(e);
       console.error(`Unable to wipe firestore (attempt ${attempt}/${retries}): ${message}`);
       if (attempt < retries) {
         await new Promise(resolve => setTimeout(resolve, 250 * attempt));
+      }
+    } finally {
+      if (timer) {
+        clearTimeout(timer);
       }
     }
   }
