@@ -64,6 +64,7 @@ When RNFB podspecs change:
   `install_modules_dependencies`.
 
 Do not treat this file as consumer setup.
-Static-SPM opt-out (`$RNFirebaseDisableSPM` / `forceStaticLinking` /
-`$RNFirebaseAsStaticFramework`) stays in [`docs/index.mdx`](../docs/index.mdx)
-and [`docs/ios-spm.mdx`](../docs/ios-spm.mdx).
+`$RNFirebaseDisableSPM` / Expo `disableSPM` / static Firebase linkage are
+**removed** (fail loud with Firebase Apple SDK 13+) — see
+[`docs/ios-spm.mdx`](../docs/ios-spm.mdx) and
+[`docs/migrating-to-v27.mdx`](../docs/migrating-to-v27.mdx).
