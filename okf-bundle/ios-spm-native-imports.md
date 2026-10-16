@@ -145,6 +145,13 @@ its queue and constants from `RNFBDatabaseCommon`.
 | Remote Config | `RNFBConfigHelper` |
 | In-App Messaging | `RNFBFiamHelper` |
 | Database | `RNFBDatabase*Helper` classes, plus Firebase-free queue/constants headers |
+| Installations | `RNFBInstallationsHelper` |
+
+Installations still publishes Objective-C product headers
+(`FirebaseInstallations/FirebaseInstallations.h`), but
+`RNFBInstallationsModule.mm` must not import Firebase or fall through to
+`@import`: keep dual CocoaPods/SPM Firebase imports in the plain `.m` helper
+only.
 
 This is a compile-boundary decision, not a TurboModule bridge API decision, so
 it does not use a `NewArch-AD-*` identifier.

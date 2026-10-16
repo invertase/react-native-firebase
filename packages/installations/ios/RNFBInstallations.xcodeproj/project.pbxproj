@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBInstallationsModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBInstallationsModule.mm */; };
+		RNFBIN000000000000000003 /* RNFBInstallationsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = RNFBIN000000000000000005 /* RNFBInstallationsHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,8 @@
 		2744B98221F45429004F8E3F /* libRNFBInstallations.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBInstallations.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBInstallationsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBInstallationsModule.h; path = RNFBInstallations/RNFBInstallationsModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBInstallationsModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBInstallationsModule.mm; path = RNFBInstallations/RNFBInstallationsModule.mm; sourceTree = SOURCE_ROOT; };
+		RNFBIN000000000000000004 /* RNFBInstallationsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBInstallationsHelper.h; path = RNFBInstallations/RNFBInstallationsHelper.h; sourceTree = SOURCE_ROOT; };
+		RNFBIN000000000000000005 /* RNFBInstallationsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBInstallationsHelper.m; path = RNFBInstallations/RNFBInstallationsHelper.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +57,8 @@
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBInstallationsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBInstallationsModule.mm */,
+				RNFBIN000000000000000004 /* RNFBInstallationsHelper.h */,
+				RNFBIN000000000000000005 /* RNFBInstallationsHelper.m */,
 			);
 			path = RNFBInstallations;
 			sourceTree = "<group>";
@@ -125,6 +130,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2744B98621F45429004F8E3F /* RNFBInstallationsModule.mm in Sources */,
+				RNFBIN000000000000000003 /* RNFBInstallationsHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

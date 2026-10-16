@@ -3676,7 +3676,7 @@ SPEC CHECKSUMS:
   RNFBFirestore: 9aee39f71b33a7639de421372a7469de624b2d09
   RNFBFunctions: ea45bc01bf96f3ef729a80b5ad0d121769f63f4f
   RNFBInAppMessaging: 6d89a102615a3dcce1f0a61cda386471f2604f98
-  RNFBInstallations: 8ca99e671f6a0e2eb2bc595b5d1945f3a782cbe5
+  RNFBInstallations: cee2e5030edbefe8077699d0f8a6e5b3b056cd15
   RNFBMessaging: 040d846facb2cb7def9955b20b03380d269725f9
   RNFBML: 0fbf5a3625154af91b96cccaed4edc82ddc6df36
   RNFBPerf: 0dd6ba75626b7fcb79aad15f27e9f2a5ef7e9f01
