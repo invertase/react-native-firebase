@@ -74,7 +74,7 @@ Removed packages (e.g. Dynamic Links) have no TypeDoc module — fall back to `m
 
 <a id="docs-page-link-check-ci"></a>
 
-`yarn lint:docs-links` runs `@docs.page/cli` `check` (pinned in root `package.json`, **≥ 2.2.0** for per-host severity overrides) and is a step in `.github/workflows/docs.yml`. The yarn script is `docs check .` — CLI defaults plus the `docs.json` `check` block; no severity flags on the command line. Fresh CLI publishes younger than the repo `npmMinimalAgeGate` (7d) must be listed in `.yarnrc.yml` `npmPreapprovedPackages`.
+`yarn lint:docs-links` runs `@docs.page/cli` `check` (pinned in root `package.json`, **≥ 2.2.0** for per-host severity overrides) and is a step in `.github/workflows/docs.yml`, wrapped in `nick-fields/retry` to absorb transient external failures (5xx, timeouts); a real breakage fails every attempt. The yarn script is `docs check .` — CLI defaults plus the `docs.json` `check` block; no severity flags on the command line. Fresh CLI publishes younger than the repo `npmMinimalAgeGate` (7d) must be listed in `.yarnrc.yml` `npmPreapprovedPackages`.
 
 **Severity:** external **404**, **5xx**, DNS, and timeout failures are **errors**. Bot-gated HTTP statuses (**401 / 403 / 405 / 429**) are **warnings** so CI stays green while still surfacing hosts that refuse automated clients (npmjs, Stack Overflow, and similar). Do **not** add `--external-links warn` or `--ignore-external-hosts` — that would hide TypeDoc rot on `reference.rnfirebase.io`.
 

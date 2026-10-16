@@ -171,7 +171,7 @@ When `docs/**` is in the diff, **`yarn lint:docs-links` exit code 0** is blockin
 
 **The only acceptable non-fix** is a **`warn`** on an **external** link where the checker reports a **bot/WAF gate** (common on npmjs.com, stackoverflow.com, some Google support URLs). Those URLs are often valid in a browser. **Do not** replace, remove, or “fix” those links to clear warnings, and do not relax check severity (flags or `docs.json` overrides) to hide real failures.
 
-If an external link is a true **404** / **not found** at **error** severity, fix it like any other error. If unsure, verify in a browser; 403 from npm/SO in warn output alone is not grounds to change the link. An `rnfirebase.io` **error** with a bot-gate status (e.g. **429**) is a host/rate problem, not a broken link: re-run; do not change the link or the override.
+If an external link is a true **404** / **not found** at **error** severity, fix it like any other error. If unsure, verify in a browser; 403 from npm/SO in warn output alone is not grounds to change the link. An **error** that clears on re-run — a **5xx** or timeout on any host, or a bot-gate status (e.g. **429**) on `rnfirebase.io` — is a host/rate problem, not a broken link: re-run until exit 0; do not change the link or the override. One that fails on every re-run is a real breakage — fix it.
 
 ## Expo example and documented-path iOS link (not e2e)
 

@@ -53,8 +53,13 @@ jobs:
         run: |
           yarn lint:spellcheck
       - name: Docs.page links
-        timeout-minutes: 15
-        run: yarn lint:docs-links
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 90
+          max_attempts: 5
+          command: yarn lint:docs-links
       # https://github.com/actions/cache/releases
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save
