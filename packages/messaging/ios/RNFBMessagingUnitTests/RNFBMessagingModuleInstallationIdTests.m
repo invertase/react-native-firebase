@@ -21,25 +21,8 @@
 #import <XCTest/XCTest.h>
 
 #import "RNFBMessagingHelper.h"
-#import "RNFBMessagingModule.h"
-
-// `register` / `unregister` come from the codegen'd NativeRNFBTurboMessagingSpec protocol, which
-// the host stub does not redeclare.
-@interface RNFBMessagingModule (InstallationIdTesting)
-- (void)register:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
-- (void)unregister:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
-- (void)getToken:(NSString *)appName
-        senderId:(NSString *)senderId
-         resolve:(RCTPromiseResolveBlock)resolve
-          reject:(RCTPromiseRejectBlock)reject;
-- (void)getAPNSToken:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
-- (void)unregisterForRemoteNotifications:(RCTPromiseResolveBlock)resolve
-                                  reject:(RCTPromiseRejectBlock)reject;
-- (NSDictionary *)messagingConstantsDictionary;
-@end
 
 @interface RNFBMessagingModuleInstallationIdTests : XCTestCase
-@property(nonatomic, strong) RNFBMessagingModule *module;
 @property(nonatomic, strong) NSMutableArray *resolved;
 @property(nonatomic, strong) NSMutableArray<NSString *> *rejectedCodes;
 @property(nonatomic, strong) NSMutableArray<NSError *> *rejectedErrors;
@@ -49,7 +32,6 @@
 
 - (void)setUp {
   [super setUp];
-  self.module = [[RNFBMessagingModule alloc] init];
   self.resolved = [NSMutableArray array];
   self.rejectedCodes = [NSMutableArray array];
   self.rejectedErrors = [NSMutableArray array];
@@ -136,17 +118,18 @@
   XCTAssertEqual([RNFBMessagingHelper isInstallationIdEnabled], YES);
 }
 
-- (void)testConstants_isRegisteredForRemoteNotifications_reflectsUIApplicationFlag {
+- (void)testIsRegisteredForRemoteNotifications_reflectsUIApplicationFlag {
   [UIApplication sharedApplication].registeredForRemoteNotifications = YES;
 
-  XCTAssertEqualObjects(
-      [self.module messagingConstantsDictionary][@"isRegisteredForRemoteNotifications"], @YES);
+  XCTAssertTrue([RNFBMessagingHelper isRegisteredForRemoteNotifications]);
 }
 
 #pragma mark - getToken / getAPNSToken / unregister (main-queue UIApplication hops)
 
 - (void)testGetToken_rejectsUnregistered_whenNotRegistered {
-  [self.module getToken:@"app" senderId:@"sender" resolve:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper getTokenWithSenderId:@"sender"
+                                    resolve:[self resolver]
+                                     reject:[self rejecter]];
 
   XCTAssertEqual(self.resolved.count, 0);
   XCTAssertEqualObjects(self.rejectedCodes, (@[ @"unregistered" ]));
@@ -156,56 +139,50 @@
   [UIApplication sharedApplication].registeredForRemoteNotifications = YES;
   NSError *fcmError = [NSError errorWithDomain:@"com.google.fcm" code:99 userInfo:nil];
   [FIRMessaging messaging].completionErrorForTesting = fcmError;
+  FIRMessaging.retrieveFCMTokenError = fcmError;
+  FIRMessaging.retrieveFCMTokenResult = nil;
 
-  [self.module getToken:@"app" senderId:@"sender" resolve:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper getTokenWithSenderId:@"sender"
+                                    resolve:[self resolver]
+                                     reject:[self rejecter]];
 
   XCTAssertEqual(self.resolved.count, 0);
   XCTAssertEqual(self.rejectedCodes.count, 1);
   XCTAssertNotEqualObjects(self.rejectedCodes.firstObject, @"unregistered");
-  XCTAssertEqualObjects(self.rejectedCodes.firstObject, @"native-error");
+  XCTAssertEqualObjects(self.rejectedCodes.firstObject, @"unknown");
+  XCTAssertEqual(self.rejectedErrors.count, 1);
+  XCTAssertEqual(self.rejectedErrors[0], fcmError);
 }
 
 - (void)testGetAPNSToken_rejectsUnregistered_whenNotRegistered {
   [FIRMessaging messaging].APNSToken = nil;
 
-  [self.module getAPNSToken:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper getAPNSToken:[self resolver] reject:[self rejecter]];
 
   XCTAssertEqual(self.resolved.count, 0);
   XCTAssertEqualObjects(self.rejectedCodes, (@[ @"unregistered" ]));
 }
 
-- (void)testUnregisterForRemoteNotifications_callsUIKitAndResolves {
+- (void)testUnregisterForRemoteNotificationsOnMain_callsUIKit {
   [UIApplication sharedApplication].registeredForRemoteNotifications = YES;
 
-  [self.module unregisterForRemoteNotifications:[self resolver] reject:[self rejecter]];
+  [RNFBMessagingHelper unregisterForRemoteNotificationsOnMain];
 
   XCTAssertEqual(
       [UIApplication sharedApplication].unregisterForRemoteNotificationsCallCountForTesting, 1);
   XCTAssertFalse([UIApplication sharedApplication].isRegisteredForRemoteNotifications);
-  XCTAssertEqualObjects(self.resolved, (@[ [NSNull null] ]));
-  XCTAssertEqual(self.rejectedCodes.count, 0);
 }
 
-- (void)testAddCustomProps_setsIsHeadlessWhenBackgroundRemoteLaunch {
+- (void)testIsApplicationInBackground_trueWhenBackground {
   [UIApplication sharedApplication].applicationState = UIApplicationStateBackground;
-  NSDictionary *props = [RNFBMessagingModule
-      addCustomPropsToUserProps:nil
-              withLaunchOptions:@{
-                UIApplicationLaunchOptionsRemoteNotificationKey : @{@"a" : @"b"}
-              }];
 
-  XCTAssertEqualObjects(props[@"isHeadless"], @YES);
+  XCTAssertTrue([RNFBMessagingHelper isApplicationInBackground]);
 }
 
-- (void)testAddCustomProps_isHeadlessFalseWhenActiveRemoteLaunch {
+- (void)testIsApplicationInBackground_falseWhenActive {
   [UIApplication sharedApplication].applicationState = UIApplicationStateActive;
-  NSDictionary *props = [RNFBMessagingModule
-      addCustomPropsToUserProps:nil
-              withLaunchOptions:@{
-                UIApplicationLaunchOptionsRemoteNotificationKey : @{@"a" : @"b"}
-              }];
 
-  XCTAssertEqualObjects(props[@"isHeadless"], @NO);
+  XCTAssertFalse([RNFBMessagingHelper isApplicationInBackground]);
 }
 
 @end
