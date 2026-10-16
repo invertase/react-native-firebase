@@ -4,9 +4,12 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 static inline BOOL RCTRunningInAppExtension(void) { return NO; }
 
-static inline void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block) {
-  block();
+static inline UIApplication *RCTSharedApplication(void) {
+  return [UIApplication sharedApplication];
 }
+
+static inline void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block) { block(); }

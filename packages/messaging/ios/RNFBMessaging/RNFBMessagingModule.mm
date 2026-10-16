@@ -35,6 +35,36 @@
 #import "RNFBMessagingSerializer.h"
 #import "RNFBMessagingTurboModules.h"
 
+// UIApplication register/isRegistered/unregister and applicationState must run on the main
+// queue (NewArch-AD-9). TurboModule methods use requiresMainQueueSetup = NO, so hop explicitly.
+// RCTSharedApplication() is nil in app extensions — treat as not-registered / not-background.
+static BOOL RNFBMessagingIsRegisteredForRemoteNotifications(void) {
+  __block BOOL registered = NO;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    UIApplication *application = RCTSharedApplication();
+    registered = application != nil && [application isRegisteredForRemoteNotifications];
+  });
+  return registered;
+}
+
+static void RNFBMessagingUnregisterForRemoteNotificationsOnMain(void) {
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    UIApplication *application = RCTSharedApplication();
+    if (application != nil) {
+      [application unregisterForRemoteNotifications];
+    }
+  });
+}
+
+static BOOL RNFBMessagingIsApplicationInBackground(void) {
+  __block BOOL background = NO;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    UIApplication *application = RCTSharedApplication();
+    background = application != nil && application.applicationState == UIApplicationStateBackground;
+  });
+  return background;
+}
+
 @interface RNFBMessagingModule () <NativeRNFBTurboMessagingSpec>
 @end
 
@@ -60,7 +90,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
   appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
 
   if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    if (RNFBMessagingIsApplicationInBackground()) {
       appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
     }
   }
@@ -76,13 +106,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
   constants[@"isRegisteredForRemoteNotifications"] = @NO;
 #else
   // Under TurboModules getConstants runs on the JS thread; UIApplication is main-thread only.
-  __block BOOL isRegisteredForRemoteNotifications = NO;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    isRegisteredForRemoteNotifications =
-        [[UIApplication sharedApplication] isRegisteredForRemoteNotifications];
-  });
   constants[@"isRegisteredForRemoteNotifications"] =
-      @([RCTConvert BOOL:@(isRegisteredForRemoteNotifications)]);
+      @([RCTConvert BOOL:@(RNFBMessagingIsRegisteredForRemoteNotifications())]);
 #endif
   constants[@"isDeliveryMetricsExportToBigQueryEnabled"] =
       @([RCTConvert BOOL:@(_isDeliveryMetricsExportToBigQueryEnabled)]);
@@ -143,7 +168,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
         senderId:(NSString *)senderId
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
+  if (!RNFBMessagingIsRegisteredForRemoteNotifications()) {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
                          userInfo:(NSMutableDictionary *)@{
@@ -231,7 +256,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
          @"valid. "
          @"Use setAPNSToken in testing if needed.");
 #endif
-    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
+    if (!RNFBMessagingIsRegisteredForRemoteNotifications()) {
       [RNFBSharedUtils
           rejectPromiseWithUserInfo:reject
                            userInfo:(NSMutableDictionary *)@{
@@ -454,7 +479,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 
 - (void)unregisterForRemoteNotifications:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject {
-  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+  RNFBMessagingUnregisterForRemoteNotificationsOnMain();
   resolve(nil);
 }
 
