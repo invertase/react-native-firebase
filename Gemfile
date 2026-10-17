@@ -31,4 +31,4 @@ gem 'rubocop', '~> 1.91'
 # podspec JSON (react-native-macos codegen during `yarn tests:macos:pod:install`).
 # json 3.0 dropped that keyword (ArgumentError: unknown keyword: quirks_mode).
 # RuboCop 1.91 allows json >= 2.3 and would otherwise pull 3.x; keep the 2.x line.
-gem 'json', '~> 2.21'
+gem 'json', '~> 3.0'
