@@ -131,6 +131,7 @@ if command -v gtimeout >/dev/null 2>&1; then
   gtimeout "$XCODEBUILD_TIMEOUT_SEC" xcodebuild \
     ARCHS="$HOST_ARCH" \
     ONLY_ACTIVE_ARCH=YES \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
@@ -144,6 +145,7 @@ elif command -v timeout >/dev/null 2>&1; then
   timeout "$XCODEBUILD_TIMEOUT_SEC" xcodebuild \
     ARCHS="$HOST_ARCH" \
     ONLY_ACTIVE_ARCH=YES \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
@@ -158,6 +160,7 @@ else
     xcodebuild \
     ARCHS="$HOST_ARCH" \
     ONLY_ACTIVE_ARCH=YES \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
@@ -189,6 +192,7 @@ settings_err="$(mktemp)"
 set +e
 settings_out="$(
   xcodebuild \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
