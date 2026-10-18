@@ -10,6 +10,8 @@ timestamp: 2026-08-26T00:00:00Z
 
 ## E2E job shape (CI — mirrors workflow YAML; local: [running e2e](../testing/running-e2e.md))
 
+CI builds **one ABI** from `matrix.arch` via job env `ORG_GRADLE_PROJECT_reactNativeArchitectures` (overrides `tests/android/gradle.properties` multi-ABI defaults for CI only; same `ORG_GRADLE_PROJECT_*` pattern as Metro port). Gradle cache keys are arch-scoped (`gradle-v2-<arch>`).
+
 1. `tests:android:build`
 2. `tests:android:unit` — JVM unit (no emulator); produces module Jacoco `*.exec` ([AndroidTest-AD-1](../testing/android-architecture-decisions.md#androidtest-ad-1))
 3. `tests:android:test-cover --headless` — pass/fail gate
