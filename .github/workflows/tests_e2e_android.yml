@@ -246,8 +246,9 @@ jobs:
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
-          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-metro-v1
+          # Sticky content-hash key (no run_id). Shared inputs with iOS/Other Metro caches.
+          key: ${{ runner.os }}-android-metro-v2-${{ hashFiles('yarn.lock', 'tests/package.json', 'tests/metro.config.js', 'tests/index.js', 'tests/app.js', 'tests/react-native.config.js', 'packages/*/package.json', 'packages/*/lib/**') }}
+          restore-keys: ${{ runner.os }}-android-metro-v2-
 
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
@@ -378,7 +379,7 @@ jobs:
       - name: Metro Bundler Cache Save
         # https://github.com/actions/cache/releases
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: "${{ github.ref == 'refs/heads/main' }}"
+        if: github.ref == 'refs/heads/main' && matrix.iteration == 0 && steps.metro-bundler-cache.outputs.cache-hit != 'true'
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}

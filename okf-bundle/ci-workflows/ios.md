@@ -10,6 +10,10 @@ timestamp: 2026-08-26T00:00:00Z
 
 **Testing E2E iOS** workflow (`.github/workflows/tests_e2e_ios.yml`) and `.github/workflows/scripts/`.
 
+<a id="metro-bundler-cache"></a>
+
+**Metro bundler cache** (debug legs only) — restore key `${{ runner.os }}-ios-metro-v2-<hashFiles(…)>` (same content inputs as Android Metro; restore-keys prefix `…-ios-metro-v2-`). Save only when debug + `dep-resolution == 'spm'` + `matrix.iteration == 0` + `main` + exact restore miss (`cache-hit != 'true'`). Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
+
 ## Apple CI toolchain (Xcode 27)
 
 Dedicated Apple jobs use the **`xcode-27`** runner label (macOS 27 image), `maxim-lobanov/setup-xcode` with **`latest-stable`**, then `.github/workflows/scripts/configure-apple-ci.sh` (D6):
