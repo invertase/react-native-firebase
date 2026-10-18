@@ -14,6 +14,10 @@ timestamp: 2026-08-26T00:00:00Z
 
 **Metro bundler cache** (debug legs only) — restore key `${{ runner.os }}-ios-metro-v2-<hashFiles(…)>` (same content inputs as Android Metro; restore-keys prefix `…-ios-metro-v2-`). Save only when debug + `dep-resolution == 'spm'` + `matrix.iteration == 0` + `main` + exact restore miss (`cache-hit != 'true'`). Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
 
+<a id="xcode-ccache"></a>
+
+**Xcode ccache** — `hendrikmuhs/ccache-action` with `append-timestamp: false` and content-hash keys (`yarn.lock`, podspecs, `packages/*/ios/**`, `tests/ios/Podfile.lock`). iOS e2e key includes `buildmode` + `dep-resolution` (`…-e2e-…-ios-v5-xcode27-…`); archive key includes `dep-resolution` (`…-e2e-archive-…-ios-v3-xcode27-…`). Never share spm/cocoapods caches. Save on `main` only; e2e also requires `matrix.iteration == 0`. Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
+
 ## Apple CI toolchain (Xcode 27)
 
 Dedicated Apple jobs use the **`xcode-27`** runner label (macOS 27 image), `maxim-lobanov/setup-xcode` with **`latest-stable`**, then `.github/workflows/scripts/configure-apple-ci.sh` (D6):

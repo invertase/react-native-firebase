@@ -201,8 +201,10 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v4-xcode27 # bust ccache polluted by Xcode 27.1 beta / prior majors
-          save: "${{ github.ref == 'refs/heads/main' }}"
+          # Sticky content-hash key (append-timestamp: false). Dimensions keep spm/cocoapods and debug/release caches distinct.
+          key: ${{ runner.os }}-e2e-${{ matrix.buildmode }}-${{ matrix.dep-resolution }}-ios-v5-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/ios/**', 'tests/ios/Podfile.lock') }}
+          save: "${{ github.ref == 'refs/heads/main' && matrix.iteration == 0 }}"
+          append-timestamp: false
           create-symlink: true
           max-size: 1500M
 
@@ -649,8 +651,10 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-archive-${{ matrix.dep-resolution }}-ios-v2-xcode27
+          # Sticky content-hash key (append-timestamp: false). dep-resolution keeps spm/cocoapods caches distinct.
+          key: ${{ runner.os }}-e2e-archive-${{ matrix.dep-resolution }}-ios-v3-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/ios/**', 'tests/ios/Podfile.lock') }}
           save: "${{ github.ref == 'refs/heads/main' }}"
+          append-timestamp: false
           create-symlink: true
           max-size: 1500M
 
