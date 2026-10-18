@@ -59,6 +59,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -72,6 +73,15 @@ jobs:
     env:
       XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
+      # Prefer PATH ccache wrappers from ccache-action (create-symlink). Do not set LD/LDPLUSPLUS (Xcode 27 trap).
+      # Build/launch scripts also pass CC=clang CPLUSPLUS=clang++ as xcodebuild settings.
+      CC: clang
+      CPLUSPLUS: clang++
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -89,14 +99,32 @@ jobs:
       - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
 
+      # Sticky content-hash key (append-timestamp: false). Distinct from e2e/expo (`rn-bare` app id).
+      # https://github.com/hendrikmuhs/ccache-action/releases
+      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-rn-bare-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-rn-bare/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js') }}
+          append-timestamp: false
+          save: ${{ github.ref == 'refs/heads/main' }}
+          create-symlink: true
+          max-size: 1500M
+
       - name: Yarn Install
         run: yarn
+
+      - name: ccache stats (before)
+        run: ccache -s || true
 
       - name: test-rn-bare iOS build
         run: yarn test-rn-bare:ios:build
 
       - name: test-rn-bare iOS launch smoke
         run: yarn test-rn-bare:ios:launch-smoke
+
+      - name: ccache stats (after)
+        if: always()
+        run: ccache -s || true
 
   # Permanent probe: App links through the local dynamic RNFBFirebase package
   # instead of direct firebase-ios-sdk. Flag off job above stays the shipped path.
@@ -116,6 +144,15 @@ jobs:
       RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG: /tmp/test-rn-bare-launch-smoke-xcodebuild-probe.log
       RNFB_TEST_RN_BARE_LAUNCH_LOG: /tmp/test-rn-bare-launch-smoke-probe.log
       RNFB_TEST_RN_BARE_METRO_LOG: /tmp/test-rn-bare-launch-smoke-metro-probe.log
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
+      # Prefer PATH ccache wrappers from ccache-action (create-symlink). Do not set LD/LDPLUSPLUS (Xcode 27 trap).
+      # Build/launch scripts also pass CC=clang CPLUSPLUS=clang++ as xcodebuild settings.
+      CC: clang
+      CPLUSPLUS: clang++
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -136,8 +173,22 @@ jobs:
       - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
 
+      # Sticky content-hash key (append-timestamp: false). Distinct from shipped-path job (`rn-bare-dynfb`).
+      # https://github.com/hendrikmuhs/ccache-action/releases
+      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-rn-bare-dynfb-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-rn-bare/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js', 'packages/app/package.json') }}
+          append-timestamp: false
+          save: ${{ github.ref == 'refs/heads/main' }}
+          create-symlink: true
+          max-size: 1500M
+
       - name: Yarn Install
         run: yarn
+
+      - name: ccache stats (before)
+        run: ccache -s || true
 
       - name: test-rn-bare iOS build (dynamic Firebase probe)
         run: yarn test-rn-bare:ios:build
@@ -147,3 +198,7 @@ jobs:
       # running app, and that FirebaseCore logged the default-app configure marker.
       - name: test-rn-bare iOS launch smoke (dynamic Firebase probe)
         run: yarn test-rn-bare:ios:launch-smoke
+
+      - name: ccache stats (after)
+        if: always()
+        run: ccache -s || true

@@ -129,6 +129,7 @@ set +e
 xcodebuild \
   ARCHS="$HOST_ARCH" \
   ONLY_ACTIVE_ARCH=YES \
+  CC=clang CPLUSPLUS=clang++ \
   -workspace "$WORKSPACE" \
   -scheme "$SCHEME" \
   ${derived_data_args[@]+"${derived_data_args[@]}"} \
