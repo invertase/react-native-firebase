@@ -91,7 +91,7 @@ Artifacts upload on every run (`if: always()`).
 | `detox-step-<buildmode>-<iteration>_log` | Detox/Jet step stdout/stderr (`tee detox-step.log`) | `[jet-ws]`, `[rnfb-e2e]`, `[jet-coverage]`, Jest output — primary orchestration log |
 | `flake-summary-<buildmode>-<iteration>` | `.github/workflows/scripts/flake-summary.sh` → `flake-summary.txt` | Pre-digested `rg` hits across detox/sim-app/metro/resource-monitor logs |
 | `resource-monitor-<buildmode>-<iteration>_log` | `.github/workflows/scripts/resource-monitor.sh` → `resource-monitor.log` | Periodic `uptime` + `ps` snapshots (10s default) to correlate WS drops with CPU/memory pressure |
-| `metro-<buildmode>-<iteration>_log` | Metro stdout/stderr from `yarn tests:packager:jet-ci` → `metro.log` (debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch |
+| `metro-<buildmode>-<iteration>_log` | Wrapper `metro.log` plus packager detail `/tmp/rnfb-metro-*.log` (`scripts/e2e/start-packager.sh`; debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch — wrapper alone is often 1–2 lines; inspect the detail log |
 | `simulator-<buildmode>-<iteration>_video` | `simctl recordVideo` → `simulator.mp4` | Visual confirmation (**`workflow_dispatch` / `workflow_call` `record_screens: true` only**) |
 | `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Device Hub window (**`record_screens: true` only**) |
 | `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup (**`record_screens: true` only**) |
@@ -277,7 +277,7 @@ Metro can look healthy on the **host** during pre-fetch minutes earlier while be
 | Full Jet e2e retry when inner launch retries exhausted or WS/coverage teardown retryable | `tests/e2e/firebase.test.js` (`retryableAtJetLevel`, `isRetryableE2eFailure`) |
 | `simctl get_app_container` / `listapps` before and after each launch attempt | `tests/e2e/firebase.test.js` (`[rnfb-e2e] install-state`) |
 | Bounded `launchApp` timeout | Debug: `RNFB_LAUNCH_APP_TIMEOUT_MS` ([`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)). Release: `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` in `firebase.test.js` |
-| Metro log artifact (`metro.log`) | `.github/workflows/tests_e2e_ios.yml` |
+| Metro log artifacts (`metro.log` + `/tmp/rnfb-metro-*.log`) | `.github/workflows/tests_e2e_ios.yml` |
 | JS load failure + packager probe logging | `tests/ios/testing/AppDelegate.mm` |
 | Bundle URL pinned to `127.0.0.1` (bypasses RN `localhost` fallback) | `tests/ios/testing/AppDelegate.mm` |
 
@@ -332,10 +332,10 @@ rg 'testing\[' sim-app.log | rg -i 'FIRApp|RNFB|RCTBridge|configure'
 
 **Example healthy sequence** (abbreviated): `didFinishLaunching+after` → `UIApplicationDidBecomeActiveNotification` / scene `foregroundActive` → Detox `loginSuccess` → `isReady` → `waitForActiveDone`. A gap between SpringBoard foreground request and `[rnfb-lifecycle]` `active` is the smoking gun for issue 4. For issue 5, lifecycle probes show `active` but you will see `RCTJavaScriptDidFailToLoad` and/or `No script URL provided` before Detox stalls on `waitForActive`.
 
-For Metro-side post-mortem, also download `metro-*_log` and check whether Metro logged bundle requests or stalled around the launch timestamp:
+For Metro-side post-mortem, also download `metro-*_log` and check whether Metro logged bundle requests or stalled around the launch timestamp. The wrapper `metro.log` is often only 1–2 lines; prefer the packager detail log:
 
 ```bash
-rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
+rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log /tmp/rnfb-metro-*.log
 ```
 
 **Mitigations in this repo (summary)**
@@ -351,7 +351,7 @@ rg -i 'BUNDLE|index\.bundle|8081|error|ECONN|transform' metro.log
 | Pre-boot + `bootstatus` + shutdown wait before install | `boot-simulator.sh` |
 | Baseload shrink: one `sim-app.log` stream, load settle before Detox, optional video | `simulator-logging.sh`, `wait-for-load-settle.sh`, `tests_e2e_ios.yml` — [CI baseload policy](#ci-baseload-policy-instrumentation) |
 | Filtered logs, resource monitor, flake summary, Detox `tee` | `.github/workflows/tests_e2e_ios.yml`, `resource-monitor.sh`, `flake-summary.sh` |
-| Metro stdout/stderr artifact | `.github/workflows/tests_e2e_ios.yml` |
+| Metro log artifacts (`metro.log` + `/tmp/rnfb-metro-*.log`) | `.github/workflows/tests_e2e_ios.yml` |
 
 #### 6. Jet WebSocket disconnect (1006 / 1001)
 
@@ -413,6 +413,7 @@ rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
 | `reconnect_recovered` alone then ordinary product assertion (single `Jet tests on `) | **Not** Jet-retryable — bare reconnect must not mask deterministic product bugs. Tradeoff: avoids false retries; D1 (Release `transformFailure` mask) + D4 (secondary app-name collision) cover related flakes separately |
 | `reconnect_recovered` **and** desync signal (`Jet tests on ` ≥2 / suite re-entry, or `Unknown% ( 0/0 )`, or `[🟥] Stopped the server`) | Mid-suite reconnect left polluted JS / Firebase registry or lost coverage; Jet attempt 2 should trigger (`jetReconnectDesync` in `retry-eligibility`) |
 | `reconnect_recovered` then `Error: No client connected` or `send skipped action=pull-coverage` | Reconnect send race (issue 6b); Jet attempt 2 should trigger |
+| `awaiting-jet-exit` + ~20m silence + coverage `0/0` + `launch-retry-kill-jet` (+ `retryable=false` today) | Jet never produced mocha after `launch-ready` — inspect `[rnfb-e2e] stall-diagnostics` / `lsof` on `:8090`/`:8091`/`:8081`, `[jet-control] server.run starting` vs defer-only, and Metro detail in `/tmp/rnfb-metro-*.log` inside `metro-*_log` |
 
 #### 6b. Reconnect send race under extreme host load
 
