@@ -14,6 +14,10 @@ Local macOS e2e: [running e2e § Rules](../testing/running-e2e.md#rules) only. C
 
 **Dual-app pins:** CI macOS stays on **`tests-macos/`** RN **0.78.3** + `react-native-macos@0.78.6`. Mobile Detox (`tests/`) is on RN **0.86.2** and owns codegen. See [test app dependency pins](../testing/test-app-dependency-pins.md).
 
+<a id="metro-bundler-cache"></a>
+
+**Metro bundler cache** — restore key `${{ runner.os }}-macos-metro-v2-<hashFiles(…)>` (same shared `tests/` + `packages` inputs as mobile, plus `tests-macos` package/metro/index/react-native config; restore-keys prefix `…-macos-metro-v2-`). Save on `main` only when `matrix.iteration == 0` and restore was an exact miss (`cache-hit != 'true'`). Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
+
 ### Pipeline (CI — mirrors `tests_e2e_other.yml`; local operators use [running e2e](../testing/running-e2e.md) only)
 
 1. Build macOS app (`tests:macos:build` from `tests-macos/`, `SKIP_BUNDLING=1`)
