@@ -274,7 +274,7 @@ Metro can look healthy on the **host** during pre-fetch minutes earlier while be
 | In-process `launchApp` retry on launch failure (logs `launchApp failure reason=`) | `tests/e2e/firebase.test.js` (`RNFB_LAUNCH_APP_MAX_ATTEMPTS` — default in [`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)) |
 | Keep install on inner retry (`delete: false` on attempt 2+) | `tests/e2e/firebase.test.js` |
 | Slow `terminateApp` (≥ `RNFB_SLOW_TERMINATE_MS`, default 10s) → reboot via `boot-simulator.sh` | `tests/e2e/firebase.test.js` |
-| Full Jet e2e retry when inner launch retries exhausted or WS/coverage teardown retryable | `tests/e2e/firebase.test.js` (`retryableAtJetLevel`, `isRetryableE2eFailure`) |
+| Full Jet e2e retry when inner launch retries exhausted, await-exit stall, or WS/coverage teardown retryable | `tests/e2e/firebase.test.js` (`retryableAtJetLevel`, `isRetryableE2eFailure`; stall → `stall-kill-jet`) |
 | `simctl get_app_container` / `listapps` before and after each launch attempt | `tests/e2e/firebase.test.js` (`[rnfb-e2e] install-state`) |
 | Bounded `launchApp` timeout | Debug: `RNFB_LAUNCH_APP_TIMEOUT_MS` ([`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)). Release: `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` in `firebase.test.js` |
 | Metro log artifacts (`metro.log` + `/tmp/rnfb-metro-*.log`) | `.github/workflows/tests_e2e_ios.yml` |
@@ -413,7 +413,7 @@ rg 'disconnect_context|resource-monitor' detox-step.log resource-monitor.log
 | `reconnect_recovered` alone then ordinary product assertion (single `Jet tests on `) | **Not** Jet-retryable — bare reconnect must not mask deterministic product bugs. Tradeoff: avoids false retries; D1 (Release `transformFailure` mask) + D4 (secondary app-name collision) cover related flakes separately |
 | `reconnect_recovered` **and** desync signal (`Jet tests on ` ≥2 / suite re-entry, or `Unknown% ( 0/0 )`, or `[🟥] Stopped the server`) | Mid-suite reconnect left polluted JS / Firebase registry or lost coverage; Jet attempt 2 should trigger (`jetReconnectDesync` in `retry-eligibility`) |
 | `reconnect_recovered` then `Error: No client connected` or `send skipped action=pull-coverage` | Reconnect send race (issue 6b); Jet attempt 2 should trigger |
-| `awaiting-jet-exit` + ~20m silence + coverage `0/0` + `launch-retry-kill-jet` (+ `retryable=false` today) | Jet never produced mocha after `launch-ready` — inspect `[rnfb-e2e] stall-diagnostics` / `lsof` on `:8090`/`:8091`/`:8081`, `[jet-control] server.run starting` vs defer-only, and Metro detail in `/tmp/rnfb-metro-*.log` inside `metro-*_log` |
+| `awaiting-jet-exit` + ~20m silence + coverage `0/0` + `stall-kill-jet` (then Jet attempt 2 / iOS reboot) | Jet never produced mocha after `launch-ready` — stall is **retryable** once (`retryableAtJetLevel`); inspect `[rnfb-e2e] stall-diagnostics` / `lsof` on `:8090`/`:8091`/`:8081`, `[jet-control] server.run starting` vs defer-only, and Metro detail in `/tmp/rnfb-metro-*.log` inside `metro-*_log` |
 
 #### 6b. Reconnect send race under extreme host load
 

@@ -34,7 +34,7 @@ LOG_DIR="${RNFB_LOG_DIR:-.}"
 
   echo "=== await-exit stall markers ==="
   if [[ -f "${DETOX_LOG}" ]]; then
-    rg -n 'awaiting-jet-exit stalled|launch-retry-kill-jet|stall-diagnostics|Coverage summary|Unknown% \( 0/0 \)|\( 0/0 \)' \
+    rg -n 'awaiting-jet-exit stalled|stall-kill-jet|launch-retry-kill-jet|stall-diagnostics|Coverage summary|Unknown% \( 0/0 \)|\( 0/0 \)' \
       "${DETOX_LOG}" 2>/dev/null | tail -40 || true
   else
     echo "(no detox log)"

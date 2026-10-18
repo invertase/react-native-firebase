@@ -72,7 +72,8 @@ describe('detoxLatencyPolicy (UNI-9way-latency)', function () {
     expect(firebase).toMatch(/awaitJetExitWithStallGuard/);
     expect(firebase).toMatch(/stall-diagnostics/);
     expect(firebase).toMatch(/console\.error\(err\.message\)/);
-    expect(firebase).not.toMatch(/err\.retryableAtJetLevel\s*=\s*true/);
+    expect(firebase).toMatch(/err\.retryableAtJetLevel\s*=\s*true/);
+    expect(firebase).toMatch(/stall-kill-jet/);
     expect(detoxrc).toMatch(/debugSynchronization:\s*30000/);
   });
 
