@@ -325,7 +325,8 @@ ${body}
       const file = writeLog(['Window did become application key', 'sceneOfRecord: something']);
       const result = runHelper(`rnfb_probe_launch_assert_configure_logged "${file}"`);
       expect(result.status).toBe(1);
-      expect(result.stdout).toContain('RNFBFirebaseAppClient.configure() did not run');
+      expect(result.stdout).toContain('configure-marker miss');
+      expect(result.stdout).toContain('Could be configure skip OR debug logging/capture');
     });
 
     it('fails when only the code or only the message text appears', function () {
@@ -435,6 +436,30 @@ ${body}
       expect(launchIdx).toBeGreaterThan(-1);
       expect(captureIdx).toBeGreaterThan(launchIdx);
       expect(terminateIdx).toBeGreaterThan(captureIdx);
+    });
+
+    it('retrospectively scrapes I-COR with log show --debug before configure assert (probe only)', function () {
+      // Default log show omits debug; without --debug the scrape cannot see I-COR000001.
+      expect(smokeSource).toContain('log show --debug');
+      const retroIdx = smokeSource.indexOf('log show --debug');
+      const configureIdx = smokeSource.indexOf('rnfb_probe_launch_assert_configure_logged');
+      expect(retroIdx).toBeGreaterThan(-1);
+      expect(configureIdx).toBeGreaterThan(retroIdx);
+      // Command (not comments) lives in the probe-gated block with configure.
+      const lines = smokeSource.split('\n');
+      const showLineIdx = lines.findIndex(line =>
+        /^\s*xcrun simctl spawn .* log show --debug/.test(line),
+      );
+      expect(showLineIdx).toBeGreaterThan(-1);
+      const indent = line => line.length - line.trimStart().length;
+      let openerIdx = showLineIdx - 1;
+      while (
+        openerIdx >= 0 &&
+        (lines[openerIdx].trim() === '' || indent(lines[openerIdx]) >= indent(lines[showLineIdx]))
+      ) {
+        openerIdx -= 1;
+      }
+      expect(lines[openerIdx]).toMatch(/if \[\[ "\$PROBE_DYNAMIC_FIREBASE" == "1" \]\]; then/);
     });
 
     describe('running the script against a skeleton checkout', function () {
