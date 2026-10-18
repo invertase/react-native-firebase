@@ -43,6 +43,7 @@ const {
   androidAdbSerialAppearTimeoutMs,
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
+const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -1334,7 +1335,8 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
         `[rnfb-e2e] Jet awaiting-jet-exit stalled ${stallMs}ms after launch-ready — aborting cell`,
       );
       err.jetOutput = jetSession.output;
-      // Phase B will mark this stall retryable at Jet level (attempt 2 + iOS reboot).
+      // Attempt 2 + iOS sim reboot via isRetryableE2eFailure / retryableAtJetLevel.
+      err.retryableAtJetLevel = true;
       reject(err);
     }, stallMs);
   });
@@ -1347,7 +1349,9 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
       console.error(err.message);
       dumpAwaitExitStallDiagnostics(err, jetSession);
     }
-    await killJetForLaunchRetry(jetSession.process);
+    // ignoreExit during kill so outer Promise.race keeps this err (retryable stall)
+    // instead of a fresh "Jet tests failed!" from exitPromise.
+    await jetSession.killIgnoringExit(isAwaitExitStall ? 'stall' : 'launch-retry');
     if (!err.jetOutput) {
       err.jetOutput = jetSession.output;
     }
@@ -1359,13 +1363,18 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
   }
 }
 
-async function killJetForLaunchRetry(jetProcess) {
+async function killJetForLaunchRetry(jetProcess, reason = 'launch-retry') {
   if (!jetProcess || jetProcess.killed) {
     return;
   }
 
-  logOrchestrateState('launch-retry-kill-jet');
-  console.warn('[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot');
+  const fromStall = reason === 'stall';
+  logOrchestrateState(fromStall ? 'stall-kill-jet' : 'launch-retry-kill-jet');
+  console.warn(
+    fromStall
+      ? '[rnfb-e2e] stall-kill: killing Jet after await-exit stall'
+      : '[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot',
+  );
   jetProcess.kill('SIGTERM');
   await sleep(500);
   killSpawnedProcessTree(jetProcess);
@@ -1373,11 +1382,13 @@ async function killJetForLaunchRetry(jetProcess) {
   try {
     await ensureTcpPortClosed(
       jetRemotePort(),
-      'launch-retry',
+      fromStall ? 'stall-kill' : 'launch-retry',
       KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS,
     );
   } catch (err) {
-    console.warn(`[rnfb-e2e] launch-retry: Jet port still open after kill: ${err?.message || err}`);
+    console.warn(
+      `[rnfb-e2e] ${fromStall ? 'stall-kill' : 'launch-retry'}: Jet port still open after kill: ${err?.message || err}`,
+    );
   }
 }
 
@@ -1514,10 +1525,27 @@ function createJetSession(jetArgs, testsDir) {
       return output;
     },
     exitPromise,
+    /**
+     * Kill Jet with ignoreExit held so exitPromise does not reject and steal an
+     * outer Promise.race from a retryable caller error (await-exit stall).
+     * Leaves ignoreExit true — session is abandoned or respawned next.
+     */
+    async killIgnoringExit(reason = 'launch-retry') {
+      await killJetIgnoringExit({
+        setIgnoreExit: value => {
+          ignoreExit = value;
+        },
+        kill: () => killJetForLaunchRetry(jetProcess, reason),
+      });
+    },
     async respawnAfterLaunchRetry() {
-      ignoreExit = true;
       try {
-        await killJetForLaunchRetry(jetProcess);
+        await killJetIgnoringExit({
+          setIgnoreExit: value => {
+            ignoreExit = value;
+          },
+          kill: () => killJetForLaunchRetry(jetProcess),
+        });
         output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
         spawnJet();
         await waitForTcpPort(jetRemotePort());
