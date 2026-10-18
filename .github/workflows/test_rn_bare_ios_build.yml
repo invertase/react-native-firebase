@@ -195,7 +195,7 @@ jobs:
 
       # Same pod install state as the build above (the smoke does not run pod install).
       # Probe mode asserts RNFBFirebase.framework is embedded and mapped into the
-      # running app, and that FirebaseCore logged the default-app configure marker.
+      # running app, and hard-gates on RNFB_PROBE_CONFIGURE_OK (I-COR is soft warn).
       - name: test-rn-bare iOS launch smoke (dynamic Firebase probe)
         run: yarn test-rn-bare:ios:launch-smoke
 

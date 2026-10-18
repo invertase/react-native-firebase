@@ -191,9 +191,10 @@ fi
 xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
 APP_PID=""
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
-  # -FIRDebugEnabled turns on FirebaseCore debug logging (the configure marker).
+  # -FIRDebugEnabled turns on FirebaseCore debug logging (soft I-COR check).
+  # Pass args after `--` so simctl delivers them as process argv (not as simctl flags).
   # simctl prints "<bundle id>: <pid>".
-  launch_output="$(xcrun simctl launch "$UDID" "$BUNDLE_ID" -FIRDebugEnabled)"
+  launch_output="$(xcrun simctl launch "$UDID" "$BUNDLE_ID" -- -FIRDebugEnabled)"
   APP_PID="${launch_output##*: }"
 else
   xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
@@ -248,7 +249,7 @@ fi
 
 xcrun simctl terminate "$UDID" "$BUNDLE_ID"
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
-  log "PASS: iOS 27 sim launch smoke, dynamic probe (foreground scene, RNFBFirebase.framework embedded and loaded, FirebaseCore configure ran)"
+  log "PASS: iOS 27 sim launch smoke, dynamic probe (foreground scene, RNFBFirebase.framework embedded and loaded, probe configure breadcrumb observed)"
 else
   log "PASS: iOS 27 sim launch smoke (foreground scene, no UIScene runtime issue)"
 fi
