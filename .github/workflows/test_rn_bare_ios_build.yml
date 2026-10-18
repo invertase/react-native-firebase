@@ -199,6 +199,21 @@ jobs:
       - name: test-rn-bare iOS launch smoke (dynamic Firebase probe)
         run: yarn test-rn-bare:ios:launch-smoke
 
+      # Paths match dynfb env above (probe launch / metro / xcodebuild logs + optional *.retro.txt).
+      - name: Upload dynfb launch-smoke logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        continue-on-error: true
+        if: failure()
+        with:
+          name: rn-bare-dynfb-launch-smoke-logs
+          path: |
+            /tmp/test-rn-bare-launch-smoke-probe.log
+            /tmp/test-rn-bare-launch-smoke-probe.log.retro.txt
+            /tmp/test-rn-bare-launch-smoke-metro-probe.log
+            /tmp/test-rn-bare-launch-smoke-xcodebuild-probe.log
+          if-no-files-found: warn
+
       - name: ccache stats (after)
         if: always()
         run: ccache -s || true

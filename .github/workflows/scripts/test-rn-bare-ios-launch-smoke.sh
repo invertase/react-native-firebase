@@ -235,6 +235,14 @@ fi
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   log "--- dynamic probe launch checks ---"
   rnfb_probe_launch_assert_framework_loaded
+  # Retrospective scrape: distinguishes "never logged I-COR" from "log stream missed it".
+  # --debug is required: I-COR000001 is debug-level (log show omits debug without it).
+  # Written next to APP_LOG so the dynfb failure artifact can pick up *.retro.txt.
+  RETRO_LOG="${APP_LOG}.retro.txt"
+  xcrun simctl spawn "$UDID" log show --debug --style compact --last 2m \
+    --predicate "process == \"${PROCESS_NAME}\" AND eventMessage CONTAINS \"I-COR\"" \
+    >"$RETRO_LOG" 2>&1 || true
+  log "retrospective log show (I-COR) → ${RETRO_LOG} ($(wc -l <"$RETRO_LOG" | tr -d ' ') lines)"
   rnfb_probe_launch_assert_configure_logged "$APP_LOG"
 fi
 

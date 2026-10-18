@@ -130,9 +130,20 @@ rnfb_probe_launch_assert_configure_logged() {
   local matches
 
   [[ -f "$app_log" ]] || fail "app log was not found: ${app_log}"
-  if ! matches="$(grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_CODE" "$app_log" | grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_MARKER")"; then
-    fail "FirebaseCore never logged '${RNFB_PROBE_LAUNCH_CONFIGURE_MARKER}' (${RNFB_PROBE_LAUNCH_CONFIGURE_CODE}); RNFBFirebaseAppClient.configure() did not run, or debug logging was off. See ${app_log}"
+  if matches="$(grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_CODE" "$app_log" | grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_MARKER")"; then
+    log "FirebaseCore configure marker observed:"
+    printf '%s\n' "$matches" | tail -2
+    return 0
   fi
-  log "FirebaseCore configure marker observed:"
-  printf '%s\n' "$matches" | tail -2
+
+  # Hard-fail stays, but dump enough so CI job logs (and the failure artifact)
+  # distinguish "configure never ran" from "debug logging/capture missed it".
+  log "configure-marker miss — log diagnostics for ${app_log}:"
+  log "  bytes=$(wc -c <"$app_log" | tr -d ' ') lines=$(wc -l <"$app_log" | tr -d ' ')"
+  log "  firebase-ish lines:"
+  grep -Ei 'Firebase|FIRApp|I-COR|com\.google\.firebase|RNFB_PROBE|FIRDebug| Db ' "$app_log" \
+    | grep -Ev '^Filtering the log data using' \
+    | tail -40 \
+    || log "  (none)"
+  fail "FirebaseCore marker '${RNFB_PROBE_LAUNCH_CONFIGURE_MARKER}' (${RNFB_PROBE_LAUNCH_CONFIGURE_CODE}) missing in ${app_log}. Could be configure skip OR debug logging/capture; see diagnostics above and uploaded artifact."
 }
