@@ -1299,6 +1299,33 @@ function killSpawnedProcessTree(proc) {
   }
 }
 
+function dumpAwaitExitStallDiagnostics(err, jetSession) {
+  const jetOutput = String(err?.jetOutput || jetSession?.output || '');
+  const hasMochaTitle = /Jet tests on |^\s*\d+\)\s/m.test(jetOutput);
+  console.error(
+    `[rnfb-e2e] stall-diagnostics jetOutputBytes=${jetOutput.length} mochaTitleSeen=${hasMochaTitle}`,
+  );
+  console.error(`[rnfb-e2e] stall-diagnostics jetOutputTail:\n${jetOutput.slice(-4000)}`);
+
+  // Best-effort TCP snapshot on CI macOS (Jet :8090, control :8091, Metro).
+  const ports = [jetRemotePort(), jetControlPort(), metroPortForHost()];
+  for (const port of ports) {
+    try {
+      const lsof = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN,ESTABLISHED 2>/dev/null || true`, {
+        encoding: 'utf8',
+        timeout: 5000,
+      }).trim();
+      console.error(
+        `[rnfb-e2e] stall-diagnostics lsof :${port}\n${lsof || '(no LISTEN/ESTABLISHED)'}`,
+      );
+    } catch (lsofErr) {
+      console.error(
+        `[rnfb-e2e] stall-diagnostics lsof :${port} failed: ${lsofErr?.message || lsofErr}`,
+      );
+    }
+  }
+}
+
 async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStallTimeoutMs()) {
   let stallTimer;
   const stallPromise = new Promise((_, reject) => {
@@ -1307,12 +1334,19 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
         `[rnfb-e2e] Jet awaiting-jet-exit stalled ${stallMs}ms after launch-ready — aborting cell`,
       );
       err.jetOutput = jetSession.output;
+      // Phase B will mark this stall retryable at Jet level (attempt 2 + iOS reboot).
       reject(err);
     }, stallMs);
   });
   try {
     return await Promise.race([jetSession.exitPromise, stallPromise]);
   } catch (err) {
+    const isAwaitExitStall = /awaiting-jet-exit stalled/.test(err?.message || '');
+    if (isAwaitExitStall) {
+      // Surface in detox-step.log even when Jest wraps the throw as "Jet tests failed!".
+      console.error(err.message);
+      dumpAwaitExitStallDiagnostics(err, jetSession);
+    }
     await killJetForLaunchRetry(jetSession.process);
     if (!err.jetOutput) {
       err.jetOutput = jetSession.output;

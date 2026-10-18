@@ -497,12 +497,16 @@ jobs:
 
       - name: Upload Metro log
         # https://github.com/actions/upload-artifact/releases
+        # Wrapper stdout is metro.log; packager detail is /tmp/rnfb-metro-${RCT_METRO_PORT}.log
+        # (see scripts/e2e/start-packager.sh). Glob covers non-default slot ports.
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always() && contains(matrix.buildmode, 'debug')
         with:
           name: metro-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
-          path: metro.log
+          path: |
+            metro.log
+            /tmp/rnfb-metro-*.log
 
       - name: Upload Screen Recording
         # https://github.com/actions/upload-artifact/releases

@@ -191,7 +191,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..c212d6845e5b78129ed8b7efe8891588
    });
  }
  (0, _yargs.default)((0, _helpers.hideBin)(process.argv)).scriptName('jet').version('version', 'Show version number & exit', jetPackageJson.version).alias('v', 'version').option('target', {
-@@ -301,17 +388,34 @@ function attachHttpServer(wss) {
+@@ -301,17 +388,35 @@ function attachHttpServer(wss) {
      timeout: finalConfig.timeout,
      slow: finalConfig.slow
    });
@@ -218,6 +218,7 @@ index 35c04da87c63a79bc26707aaffe3156fb98eca79..c212d6845e5b78129ed8b7efe8891588
 +      }
 +      runStarted = true;
 +      if (!finalConfig.watch) {
++        console.log('[jet-control] server.run starting');
 +        server.run(async failures => {
 +          global.__coverage__ = coverageMap.toJSON();
 +          const mergedKeys = Object.keys(global.__coverage__).length;
