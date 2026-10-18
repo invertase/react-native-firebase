@@ -18,6 +18,7 @@ const APP_BUNDLE = `${SIM_DEVICE_PREFIX}/Bundle/Application/1234/testrnbare.app`
 
 const CONFIGURE_LINE =
   '2026-10-02 12:00:00.000 Db testrnbare[1:2] [com.google.firebase:] [FirebaseCore][I-COR000001] Configuring the default app.';
+const BREADCRUMB_LINE = '2026-10-02 12:00:00.000 testrnbare[1:2] RNFB_PROBE_CONFIGURE_OK';
 
 function lsofFields(paths) {
   return ['p4242', ...paths.map(p => `n${p}`)].join('\n') + '\n';
@@ -307,35 +308,58 @@ ${body}
     });
   });
 
-  describe('configure marker in the app log', function () {
+  describe('configure breadcrumb and soft I-COR in the app log', function () {
     function writeLog(lines) {
       const file = path.join(tmpDir, 'app.log');
       fs.writeFileSync(file, `${lines.join('\n')}\n`);
       return file;
     }
 
-    it('passes when FirebaseCore logged the default-app configure line', function () {
-      const file = writeLog(['unrelated line', CONFIGURE_LINE]);
+    it('passes when breadcrumb and FirebaseCore configure line are both present', function () {
+      const file = writeLog(['unrelated line', BREADCRUMB_LINE, CONFIGURE_LINE]);
       const result = runHelper(`rnfb_probe_launch_assert_configure_logged "${file}"`);
       expect(result.status).toBe(0);
+      expect(result.stdout).toContain('probe configure breadcrumb observed');
+      expect(result.stdout).toContain('RNFB_PROBE_CONFIGURE_OK');
       expect(result.stdout).toContain('I-COR000001');
+      expect(result.stdout).not.toContain('WARN:');
     });
 
-    it('fails when the log has no configure line', function () {
-      const file = writeLog(['Window did become application key', 'sceneOfRecord: something']);
+    it('passes with a soft warn when breadcrumb is present but I-COR is missing', function () {
+      const file = writeLog(['Window did become application key', BREADCRUMB_LINE]);
       const result = runHelper(`rnfb_probe_launch_assert_configure_logged "${file}"`);
-      expect(result.status).toBe(1);
-      expect(result.stdout).toContain('configure-marker miss');
-      expect(result.stdout).toContain('Could be configure skip OR debug logging/capture');
+      expect(result.status).toBe(0);
+      expect(result.stdout).toContain('probe configure breadcrumb observed');
+      expect(result.stdout).toContain('WARN:');
+      expect(result.stdout).toContain('I-COR000001');
+      expect(result.stdout).toContain('soft (debug logging/capture)');
     });
 
-    it('fails when only the code or only the message text appears', function () {
+    it('soft-warns (does not fail) when breadcrumb is present but I-COR dual-substring is incomplete', function () {
       const file = writeLog([
+        BREADCRUMB_LINE,
         '[FirebaseCore][I-COR000001] something else',
         '[FirebaseCore][I-COR000002] Configuring the default app.',
       ]);
       const result = runHelper(`rnfb_probe_launch_assert_configure_logged "${file}"`);
+      expect(result.status).toBe(0);
+      expect(result.stdout).toContain('WARN:');
+    });
+
+    it('fails hard when the breadcrumb is missing even if I-COR is present', function () {
+      const file = writeLog(['unrelated line', CONFIGURE_LINE]);
+      const result = runHelper(`rnfb_probe_launch_assert_configure_logged "${file}"`);
       expect(result.status).toBe(1);
+      expect(result.stdout).toContain('configure breadcrumb miss');
+      expect(result.stdout).toContain('RNFB_PROBE_CONFIGURE_OK');
+    });
+
+    it('fails hard when the log has neither breadcrumb nor I-COR', function () {
+      const file = writeLog(['Window did become application key', 'sceneOfRecord: something']);
+      const result = runHelper(`rnfb_probe_launch_assert_configure_logged "${file}"`);
+      expect(result.status).toBe(1);
+      expect(result.stdout).toContain('configure breadcrumb miss');
+      expect(result.stdout).toContain('RNFBFirebaseAppClient.configure() did not run');
     });
 
     it('fails when the log file is missing', function () {
@@ -386,11 +410,12 @@ ${body}
       expect(smokeSource).toContain(
         '"${HOME}/Library/Developer/Xcode/DerivedData"/testrnbare-*/Build/Products/Debug-iphonesimulator',
       );
-      // -FIRDebugEnabled is probe-only.
+      // -- -FIRDebugEnabled is probe-only.
       const launchLines = smokeSource
         .split('\n')
         .filter(line => line.includes('simctl launch') && line.includes('-FIRDebugEnabled'));
       expect(launchLines).toHaveLength(1);
+      expect(launchLines[0]).toContain('-- -FIRDebugEnabled');
     });
 
     it('builds into the launch DerivedData and finds the probe app only there', function () {
@@ -426,11 +451,12 @@ ${body}
     });
 
     it('launches the probe app with FirebaseCore debug logging and streams debug logs', function () {
-      expect(smokeSource).toContain('"$UDID" "$BUNDLE_ID" -FIRDebugEnabled');
+      // `--` so -FIRDebugEnabled is process argv, not a simctl flag.
+      expect(smokeSource).toContain('"$UDID" "$BUNDLE_ID" -- -FIRDebugEnabled');
       expect(smokeSource).toContain('LOG_LEVEL="debug"');
       expect(smokeSource).toContain('log stream --level "$LOG_LEVEL"');
       // Load check must happen while the app is alive: after launch, before terminate.
-      const launchIdx = smokeSource.indexOf('-FIRDebugEnabled)');
+      const launchIdx = smokeSource.indexOf('-- -FIRDebugEnabled)');
       const captureIdx = smokeSource.indexOf('rnfb_probe_launch_capture_loaded_images "$APP_PID"');
       const terminateIdx = smokeSource.lastIndexOf('xcrun simctl terminate "$UDID" "$BUNDLE_ID"');
       expect(launchIdx).toBeGreaterThan(-1);

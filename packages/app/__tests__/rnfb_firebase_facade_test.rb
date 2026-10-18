@@ -112,7 +112,9 @@ class RNFBFirebaseFacadeTest < Minitest::Test # rubocop:disable Metrics/ClassLen
   def test_test_rn_bare_app_delegate_uses_probe_condition
     source = File.read(File.expand_path('../../../test-rn-bare/ios/testrnbare/AppDelegate.swift', __dir__))
     assert_includes source, "#if #{PROBE_CONDITION}\nimport RNFBFirebase\n#else\nimport Firebase\n#endif"
-    assert_includes source, "#if #{PROBE_CONDITION}\n    RNFBFirebaseAppClient.configure()\n#else"
+    assert_includes source, "#if #{PROBE_CONDITION}\n    RNFBFirebaseAppClient.configure()\n"
+    assert_includes source, 'NSLog("RNFB_PROBE_CONFIGURE_OK")'
+    assert_match(/RNFBFirebaseAppClient\.configure\(\)\n.*NSLog\("RNFB_PROBE_CONFIGURE_OK"\)\n#else/m, source)
   end
 
   def test_firebase_unit_test_target_sets_probe_condition_for_compiled_app_sources

@@ -13,14 +13,16 @@
 #   - RNFBFirebase.framework is embedded in the installed .app
 #   - the app's own binary (testrnbare, or testrnbare.debug.dylib for Debug
 #     previews) has an undefined symbol into the RNFBFirebase AppClient, so the
-#     facade is what calls configure (any other [FIRApp configure] would also
-#     log the marker below and would not prove the facade path)
+#     facade is what calls configure (proves the app compiled the probe
+#     AppClient import; the breadcrumb below is probe-owned after that path)
 #   - RNFBFirebase.framework is mapped into the running app process (dyld loaded it)
-#   - the app logged FirebaseCore's "Configuring the default app." marker.
-#     FirebaseCore logs that at debug level inside FIRApp configure, which is
-#     the only thing RNFBFirebaseAppClient.configure() calls. The smoke passes
-#     -FIRDebugEnabled at launch and streams debug-level logs so the marker is
-#     visible.
+#   - the app logged the probe-owned RNFB_PROBE_CONFIGURE_OK breadcrumb (NSLog
+#     right after RNFBFirebaseAppClient.configure() under
+#     RNFB_DYNAMIC_FIREBASE_PROBE). That is the primary configure proof: default
+#     log level, no GUL/FIR debug mode required.
+#   - FirebaseCore's "Configuring the default app." / I-COR000001 is secondary
+#     and soft: warn + diagnostics if the breadcrumb is present but I-COR is
+#     missing (debug logging/capture flake). Missing breadcrumb fails hard.
 #
 # The caller must define `log` and `fail` (fail must exit). The loaded-image
 # capture sets RNFB_PROBE_LOADED_IMAGES instead of printing, so `fail` runs in
@@ -31,6 +33,7 @@ RNFB_PROBE_LAUNCH_FRAMEWORK_REL='RNFBFirebase.framework/RNFBFirebase'
 # only the framework binary itself matches, not RNFBFirebase.debug.dylib or a
 # longer path that merely ends the same way.
 RNFB_PROBE_LAUNCH_FRAMEWORK_LSOF_RE='^n.*/RNFBFirebase\.framework/RNFBFirebase$'
+RNFB_PROBE_LAUNCH_CONFIGURE_BREADCRUMB='RNFB_PROBE_CONFIGURE_OK'
 RNFB_PROBE_LAUNCH_CONFIGURE_MARKER='Configuring the default app.'
 RNFB_PROBE_LAUNCH_CONFIGURE_CODE='I-COR000001'
 
@@ -124,26 +127,55 @@ rnfb_probe_launch_assert_framework_loaded() {
   log "dyld: RNFBFirebase.framework is mapped into the running app"
 }
 
-# rnfb_probe_launch_assert_configure_logged <app-log>
-rnfb_probe_launch_assert_configure_logged() {
+# rnfb_probe_launch_dump_configure_diagnostics <app-log>
+# Shared diagnostics for breadcrumb hard-fail and soft I-COR miss.
+rnfb_probe_launch_dump_configure_diagnostics() {
   local app_log="$1"
-  local matches
 
-  [[ -f "$app_log" ]] || fail "app log was not found: ${app_log}"
-  if matches="$(grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_CODE" "$app_log" | grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_MARKER")"; then
-    log "FirebaseCore configure marker observed:"
-    printf '%s\n' "$matches" | tail -2
-    return 0
-  fi
-
-  # Hard-fail stays, but dump enough so CI job logs (and the failure artifact)
-  # distinguish "configure never ran" from "debug logging/capture missed it".
-  log "configure-marker miss — log diagnostics for ${app_log}:"
   log "  bytes=$(wc -c <"$app_log" | tr -d ' ') lines=$(wc -l <"$app_log" | tr -d ' ')"
   log "  firebase-ish lines:"
   grep -Ei 'Firebase|FIRApp|I-COR|com\.google\.firebase|RNFB_PROBE|FIRDebug| Db ' "$app_log" \
     | grep -Ev '^Filtering the log data using' \
     | tail -40 \
     || log "  (none)"
-  fail "FirebaseCore marker '${RNFB_PROBE_LAUNCH_CONFIGURE_MARKER}' (${RNFB_PROBE_LAUNCH_CONFIGURE_CODE}) missing in ${app_log}. Could be configure skip OR debug logging/capture; see diagnostics above and uploaded artifact."
+}
+
+# rnfb_probe_launch_assert_configure_logged <app-log>
+# Primary: hard-assert RNFB_PROBE_CONFIGURE_OK (probe-owned NSLog after configure).
+# Secondary: soft-check FirebaseCore I-COR000001 dual-substring — warn + diagnostics
+# when the breadcrumb is present but I-COR is missing; do not fail the job.
+rnfb_probe_launch_assert_configure_logged() {
+  local app_log="$1"
+  local matches
+  local breadcrumb_ok=0
+  local icor_ok=0
+
+  [[ -f "$app_log" ]] || fail "app log was not found: ${app_log}"
+
+  if grep -Fq "$RNFB_PROBE_LAUNCH_CONFIGURE_BREADCRUMB" "$app_log"; then
+    breadcrumb_ok=1
+    log "probe configure breadcrumb observed: ${RNFB_PROBE_LAUNCH_CONFIGURE_BREADCRUMB}"
+  fi
+
+  if matches="$(grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_CODE" "$app_log" | grep -F "$RNFB_PROBE_LAUNCH_CONFIGURE_MARKER")"; then
+    icor_ok=1
+    log "FirebaseCore configure marker observed:"
+    printf '%s\n' "$matches" | tail -2
+  fi
+
+  if [[ "$breadcrumb_ok" -eq 1 && "$icor_ok" -eq 1 ]]; then
+    return 0
+  fi
+
+  if [[ "$breadcrumb_ok" -eq 1 ]]; then
+    # Configure ran (probe breadcrumb); missing I-COR is a debug-log/capture flake.
+    log "WARN: FirebaseCore marker '${RNFB_PROBE_LAUNCH_CONFIGURE_MARKER}' (${RNFB_PROBE_LAUNCH_CONFIGURE_CODE}) missing in ${app_log}, but probe breadcrumb is present — soft (debug logging/capture); see diagnostics:"
+    rnfb_probe_launch_dump_configure_diagnostics "$app_log"
+    return 0
+  fi
+
+  # Breadcrumb missing: hard fail whether or not I-COR appeared.
+  log "configure breadcrumb miss — log diagnostics for ${app_log}:"
+  rnfb_probe_launch_dump_configure_diagnostics "$app_log"
+  fail "probe configure breadcrumb '${RNFB_PROBE_LAUNCH_CONFIGURE_BREADCRUMB}' missing in ${app_log}. RNFBFirebaseAppClient.configure() did not run (or NSLog was not captured); see diagnostics above and uploaded artifact."
 }

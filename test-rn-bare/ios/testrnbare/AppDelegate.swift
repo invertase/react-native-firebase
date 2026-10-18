@@ -16,6 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   ) -> Bool {
 #if RNFB_DYNAMIC_FIREBASE_PROBE
     RNFBFirebaseAppClient.configure()
+    // Probe-owned breadcrumb at default log level (no -FIRDebugEnabled required).
+    // Launch smoke hard-asserts this; FirebaseCore I-COR000001 is soft-only.
+    NSLog("RNFB_PROBE_CONFIGURE_OK")
 #else
     FirebaseApp.configure()
 #endif
