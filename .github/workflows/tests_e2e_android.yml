@@ -109,6 +109,8 @@ jobs:
       NX_NO_CLOUD: true
       NX_CACHE_DIRECTORY: .nx/cache
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
+      # CI-only: override tests/android/gradle.properties multi-ABI defaults (same ORG_GRADLE_PROJECT_* pattern as Metro port)
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: ${{ matrix.arch }}
     steps:
       - name: Free Disk Space (Ubuntu)
         # https://github.com/AdityaGarg8/remove-unwanted-software/releases
@@ -215,8 +217,8 @@ jobs:
         continue-on-error: true
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-v1-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle-v1
+          key: ${{ runner.os }}-gradle-v2-${{ matrix.arch }}-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-v2-${{ matrix.arch }}-
 
       - name: Build Android App
         # https://github.com/nick-fields/retry/releases
