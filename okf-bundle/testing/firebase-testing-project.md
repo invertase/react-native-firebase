@@ -265,7 +265,7 @@ GHA e2e:
 
 1. Emulator — [running e2e § Rules #2](running-e2e.md#rules) (`tests:emulator:start-ci` in CI)
 2. Build + Detox run — [running e2e](running-e2e.md) (needs network for `pipelines-e2e` cloud)
-3. Emulator cache under `~/.cache/firebase/emulators`
+3. Emulator cache under `~/.cache/firebase/emulators` — key/saver policy: [CI workflows index](/ci-workflows/index.md)
 
 Pipeline tests share Jet session with Firestore e2e but execute on cloud; `(default)` setup/wipe stays emulator.
 

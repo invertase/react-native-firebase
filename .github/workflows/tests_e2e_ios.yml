@@ -280,17 +280,23 @@ jobs:
           max_attempts: 3
           command: yarn tests:ios:pod:install
 
+      - name: Resolve firebase-tools version
+        id: firebase-tools
+        run: |
+          VER=$(node -p "require('./node_modules/firebase-tools/package.json').version")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
       - name: Firestore Emulator Restore
+        # Restore-only; Android e2e saves firebase-emulators-v2 on main. See okf-bundle/ci-workflows/index.md.
         # https://github.com/actions/cache/releases
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: firestore-emulator-cache
         continue-on-error: true
         with:
-          # The firebase emulators are pure javascript and java, OS-independent
           enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
-          key: firebase-emulators-v1-${{ github.run_id }}
-          restore-keys: firebase-emulators-v1
+          key: firebase-emulators-v2-${{ steps.firebase-tools.outputs.version }}
+          restore-keys: firebase-emulators-v2-
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
@@ -579,17 +585,6 @@ jobs:
         with:
           path: tests/ios/Pods
           key: ${{ steps.pods-cache.outputs.cache-primary-key }}
-
-      - name: Firestore Emulator Cache Save
-        # https://github.com/actions/cache/releases
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: "${{ github.ref == 'refs/heads/main' }}"
-        continue-on-error: true
-        with:
-          # The firebase emulators are pure javascript and java, OS-independent
-          enableCrossOsArchive: true
-          path: ~/.cache/firebase/emulators
-          key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
 
       - name: Metro Bundler Cache Save
         # https://github.com/actions/cache/releases
