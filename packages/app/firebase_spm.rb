@@ -577,8 +577,7 @@ end
 # (`duplicate symbol`). Under dynamic pod linkage the app builds, but each
 # dynamic framework still keeps a private copy (runtime class duplication /
 # split FirebaseApp registries). There is no supported combination of RNFB's
-# SPM mode with static linkage; the fix is always to switch to dynamic
-# linkage or opt out of SPM entirely.
+# SPM mode with static linkage; the fix is to switch to dynamic linkage.
 #
 # Raises `Pod::Informative` -- CocoaPods' own user-facing error class, which
 # `pod install` prints as a plain, readable message with no Ruby backtrace --
@@ -604,18 +603,40 @@ def rnfirebase_fail_if_spm_static_linkage!(installer)
   end
   return if static_targets.empty?
 
-  target_names = static_targets.map(&:name).join(', ')
+  # `build_type.static?` is true for two different Podfiles: no
+  # `use_frameworks!` at all (CocoaPods' default static libraries -- the stock
+  # React Native / bare Expo Podfile) and `use_frameworks! :linkage => :static`.
+  # Name the one the user actually has so they can find it in their Podfile.
+  library_targets, framework_targets = static_targets.partition do |target|
+    !target.target_definition.uses_frameworks?
+  end
+  detected = []
+  unless library_targets.empty?
+    library_label = 'no `use_frameworks!` (or `use_frameworks! false`) -- pods build as static libraries'
+    detected << "  - #{library_label}: #{library_targets.map(&:name).join(', ')}"
+  end
+  unless framework_targets.empty?
+    framework_label = '`use_frameworks! :linkage => :static` ' \
+                      '(incl. `USE_FRAMEWORKS=static` / Expo `useFrameworks: "static"`)'
+    detected << "  - #{framework_label}: #{framework_targets.map(&:name).join(', ')}"
+  end
 
   raise Pod::Informative, <<~MESSAGE
-    [react-native-firebase] SPM + static linkage is not supported (target(s): #{target_names}).
+    [react-native-firebase] SPM + static linkage is not supported.
 
-    firebase-ios-sdk's Swift Package products are automatic libraries (not `type: .dynamic`), so each react-native-firebase pod that resolves Firebase via SPM embeds its own copy. With `use_frameworks! :linkage => :static` those copies collide at link time as duplicate-symbol errors.
+    Detected static pod linkage:
+    #{detected.join("\n")}
+
+    firebase-ios-sdk's Swift Package products are automatic libraries (not `type: .dynamic`), so each react-native-firebase pod that resolves Firebase via SPM embeds its own copy. With static pod linkage those copies collide at link time as duplicate-symbol errors.
 
     Fix your Podfile to use dynamic linkage, then run `pod install` again:
 
       use_frameworks! :linkage => :dynamic
 
-    CocoaPods Firebase is no longer available with Firebase Apple SDK 13+. See https://rnfirebase.io/ios-spm
+    With the stock template Podfile you can instead run `USE_FRAMEWORKS=dynamic pod install`, but it must be set for every `pod install` (including CI) or linkage reverts to static; the Podfile line above is the durable fix.
+    Expo: set `ios.useFrameworks` to `"dynamic"` in the `expo-build-properties` plugin config, then re-run `npx expo prebuild`. Only if you maintain `ios/` by hand (no prebuild), set `"ios.useFrameworks": "dynamic"` in `ios/Podfile.properties.json`.
+
+    See https://rnfirebase.io/ios-spm
   MESSAGE
 end
 
