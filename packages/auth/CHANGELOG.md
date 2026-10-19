@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+
+### Features
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+
+### Bug Fixes
+
+- **app,database:** resolve platform native module when bundlers apply package exports ([959d91f](https://github.com/invertase/react-native-firebase/commit/959d91fc79d7155d1d9a08e1f836789e6e6d6156))
+- **auth, analytics, remote-config:** unwrap iOS null sentinels on Object args ([53fdb6a](https://github.com/invertase/react-native-firebase/commit/53fdb6a1c273d4125cff69e33b2d0af6bfd7d6dc))
+- **auth, android:** accept null keys in auth cache registry get/take ([211c6cf](https://github.com/invertase/react-native-firebase/commit/211c6cff37c004c06134242cf84e670afd52eff5))
+- **auth:** apply the reCAPTCHA openURL fix on the UIScene life cycle ([327fbe3](https://github.com/invertase/react-native-firebase/commit/327fbe319ba238c4f50aadc85ed687225b0804c8))
+- **auth:** remove sensitive authentication logs ([57c5d1c](https://github.com/invertase/react-native-firebase/commit/57c5d1c993e8497148cd40a706fb40ebe01426ef))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes

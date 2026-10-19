@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+
+### Features
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+- **messaging:** add FID register and onRegistered ([ca301b2](https://github.com/invertase/react-native-firebase/commit/ca301b27673fbef5270d37fc6e49aa80df80069b))
+- **messaging:** add messaging_installation_id_enabled firebase.json opt-in ([e9c9741](https://github.com/invertase/react-native-firebase/commit/e9c9741a65a76cc102d2d27ff675c453fd506243))
+
+### Bug Fixes
+
+- **analytics, messaging:** dedupe GoogleUtilities classes under SPM dynamic frameworks ([#9327](https://github.com/invertase/react-native-firebase/issues/9327)) ([b70ba88](https://github.com/invertase/react-native-firebase/commit/b70ba889e215df4b123aacb0c830551f18b14fe8)), closes [#9322](https://github.com/invertase/react-native-firebase/issues/9322) [#9322](https://github.com/invertase/react-native-firebase/issues/9322)
+- **app,database:** resolve platform native module when bundlers apply package exports ([959d91f](https://github.com/invertase/react-native-firebase/commit/959d91fc79d7155d1d9a08e1f836789e6e6d6156))
+- **messaging, ios:** guard AppDelegate window access for UIScene apps ([79c2d72](https://github.com/invertase/react-native-firebase/commit/79c2d72a7a61bccd41395e8c44b32ead9810d4bc))
+- **messaging, ios:** hop notification permission APIs onto the main queue ([3fde064](https://github.com/invertase/react-native-firebase/commit/3fde064e34094760a1395e8fa9753ad4917eaec7))
+- **messaging, ios:** hop remaining UIApplication register APIs onto main queue ([07e4562](https://github.com/invertase/react-native-firebase/commit/07e45624f6a7be8a8a47cfb46b3fd29a0553c003))
+- **messaging, ios:** normalize sent time ([0b48006](https://github.com/invertase/react-native-firebase/commit/0b4800658e4aa535563abbcd8bb12b279ad9139b))
+- **messaging, ios:** port UIScene window guard after rebase ([7cd8f14](https://github.com/invertase/react-native-firebase/commit/7cd8f14ac841d4f5378bf53454b34d50493a619b))
+- **messaging, ios:** read isRegisteredForRemoteNotifications on main queue in getConstants ([87a30dc](https://github.com/invertase/react-native-firebase/commit/87a30dcf07882fab22a642946048ad50702ed967))
+- **messaging, ios:** serialize notification badges as strings ([c6a8e85](https://github.com/invertase/react-native-firebase/commit/c6a8e85816186189e09ac33da19078d5a6845c8a))
+- **messaging, ios:** validate sent-time format ([7b39040](https://github.com/invertase/react-native-firebase/commit/7b39040bf48abdc8d8c16af81c516c9ba449a767))
+- **messaging:** detect the iOS APNs environment from the provisioning profile ([56a4141](https://github.com/invertase/react-native-firebase/commit/56a414144c87f467965952ad40d9afe6365800b3))
+- **messaging:** nest iOS string sounds correctly ([a34ce00](https://github.com/invertase/react-native-firebase/commit/a34ce007833e3ba3ba13a5a46cf82c7f38ef1282))
+- **messaging:** pass sent message IDs to listeners ([05bcd71](https://github.com/invertase/react-native-firebase/commit/05bcd71bd25c6fc7b2f8b4a4118ad6cea4e056a3))
+- **messaging:** read flattened isInstallationIdEnabled Turbo constant ([7f65512](https://github.com/invertase/react-native-firebase/commit/7f655122737ad0cc57b4965c43452ba94dc86aa1))
+- **messaging:** rethrow onRegistered replay error and drop the subscription ([56d071e](https://github.com/invertase/react-native-firebase/commit/56d071e08bb94616da87fb3c76f9645c12835eb8))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes

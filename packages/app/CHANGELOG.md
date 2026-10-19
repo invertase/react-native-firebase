@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **ios:** drop CocoaPods Firebase matrix; SPM-only
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+- **ml:** remove discontinued @react-native-firebase/ml package
+- **app, ios:** initializeApp now reads automaticDataCollectionEnabled as a
+  boolean. Previously any non-nil value (including JS false) enabled collection
+  via pointer cast; false, 0, null, and absent now disable it. See
+  docs/migrating-to-v27.mdx.
+
+### Features
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+- **app, sdk:** bump Firebase Android SDK to 34.19.0 ([ca054bc](https://github.com/invertase/react-native-firebase/commit/ca054bc2fdcb298575f1e7412aa8b02540d53def))
+- **app, sdk:** bump Firebase iOS SDK to 12.19.0 ([95dca6a](https://github.com/invertase/react-native-firebase/commit/95dca6a4eeb849bc2910946e1477694635bee6b7))
+- **app, sdk:** bump Firebase JS SDK to 12.18.0 ([5e2617d](https://github.com/invertase/react-native-firebase/commit/5e2617dcddfd55f10f441f2e9d83fe7b4681470e))
+- **app, sdk:** bump Firebase JS SDK to 12.19.0 ([34d0318](https://github.com/invertase/react-native-firebase/commit/34d031849146527ab9b9ee3ba4fbd207bdab0803))
+- **messaging:** add messaging_installation_id_enabled firebase.json opt-in ([e9c9741](https://github.com/invertase/react-native-firebase/commit/e9c9741a65a76cc102d2d27ff675c453fd506243))
+- **ml:** remove discontinued @react-native-firebase/ml package ([58622b1](https://github.com/invertase/react-native-firebase/commit/58622b1a24a32008fd33ff56346cceb4f71bc29f))
+
+### Bug Fixes
+
+- **app, android:** bind nullable recent-task fields before use ([bed8c71](https://github.com/invertase/react-native-firebase/commit/bed8c71313cd3c0bf60bf9a9d86417ae550ec98f))
+- **app, android:** harden RecentTaskInfo null and JSON parse ([908400b](https://github.com/invertase/react-native-firebase/commit/908400b230cfd5d7d4406da9bb350332d6bc8c4c))
+- **app, expo:** match scene-based AppDelegate for Expo SDK 58 config plugin ([dce165d](https://github.com/invertase/react-native-firebase/commit/dce165d7283a30060c5b08066cf5841d9247105a))
+- **app, ios:** clarify SPM static linkage error when use_frameworks is absent ([cdf99cd](https://github.com/invertase/react-native-firebase/commit/cdf99cde79d46be737b671096e1cc3af7a14f58f))
+- **app, ios:** import ObjC NullSentinelDecoder in SharedUtils ([9a565c8](https://github.com/invertase/react-native-firebase/commit/9a565c879edc11c18b5c7ffca92c7f22e2b639e7))
+- **app, ios:** pin SPM Firebase SDK and retain Measurement ObjC categories ([7e271af](https://github.com/invertase/react-native-firebase/commit/7e271afecab65ef150140056171265e9c9ca621c))
+- **app, ios:** read automaticDataCollectionEnabled as a boolean ([cc18140](https://github.com/invertase/react-native-firebase/commit/cc181400e465895bdb012eff881209315adaed70))
+- **app, ios:** tighten the dynamic Firebase probe and import guard ([cac843c](https://github.com/invertase/react-native-firebase/commit/cac843c09156237751274073c67b6105fa7b4188))
+- **app, storage:** link Photos framework on tvOS ([56f5c1f](https://github.com/invertase/react-native-firebase/commit/56f5c1fcf83bc89d8cd80f019696e13bc96578dd))
+- **app, tests:** ignore iOS host stubs in TurboModule spec parity lookup ([e2f515d](https://github.com/invertase/react-native-firebase/commit/e2f515da36a180d16d6f6002886c17f6fd511749))
+- **app,database:** resolve platform native module when bundlers apply package exports ([959d91f](https://github.com/invertase/react-native-firebase/commit/959d91fc79d7155d1d9a08e1f836789e6e6d6156))
+- **app:** import e2e native module resolver via internal barrel ([93f51ff](https://github.com/invertase/react-native-firebase/commit/93f51fff8b2b4f1355bc213f5f98fbbf7986c7e0))
+- **app:** reject unsafe deepSet path segments ([ec3ac24](https://github.com/invertase/react-native-firebase/commit/ec3ac2455b30cfabc501845364623d9ab55e7193))
+- **app:** restore vendor EventEmitter for RN macOS 0.78 ([6b13c9d](https://github.com/invertase/react-native-firebase/commit/6b13c9d468abde5b5acc990e43a3d3fd6c7a140e))
+- **app:** seed automaticDataCollectionEnabled from the native initializeApp result ([5d187f9](https://github.com/invertase/react-native-firebase/commit/5d187f9271f183ccac4d7b70e233a4ccd2145fd0))
+- **app:** stop evaluating firebase.json content as Ruby/Python source in ios_config.sh ([d333ab3](https://github.com/invertase/react-native-firebase/commit/d333ab39a83454606d9ede4aa4a3c031a63cf898))
+- **app:** swizzle null sentinels after codegen converters load ([bcff184](https://github.com/invertase/react-native-firebase/commit/bcff18471b187bda0476c8bbc76e4c216de58ec2))
+- **ci:** unblock Yarn hardened CI and Xcode 27 iOS archive ([9c63630](https://github.com/invertase/react-native-firebase/commit/9c636307e9f87e106e802f5d39d2be32ef2cecdb))
+- **e2e:** skip watchman watch-del when a sibling Metro owns the root ([7695132](https://github.com/invertase/react-native-firebase/commit/769513224d0e6f9bb6fb2a98c578411a5016615d))
+
+### Continuous Integration
+
+- **ios:** drop CocoaPods Firebase matrix; SPM-only ([89e270f](https://github.com/invertase/react-native-firebase/commit/89e270f3d1f4c1f3c22e32ca539ebe3da30dbd7e))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Features

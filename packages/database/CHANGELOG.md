@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+
+### Features
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+- **database:** get() uses the native one-shot read on Android and web ([65cf63c](https://github.com/invertase/react-native-firebase/commit/65cf63c963b3914a4aa0e450caefae7a621d383b)), closes [firebase-ios-sdk#12168](https://github.com/invertase/firebase-ios-sdk/issues/12168)
+
+### Bug Fixes
+
+- **app,database:** resolve platform native module when bundlers apply package exports ([959d91f](https://github.com/invertase/react-native-firebase/commit/959d91fc79d7155d1d9a08e1f836789e6e6d6156))
+- **database, android:** settle keepSynced promise after SDK apply ([61100f2](https://github.com/invertase/react-native-firebase/commit/61100f27700eda0b5f69ec21ebd991ca97ce316d))
+- **database, android:** surface onDisconnect errors; cover deny reject arms ([1a4a4d6](https://github.com/invertase/react-native-firebase/commit/1a4a4d63e5f41042d9ddba55375b6a758f9829d5))
+- **database:** decode iOS null sentinels before writes ([501bec8](https://github.com/invertase/react-native-firebase/commit/501bec812fab11614cae0622a93b6d16687819dd))
+- **database:** keep get() from cancelling any keepSynced at the location on Android ([befb08c](https://github.com/invertase/react-native-firebase/commit/befb08c2f225ea65031ffa71ad173a68cf411dfd)), closes [firebase-android-sdk#8433](https://github.com/invertase/firebase-android-sdk/issues/8433)
+- **database:** only fall back to once() for locations kept synced ([6a7eddb](https://github.com/invertase/react-native-firebase/commit/6a7eddb837f6c003eaa6f6da8697e4b402da4861))
+- **database:** skip once retry after observer-shaped get errors ([6e18ddf](https://github.com/invertase/react-native-firebase/commit/6e18ddffa2f74445b843dc0d992b41232254ccb3))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes
