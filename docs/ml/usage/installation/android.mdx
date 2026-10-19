@@ -1,57 +1,72 @@
 ---
 title: Android Installation
-description: Manually integrate ML into your Android application.
+description: 'Legacy manual Android linking for @react-native-firebase/ml on React Native 0.59 and earlier (settings.gradle include, build.gradle dependency, ReactNativeFirebaseMLPackage registration in MainApplication.java). Not supported by v26; use autolinking.'
 ---
 
-# Android Manual Installation
+# Android Manual Installation (legacy)
 
-The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> **Legacy, not supported in v26 and later.** Manual linking only applied to React Native **0.59 and earlier**. `@react-native-firebase/app` v26 declares the peer range `react-native` `>=0.60.0-0` and requires React Native's New Architecture, so those versions cannot run it. Follow [Getting Started](/) for the supported Android setup (autolinking). The steps below are kept only for projects still pinned to an older major version.
+
+## Prerequisites
+
+These steps assume:
+
+- `@react-native-firebase/app` is already installed and linked (follow [Getting Started](/) for the supported setup).
+- `@react-native-firebase/ml` is already listed in your app `package.json` (install with `npm install --save @react-native-firebase/ml` or `yarn add @react-native-firebase/ml`).
+
+Apply the four steps below **in order**, then rebuild.
 
 ## 1. Update Gradle Settings
 
-Add the following to your projects `/android/settings.gradle` file:
+File: `/android/settings.gradle`. Do this before editing `android/app/build.gradle`.
 
 ```groovy
+// Legacy (React Native 0.59 and earlier only): not needed or supported with autolinking. See Getting Started.
+// File: android/settings.gradle. Step 1 of 4 (before android/app/build.gradle dependency).
 include ':@react-native-firebase_ml'
 project(':@react-native-firebase_ml').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/ml/android')
 ```
 
 ## 2. Update Gradle Dependencies
 
-Add the React Native Functions module dependency to your `/android/app/build.gradle` file:
+File: `/android/app/build.gradle`. Add the module inside the existing `dependencies { }` block after step 1.
 
 ```groovy
-// ..
-dependencies {
-  // ..
-  implementation project(path: ":@react-native-firebase_ml")
-}
+// Legacy (React Native 0.59 and earlier only): not needed or supported with autolinking. See Getting Started.
+// File: android/app/build.gradle. Step 2 of 4 (after settings.gradle include; before MainApplication.java).
+// Add this line inside the existing dependencies { } block:
+implementation project(path: ":@react-native-firebase_ml")
 ```
 
 ## 3. Add package to the Android Application
 
-Import and apply the React Native Firebase module package to your `/android/app/src/main/java/**/MainApplication.java` file:
-
-Import the package:
+File: `/android/app/src/main/java/**/MainApplication.java` (path under `java/` matches your `applicationId` package). Register the package after steps 1 and 2. If `getPackages()` already exists on the class, add only `new ReactNativeFirebaseMLPackage(),` to the returned list.
 
 ```java
-import io.invertase.firebase.perf.ReactNativeFirebaseMLPackage;
-```
+// Legacy (React Native 0.59 and earlier only): Java getPackages() registration, not needed or supported with autolinking.
+// File: android/app/src/main/java/**/MainApplication.java. Step 3 of 4 (after Gradle settings and dependency; rebuild next).
+import java.util.Arrays;
+import java.util.List;
 
-Add the package to the registry:
+import com.facebook.react.ReactPackage;
+import com.facebook.react.shell.MainReactPackage;
+import io.invertase.firebase.ml.ReactNativeFirebaseMLPackage;
 
-```java
+@Override
 protected List<ReactPackage> getPackages() {
   return Arrays.asList(
     new MainReactPackage(),
-    new ReactNativeFirebaseMLPackage(),
+    new ReactNativeFirebaseMLPackage()
+  );
+}
 ```
 
 ## 4. Rebuild the project
 
-Once the above steps have been completed, rebuild your Android project:
+After steps 1 to 3, rebuild Android from the project root:
 
 ```bash
+# Legacy (React Native 0.59 and earlier only): rebuild after the manual linking steps above.
+# Project root. Step 4 of 4 (after settings.gradle, app/build.gradle, and MainApplication.java).
 npx react-native run-android
 ```
