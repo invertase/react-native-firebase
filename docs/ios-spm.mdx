@@ -34,6 +34,8 @@ use_frameworks! :linkage => :dynamic
 ```
 
 Do not use RNFB's SPM mode with `use_frameworks! :linkage => :static`.
+A Podfile with no `use_frameworks!` line (or `use_frameworks! false`) is static
+linkage too — that is the stock React Native / bare Expo default.
 firebase-ios-sdk SPM products are automatic libraries (plain `.library(...)`,
 not `type: .dynamic`), so each pod that depends on them embeds its own copy.
 With static pod linkage those copies collide at link time as duplicate-symbol
@@ -200,7 +202,16 @@ time with duplicate symbols (and `pod install` rejects the combination).
   Remove `$RNFirebaseDisableSPM = true` and Expo `ios.disableSPM`. Use
   `use_frameworks! :linkage => :dynamic` and React Native 0.75+.
 - **`pod install` fails with "SPM + static linkage is not supported":** Use
-  dynamic linkage (`use_frameworks! :linkage => :dynamic`).
+  dynamic linkage (`use_frameworks! :linkage => :dynamic`). A Podfile with no
+  `use_frameworks!` line (or `use_frameworks! false`), the stock React Native /
+  Expo default, is static linkage too.
+  - With the stock template Podfile, `USE_FRAMEWORKS=dynamic pod install` also
+    works, but it must be set for every `pod install` (including CI); the
+    Podfile line is the durable fix.
+  - Expo: set `ios.useFrameworks` to `"dynamic"` in the `expo-build-properties`
+    plugin (see [Expo projects](#expo-projects)), then re-run
+    `npx expo prebuild`. Only if you maintain `ios/` by hand (no prebuild), set
+    `"ios.useFrameworks": "dynamic"` in `ios/Podfile.properties.json` instead.
 - **`FirebaseApp.app()` is `nil` / Auth looks signed-out inside another native
   pod, or runtime logs duplicate `FIRApp` classes:** SPM mode cannot share one
   `FirebaseCore` across dynamic pod frameworks. See
