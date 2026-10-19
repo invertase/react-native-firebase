@@ -30,6 +30,8 @@ yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote
 
 **Keep host toolchains current.** Android Studio / emulator and Xcode / CocoaPods are expected to track upstream, not be pinned indefinitely. A stale Android Emulator (e.g. 36.2.12.0) can lack CLI flags newer Detox patches rely on (`-crash-report-mode`, requires **≥ 37**, see [detox-patches.md](../ci-workflows/detox-patches.md)) and fail at spawn rather than at test time. When a patch or e2e step breaks only on your host, update the toolchain first — don't reach for a runtime capability probe as the default fix.
 
+**JDK 21+ on `PATH`** for `yarn tests:emulator:start`: `firebase-tools` refuses older Java (`firebase-tools no longer supports Java version before 21`). Same host fix as [`yarn lint:android` § needs JDK 21+](agent-command-policy.md#android-java-format).
+
 <a id="apple-host-toolchain-local"></a>
 
 ### Apple host toolchain (local)
@@ -40,6 +42,8 @@ Align the Mac with [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.
 |-------------|----------------|
 | **Xcode** | **27** stable (beta fails CI gate; match `xcodebuild -version` major to CI) |
 | **iOS Simulator runtime** | **`iOS 27.0`** — export `RNFB_IOS_SIM_RUNTIME` if your install uses a different label; `yarn tests:e2e:setup-ios-sims` creates devices on that runtime |
+| **Simulator device type** | **`iPhone 17`** (serial device and slot base). If the runtime does not support it (`simctl create` fails `Incompatible device`), export `RNFB_IOS_BASE_SIMULATOR` to a device type that runtime lists as supported, for setup and the Detox run alike |
+| **`xcbeautify`** | Required on `PATH`: Detox iOS `build` pipes `xcodebuild` through it (`xcbeautify: command not found` otherwise). CI version/install: [iOS CI § pinned Homebrew utilities](../ci-workflows/ios.md#pinned-homebrew-utilities) |
 | **Simulator UI** | **Device Hub** from the selected Xcode bundle (`…/Applications/DeviceHub.app`). Do not use `open -a Simulator` / `open -a Device Hub` for CI-parity boot paths — see [iOS CI § simulator reliability](../ci-workflows/ios.md#simulator-reliability) |
 | **Mobile e2e fixtures** | **RN 0.88.0-rc.3**, **Expo 58** (`test-expo/`), same RN line in `tests/` / `test-rn-bare/` — test-fixture pins only; do not document higher consumer Xcode/RN floors than product metadata |
 
