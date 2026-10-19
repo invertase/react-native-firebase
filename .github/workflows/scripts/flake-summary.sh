@@ -47,6 +47,19 @@ DETOX_LOG="${RNFB_DETOX_LOG:-}"
     fi
   done
   echo ""
+
+  echo "=== await-exit stall markers ==="
+  if [[ -f "${DETOX_LOG}" ]]; then
+    rg -n 'awaiting-jet-exit stalled|stall-kill-jet|launch-retry-kill-jet|stall-diagnostics|Coverage summary|Unknown% \( 0/0 \)|\( 0/0 \)' \
+      "${DETOX_LOG}" 2>/dev/null | tail -40 || true
+  else
+    echo "(no detox log)"
+  fi
+  if [[ -f "resource-monitor.log" ]]; then
+    echo "--- resource-monitor load around stall (last 40 load lines) ---"
+    rg -n 'load averages|^\[resource-monitor\] ps-empty' resource-monitor.log 2>/dev/null | tail -40 || true
+  fi
+  echo ""
 } >"$OUT"
 
 echo "[flake-summary] wrote ${OUT} ($(wc -l <"$OUT" | tr -d ' ') lines)"

@@ -122,5 +122,21 @@ export function setFireBaseMessagingAndroidManifest(
     });
   }
 
+  if (
+    props?.installationIdEnabled &&
+    !hasMetaData(application, 'firebase_messaging_installation_id_enabled')
+  ) {
+    metaData.push({
+      $: {
+        'android:name': 'firebase_messaging_installation_id_enabled',
+        'android:value': 'true',
+        // Library AndroidManifest always emits this meta via placeholder (default false);
+        // tools:replace lets the app/Expo value win without a merger conflict.
+        // @ts-ignore
+        'tools:replace': 'android:value',
+      },
+    });
+  }
+
   return application;
 }

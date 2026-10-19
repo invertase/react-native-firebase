@@ -47,11 +47,11 @@ import {
   parseListenerOrObserver,
 } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import {
   FirebaseModule,
   getOrCreateModularInstance,
   type ModuleConfig,
+  setReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import ConfirmationResultClass from './ConfirmationResult';
 import { ActionCodeURL } from './ActionCodeURL';

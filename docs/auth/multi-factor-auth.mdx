@@ -9,7 +9,7 @@ previous: /auth/oidc-auth
 
 - `@react-native-firebase/app` and `@react-native-firebase/auth` installed and native config completed per [Authentication usage](/auth/usage) / [Getting Started](/). From v26, New Architecture is required for packages with a native bridge.
 - Multi-factor authentication enabled for your project via [Google Cloud Identity Platform](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication) (paid Identity Platform features). Follow the platform guides for iOS and Android app verification.
-- The user must verify their email before enrolling a second factor. Use [`sendEmailVerification`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#sendemailverification) on the signed-in [`User`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html).
+- The user must verify their email before enrolling a second factor. Use [`sendEmailVerification`](https://reference.rnfirebase.io/_react-native-firebase/auth/sendEmailVerification.html) on the signed-in [`User`](https://reference.rnfirebase.io/_react-native-firebase/auth/User.html).
 
 Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/auth/mfa.tsx (connects to the Auth emulator and has controls for the phone and TOTP calls on this page).
 
@@ -147,7 +147,7 @@ async function enrollPhoneMultiFactor(phoneNumber, verificationCode) {
 }
 ```
 
-Inspect [`User#multiFactor`](https://invertase.github.io/react-native-firebase/_react-native-firebase/auth/FirebaseAuthTypes/User.html#multifactor) for enrolled factors after enrollment.
+Inspect [`User#multiFactor`](https://reference.rnfirebase.io/_react-native-firebase/auth/User.html#multifactor) for enrolled factors after enrollment.
 
 ## Sign-in flow using phone multi-factor
 

@@ -23,7 +23,7 @@ jobs:
   # the docs snippet type-check (`yarn docs:tsc:check`) and the docs member
   # check (`yarn docs:member:check`).
   spelling:
-    name: 'Spelling & Grammar'
+    name: 'Spelling, Grammar & Docs links'
     runs-on: ubuntu-latest
     steps:
       # https://github.com/actions/checkout/releases
@@ -31,7 +31,7 @@ jobs:
         with:
           fetch-depth: 1
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
       # https://github.com/actions/cache/releases
@@ -60,6 +60,14 @@ jobs:
         run: yarn docs:tsc:check
       - name: Docs member check
         run: yarn docs:member:check
+      - name: Docs.page links
+        # https://github.com/nick-fields/retry/releases
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 90
+          max_attempts: 5
+          command: yarn lint:docs-links
       # https://github.com/actions/cache/releases
       - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         name: Yarn Cache Save

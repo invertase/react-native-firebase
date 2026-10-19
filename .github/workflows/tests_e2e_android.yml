@@ -109,6 +109,8 @@ jobs:
       NX_NO_CLOUD: true
       NX_CACHE_DIRECTORY: .nx/cache
       NX_WORKSPACE_DATA_DIRECTORY: .nx/workspace-data
+      # CI-only: override tests/android/gradle.properties multi-ABI defaults (same ORG_GRADLE_PROJECT_* pattern as Metro port)
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: ${{ matrix.arch }}
     steps:
       - name: Free Disk Space (Ubuntu)
         # https://github.com/AdityaGarg8/remove-unwanted-software/releases
@@ -147,13 +149,13 @@ jobs:
 
       # Set up tool versions
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -193,17 +195,23 @@ jobs:
           max_attempts: 3
           command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
+      - name: Resolve firebase-tools version
+        id: firebase-tools
+        run: |
+          VER=$(node -p "require('./node_modules/firebase-tools/package.json').version")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
       - name: Firestore Emulator Restore
         # https://github.com/actions/cache/releases
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: firestore-emulator-cache
         continue-on-error: true
         with:
-          # The firebase emulators are pure javascript and java, OS-independent
+          # Cross-OS; keyed by installed/resolved firebase-tools version after yarn. This workflow is the sole saver on main (iOS/Other restore-only).
           enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
-          key: firebase-emulators-v1-${{ github.run_id }}
-          restore-keys: firebase-emulators-v1
+          key: firebase-emulators-v2-${{ steps.firebase-tools.outputs.version }}
+          restore-keys: firebase-emulators-v2-
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
@@ -215,8 +223,8 @@ jobs:
         continue-on-error: true
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-v1-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle-v1
+          key: ${{ runner.os }}-gradle-v2-${{ matrix.arch }}-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-v2-${{ matrix.arch }}-
 
       - name: Build Android App
         # https://github.com/nick-fields/retry/releases
@@ -238,8 +246,9 @@ jobs:
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
-          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-metro-v1
+          # Sticky content-hash key (no run_id). Shared inputs with iOS/Other Metro caches.
+          key: ${{ runner.os }}-android-metro-v2-${{ hashFiles('yarn.lock', 'tests/package.json', 'tests/metro.config.js', 'tests/index.js', 'tests/app.js', 'tests/react-native.config.js', 'packages/*/package.json', 'packages/*/lib/**') }}
+          restore-keys: ${{ runner.os }}-android-metro-v2-
 
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
@@ -287,7 +296,7 @@ jobs:
 
       # https://github.com/codecov/codecov-action/releases
       - name: Upload Codecov e2e TS (Android)
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         continue-on-error: true
         with:
           files: coverage/lcov.info
@@ -297,7 +306,7 @@ jobs:
 
       # Merged unit (*.exec) + e2e (*.ec) from jacocoTestReport (post-e2e-coverage).
       - name: Upload Codecov Android native
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         continue-on-error: true
         with:
           files: tests/android/app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
@@ -307,14 +316,14 @@ jobs:
 
       - name: Upload Emulator Log
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: adb_logs_${{ matrix.api-level}}_${{ matrix.arch }}_${{ matrix.target }}_${{ matrix.iteration }}
           path: adb-*.txt
 
       - name: Upload Android resource monitor log
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: resource-monitor-android-${{ matrix.api-level }}-${{ matrix.arch }}-${{ matrix.target }}-${{ matrix.iteration }}
@@ -322,7 +331,7 @@ jobs:
 
       - name: Upload Firebase emulator script logs
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always()
         with:
@@ -348,12 +357,12 @@ jobs:
           key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
 
       - name: Firestore Emulator Cache Save
+        # Sole saver for firebase-emulators-v2 (iOS/Other restore-only). See okf-bundle/ci-workflows/index.md.
         # https://github.com/actions/cache/releases
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
-          # The firebase emulators are pure javascript and java, OS-independent
           enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
           key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
@@ -370,7 +379,7 @@ jobs:
       - name: Metro Bundler Cache Save
         # https://github.com/actions/cache/releases
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: "${{ github.ref == 'refs/heads/main' }}"
+        if: github.ref == 'refs/heads/main' && matrix.iteration == 0 && steps.metro-bundler-cache.outputs.cache-hit != 'true'
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}

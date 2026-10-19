@@ -34,6 +34,16 @@
 #import "RNFBStorageCommon.h"
 #import "RNFBUtilsModule.h"
 
+#if __has_include(<RNFBStorage/RNFBStorage-Swift.h>)
+#import <RNFBStorage/RNFBStorage-Swift.h>
+#elif __has_include("RNFBStorage-Swift.h")
+#import "RNFBStorage-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBStorage Swift interface not found"
+#endif
+
 @implementation RNFBStorageCommon
 
 + (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format {
@@ -264,22 +274,15 @@
 
 + (NSDictionary *)buildErrorSnapshotDict:(NSError *)error
                         taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict {
-  NSArray *codeAndMessage = [self getErrorCodeMessage:error];
-  taskSnapshotDict[@"error"] = @{
-    @"code" : (NSString *)codeAndMessage[0],
-    @"message" : (NSString *)codeAndMessage[1],
-    @"nativeErrorMessage" : [error localizedDescription]
-  };
-  return taskSnapshotDict;
+  return [RNFBStorageErrorSnapshotDictBuilder buildErrorSnapshotDict:error
+                                                    taskSnapshotDict:taskSnapshotDict];
 }
 
 + (NSDictionary *)buildErrorSnapshotDictFromCodeAndMessage:(NSArray *)codeAndMessage
                                           taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict {
-  taskSnapshotDict[@"error"] = @{
-    @"code" : (NSString *)codeAndMessage[0],
-    @"message" : (NSString *)codeAndMessage[1],
-  };
-  return taskSnapshotDict;
+  return [RNFBStorageErrorSnapshotDictBuilder
+      buildErrorSnapshotDictFromCodeAndMessage:codeAndMessage
+                              taskSnapshotDict:taskSnapshotDict];
 }
 
 + (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata {
@@ -390,17 +393,7 @@
 }
 
 + (NSString *)getTaskStatus:(FIRStorageTaskStatus)status {
-  if (status == FIRStorageTaskStatusResume || status == FIRStorageTaskStatusProgress) {
-    return @"running";
-  } else if (status == FIRStorageTaskStatusPause) {
-    return @"paused";
-  } else if (status == FIRStorageTaskStatusSuccess) {
-    return @"success";
-  } else if (status == FIRStorageTaskStatusFailure) {
-    return @"error";
-  } else {
-    return @"unknown";
-  }
+  return [RNFBStorageTaskStatusMapper stringForTaskStatus:(NSInteger)status];
 }
 
 + (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata
@@ -472,81 +465,7 @@
 }
 
 + (NSArray *)getErrorCodeMessage:(NSError *)error {
-  NSString *code = @"unknown";
-
-  if (error == nil) {
-    return @[ code, @"An unknown error has occurred." ];
-  }
-
-  NSString *message = [error localizedDescription];
-  NSDictionary *userInfo = [error userInfo];
-  NSError *underlyingError = userInfo[NSUnderlyingErrorKey];
-  NSString *underlyingErrorDescription = [underlyingError localizedDescription];
-
-  switch (error.code) {
-    case FIRStorageErrorCodeUnknown:
-      if ([underlyingErrorDescription
-              isEqualToString:@"The operation couldn’t be completed. Permission denied"]) {
-        code = @"invalid-device-file-path";
-        message = @"The specified device file path is invalid or is restricted.";
-      } else {
-        if (userInfo[@"ResponseBody"]) {
-          message =
-              [NSString stringWithFormat:@"An unknown error has occurred. (underlying reason '%@')",
-                                         userInfo[@"ResponseBody"]];
-        } else {
-          message = @"An unknown error has occurred.";
-        }
-      }
-      break;
-    case FIRStorageErrorCodeObjectNotFound:
-      code = @"object-not-found";
-      message = @"No object exists at the desired reference.";
-      break;
-    case FIRStorageErrorCodeBucketNotFound:
-      code = @"bucket-not-found";
-      message = @"No bucket is configured for Firebase Storage.";
-      break;
-    case FIRStorageErrorCodeProjectNotFound:
-      code = @"project-not-found";
-      message = @"No project is configured for Firebase Storage.";
-      break;
-    case FIRStorageErrorCodeQuotaExceeded:
-      code = @"quota-exceeded";
-      message = @"Quota on your Firebase Storage bucket has been exceeded.";
-      break;
-    case FIRStorageErrorCodeUnauthenticated:
-      code = @"unauthenticated";
-      message = @"User is unauthenticated. Authenticate and try again.";
-      break;
-    case FIRStorageErrorCodeUnauthorized:
-      code = @"unauthorized";
-      message = @"User is not authorized to perform the desired action.";
-      break;
-    case FIRStorageErrorCodeRetryLimitExceeded:
-      code = @"retry-limit-exceeded";
-      message = @"The maximum time limit on an operation (upload, download, delete, etc.) has been "
-                @"exceeded.";
-      break;
-    case FIRStorageErrorCodeNonMatchingChecksum:
-      code = @"non-matching-checksum";
-      message =
-          @"File on the client does not match the checksum of the file received by the server.";
-      break;
-    case FIRStorageErrorCodeDownloadSizeExceeded:
-      code = @"download-size-exceeded";
-      message =
-          @"Size of the downloaded file exceeds the amount of memory allocated for the download.";
-      break;
-    case FIRStorageErrorCodeCancelled:
-      code = @"cancelled";
-      message = @"User cancelled the operation.";
-      break;
-    default:
-      break;
-  }
-
-  return @[ code, message ];
+  return [RNFBStorageErrorCodeMapper codeAndMessageForError:error];
 }
 
 @end

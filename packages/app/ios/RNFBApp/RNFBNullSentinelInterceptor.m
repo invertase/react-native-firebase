@@ -17,14 +17,38 @@
 
 #import "RNFBNullSentinelInterceptor.h"
 #import <objc/runtime.h>
-#import "RNFBSharedUtils.h"
+
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
 
 @implementation RNFBNullSentinelInterceptor
 
 + (void)load {
+  [self scheduleSwizzleOnMainQueue];
+}
+
++ (void)scheduleSwizzleOnMainQueue {
   static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    [self swizzleRCTConvertMethods];
+  [self scheduleSwizzleOnMainQueueWithOnceToken:&onceToken turboConvertClass:Nil];
+}
+
++ (void)scheduleSwizzleOnMainQueueWithOnceToken:(dispatch_once_t *)onceToken
+                              turboConvertClass:(Class)turboConvertClass {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_once(onceToken, ^{
+      if (turboConvertClass) {
+        [self swizzleTurboModuleConversions:turboConvertClass];
+      } else {
+        [self swizzleRCTConvertMethods];
+      }
+    });
   });
 }
 
@@ -51,12 +75,11 @@
     if ([selectorName hasPrefix:@"JS_NativeRNFBTurbo"] && [selectorName containsString:@"_Spec"]) {
       // Create a swizzled version using IMP
       IMP originalIMP = method_getImplementation(method);
-      const char *typeEncoding = method_getTypeEncoding(method);
 
       // Replace with our wrapper that decodes nulls
       IMP newIMP = imp_implementationWithBlock(^id(id self, id json) {
         // Decode null sentinels before passing to original conversion
-        id decoded = [RNFBSharedUtils decodeNullSentinels:json];
+        id decoded = [RNFBNullSentinelDecoder decodeNullSentinels:json];
 
         // Call original implementation with decoded data
         typedef id (*OriginalFunc)(id, SEL, id);

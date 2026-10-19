@@ -58,9 +58,11 @@ Adopt Nx **local computation cache** by adding an `nx.json`. Keep `lerna run` as
 
 ## MonoTool-AD-2 — Keep Lerna for versioning and publish — **Accepted**
 
-Lerna remains the owner of version bumping, changelog generation, and `lerna publish from-package` (OIDC provenance). No change to `lerna.json`, `publish.yml`, or the release flow.
+Lerna remains the owner of version bumping, changelog generation, and `lerna publish from-package` (OIDC provenance). Do **not** migrate publish to semantic-release (or another release orchestrator).
 
-**Why:** The publish workflow is mature (conventional commits, `ignoreChanges`, trusted publishing). Nx adoption is scoped to task running/caching only; splitting publish from task-running is the documented Lerna+Nx pattern.
+**GitHub Releases (intentional):** `lerna.json` sets `command.version.createRelease: "github"` so `yarn lerna version` creates GitHub Release objects when it cuts tags. `.github/workflows/publish.yml` must export **`GH_TOKEN`** (Lerna's GitHub client reads `process.env.GH_TOKEN`) and grant the publish job **`contents: write`** (plus the existing `id-token: write` for npm OIDC). Keep `GITHUB_TOKEN` wired to the same org admin secret for changelog/tag push under branch protection.
+
+**Why:** The publish workflow is mature (conventional commits, `ignoreChanges`, trusted publishing, Lerna-owned Releases). Nx adoption is scoped to task running/caching only; splitting publish from task-running is the documented Lerna+Nx pattern.
 
 **Publish impact of the new devDeps (verify, expected-nil):** [MonoTool-AD-3](#monotool-ad-3--build-order-via-devdependencies-not-manual-phase-scripts--accepted) adds internal `@react-native-firebase/app` `devDependencies`. In this repo's **fixed** versioning (`lerna.json` `version: 25.1.0`, `exact: true`) every package already bumps in lockstep and Lerna already rewrites internal `peerDependencies` ranges each release; the new devDep ranges are rewritten by the same mechanism. Confirm with a `lerna version` dry run that (a) the exact devDep ranges are rewritten to the new version and (b) nothing else in the release flow (provenance, `ignoreChanges`) is affected. No side effects expected.
 

@@ -139,7 +139,7 @@ Publication is not a separate work type; it follows the same evidence bar as `re
 
 ## Quality standards
 
-Two authoring standards gate every item, and both admit the same narrow set of [acceptable exceptions](#acceptable-exceptions) — the only things that may be documented and tracked instead of fixed.
+Two exception-gated authoring standards apply to every item — [acceptable exceptions](#acceptable-exceptions) and [review findings](#review-findings--resolve-do-not-defer). Both share the same narrow exception set (the only things that may be documented and tracked instead of fixed). [Language port observable contracts](#language-port-observable-contracts) is an additional domain application rule for port work, not a third exception gate.
 
 <a id="acceptable-exceptions-intractable-limitation-bar"></a>
 
@@ -168,6 +168,15 @@ Domain applications reference this section rather than restating it:
 
 - **Coverage completion:** [coverage design § expectations](coverage-design.md#coverage-expectations-policy).
 - **Type parity / API drift:** [compare-types justification bar](../../.github/scripts/compare-types/README.md#justification-bar).
+
+<a id="language-port-observable-contracts"></a>
+
+### Language port observable contracts
+
+When porting ObjC/C++/Java to Swift/Kotlin, or writing unit tests for such a port, assert **pre-port observable product contracts** — the behavior callers already relied on — not incidental Foundation/JDK return shapes or host-specific quirks.
+
+- Prefer key-absence and documented API/bridge behavior over platform return-shape details (for example nil vs empty dictionary) when the pre-port code never asserted that shape.
+- Do not promote host XCTest/JUnit or Simulator/JVM environment quirks into product requirements.
 
 ## Frozen tree
 

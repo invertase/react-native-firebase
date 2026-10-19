@@ -38,7 +38,7 @@ yarn lerna:prepare                    # after packages/*/lib/** edits — transp
 yarn tsc:compile
 yarn tsc:compile:consumer
 yarn tsc:compile:test-expo         # when test-expo/** TS in the diff — [agent command policy](agent-command-policy.md); never `cd test-expo && tsc`
-yarn attw:check                    # scoped attw + Expo plugin smoke; pack ignore — [Types-AD](architecture-decisions.md)
+yarn attw:check                    # scoped attw + Expo plugin smoke; allowlisted pack stage — [Types-AD](architecture-decisions.md)
 ```
 
 `yarn lerna:prepare` runs each package **`prepare`** script (`build` then `compile`/bob). That is the canonical **`lib/**`→`dist/module/**`** path. Do **not** use `cd packages/<pkg> && yarn compile` as a substitute — `compile` is a step **inside** `prepare`, not a standalone agent entrypoint.
@@ -106,7 +106,7 @@ When `packages/*/ios/**` Objective-C/C++ bridge logic changed (or an in-package 
 yarn tests:ios:unit                   # macOS/host-first — [IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1)
 ```
 
-Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/lcov.info`. After iOS e2e, `yarn tests:ios:test:process-coverage` merges unit LCOV again so e2e export does not drop XCTest hits — [coverage design](coverage-design.md). In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
+Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/lcov.info`. After iOS e2e, `yarn tests:ios:test:process-coverage` merges unit LCOV again so e2e export does not drop XCTest hits — [coverage design](coverage-design.md) (non-zero exit from the trailing NYC JS report can leave `coverage/ios-native/lcov.info` already written and usable). In-package XCTest does **not** replace [platform coverage gate](running-e2e.md#platform-coverage-gate-blocking) e2e.
 
 <a id="ios-ruby-unit-tests"></a>
 
@@ -135,7 +135,7 @@ Opt-in shape/embed suites skip cleanly when cocoapods/xcodeproj are absent; exit
 
 **Blocking before `implementation` handoff and on the frozen tree for `independent-review`.** Run from repo root after prepare/compile when TS/JS changed. **Owner of which script to run** — [change authoring](change-authoring-workflow.md) hops here; do not duplicate this table there.
 
-**CI Lint job** (`.github/workflows/linting.yml`) is `yarn lint` = `lint:js` + `lint:deps` + `lint:android` + `lint:ios:check`.
+**CI Lint job** (`.github/workflows/linting.yml`) is `yarn lint` = `lint:js` + `lint:deps` + `lint:android` + `lint:ios:check`. `lint:android` is **Java** (`google-java-format`); it does **not** format Kotlin. Kotlin format is repo-root `./gradlew ktlintFormat` ([agent command policy](agent-command-policy.md)), not part of `yarn lint`.
 
 ### Lint-by-tree / by-diff
 
@@ -145,9 +145,10 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 | ------------ | ------ | ----- |
 | `packages/**` or `test-expo/**` JS/TS | `yarn lint:js` | ESLint `packages/*` and `test-expo/` (one script; do not invent a `test-expo` lint entrypoint). Implementation may `yarn lint:js --fix` then re-run until clean. Prefer that over `yarn format:js`. A flood under `packages/app/__tests__/vendor/` is local Bundler vendor, not product lint. Do not treat it as the lint gate. [Agent command policy § JS lint / Bundler vendor](agent-command-policy.md#js-lint-bundler-vendor). |
 | `packages/*/lib/**` | `yarn lint:deps` | Blocking. [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting). |
-| Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` — **mutates**. Only entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
-| iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Pin npm `clang-format@1.7.0` (1.8.0 darwin tarball is x64-only on arm64). Implementation may `yarn lint:ios:fix` then re-check. |
-| `docs/**`, or docs tooling (`scripts/docs-snippets-tsc.mjs`, `scripts/docs-member-check.mjs`, `scripts/lib/mdx-fences.mjs`, `eslint.docs-snippets.config.mjs`) | `yarn lint:markdown` (`yarn lint:markdown:fix` for Prettier formatting) then `yarn lint:spellcheck` then `yarn docs:tsc:check` then `yarn docs:member:check` | Docs tree globs and the docs tooling files above (CI docs job). OKF-only diffs skip these. Gotchas below. |
+| Java under `packages/*/android` | `yarn lint:android` | **Implementation only.** `google-java-format --set-exit-if-changed --replace` on **`.java`** — **mutates**. Does **not** format `.kt`. Only Java entrypoint ([agent command policy](agent-command-policy.md)); never invent `yarn google-java-format` / `npx google-java-format`. Can flake; rerun once/twice if failure is not clearly in diff. Commit formatter output. |
+| Kotlin under `packages/*/android` or `tests/android/**/*.kt` | repo-root `./gradlew ktlintFormat` | **Implementation only.** **Mutates.** Include `tests/android/**/*.kt` when those files are in the diff. Invocation and filter: [agent command policy § Android Kotlin format](agent-command-policy.md#android-kotlin-format). Frozen review: do not run. |
+| iOS native (`packages/*/ios` `.h` / `.cpp` / `.m` / `.mm`, not generated) | `yarn lint:ios:check` | clang-format **check** (`-n -Werror`). Implementation may `yarn lint:ios:fix` then re-check. Repo pins `clang-format@1.7.0` (exact, not `^`): `1.8.0` ships darwin **x86_64** only (needs Rosetta); `1.7.0`’s misnamed `darwin_x64` path is native **arm64**. Intel Mac is not a supported local `lint:ios` host (App Store / Xcode / macOS floor). |
+| `docs/**`, or docs tooling (`scripts/docs-snippets-tsc.mjs`, `scripts/docs-member-check.mjs`, `scripts/lib/mdx-fences.mjs`, `eslint.docs-snippets.config.mjs`) | `yarn lint:markdown` (`yarn lint:markdown:fix` for Prettier formatting) then `yarn lint:spellcheck` then `yarn docs:tsc:check` then `yarn docs:member:check` then `yarn lint:docs-links` | Docs tree globs and the docs tooling files above (CI docs job). OKF-only diffs skip these. Gotchas below. Link-check: [§ docs.page link check](#docs-page-link-check). |
 
 <a id="docs-lint-gotchas"></a>
 
@@ -158,11 +159,23 @@ Run **only** the scripts whose trees are in the diff (exit 0). Do not run the re
 - **`yarn docs:tsc:check`:** blocking. Compiles the `js`, `javascript`, `jsx`, `ts`, `typescript` and `tsx` fences in `docs/**/*.mdx` against the consumer type surface (`tsconfig.consumer.json`); other fence languages are counted and listed as not compiled. Exit **1** on a failed fence, on a fence-grammar error (unclosed fence, `~~~` fence, or a fence inside a blockquote), or when no compilable fence is found. The fence grammar (indented fences are de-indented, CRLF is normalised) is shared with `docs:member:check` in `scripts/lib/mdx-fences.mjs`. Imports are hoisted with the TypeScript compiler API and the rest of the fence is wrapped in an async function, so top-level `await` and `export default` compile. Unhandled forms (`export const`, `export { ... }`, `export =`, `import x = require()`) need the ignore marker. Opt out of an intentionally partial fence with `// codeblock-ignore` as the first non-blank line inside the fence. Limits: strict mode is off, so null misuse and implicit `any` are not reported, and all fences share one type environment, so a fence can pass because another fence pulls in a global type. Failures print `<mdx>:<line in the mdx file>`. The console shows the first 10 failing fences followed by `and M more ... not shown`; set `DOCS_TSC_ALL=1` on the same command to print every failing fence, then filter that output by path to confirm one docs area. Generated files in gitignored `.docs-snippets-tsc/` are named `docs__<path>.block<N>.<ext>`. Do not re-check with `yarn tsc --project tsconfig.docs-snippets.generated.json <files>` (TS5042: project cannot mix with source files) or a full-project `yarn tsc -p` (the `tsc` CLI drops cross-file semantic diagnostics). For TS2307 on an `@react-native-firebase/*` package whose `dist/typescript` is missing, the output names the prepare command from the [agent command policy](agent-command-policy.md#prepare-must-finish-first).
 - **`yarn docs:member:check`:** blocking. For each `.github/scripts/compare-types/configs/<pkg>.ts`: (1) every `extraInRN` name must be mentioned (prose or code) under that package's docs tree (`perf-config` → `docs/perf`, `firestore-pipelines` → `docs/firestore`); (2) every runtime function the taught pages import by name from the package must be referenced by the matching `test-expo/app` screen. The screen must value-import the name from the same specifier the docs use, and the local binding must appear as an identifier outside import statements (comments and strings do not count). This proves a reference, not a call. Taught pages are `docs/<docsPkg>/usage/**` by default; `app` reads `docs/app/**`; `firestore-pipelines` reads `docs/firestore/pipelines/**` and only the `@react-native-firebase/firestore/pipelines` specifier. A package that needs a screen and teaches zero names fails. Limits: namespace and default imports teach nothing; `// codeblock-ignore` fences still count as taught; a local that shadows an imported name is not detected. A screen control for an untaught function does not fail. Guards: every `packages/*` directory with a `package.json` needs a compare-types config or an `EXEMPT_PACKAGES` entry with a reason (`vertexai`), and a stale exemption fails; `NO_SCREEN` packages (`ml`) fail if a screen file exists. Migration guides are not packages. `DOCS_MEMBER_VERBOSE=1` lists the taught names.
 
-A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`).
+A JS-only (or docs-only) diff does **not** require full `yarn lint`. Full `yarn lint` is the CI equivalent when the diff spans those package trees **and** mutating `lint:android` is allowed (`implementation`). Full `yarn lint` still does **not** run Kotlin `ktlintFormat`.
 
 ### Frozen `independent-review` (check-only)
 
-Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android` or full `yarn lint` — `lint:android` `--replace` mutates the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), `yarn lint:markdown`/`yarn lint:spellcheck`/`docs:tsc:check`/`docs:member:check` (docs tree or [docs tooling](#docs-lint-gotchas) only).
+Frozen review is [report/check-only except revert `.only`](change-authoring-workflow.md#frozen-tree). **Do not** run `yarn lint:android`, repo-root `./gradlew ktlintFormat`, or full `yarn lint` — those formatters **mutate** the tree. Run the **check-only** by-diff scripts: `lint:js` (JS/TS), `lint:deps` (lib), `lint:ios:check` (ios), `yarn lint:markdown`/`yarn lint:spellcheck`/`yarn lint:docs-links`/`docs:tsc:check`/`docs:member:check` (docs tree or [docs tooling](#docs-lint-gotchas) only). There is no allowlisted check-only Kotlin ktlint task.
+
+<a id="docs-page-link-check"></a>
+
+### `yarn lint:docs-links` — fix failures; bot-gate warnings only
+
+When `docs/**` is in the diff, **`yarn lint:docs-links` exit code 0** is blocking ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)). Which failures are errors vs warnings, and the `rnfirebase.io` override: [documentation site maintenance § Docs.page link check](../documentation-site-maintenance.md#docs-page-link-check-ci).
+
+**Agents must fix every `error` line** (internal links, assets, MDX render, metadata, true external 404s). Do not hand off or close gates while errors remain.
+
+**The only acceptable non-fix** is a **`warn`** on an **external** link where the checker reports a **bot/WAF gate** (common on npmjs.com, stackoverflow.com, some Google support URLs). Those URLs are often valid in a browser. **Do not** replace, remove, or “fix” those links to clear warnings, and do not relax check severity (flags or `docs.json` overrides) to hide real failures.
+
+If an external link is a true **404** / **not found** at **error** severity, fix it like any other error. If unsure, verify in a browser; 403 from npm/SO in warn output alone is not grounds to change the link. An **error** that clears on re-run — a **5xx** or timeout on any host, or a bot-gate status (e.g. **429**) on `rnfirebase.io` — is a host/rate problem, not a broken link: re-run until exit 0; do not change the link or the override. One that fails on every re-run is a real breakage — fix it.
 
 ## Expo example and documented-path iOS link (not e2e)
 
@@ -170,7 +183,7 @@ Frozen review is [report/check-only except revert `.only`](change-authoring-work
 
 ## RN CLI prebuilt RNCore iOS compile (not e2e)
 
-Workspace fixture `test-rn-bare/`: **`yarn test-rn-bare:ios:build`** then **`yarn test-rn-bare:ios:launch-smoke`** (iOS 27 UIScene gate; CI runs both) — [agent command policy](agent-command-policy.md). Not Detox; not the Expo link/launch closers; do not add `yarn tests:ios:*` or ad-hoc `pod` / `xcodebuild` / `simctl` as those closers. App package: [packages/app](../packages/app/index.md).
+Workspace fixture `test-rn-bare/`: **`yarn test-rn-bare:ios:build`** then **`yarn test-rn-bare:ios:launch-smoke`** (iOS 27 UIScene gate; CI runs both, and again for the dynamic Firebase probe with facade-reference, framework-load, and configure assertions — [probe launch smoke](agent-command-policy.md#dynamic-firebase-probe-launch-smoke)) — [agent command policy](agent-command-policy.md). Not Detox; not the Expo link/launch closers; do not add `yarn tests:ios:*` or ad-hoc `pod` / `xcodebuild` / `simctl` as those closers. App package: [packages/app](../packages/app/index.md).
 
 ## E2e with coverage
 
@@ -205,12 +218,13 @@ Goal: each iteration improves OKF and removes conflicting guidance. Check meanin
 | e2e Android               | yarn tests:android:test-cover        | 0    | Z passing — /tmp/...log                                                                                                                      |
 | android merged Jacoco     | yarn tests:android:post-e2e-coverage | 0    | jacocoTestReport.xml (unit + e2e) — [coverage design](coverage-design.md)                                                                    |
 | compare:types             | yarn compare:types                   | 0    | <pkg> 0/0/0                                                                                                                                  |
-| lint (by-tree)            | [§ lint and formatting](#lint-and-formatting) | 0    | matching scripts; frozen review: check-only (no `lint:android` / full `yarn lint`)                                                            |
+| lint (by-tree)            | [§ lint and formatting](#lint-and-formatting) | 0    | matching scripts; frozen review: check-only (no `lint:android` / `ktlintFormat` / full `yarn lint`)                                          |
 | lint:deps (lib diff)      | yarn lint:deps                       | 0    | when `packages/*/lib/**` in diff — [dependency-cycle linting](../monorepo-tooling/prepare-and-cache.md#dependency-cycle-linting)             |
 | lint:markdown (CI docs)   | yarn lint:markdown                   | 0    | when `docs/**` or docs tooling in diff (ESLint, snippet ESLint, Prettier; [§ gotchas](#docs-lint-gotchas))                                  |
 | lint:spellcheck (CI docs) | yarn lint:spellcheck                 | 0    | when `docs/**` in diff                                                                                                                       |
 | docs:tsc:check (CI docs)  | yarn docs:tsc:check                  | 0    | when `docs/**` or docs tooling in diff; failed fence, fence-grammar error, or no compilable fence exits 1                                   |
 | docs:member:check (CI docs) | yarn docs:member:check             | 0    | when `docs/**`, docs tooling, compare-types configs, test-expo screens, or a new `packages/*` directory in diff                              |
+| lint:docs-links (CI docs) | yarn lint:docs-links                 | 0    | when `docs/**` in diff — errors fail; bot-gate warnings do not                                                                               |
 | coverage                  | post-process + region table          | —    | [coverage evidence package](coverage-design.md#coverage-evidence-package); closes `coverage_evidence_gate` when lib/native bridge or `packages/app/**/*.rb` touched |
 ```
 
@@ -232,7 +246,7 @@ Exit codes must be the **real** ones: the agent shell is zsh, where `${PIPESTATU
 - [ ] `yarn tests:ios:unit` when `packages/*/ios/**` ObjC/C++ or `packages/*/ios/*UnitTests` changed ([IosTest-AD-1](ios-architecture-decisions.md#iostest-ad-1))
 - [ ] TurboModule wrapper contract ([NewArch-AD-17.1](../new-architecture/architecture-decisions.md#newarch-ad-171--jest-turbomodule-contract-test--accepted)) when `packages/app/lib/internal/registry/nativeModule.ts`, `nativeModuleAndroidIos.ts`, or TurboModule wrapper behavior changed: `yarn tests:jest -- packages/app/__tests__/nativeModuleContract.test.ts`
 - [ ] `yarn compare:types` (stale config entries removed)
-- [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / full `yarn lint`)
+- [ ] Lint by-tree / by-diff per [§ lint and formatting](#lint-and-formatting) (frozen `independent-review`: check-only — no `yarn lint:android` / `./gradlew ktlintFormat` / full `yarn lint`)
 - [ ] E2e green on **every required platform** for the changed module ([platform coverage gate](running-e2e.md#platform-coverage-gate-blocking); [harness narrowing gate](running-e2e.md#harness-narrowing-gate-blocking); no `.only`; committed `RNFBDebug` remains `false`)
 - [ ] Android post-e2e merged Jacoco when Android native touched: `yarn tests:android:post-e2e-coverage` → `jacocoTestReport.xml` ([coverage design](coverage-design.md))
 - [ ] [Validation evidence package](validation-checklist.md#validation-evidence-package) recorded (exit codes, e2e counts, log paths)

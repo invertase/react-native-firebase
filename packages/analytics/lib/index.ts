@@ -33,13 +33,13 @@ import {
 import {
   FirebaseModule,
   getOrCreateModularInstance,
+  setReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 
 import './types/internal';
 
 // Internal types are now available through module declarations in app package
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 
 import { validateStruct, validateCompound } from './struct';
 import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';

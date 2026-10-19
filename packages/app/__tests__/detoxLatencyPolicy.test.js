@@ -70,7 +70,20 @@ describe('detoxLatencyPolicy (UNI-9way-latency)', function () {
     expect(firebase).toMatch(/launchAppMaxAttempts\(\)/);
     expect(firebase).toMatch(/launchAppTimeoutMs\(\)/);
     expect(firebase).toMatch(/awaitJetExitWithStallGuard/);
+    expect(firebase).toMatch(/stall-diagnostics/);
+    expect(firebase).toMatch(/console\.error\(err\.message\)/);
+    expect(firebase).toMatch(/err\.retryableAtJetLevel\s*=\s*true/);
+    expect(firebase).toMatch(/stall-kill-jet/);
     expect(detoxrc).toMatch(/debugSynchronization:\s*30000/);
+  });
+
+  it('positive: Jet patch logs server.run starting after launch-ready', function () {
+    const jetPatch = fs.readFileSync(
+      path.join(repoRoot, '.yarn/patches/jet-npm-0.9.0-dev.13-3321aeea6e.patch'),
+      'utf8',
+    );
+    expect(jetPatch).toMatch(/\[jet-control\] deferring server\.run until POST \/launch-ready/);
+    expect(jetPatch).toMatch(/\[jet-control\] server\.run starting/);
   });
 
   it('positive: Detox CurrentStatus / Login timeouts are patched above 5000 / 1000', function () {

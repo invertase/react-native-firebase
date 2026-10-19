@@ -98,6 +98,7 @@ Fastlane
 FCM
 FieldValue
 FDL
+FID
 firebase
 Firebase
 firebase-admin
@@ -291,6 +292,7 @@ typings
 UI
 uid
 UIKit
+UIScene
 UIViewController
 Unactivated
 uncomment

@@ -48,7 +48,10 @@ export interface RNFBAppModuleInterface {
   initializeApp(
     options: ReactNativeFirebase.FirebaseAppOptions,
     appConfig: ReactNativeFirebase.FirebaseAppConfig,
-  ): Promise<void>;
+  ): Promise<{
+    options?: ReactNativeFirebase.FirebaseAppOptions;
+    appConfig?: ReactNativeFirebase.FirebaseAppConfig;
+  } | void>;
   deleteApp(name: string): Promise<void>;
   setLogLevel(logLevel: string): void;
   metaGetAll(): Promise<{ [key: string]: string | boolean }>;

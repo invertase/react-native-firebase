@@ -1,6 +1,6 @@
 ---
 title: Migrating to v27
-description: Migrate to React Native Firebase v27 — Firebase JS SDK 12.18.0, messaging corrections, and Imagen API removal.
+description: Migrate to React Native Firebase v27 - Firebase JS SDK 12.18.0, messaging corrections, Imagen API removal, and App iOS behavior/header changes.
 previous: /migrating-to-v26
 next: /typescript
 ---
@@ -10,6 +10,7 @@ Version 27 bundles several **breaking behavior corrections** and dependency bump
 - **Firebase JS SDK 12.18.0** — on web/macOS (`Platform.other`), `FunctionsError.message` appends an HTTP status suffix and `customData.url` is populated ([#9218](https://github.com/invertase/react-native-firebase/pull/9218)).
 - **Cloud Messaging** — four documented runtime contracts are enforced after previous accidental shapes ([#9246](https://github.com/invertase/react-native-firebase/pull/9246), [#9247](https://github.com/invertase/react-native-firebase/pull/9247), [#9252](https://github.com/invertase/react-native-firebase/pull/9252), [#9254](https://github.com/invertase/react-native-firebase/pull/9254)).
 - **Imagen API removed** from `@react-native-firebase/ai` after Google shut down the Imagen models as a service on **2026-08-17**. Generate images with a Gemini image model through `getGenerativeModel()` instead.
+- **App (iOS)** — `initializeApp` reads `automaticDataCollectionEnabled` as a real boolean, and public App headers no longer re-export FirebaseCore / Photos ([#9337](https://github.com/invertase/react-native-firebase/pull/9337)).
 
 If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating-to-v26) first — the namespaced API removal and New Architecture requirement still apply.
 
@@ -24,6 +25,9 @@ If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating
   - [`onMessageSent` receives a string message ID](/migrating-to-v27#onmessagesent-receives-a-string-message-id)
 - [Removed Imagen API](/migrating-to-v27#removed-imagen-api)
   - [Example](/migrating-to-v27#example)
+- [App (iOS)](/migrating-to-v27#app-ios)
+  - [`automaticDataCollectionEnabled` is a boolean](/migrating-to-v27#automaticdatacollectionenabled-is-a-boolean)
+  - [Public headers no longer import FirebaseCore / Photos](/migrating-to-v27#public-headers-no-longer-import-firebasecore--photos)
 - [Automated migration checklist](/migrating-to-v27#automated-migration-checklist)
 
 ## Agent-assisted migration
@@ -227,6 +231,60 @@ console.log(imagePart?.inlineData.mimeType);
 
 See [AI Logic usage](/ai/usage) for more image generation examples, and Google's [Imagen to Gemini migration guide](https://firebase.google.com/docs/ai-logic/imagen-models-migration) for model and prompt guidance.
 
+# App (iOS)
+
+**PR:** [#9337](https://github.com/invertase/react-native-firebase/pull/9337)
+
+These changes landed with the App native Swift/Kotlin port. Most apps that only use the JavaScript API are unaffected by the header change; the data-collection fix can change runtime behavior if you passed `automaticDataCollectionEnabled: false` and previously still got collection enabled.
+
+## `automaticDataCollectionEnabled` is a boolean
+
+`initializeApp` / native app options now read `automaticDataCollectionEnabled` as a **boolean**. Previously the Objective-C path cast the option value to a pointer, so **any non-nil value — including JavaScript `false` — enabled** automatic data collection.
+
+| Value                         | Before (accidental) | After        |
+| ----------------------------- | ------------------- | ------------ |
+| `true`                        | enabled             | enabled      |
+| `false` / `0` / `null` / omit | enabled if non-nil  | **disabled** |
+
+### Migration actions
+
+1. Search for `automaticDataCollectionEnabled` in `initializeApp` options and native config.
+2. If you passed `false` expecting collection to stay off, you are now correct — no change needed beyond verifying analytics/collection behavior.
+3. If you relied on the old bug (passing a non-boolean non-nil value, or `false` while still seeing collection), set an explicit boolean for the behavior you want.
+
+```js
+// codeblock-ignore: migration guide historical / partial snippet
+import { initializeApp } from '@react-native-firebase/app';
+
+// Now false / null / absent disable collection; only true enables it.
+await initializeApp({
+  // …
+  automaticDataCollectionEnabled: false,
+});
+```
+
+## Public headers no longer import FirebaseCore / Photos
+
+These public App headers **no longer** import FirebaseCore or Photos. Forward declarations are used instead. Downstream **native** code that compiled only because those headers pulled the frameworks in transitively must import them at the call site.
+
+| Header                    | No longer imports |
+| ------------------------- | ----------------- |
+| `RNFBSharedUtils.h`       | FirebaseCore      |
+| `RCTConvert+FIRApp.h`     | FirebaseCore      |
+| `RCTConvert+FIROptions.h` | FirebaseCore      |
+| `RNFBUtilsModule.h`       | Photos            |
+
+### Migration actions
+
+1. If a native `.m` / `.mm` / `.swift` file fails to compile with unknown `FIRApp` / `FIROptions` / `PHAsset` (or similar) after upgrading, add the import next to your other Firebase / Photos imports.
+2. JavaScript-only apps do not need changes for this item.
+
+```objc
+// Example — add at the call site if you used RNFB headers and relied on the old transitive import
+#import <FirebaseCore/FirebaseCore.h>
+#import <Photos/Photos.h>
+```
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades from v26 → v27.
@@ -253,6 +311,8 @@ For each area you use, search the listed symbols and apply the replacements:
 | Messaging badge           | numeric use of `notification.ios.badge`                                                | Parse string (`Number(...)`) when a number is required                                        |
 | Messaging `onMessageSent` | `({ messageId })` / `.messageId` in the listener                                       | Use the string argument directly                                                              |
 | AI Imagen                 | `getImagenModel`, `getTemplateImagenModel`, `ImagenModel`, `Imagen*`, `generateImages` | `getGenerativeModel` / `getTemplateGenerativeModel` with `responseModalities` + `imageConfig` |
+| App iOS data collection   | `automaticDataCollectionEnabled` in `initializeApp` options                            | Use an explicit boolean; `false` / `0` / `null` / absent now disable collection               |
+| App iOS native headers    | compile errors for `FIRApp` / `FIROptions` / `PHAsset` after including RNFB headers    | `#import <FirebaseCore/FirebaseCore.h>` and/or `#import <Photos/Photos.h>` at the call site   |
 
 ## 3. Validate
 
@@ -260,6 +320,7 @@ For each area you use, search the listed symbols and apply the replacements:
 yarn compile
 # TypeScript consumers: fix compile errors from removed Imagen exports and messaging types
 # Manually exercise: callable error message handling (web/macOS), FCM notification fields (iOS), onMessageSent, Gemini image generation
+# Native iOS: rebuild any pods/apps that import RNFB App headers; confirm automaticDataCollectionEnabled false disables collection
 ```
 
 ## Related PRs (v27 breaking changes)
@@ -272,3 +333,4 @@ yarn compile
 | Messaging — iOS badge string               | [#9252](https://github.com/invertase/react-native-firebase/pull/9252) |
 | Messaging — `onMessageSent` string ID      | [#9254](https://github.com/invertase/react-native-firebase/pull/9254) |
 | AI — Imagen API removal                    | [#9275](https://github.com/invertase/react-native-firebase/pull/9275) |
+| App iOS — ADC boolean + header imports     | [#9337](https://github.com/invertase/react-native-firebase/pull/9337) |

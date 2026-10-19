@@ -10,6 +10,12 @@ timestamp: 2026-08-26T00:00:00Z
 
 ## E2E job shape (CI — mirrors workflow YAML; local: [running e2e](../testing/running-e2e.md))
 
+CI builds **one ABI** from `matrix.arch` via job env `ORG_GRADLE_PROJECT_reactNativeArchitectures` (overrides `tests/android/gradle.properties` multi-ABI defaults for CI only; same `ORG_GRADLE_PROJECT_*` pattern as Metro port). Gradle cache keys are arch-scoped (`gradle-v2-<arch>`).
+
+<a id="metro-bundler-cache"></a>
+
+**Metro bundler cache** — restore key `${{ runner.os }}-android-metro-v2-<hashFiles(…)>` (content hash over `yarn.lock`, `tests` metro/entry files, `packages/*/package.json` + `packages/*/lib/**`; restore-keys prefix `…-android-metro-v2-`). Save on `main` only when `matrix.iteration == 0` and restore was an exact miss (`cache-hit != 'true'`). Shared policy: [CI workflows index](index.md#shared-e2e-dependencies).
+
 1. `tests:android:build`
 2. `tests:android:unit` — JVM unit (no emulator); produces module Jacoco `*.exec` ([AndroidTest-AD-1](../testing/android-architecture-decisions.md#androidtest-ad-1))
 3. `tests:android:test-cover --headless` — pass/fail gate

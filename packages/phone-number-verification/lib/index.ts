@@ -22,7 +22,7 @@
  * Web. Every exported function throws when `Platform.OS !== 'android'`.
  */
 import { Platform } from 'react-native';
-import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal';
 
 import type { VerificationSupportResult, VerifiedPhoneNumberTokenResult } from './types/pnv';
 

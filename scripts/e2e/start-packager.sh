@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Canonical Metro start for yarn tests:packager:* / tests:macos:packager:*.
 # Honor RCT_METRO_PORT (fallback RNFB_METRO_PORT / 8081). Always kill that port's
-# listeners (SIGTERM then SIGKILL), set TMPDIR=$HOME/.metro/rnfb-${port}, drop a
-# stale Watchman watch for this Metro project root and watch only allowlist trees
-# Metro reloads. Start Metro, wait for /status packager-status:running, then
-# succeed or fail. Leaves Metro running (no setsid / no reuse-if-up).
+# listeners (SIGTERM then SIGKILL), set TMPDIR=$HOME/.metro/rnfb-${port}.
+# Watchman: watch-del this Metro project root unless a sibling Metro already owns
+# it (skip so android∥ios dual tests/ packagers survive); force with
+# RNFB_METRO_FORCE_WATCHMAN_RESET=1. Always watch-project the allowlist. Never
+# watch-del $REPO_ROOT. Start Metro, wait for /status packager-status:running,
+# then succeed or fail. Leaves Metro running (no setsid / no reuse-if-up).
 #
 # Usage:
 #   bash scripts/e2e/start-packager.sh tests [--client-logs|--reset-cache ...]
@@ -81,11 +83,17 @@ watchman_reset_allowlist() {
   if ! command -v watchman >/dev/null 2>&1; then
     return 0
   fi
-  echo "[packager] watchman watch-del metro root ${METRO_ROOT}"
-  watchman watch-del "$METRO_ROOT" >/dev/null 2>&1 || true
-  # Do not watch-del $REPO_ROOT: a same-worktree sibling packager (android+ios
-  # share tests/; macos is tests-macos/) still needs its watches. Dropping the
-  # whole tree left /status dead by :test-cover (anrser4 Metro wait / macOS bundle).
+  # Skip watch-del when a sibling Metro already owns this project root (e.g.
+  # android∥ios dual yarn tests:packager:jet on distinct RCT_METRO_PORT sharing
+  # tests/). Detection is Metro cmdline + cwd (LISTEN not required) so cold
+  # dual-start does not both del. Force hard reset only when
+  # RNFB_METRO_FORCE_WATCHMAN_RESET=1. Never watch-del $REPO_ROOT.
+  if [[ "${RNFB_METRO_FORCE_WATCHMAN_RESET:-}" != "1" ]] && e2e_sibling_metro_owns_root "$METRO_ROOT" "$PORT"; then
+    echo "[packager] watchman skip watch-del (sibling Metro owns ${METRO_ROOT})"
+  else
+    echo "[packager] watchman watch-del metro root ${METRO_ROOT}"
+    watchman watch-del "$METRO_ROOT" >/dev/null 2>&1 || true
+  fi
   # Do not keep a whole-monorepo watch (native */build noise) — only allowlist below.
   local dir
   # Allowlist: this Metro project root + packages Metro already watchFolders.

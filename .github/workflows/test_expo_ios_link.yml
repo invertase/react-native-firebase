@@ -42,6 +42,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -55,12 +56,20 @@ jobs:
     env:
       XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
+      # Prefer PATH ccache wrappers from ccache-action (create-symlink). Do not set LD/LDPLUSPLUS (Xcode 27 trap).
+      CC: clang
+      CPLUSPLUS: clang++
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
 
@@ -72,11 +81,44 @@ jobs:
       - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
 
+      # Sticky content-hash key (append-timestamp: false). Distinct from e2e (`expo-link` app id).
+      # https://github.com/hendrikmuhs/ccache-action/releases
+      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-expo-link-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-expo/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js') }}
+          append-timestamp: false
+          save: ${{ github.ref == 'refs/heads/main' }}
+          create-symlink: true
+          max-size: 1500M
+
       - name: Yarn Install
         run: yarn
+
+      - name: ccache stats (before)
+        run: ccache -s || true
 
       - name: test-expo iOS link
         run: yarn test-expo:ios:link
 
       - name: test-expo iOS launch smoke
+        id: launch-smoke
         run: yarn test-expo:ios:launch-smoke
+
+      - name: ccache stats (after)
+        if: always()
+        run: ccache -s || true
+
+      # Paths match defaults in test-expo-ios-launch-smoke.sh (APP_LOG / METRO_LOG / XCODEBUILD_LOG).
+      - name: Upload launch-smoke logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        continue-on-error: true
+        if: failure() && steps.launch-smoke.outcome == 'failure'
+        with:
+          name: test-expo-ios-launch-smoke-logs
+          path: |
+            /tmp/test-expo-launch-smoke.log
+            /tmp/test-expo-launch-smoke-metro.log
+            /tmp/test-expo-launch-smoke-xcodebuild.log
+          if-no-files-found: ignore

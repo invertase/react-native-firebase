@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Documentation site maintenance
-description: Canonical maintenance for docs.page (docs.json) and TypeDoc (reference.rnfirebase.io), including legacy redirect audits.
+description: Canonical maintenance for docs.page (docs.json) and TypeDoc (reference.rnfirebase.io), including legacy redirect audits and the docs.page link check in CI.
 tags: [okf, documentation, typedoc, docs-page, redirects]
 timestamp: 2026-07-02T00:00:00Z
 ---
@@ -66,16 +66,28 @@ Removed packages (e.g. Dynamic Links) have no TypeDoc module — fall back to `m
 - [ ] `yarn reference:api` succeeds
 - [ ] All `docs.json` redirect targets verified (200)
 - [ ] New legacy paths identified and redirected or explicitly deferred with rationale
-- [ ] Docs checks (`yarn lint:markdown`, `yarn lint:spellcheck`, `yarn docs:tsc:check`, `yarn docs:member:check`) when `docs/**` or docs tooling changed: [validation checklist § lint and formatting](testing/validation-checklist.md#lint-and-formatting) (docs row and [§ docs lint gotchas](testing/validation-checklist.md#docs-lint-gotchas); OKF-only diffs do not run those)
+- [ ] Docs checks (`yarn lint:markdown`, `yarn lint:spellcheck`, `yarn docs:tsc:check`, `yarn docs:member:check`, `yarn lint:docs-links`) when `docs/**` or docs tooling changed: [validation checklist § lint and formatting](testing/validation-checklist.md#lint-and-formatting) (docs row and [§ docs lint gotchas](testing/validation-checklist.md#docs-lint-gotchas); OKF-only diffs do not run those)
 
 **Validation commands:** [validation checklist § API reference](testing/validation-checklist.md#api-reference-and-type-parity), [§ lint and formatting](testing/validation-checklist.md#lint-and-formatting).
+
+## Docs.page link check (CI)
+
+<a id="docs-page-link-check-ci"></a>
+
+`yarn lint:docs-links` runs `@docs.page/cli` `check` (pinned in root `package.json`, **≥ 2.2.0** for per-host severity overrides) and is a step in `.github/workflows/docs.yml`, wrapped in `nick-fields/retry` to absorb transient external failures (5xx, timeouts); a real breakage fails every attempt. The yarn script is `docs check .` — CLI defaults plus the `docs.json` `check` block; no severity flags on the command line. Fresh CLI publishes younger than the repo `npmMinimalAgeGate` (7d) must be listed in `.yarnrc.yml` `npmPreapprovedPackages`.
+
+**Severity:** external **404**, **5xx**, DNS, and timeout failures are **errors**. Bot-gated HTTP statuses (**401 / 403 / 405 / 429**) are **warnings** so CI stays green while still surfacing hosts that refuse automated clients (npmjs, Stack Overflow, and similar). Do **not** add `--external-links warn` or `--ignore-external-hosts` — that would hide TypeDoc rot on `reference.rnfirebase.io`.
+
+**Host overrides:** `docs.json` `check.severityOverrideHosts` pins `rnfirebase.io` to **error**. Matching includes subdomains, so `reference.rnfirebase.io` is covered, and the override applies to every failure — bot-gate statuses included — so a rate-limited or broken TypeDoc link cannot downgrade to a warning. Do not add `warn` overrides for first-party hosts; add an `error` entry when another first-party host must never downgrade.
+
+What agents must fix vs may leave: [validation checklist § docs.page link check](testing/validation-checklist.md#docs-page-link-check).
 
 ## docs.json edits (non-TypeDoc)
 
 When adding user docs pages only (sidebar, tabs, content under `docs/`):
 
 - Add sidebar entries in `docs.json` when new pages ship.
-- Run markdown/spellcheck per [validation checklist](testing/validation-checklist.md#lint-and-formatting).
+- Run markdown/spellcheck/link check per [validation checklist](testing/validation-checklist.md#lint-and-formatting): `yarn lint:markdown`, `yarn lint:spellcheck`, `yarn lint:docs-links`.
 - Redirect audit **not** required unless `redirects` or TypeDoc config also changed.
 
 ## Colocated TypeDoc reminder

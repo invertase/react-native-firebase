@@ -47,7 +47,28 @@ _PLIST_ENTRY_VALUES=()
 
 function setPlistValue {
   echo "note:      setting plist entry '$1' of type '$2' in file '$4'"
-  ${_PLIST_BUDDY} -c "Add :$1 $2 '$3'" $4 || echo "note:      '$1' already exists"
+  # PlistBuddy is macOS-only (Xcode builds). Fall back to python3 plistlib so
+  # unit tests can exercise this script on Linux CI (ubuntu-latest).
+  if [[ -x "${_PLIST_BUDDY}" ]]; then
+    ${_PLIST_BUDDY} -c "Add :$1 $2 '$3'" $4 || echo "note:      '$1' already exists"
+  else
+    python3 - "$1" "$2" "$3" "$4" <<'PY' || echo "note:      failed to set '$1'"
+import plistlib
+import sys
+
+key, typ, value, path = sys.argv[1:5]
+with open(path, "rb") as handle:
+    data = plistlib.load(handle)
+if key in data:
+    sys.exit(0)
+if typ == "bool":
+    data[key] = value in ("YES", "true", "1")
+else:
+    data[key] = value
+with open(path, "wb") as handle:
+    plistlib.dump(data, handle)
+PY
+  fi
 }
 
 function getFirebaseJsonKeyValue () {
@@ -203,6 +224,14 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_KEYS+=("FirebaseMessagingAutoInitEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_MESSAGING_AUTO_INIT")")
+  fi
+
+  # config.messaging_installation_id_enabled
+  _MESSAGING_INSTALLATION_ID=$(getFirebaseJsonKeyValue "messaging_installation_id_enabled")
+  if [[ $_MESSAGING_INSTALLATION_ID ]]; then
+    _PLIST_ENTRY_KEYS+=("FirebaseMessagingInstallationIdEnabled")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_MESSAGING_INSTALLATION_ID")")
   fi
 
   # config.in_app_messaging_auto_colllection_enabled

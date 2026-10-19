@@ -83,7 +83,7 @@ describe('e2e_sanitize_serial_env leftover slot Metro', function () {
         JET_REMOTE_PORT: '12010',
         RNFB_ANDROID_EMULATOR_FIRESTORE_PORT: '12000',
         RNFB_ANDROID_AVD: 'TestingAVD-0',
-        RNFB_IOS_SIMULATOR: 'RNFB E2E iOS slot-0',
+        RNFB_IOS_SIMULATOR: 'RN E2E iOS slot-0',
         RNFB_MACOS_PRODUCT_NAME: 'io.invertase.testing.s0',
       },
     );

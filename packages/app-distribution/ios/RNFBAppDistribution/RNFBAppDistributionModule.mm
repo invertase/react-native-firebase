@@ -15,22 +15,13 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#define RNFB_APP_DISTRIBUTION_SDK_AVAILABLE 1
-#elif __has_include(<FirebaseAppDistribution/FirebaseAppDistribution.h>)
-#import <FirebaseAppDistribution/FirebaseAppDistribution.h>
-#import <FirebaseCore/FirebaseCore.h>
-#define RNFB_APP_DISTRIBUTION_SDK_AVAILABLE 1
-#else
-// Product headers absent (typical Mac Catalyst + SPM). Never fall through to
-// @import in this .mm — that requires -fcxx-modules and breaks RN C++/JSI.
-#define RNFB_APP_DISTRIBUTION_SDK_AVAILABLE 0
-#endif
-#import <React/RCTUtils.h>
-
-#import "RNFBApp/RNFBSharedUtils.h"
+// This module intentionally has no Firebase imports — see RNFBAppDistributionHelper.h /
+// okf-bundle/ios-spm-native-imports.md. Every Firebase App Distribution SDK call (and the
+// Catalyst/SPM unavailable reject path) is routed through the plain Objective-C
+// RNFBAppDistributionHelper class instead, which can safely own the CocoaPods/SPM dual-import
+// and `RNFB_APP_DISTRIBUTION_SDK_AVAILABLE` gate because it compiles as ObjC, not ObjC++.
 #import "RNFBAppDistributionModule.h"
+#import "RNFBAppDistributionHelper.h"
 
 @implementation RNFBAppDistributionModule
 
@@ -45,96 +36,20 @@ RCT_EXPORT_MODULE(NativeRNFBTurboAppDistribution)
   return std::make_shared<facebook::react::NativeRNFBTurboAppDistributionSpecJSI>(params);
 }
 
-#if !RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
-- (void)rejectUnavailable:(RCTPromiseRejectBlock)reject {
-  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                    userInfo:(NSMutableDictionary *)@{
-                                      @"code" : @"unsupported",
-                                      @"message" : @"Firebase App Distribution is not available on "
-                                                   @"this platform or dependency configuration.",
-                                    }];
-}
-#endif
-
 - (void)isTesterSignedIn:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
-  FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
-  BOOL isTesterSignedIn = appDistribution.isTesterSignedIn;
-  resolve([NSNumber numberWithBool:isTesterSignedIn]);
-#else
-  (void)resolve;
-  [self rejectUnavailable:reject];
-#endif
+  [RNFBAppDistributionHelper isTesterSignedIn:resolve reject:reject];
 }
 
 - (void)signInTester:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
-  FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
-  [appDistribution signInTesterWithCompletion:^(NSError *_Nullable error) {
-    if (error != nil) {
-      DLog(@"Unable to signInTester: %@", error);
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"tester-sign-in-error",
-                                          @"message" : [error localizedDescription],
-                                        }];
-      return;
-    }
-
-    resolve([NSNull null]);
-  }];
-#else
-  (void)resolve;
-  [self rejectUnavailable:reject];
-#endif
+  [RNFBAppDistributionHelper signInTester:resolve reject:reject];
 }
 
 - (void)signOutTester:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
-  [[FIRAppDistribution appDistribution] signOutTester];
-  resolve([NSNull null]);
-#else
-  (void)resolve;
-  [self rejectUnavailable:reject];
-#endif
+  [RNFBAppDistributionHelper signOutTester:resolve reject:reject];
 }
 
 - (void)checkForUpdate:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-#if RNFB_APP_DISTRIBUTION_SDK_AVAILABLE
-  FIRAppDistribution *appDistribution = [FIRAppDistribution appDistribution];
-  [appDistribution checkForUpdateWithCompletion:^(FIRAppDistributionRelease *_Nullable release,
-                                                  NSError *_Nullable error) {
-    if (error != nil) {
-      DLog(@"Unable to check App Distribution release: %@", error);
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"check-update-error",
-                                          @"message" : [error localizedDescription],
-                                        }];
-      return;
-    }
-    if (release == nil) {
-      DLog(@"Unable to check App Distribution release.");
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"checkupdate-null",
-                                          @"message" : @"no update checked",
-                                        }];
-      return;
-    }
-
-    resolve(@{
-      @"displayVersion" : release.displayVersion,
-      @"buildVersion" : release.buildVersion,
-      @"releaseNotes" : release.releaseNotes == nil ? [NSNull null] : release.releaseNotes,
-      @"isExpired" : [NSNumber numberWithBool:release.isExpired],
-      @"downloadURL" : release.downloadURL.absoluteString
-    });
-  }];
-#else
-  (void)resolve;
-  [self rejectUnavailable:reject];
-#endif
+  [RNFBAppDistributionHelper checkForUpdate:resolve reject:reject];
 }
 
 @end

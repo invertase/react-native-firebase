@@ -59,6 +59,14 @@ namespace facebook::react {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "deleteToken", @selector(deleteToken:senderId:resolve:reject:), args, count);
     }
 
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_register(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "register", @selector(register:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_unregister(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "unregister", @selector(unregister:reject:), args, count);
+    }
+
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboMessagingSpecJSI_getAPNSToken(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "getAPNSToken", @selector(getAPNSToken:reject:), args, count);
     }
@@ -137,6 +145,12 @@ namespace facebook::react {
         
         
         methodMap_["deleteToken"] = MethodMetadata {2, __hostFunction_NativeRNFBTurboMessagingSpecJSI_deleteToken};
+        
+        
+        methodMap_["register"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_register};
+        
+        
+        methodMap_["unregister"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_unregister};
         
         
         methodMap_["getAPNSToken"] = MethodMetadata {0, __hostFunction_NativeRNFBTurboMessagingSpecJSI_getAPNSToken};

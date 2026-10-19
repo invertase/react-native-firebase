@@ -16,6 +16,30 @@ fail() {
   exit 1
 }
 
+# Dump sim / Metro / xcodebuild tails to stderr so CI job logs (and local
+# failures) show why a step failed without needing the artifact alone.
+# Missing files are noted; safe to call before APP_LOG / XCODEBUILD_LOG exist.
+dump_failure_logs() {
+  log "--- APP_LOG tail (${APP_LOG}) ---"
+  if [[ -f "$APP_LOG" ]]; then
+    tail -120 "$APP_LOG" >&2 || true
+  else
+    log "(missing ${APP_LOG})"
+  fi
+  log "--- METRO_LOG tail (${METRO_LOG}) ---"
+  if [[ -f "$METRO_LOG" ]]; then
+    tail -80 "$METRO_LOG" >&2 || true
+  else
+    log "(missing ${METRO_LOG})"
+  fi
+  log "--- XCODEBUILD_LOG tail (${XCODEBUILD_LOG}) ---"
+  if [[ -f "$XCODEBUILD_LOG" ]]; then
+    tail -80 "$XCODEBUILD_LOG" >&2 || true
+  else
+    log "(missing ${XCODEBUILD_LOG})"
+  fi
+}
+
 BUNDLE_ID="${RNFB_TEST_EXPO_BUNDLE_ID:-io.invertase.testing}"
 SCHEME_URL="${RNFB_TEST_EXPO_SCHEME:-testexpo}"
 WORKSPACE="${RNFB_TEST_EXPO_WORKSPACE:-ios/testexpo.xcworkspace}"
@@ -26,6 +50,8 @@ METRO_PORT="${RNFB_TEST_EXPO_METRO_PORT:-8081}"
 METRO_LOG="${RNFB_TEST_EXPO_METRO_LOG:-/tmp/test-expo-launch-smoke-metro.log}"
 APP_LOG="${RNFB_TEST_EXPO_LAUNCH_LOG:-/tmp/test-expo-launch-smoke.log}"
 XCODEBUILD_LOG="${RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG:-/tmp/test-expo-launch-smoke-xcodebuild.log}"
+# Cap for key-window + sceneOfRecord poll after launch (replaces fixed sleep 10).
+KEY_WINDOW_WAIT_SEC="${RNFB_TEST_EXPO_KEY_WINDOW_WAIT_SEC:-60}"
 
 if [[ ! -d "$WORKSPACE" ]]; then
   fail "missing ${WORKSPACE} — run yarn test-expo:ios:link first"
@@ -47,10 +73,19 @@ resolve_sim_udid() {
   echo "$udid"
 }
 
+# Set once the log stream is started; cleanup() reaps it so a failure between
+# stream start and the normal kill does not leave `log stream` running.
+LOG_PID=""
+
 cleanup() {
   local udid="$1"
   local metro_pid="$2"
   xcrun simctl terminate "$udid" "$BUNDLE_ID" 2>/dev/null || true
+  if [[ -n "${LOG_PID:-}" ]]; then
+    kill "$LOG_PID" 2>/dev/null || true
+    wait "$LOG_PID" 2>/dev/null || true
+    LOG_PID=""
+  fi
   if [[ -n "$metro_pid" ]]; then
     kill "$metro_pid" 2>/dev/null || true
   fi
@@ -73,12 +108,15 @@ for _ in $(seq 1 120); do
     break
   fi
   if ! kill -0 "$METRO_PID" 2>/dev/null; then
-    tail -40 "$METRO_LOG" >&2
+    dump_failure_logs
     fail "Metro exited before becoming ready"
   fi
   sleep 1
 done
-[[ "$metro_ready" -eq 1 ]] || fail "Metro did not become ready on :${METRO_PORT}"
+if [[ "$metro_ready" -ne 1 ]]; then
+  dump_failure_logs
+  fail "Metro did not become ready on :${METRO_PORT}"
+fi
 
 HOST_ARCH="$(uname -m)"
 xcrun simctl boot "$UDID" 2>/dev/null || true
@@ -93,6 +131,7 @@ if command -v gtimeout >/dev/null 2>&1; then
   gtimeout "$XCODEBUILD_TIMEOUT_SEC" xcodebuild \
     ARCHS="$HOST_ARCH" \
     ONLY_ACTIVE_ARCH=YES \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
@@ -106,6 +145,7 @@ elif command -v timeout >/dev/null 2>&1; then
   timeout "$XCODEBUILD_TIMEOUT_SEC" xcodebuild \
     ARCHS="$HOST_ARCH" \
     ONLY_ACTIVE_ARCH=YES \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
@@ -120,6 +160,7 @@ else
     xcodebuild \
     ARCHS="$HOST_ARCH" \
     ONLY_ACTIVE_ARCH=YES \
+    CC=clang CPLUSPLUS=clang++ \
     -workspace "$WORKSPACE" \
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
@@ -132,15 +173,65 @@ else
 fi
 set -e
 if [[ "$xcodebuild_status" -eq 124 || "$xcodebuild_status" -eq 142 ]]; then
+  dump_failure_logs
   fail "xcodebuild Debug timed out after ${XCODEBUILD_TIMEOUT_SEC}s (log: ${XCODEBUILD_LOG})"
 fi
-[[ "$xcodebuild_status" -eq 0 ]] || fail "xcodebuild Debug failed (exit ${xcodebuild_status})"
+if [[ "$xcodebuild_status" -ne 0 ]]; then
+  dump_failure_logs
+  fail "xcodebuild Debug failed (exit ${xcodebuild_status})"
+fi
 
-APP="$(
-  find "${HOME}/Library/Developer/Xcode/DerivedData"/testexpo-*/Build/Products/Debug-iphonesimulator \
-    -maxdepth 1 -name '*.app' 2>/dev/null | head -1
+# Ask xcodebuild where this scheme's .app lands instead of scraping its build log: the log
+# escapes and mixes paths (spaces, "+", "(" in $HOME) in ways a regex cannot split reliably, and a
+# glob over DerivedData/testexpo-* can pick a stale app built from another worktree.
+# Each "Build settings for action build and target X" block lists TARGET_BUILD_DIR and
+# FULL_PRODUCT_NAME; the first block whose product is a .app is the application target.
+# Capture xcodebuild's output and exit status separately so a real failure (bad scheme,
+# package-resolution error) is reported as such instead of as "no .app product".
+settings_err="$(mktemp)"
+set +e
+settings_out="$(
+  xcodebuild \
+    CC=clang CPLUSPLUS=clang++ \
+    -workspace "$WORKSPACE" \
+    -scheme "$XCODE_SCHEME" \
+    -configuration Debug \
+    -destination "id=${UDID}" \
+    -showBuildSettings 2>"$settings_err"
 )"
-[[ -n "$APP" && -d "$APP" ]] || fail "could not find Debug-iphonesimulator .app under DerivedData/testexpo-*"
+settings_status=$?
+set -e
+if [[ "$settings_status" -ne 0 ]]; then
+  tail -20 "$settings_err" >&2
+  rm -f "$settings_err"
+  dump_failure_logs
+  fail "xcodebuild -showBuildSettings failed (exit ${settings_status}) for scheme ${XCODE_SCHEME}"
+fi
+rm -f "$settings_err"
+APP="$(
+  awk '
+        function flush() {
+          if (!found && dir != "" && name ~ /\.app$/) {
+            print dir "/" name
+            found = 1
+          }
+          dir = ""
+          name = ""
+        }
+        /^Build settings for action/ { flush(); next }
+        match($0, /^[[:space:]]+TARGET_BUILD_DIR = /) { dir = substr($0, RLENGTH + 1); next }
+        match($0, /^[[:space:]]+FULL_PRODUCT_NAME = /) { name = substr($0, RLENGTH + 1); next }
+        END { flush() }
+      ' <<<"$settings_out"
+)"
+if [[ -z "$APP" ]]; then
+  dump_failure_logs
+  fail "xcodebuild -showBuildSettings did not report an .app product for scheme ${XCODE_SCHEME}"
+fi
+if [[ ! -d "$APP" ]]; then
+  dump_failure_logs
+  fail "built app not found at: ${APP}"
+fi
 
 xcrun simctl install "$UDID" "$APP"
 
@@ -149,7 +240,24 @@ xcrun simctl spawn "$UDID" log stream --level default --style compact \
   --predicate 'process == "testexpo" OR subsystem == "com.apple.runtime-issues" OR eventMessage CONTAINS[c] "EvaluateRuntimeIssueForNoSceneLifecycleAdoption"' \
   >>"$APP_LOG" 2>&1 &
 LOG_PID=$!
-sleep 1
+# Fixed sleep can miss early launch markers on a cold simulator. `log stream`
+# prints its "Filtering the log data using" header once attached — wait for that
+# (up to ~10 s) before launch, matching the bare-probe launch-smoke pattern.
+log_stream_ready=0
+for _ in $(seq 1 20); do
+  if grep -Fq 'Filtering the log data using' "$APP_LOG"; then
+    log_stream_ready=1
+    break
+  fi
+  if ! kill -0 "$LOG_PID" 2>/dev/null; then
+    break
+  fi
+  sleep 0.5
+done
+if [[ "$log_stream_ready" -ne 1 ]]; then
+  dump_failure_logs
+  fail "log stream never reported ready within 10 s (no 'Filtering the log data using' header in ${APP_LOG}); key-window could be missed"
+fi
 
 metro_lines_before="$(wc -l <"$METRO_LOG" | tr -d ' ')"
 xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
@@ -157,9 +265,36 @@ xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
 ENC_URL="$(python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=""))' "http://127.0.0.1:${METRO_PORT}")"
 xcrun simctl openurl "$UDID" "${SCHEME_URL}://expo-development-client/?url=${ENC_URL}"
 
-sleep 10
+# Poll for key-window + sceneOfRecord instead of a fixed sleep 10 — cold sims
+# often need longer; warm ones finish early.
+SCENE_OF_RECORD="sceneOfRecord: sceneID: sceneID:${BUNDLE_ID}-default"
+key_window_seen=0
+scene_seen=0
+poll_deadline=$((SECONDS + KEY_WINDOW_WAIT_SEC))
+while (( SECONDS < poll_deadline )); do
+  if grep -Fq 'Window did become application key' "$APP_LOG"; then
+    key_window_seen=1
+  fi
+  if grep -Fq "$SCENE_OF_RECORD" "$APP_LOG"; then
+    scene_seen=1
+  fi
+  if [[ "$key_window_seen" -eq 1 && "$scene_seen" -eq 1 ]]; then
+    break
+  fi
+  scene_ips_early="$(
+    grep -Ei 'UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption|NoSceneLifecycleAdoption' "$APP_LOG" \
+      | grep -Ev '^Filtering the log data using' \
+      || true
+  )"
+  if [[ -n "$scene_ips_early" ]]; then
+    break
+  fi
+  sleep 0.5
+done
+
 kill "$LOG_PID" 2>/dev/null || true
 wait "$LOG_PID" 2>/dev/null || true
+LOG_PID=""
 
 scene_ips="$(
   grep -Ei 'UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption|NoSceneLifecycleAdoption' "$APP_LOG" \
@@ -167,23 +302,28 @@ scene_ips="$(
     || true
 )"
 if [[ -n "$scene_ips" ]]; then
+  dump_failure_logs
   fail "scene lifecycle runtime issue detected — see ${APP_LOG}"
 fi
 if ! grep -Fq 'Window did become application key' "$APP_LOG"; then
-  fail "app window never became key — see ${APP_LOG}"
+  dump_failure_logs
+  fail "app window never became key within ${KEY_WINDOW_WAIT_SEC}s — see ${APP_LOG}"
 fi
-if ! grep -Fq 'sceneOfRecord: sceneID: sceneID:io.invertase.testing-default' "$APP_LOG"; then
-  fail "expected single-scene sceneOfRecord not observed — see ${APP_LOG}"
+if ! grep -Fq "$SCENE_OF_RECORD" "$APP_LOG"; then
+  dump_failure_logs
+  fail "expected single-scene sceneOfRecord not observed within ${KEY_WINDOW_WAIT_SEC}s — see ${APP_LOG}"
 fi
 
 log "prefetch iOS JS bundle from Metro (root UI entry)"
 bundle_tmp="$(mktemp)"
 if ! curl -sf "http://localhost:${METRO_PORT}/.expo/.virtual-metro-entry.bundle?platform=ios&dev=true&minify=false" -o "$bundle_tmp"; then
   rm -f "$bundle_tmp"
+  dump_failure_logs
   fail "Metro did not serve the iOS bundle for test-expo"
 fi
 if ! [[ -s "$bundle_tmp" ]]; then
   rm -f "$bundle_tmp"
+  dump_failure_logs
   fail "Metro returned an empty iOS bundle"
 fi
 rm -f "$bundle_tmp"

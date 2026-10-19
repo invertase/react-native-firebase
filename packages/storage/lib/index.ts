@@ -20,6 +20,7 @@ import type { FirebaseApp } from '@react-native-firebase/app';
 import {
   FirebaseModule,
   getOrCreateModularInstance,
+  setReactNativeModule,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
@@ -27,7 +28,6 @@ import Reference from './StorageReference';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
-import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import './types/internal';
 import type {
   EmulatorMockTokenOptions,

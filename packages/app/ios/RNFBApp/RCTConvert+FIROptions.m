@@ -17,19 +17,20 @@
 
 #import "RCTConvert+FIROptions.h"
 
+#if __has_include(<RNFBApp/RNFBApp-Swift.h>)
+#import <RNFBApp/RNFBApp-Swift.h>
+#elif __has_include("RNFBApp-Swift.h")
+#import "RNFBApp-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBApp Swift interface not found"
+#endif
+
 @implementation RCTConvert (FIROptions)
 
 + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
-  FIROptions *firOptions =
-      [[FIROptions alloc] initWithGoogleAppID:[rawOptions valueForKey:@"appId"]
-                                  GCMSenderID:[rawOptions valueForKey:@"messagingSenderId"]];
-  firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
-  firOptions.projectID = [rawOptions valueForKey:@"projectId"];
-  firOptions.clientID = [rawOptions valueForKey:@"clientId"];
-  firOptions.databaseURL = [rawOptions valueForKey:@"databaseURL"];
-  firOptions.storageBucket = [rawOptions valueForKey:@"storageBucket"];
-  firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-  return firOptions;
+  return (FIROptions *)[RCTConvertFIROptions convertRawOptions:rawOptions];
 }
 
 RCT_CUSTOM_CONVERTER(FIROptions *, FIROptions, [self convertRawOptions:[self NSDictionary:json]]);

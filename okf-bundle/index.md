@@ -5,7 +5,7 @@ okf_version: '0.1'
 # React Native Firebase knowledge bundle
 
 - [Documentation/commit policy](/documentation-policy.md#durable-vs-ephemeral) — public **reference** docs vs ephemeral queue state on Linear project documents vs private items (Linear issue identifiers stay off GitHub); [Efficiency](/documentation-policy.md#efficiency); OKF consistency
-- [Documentation site maintenance](/documentation-site-maintenance.md) — docs.json, TypeDoc reference site, legacy `/reference/` redirect audits
+- [Documentation site maintenance](/documentation-site-maintenance.md) — docs.json, TypeDoc reference site, legacy `/reference/` redirect audits, docs.page link check (CI)
 
 # CI workflows
 
@@ -20,9 +20,9 @@ okf_version: '0.1'
 - [E2e parallel design](/testing/e2e-parallel-design.md) — resources, why they collide, parameterization, 9 overlapping cells, coordinator rollout
 - [Test app dependency pins](/testing/test-app-dependency-pins.md) — intentional RN / CLI locks (mobile + Expo/RN CLI fixtures share one line; `react-native-macos` is independent)
 - [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
-- [Published types ADR](/testing/architecture-decisions.md) — attw scope, Expo plugin checks, discarded resolutions; [Types-AD-5](/testing/architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted) pack ignore for nested iOS unit `build/`
+- [Published types ADR](/testing/architecture-decisions.md) — attw scope, Expo plugin checks, discarded resolutions; [Types-AD-5](/testing/architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted) attw allowlisted pack stage
 - [Android unit testing ADR](/testing/android-architecture-decisions.md#androidtest-ad-1) — JUnit-first JVM unit tests; Robolectric when Android APIs are required; omit `@Config` / `sdk` unless proven (`AndroidTest-AD-1`)
-- [iOS unit testing ADR](/testing/ios-architecture-decisions.md#iostest-ad-1) — macOS/host-first in-package XCTest; Simulator only if UIKit required (`IosTest-AD-1`)
+- [iOS unit testing ADR](/testing/ios-architecture-decisions.md#iostest-ad-1) — macOS/host-first in-package XCTest (Foundation-only, or [stub headers](/testing/ios-architecture-decisions.md#iostest-ad-1-stub-headers) for React/Firebase/UIKit); Simulator only if UIKit required (`IosTest-AD-1`)
 - [Coverage design](/testing/coverage-design.md) — unit/e2e coverage policy, native gates, Codecov; [iOS Ruby SimpleCov](/testing/coverage-design.md#ios-ruby-simplecov); [§ react-native-coverage](/testing/coverage-design.md#react-native-coverage); [§ coverage migration rollback](/testing/coverage-design.md#coverage-migration-rollback); probe vs flush — [running e2e § test-app native modules](/testing/running-e2e.md#test-app-native-modules)
 - [Firebase testing project](/testing/firebase-testing-project.md) — cloud vs emulator, live FIS/RC, helper callables, rules/indexes, deploy
 
@@ -41,4 +41,4 @@ okf_version: '0.1'
 - [Auth](/packages/auth/index.md) — modular API type parity, platform matrix, `compare:types`
 - [Firestore](/packages/firestore/index.md) — Pipelines architecture, parity, e2e coverage
 - [Functions](/packages/functions/index.md) — callables; `FunctionsError` not usable as `instanceof` under consumer types
-- [Messaging](/packages/messaging/index.md) — iOS `UNUserNotificationCenter` delegate forwarding, `completionHandler` contract
+- [Messaging](/packages/messaging/index.md) — iOS `UNUserNotificationCenter` delegate forwarding, `completionHandler` contract; APNs on Simulator; [FID (Installation ID) messaging](/packages/messaging/index.md#installation-id-messaging) flag, error codes, and [unit-test coverage](/packages/messaging/index.md#unit-tests)

@@ -389,6 +389,24 @@ ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-withou
 
 ---
 
+## NewArch-AD-23 — Stock upstream TurboModules; no alternate native framework — **Accepted**
+
+**Decision:** New Architecture support stays on canonical upstream React Native TurboModules (Codegen specs, generated artifacts, Kotlin/Java spec implementations, and the thin Objective-C++ `getTurboModule:` adapter). Swift and Kotlin are implementation languages behind that contract. They are not a reason to change the module framework.
+
+**Alternatives considered and rejected:**
+
+- Expo Modules API. Swift/Kotlin-first, but adds the `expo` dependency. That dependency is outside the external list RNFB already ships.
+- Nitro. Direct Swift↔C++ without an Objective-C++ adapter, but it is a third-party module ABI, also outside that list.
+
+**Why:** `react-native` is already an unavoidable dependency. A second module framework is not. The language migration (Swift business logic, Kotlin spec implementations, Swift/Kotlin tests) does not change this.
+
+**Not this decision:**
+
+- NewArch-AD-1 rejects a dual old/new bridge. It does not choose among TurboModules, Expo Modules, and Nitro.
+- NewArch-AD-12 governs the original TurboModule cutover commit (`feat(<pkg>)!: migrate <pkg> to TurboModules`). Later language-port slices are separate commits and do not re-open NewArch-AD-12.
+
+---
+
 ## Related docs
 
 | Topic | Document |

@@ -7,6 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D20000000000000000000060 /* RNFBFirestoreModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000061 /* RNFBFirestoreModuleHelper.m */; };
+		D20000000000000000000064 /* RNFBFirestoreTransactionModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000065 /* RNFBFirestoreTransactionModuleHelper.m */; };
+		D200000000000000000000A0 /* RNFBFirestoreCollectionModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D200000000000000000000A1 /* RNFBFirestoreCollectionModuleHelper.m */; };
+		D200000000000000000000A4 /* RNFBFirestoreDocumentModuleHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D200000000000000000000A5 /* RNFBFirestoreDocumentModuleHelper.m */; };
+		D20000000000000000000070 /* FIRFirestoreHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000071 /* FIRFirestoreHostStub.m */; };
+		D20000000000000000000072 /* RCTConvert+FIRAppHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000073 /* RCTConvert+FIRAppHostStub.m */; };
+		D20000000000000000000074 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000075 /* RNFBSharedUtilsHostStub.m */; };
+		D20000000000000000000076 /* RNFBRCTEventEmitterHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000077 /* RNFBRCTEventEmitterHostStub.m */; };
+		D20000000000000000000078 /* RNFBPreferencesHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000079 /* RNFBPreferencesHostStub.m */; };
+		D20000000000000000000080 /* RNFBFirestoreCommonHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000081 /* RNFBFirestoreCommonHostStub.m */; };
+		D20000000000000000000082 /* RNFBFirestoreSerializeHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000083 /* RNFBFirestoreSerializeHostStub.m */; };
+		D20000000000000000000084 /* RNFBFirestoreQueryHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000085 /* RNFBFirestoreQueryHostStub.m */; };
+		D20000000000000000000086 /* RNFBFirestorePipelineCallHandlerHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000087 /* RNFBFirestorePipelineCallHandlerHostStub.m */; };
+		D20000000000000000000090 /* RNFBFirestoreModuleHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000091 /* RNFBFirestoreModuleHelperHostStubTests.m */; };
+		D20000000000000000000092 /* RNFBFirestoreTransactionModuleHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000093 /* RNFBFirestoreTransactionModuleHelperHostStubTests.m */; };
+		D20000000000000000000094 /* RNFBFirestoreCollectionModuleHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000095 /* RNFBFirestoreCollectionModuleHelperHostStubTests.m */; };
+		D20000000000000000000096 /* RNFBFirestoreDocumentModuleHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000097 /* RNFBFirestoreDocumentModuleHelperHostStubTests.m */; };
 		D2000000000000000000000A /* RNFBHandleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000008 /* RNFBHandleMap.m */; };
 		D2000000000000000000000B /* RNFBFirestoreListenerRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000018 /* RNFBFirestoreListenerRegistry.m */; };
 		D2000000000000000000000C /* RNFBFirestoreListenerRegistryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000009 /* RNFBFirestoreListenerRegistryTests.m */; };
@@ -15,9 +32,36 @@
 		D20000000000000000000032 /* RNFBFirestoreTransactionAttempt.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */; };
 		D20000000000000000000034 /* RNFBFirestoreTransactionAttemptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */; };
 		D20000000000000000000015 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D20000000000000000000014 /* XCTest.framework */; };
+		D20000000000000000000035 /* RNFBHandleMapStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000036 /* RNFBHandleMapStorage.swift */; };
+		D20000000000000000000040 /* RNFBFirestoreListenerRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000041 /* RNFBFirestoreListenerRegistryStorage.swift */; };
+		D20000000000000000000042 /* RNFBFirestoreListenerRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000043 /* RNFBFirestoreListenerRegistryStorageTests.swift */; };
+		D20000000000000000000050 /* RNFBFirestoreTransactionRegistryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000051 /* RNFBFirestoreTransactionRegistryStorage.swift */; };
+		D20000000000000000000052 /* RNFBFirestoreTransactionRegistryStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20000000000000000000053 /* RNFBFirestoreTransactionRegistryStorageTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D20000000000000000000061 /* RNFBFirestoreModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreModuleHelper.m; path = ../RNFBFirestore/RNFBFirestoreModuleHelper.m; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000063 /* RNFBFirestoreModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreModuleHelper.h; path = ../RNFBFirestore/RNFBFirestoreModuleHelper.h; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000065 /* RNFBFirestoreTransactionModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreTransactionModuleHelper.m; path = ../RNFBFirestore/RNFBFirestoreTransactionModuleHelper.m; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000067 /* RNFBFirestoreTransactionModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreTransactionModuleHelper.h; path = ../RNFBFirestore/RNFBFirestoreTransactionModuleHelper.h; sourceTree = SOURCE_ROOT; };
+		D200000000000000000000A1 /* RNFBFirestoreCollectionModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreCollectionModuleHelper.m; path = ../RNFBFirestore/RNFBFirestoreCollectionModuleHelper.m; sourceTree = SOURCE_ROOT; };
+		D200000000000000000000A3 /* RNFBFirestoreCollectionModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreCollectionModuleHelper.h; path = ../RNFBFirestore/RNFBFirestoreCollectionModuleHelper.h; sourceTree = SOURCE_ROOT; };
+		D200000000000000000000A5 /* RNFBFirestoreDocumentModuleHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreDocumentModuleHelper.m; path = ../RNFBFirestore/RNFBFirestoreDocumentModuleHelper.m; sourceTree = SOURCE_ROOT; };
+		D200000000000000000000A7 /* RNFBFirestoreDocumentModuleHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestoreDocumentModuleHelper.h; path = ../RNFBFirestore/RNFBFirestoreDocumentModuleHelper.h; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000071 /* FIRFirestoreHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRFirestoreHostStub.m; path = HostStubs/Firebase/FIRFirestoreHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000073 /* RCTConvert+FIRAppHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIRAppHostStub.m"; path = "HostStubs/RNFBApp/RCTConvert+FIRAppHostStub.m"; sourceTree = "<group>"; };
+		D20000000000000000000075 /* RNFBSharedUtilsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBSharedUtilsHostStub.m; path = HostStubs/RNFBApp/RNFBSharedUtilsHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000077 /* RNFBRCTEventEmitterHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitterHostStub.m; path = HostStubs/RNFBApp/RNFBRCTEventEmitterHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000079 /* RNFBPreferencesHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBPreferencesHostStub.m; path = HostStubs/RNFBApp/RNFBPreferencesHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000081 /* RNFBFirestoreCommonHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreCommonHostStub.m; path = HostStubs/RNFBFirestore/RNFBFirestoreCommonHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000083 /* RNFBFirestoreSerializeHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreSerializeHostStub.m; path = HostStubs/RNFBFirestore/RNFBFirestoreSerializeHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000085 /* RNFBFirestoreQueryHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreQueryHostStub.m; path = HostStubs/RNFBFirestore/RNFBFirestoreQueryHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000087 /* RNFBFirestorePipelineCallHandlerHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestorePipelineCallHandlerHostStub.m; path = HostStubs/RNFBFirestore/RNFBFirestorePipelineCallHandlerHostStub.m; sourceTree = "<group>"; };
+		D20000000000000000000088 /* RNFBFirestorePipelineCallHandlerHostStub.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFirestorePipelineCallHandlerHostStub.h; path = HostStubs/RNFBFirestore/RNFBFirestorePipelineCallHandlerHostStub.h; sourceTree = "<group>"; };
+		D20000000000000000000091 /* RNFBFirestoreModuleHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreModuleHelperHostStubTests.m; sourceTree = "<group>"; };
+		D20000000000000000000093 /* RNFBFirestoreTransactionModuleHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionModuleHelperHostStubTests.m; sourceTree = "<group>"; };
+		D20000000000000000000095 /* RNFBFirestoreCollectionModuleHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreCollectionModuleHelperHostStubTests.m; sourceTree = "<group>"; };
+		D20000000000000000000097 /* RNFBFirestoreDocumentModuleHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreDocumentModuleHelperHostStubTests.m; sourceTree = "<group>"; };
 		D20000000000000000000003 /* RNFBFirestoreUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNFBFirestoreUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D20000000000000000000007 /* RNFBHandleMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBHandleMap.h; path = ../../../app/ios/RNFBApp/RNFBHandleMap.h; sourceTree = SOURCE_ROOT; };
 		D20000000000000000000008 /* RNFBHandleMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBHandleMap.m; path = ../../../app/ios/RNFBApp/RNFBHandleMap.m; sourceTree = SOURCE_ROOT; };
@@ -31,6 +75,11 @@
 		D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFirestoreTransactionAttempt.m; path = ../RNFBFirestore/RNFBFirestoreTransactionAttempt.m; sourceTree = SOURCE_ROOT; };
 		D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBFirestoreTransactionAttemptTests.m; sourceTree = "<group>"; };
 		D20000000000000000000014 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		D20000000000000000000036 /* RNFBHandleMapStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBHandleMapStorage.swift; path = ../../../app/ios/RNFBApp/RNFBHandleMapStorage.swift; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000041 /* RNFBFirestoreListenerRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFirestoreListenerRegistryStorage.swift; path = ../RNFBFirestore/RNFBFirestoreListenerRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000043 /* RNFBFirestoreListenerRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBFirestoreListenerRegistryStorageTests.swift; sourceTree = "<group>"; };
+		D20000000000000000000051 /* RNFBFirestoreTransactionRegistryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFirestoreTransactionRegistryStorage.swift; path = ../RNFBFirestore/RNFBFirestoreTransactionRegistryStorage.swift; sourceTree = SOURCE_ROOT; };
+		D20000000000000000000053 /* RNFBFirestoreTransactionRegistryStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBFirestoreTransactionRegistryStorageTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,14 +115,41 @@
 			children = (
 				D20000000000000000000007 /* RNFBHandleMap.h */,
 				D20000000000000000000008 /* RNFBHandleMap.m */,
+				D20000000000000000000036 /* RNFBHandleMapStorage.swift */,
 				D20000000000000000000016 /* RNFBFirestoreListenerRegistry.h */,
 				D20000000000000000000018 /* RNFBFirestoreListenerRegistry.m */,
+				D20000000000000000000041 /* RNFBFirestoreListenerRegistryStorage.swift */,
 				D20000000000000000000024 /* RNFBFirestoreTransactionRegistry.h */,
 				D20000000000000000000021 /* RNFBFirestoreTransactionRegistry.m */,
+				D20000000000000000000051 /* RNFBFirestoreTransactionRegistryStorage.swift */,
 				D20000000000000000000030 /* RNFBFirestoreTransactionAttempt.h */,
 				D20000000000000000000031 /* RNFBFirestoreTransactionAttempt.m */,
 				D20000000000000000000009 /* RNFBFirestoreListenerRegistryTests.m */,
+				D20000000000000000000043 /* RNFBFirestoreListenerRegistryStorageTests.swift */,
 				D20000000000000000000023 /* RNFBFirestoreTransactionRegistryTests.m */,
+				D20000000000000000000053 /* RNFBFirestoreTransactionRegistryStorageTests.swift */,
+				D20000000000000000000061 /* RNFBFirestoreModuleHelper.m */,
+				D20000000000000000000063 /* RNFBFirestoreModuleHelper.h */,
+				D20000000000000000000065 /* RNFBFirestoreTransactionModuleHelper.m */,
+				D20000000000000000000067 /* RNFBFirestoreTransactionModuleHelper.h */,
+				D200000000000000000000A1 /* RNFBFirestoreCollectionModuleHelper.m */,
+				D200000000000000000000A3 /* RNFBFirestoreCollectionModuleHelper.h */,
+				D200000000000000000000A5 /* RNFBFirestoreDocumentModuleHelper.m */,
+				D200000000000000000000A7 /* RNFBFirestoreDocumentModuleHelper.h */,
+				D20000000000000000000071 /* FIRFirestoreHostStub.m */,
+				D20000000000000000000073 /* RCTConvert+FIRAppHostStub.m */,
+				D20000000000000000000075 /* RNFBSharedUtilsHostStub.m */,
+				D20000000000000000000077 /* RNFBRCTEventEmitterHostStub.m */,
+				D20000000000000000000079 /* RNFBPreferencesHostStub.m */,
+				D20000000000000000000081 /* RNFBFirestoreCommonHostStub.m */,
+				D20000000000000000000083 /* RNFBFirestoreSerializeHostStub.m */,
+				D20000000000000000000085 /* RNFBFirestoreQueryHostStub.m */,
+				D20000000000000000000087 /* RNFBFirestorePipelineCallHandlerHostStub.m */,
+				D20000000000000000000088 /* RNFBFirestorePipelineCallHandlerHostStub.h */,
+				D20000000000000000000091 /* RNFBFirestoreModuleHelperHostStubTests.m */,
+				D20000000000000000000093 /* RNFBFirestoreTransactionModuleHelperHostStubTests.m */,
+				D20000000000000000000095 /* RNFBFirestoreCollectionModuleHelperHostStubTests.m */,
+				D20000000000000000000097 /* RNFBFirestoreDocumentModuleHelperHostStubTests.m */,
 				D20000000000000000000033 /* RNFBFirestoreTransactionAttemptTests.m */,
 			);
 			name = Sources;
@@ -137,11 +213,33 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2000000000000000000000A /* RNFBHandleMap.m in Sources */,
+				D20000000000000000000035 /* RNFBHandleMapStorage.swift in Sources */,
 				D2000000000000000000000B /* RNFBFirestoreListenerRegistry.m in Sources */,
+				D20000000000000000000040 /* RNFBFirestoreListenerRegistryStorage.swift in Sources */,
 				D20000000000000000000020 /* RNFBFirestoreTransactionRegistry.m in Sources */,
+				D20000000000000000000050 /* RNFBFirestoreTransactionRegistryStorage.swift in Sources */,
 				D20000000000000000000032 /* RNFBFirestoreTransactionAttempt.m in Sources */,
 				D2000000000000000000000C /* RNFBFirestoreListenerRegistryTests.m in Sources */,
+				D20000000000000000000042 /* RNFBFirestoreListenerRegistryStorageTests.swift in Sources */,
 				D20000000000000000000022 /* RNFBFirestoreTransactionRegistryTests.m in Sources */,
+				D20000000000000000000052 /* RNFBFirestoreTransactionRegistryStorageTests.swift in Sources */,
+				D20000000000000000000060 /* RNFBFirestoreModuleHelper.m in Sources */,
+				D20000000000000000000064 /* RNFBFirestoreTransactionModuleHelper.m in Sources */,
+				D200000000000000000000A0 /* RNFBFirestoreCollectionModuleHelper.m in Sources */,
+				D200000000000000000000A4 /* RNFBFirestoreDocumentModuleHelper.m in Sources */,
+				D20000000000000000000070 /* FIRFirestoreHostStub.m in Sources */,
+				D20000000000000000000072 /* RCTConvert+FIRAppHostStub.m in Sources */,
+				D20000000000000000000074 /* RNFBSharedUtilsHostStub.m in Sources */,
+				D20000000000000000000076 /* RNFBRCTEventEmitterHostStub.m in Sources */,
+				D20000000000000000000078 /* RNFBPreferencesHostStub.m in Sources */,
+				D20000000000000000000080 /* RNFBFirestoreCommonHostStub.m in Sources */,
+				D20000000000000000000082 /* RNFBFirestoreSerializeHostStub.m in Sources */,
+				D20000000000000000000084 /* RNFBFirestoreQueryHostStub.m in Sources */,
+				D20000000000000000000086 /* RNFBFirestorePipelineCallHandlerHostStub.m in Sources */,
+				D20000000000000000000090 /* RNFBFirestoreModuleHelperHostStubTests.m in Sources */,
+				D20000000000000000000092 /* RNFBFirestoreTransactionModuleHelperHostStubTests.m in Sources */,
+				D20000000000000000000094 /* RNFBFirestoreCollectionModuleHelperHostStubTests.m in Sources */,
+				D20000000000000000000096 /* RNFBFirestoreDocumentModuleHelperHostStubTests.m in Sources */,
 				D20000000000000000000034 /* RNFBFirestoreTransactionAttemptTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -191,11 +289,13 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBFirestore",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
-					"$(SRCROOT)/../RNFBFirestore",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -214,6 +314,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Debug;
 		};
@@ -225,11 +327,13 @@
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/HostStubs",
+					"$(SRCROOT)/../RNFBFirestore",
 					"$(SRCROOT)/../../../app/ios",
 					"$(SRCROOT)/../../../app/ios/RNFBApp",
-					"$(SRCROOT)/../RNFBFirestore",
 				);
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -241,6 +345,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "RNFBHandleMapStorage-Swift.inc";
+				SWIFT_VERSION = 5.10;
 			};
 			name = Release;
 		};

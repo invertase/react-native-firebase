@@ -31,6 +31,19 @@ LOG_DIR="${RNFB_LOG_DIR:-.}"
   summarize "springboard-log" "${LOG_DIR}/springboard-invertase.log"
   summarize "resource-monitor" "${LOG_DIR}/resource-monitor.log"
   summarize "metro-log" "${LOG_DIR}/metro.log"
+
+  echo "=== await-exit stall markers ==="
+  if [[ -f "${DETOX_LOG}" ]]; then
+    rg -n 'awaiting-jet-exit stalled|stall-kill-jet|launch-retry-kill-jet|stall-diagnostics|Coverage summary|Unknown% \( 0/0 \)|\( 0/0 \)' \
+      "${DETOX_LOG}" 2>/dev/null | tail -40 || true
+  else
+    echo "(no detox log)"
+  fi
+  if [[ -f "${LOG_DIR}/resource-monitor.log" ]]; then
+    echo "--- resource-monitor load around stall (last 40 load lines) ---"
+    rg -n 'load averages|^\[resource-monitor\] ps-empty' "${LOG_DIR}/resource-monitor.log" 2>/dev/null | tail -40 || true
+  fi
+  echo ""
 } >"$OUT"
 
 echo "[flake-summary] wrote ${OUT} ($(wc -l <"$OUT" | tr -d ' ') lines)"

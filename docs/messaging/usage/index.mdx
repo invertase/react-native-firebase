@@ -123,6 +123,49 @@ console.log('Delegation enabled:', isNotificationDelegationEnabled(messaging));
 await setNotificationDelegationEnabled(messaging, true);
 ```
 
+## Installation ID messaging (optional)
+
+Firebase Installation ID (FID) registration (`register` / `onRegistered`) is available but **off by default**.
+For the migration path (API mapping, opt-in, error codes, checklist), see
+[Migrating to Installation ID](/messaging/migrating-to-installation-id).
+Deep usage samples (native keys, Expo plugin, listeners): [Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
+For bare React Native, opt in via `firebase.json`:
+
+```json
+// <projectRoot>/firebase.json
+{
+  "react-native": {
+    "messaging_installation_id_enabled": true
+  }
+}
+```
+
+For Expo, use the plugin prop (or set the Android / iOS keys manually — see
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging)):
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/messaging",
+        {
+          "installationIdEnabled": true,
+          "android": {
+            "notificationIcon": "./assets/notification_icon.png",
+            "notificationColor": "#ffffff"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+`messaging_installation_id_enabled` / `installationIdEnabled: true` map to Android meta-data
+`firebase_messaging_installation_id_enabled` and iOS `FirebaseMessagingInstallationIdEnabled`.
+
 # Platform support and New Architecture
 
 {/* prettier-ignore */}
@@ -513,7 +556,7 @@ admin.messaging().send({
 });
 ```
 
-View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/) documentation to learn more about APNs headers.
+View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/sending-notification-requests-to-apns) documentation to learn more about APNs headers.
 
 These options can be applied to all FCM messages. View the [Server Integration](/messaging/server-integration) documentation
 to learn more about other available SDKs.
@@ -786,7 +829,10 @@ These options only apply when no other `UNUserNotificationCenter` delegate (for 
 
 ## Auto initialization
 
-Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection.
+Firebase generates an Instance ID, which FCM uses to generate a registration token (or, when Installation ID messaging is
+enabled, to register via FID — see [Migrating to Installation ID](/messaging/migrating-to-installation-id) and
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging))
+and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
 you do not need to change this behavior.
 

@@ -1,0 +1,131 @@
+---
+title: Migrating to Installation ID
+description: Migrate Cloud Messaging from FCM registration tokens to Firebase Installation ID (FID) registration.
+previous: /messaging/server-integration
+next: /storage/usage
+---
+
+Upstream Firebase SDKs prefer **Firebase Installation ID (FID)** registration over FCM registration tokens.
+React Native Firebase exposes `register`, `unregister`, `onRegistered`, and `onUnregistered` for that path.
+FID messaging is **off by default** — you must opt in before calling those APIs.
+
+This guide covers the client migration: API mapping, opt-in, iOS APNs vs `register()`, backend storage of each FID, and the error codes you will see when the flag and API choice disagree.
+Full native / Expo config samples and listener semantics live under
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
+## Table of contents
+
+- [Agent-assisted migration](/messaging/migrating-to-installation-id#agent-assisted-migration)
+- [API mapping](/messaging/migrating-to-installation-id#api-mapping)
+- [Opt-in](/messaging/migrating-to-installation-id#opt-in)
+- [APNs registration vs `register()`](/messaging/migrating-to-installation-id#apns-registration-vs-register)
+- [Backend: store the FID](/messaging/migrating-to-installation-id#backend-store-the-fid)
+- [Error codes](/messaging/migrating-to-installation-id#error-codes)
+- [Automated migration checklist](/messaging/migrating-to-installation-id#automated-migration-checklist)
+
+## Agent-assisted migration
+
+This guide is written to be **complete enough for an automated first pass**. Feed this document to your coding agent, then ask it to analyze your codebase against each section below and produce a concrete change list (or PR). Use the [Automated migration checklist](/messaging/migrating-to-installation-id#automated-migration-checklist) at the end for search/replace and validation steps.
+
+# API mapping
+
+| Before (FCM token APIs)         | After (FID registration)                              | Notes                                                                         |
+| ------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `getToken(messaging)`           | `register(messaging)` + `onRegistered`                | Prefer listening with `onRegistered`; call `register()` to start registration |
+| `onTokenRefresh(messaging, cb)` | `onRegistered(messaging, cb)`                         | FID rotations deliver through `onRegistered`                                  |
+| `deleteToken(messaging)`        | `unregister(messaging)` (+ optional `onUnregistered`) | `onUnregistered` only fires for calls after you subscribe                     |
+
+Token APIs remain usable while the Installation ID flag is **off**. After opt-in, token APIs reject; FID APIs reject while the flag is still off (see [Error codes](/messaging/migrating-to-installation-id#error-codes)).
+
+# Opt-in
+
+**Prefer `firebase.json`** for bare React Native (same pattern as `messaging_auto_init_enabled`):
+
+```json
+{
+  "react-native": {
+    "messaging_installation_id_enabled": true
+  }
+}
+```
+
+That key maps to:
+
+| Surface            | Key / prop                                   |
+| ------------------ | -------------------------------------------- |
+| Android meta-data  | `firebase_messaging_installation_id_enabled` |
+| iOS Info.plist     | `FirebaseMessagingInstallationIdEnabled`     |
+| Expo config plugin | `installationIdEnabled`                      |
+
+Bare Android / iOS keys and the Expo plugin prop remain valid if you set them yourself instead of (or in addition to) `firebase.json`.
+Do **not** duplicate full Manifest / plist / Expo JSON blocks here — copy from
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
+Rebuild native apps after changing the flag (`pod install` / Expo prebuild as applicable).
+
+# APNs registration vs register()
+
+`register()` does **not** replace `registerDeviceForRemoteMessages`.
+
+On iOS you still need APNs registration before remote pushes arrive (auto-registration by default, or a manual
+`registerDeviceForRemoteMessages` call when auto-registration is disabled).
+FID registration is a separate step for Installation ID messaging.
+
+# Backend: store the FID
+
+When the flag is on, upload the **FID** from `onRegistered` (and remove it on `onUnregistered` / `unregister`) the same way you previously stored FCM tokens — typically keyed by user in your datastore.
+Treat FID rotations like token refreshes: update or insert the new value when `onRegistered` fires again.
+
+For end-to-end client samples (listeners, replay behavior, Expo / native keys), see
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
+# Error codes
+
+| Code                                    | When                                                                                            |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `messaging/installation-id-not-enabled` | FID APIs (`register`, `unregister`, `onRegistered`, `onUnregistered`) while the flag is **off** |
+| `messaging/token-api-disabled`          | Token APIs (`getToken`, `deleteToken`, `onTokenRefresh`) while the flag is **on**               |
+
+Enable the flag before switching call sites, or keep token APIs until you are ready to opt in.
+
+# Automated migration checklist
+
+Use this section for scripted or agent-assisted migrations.
+
+## 1. Opt in
+
+Add or confirm:
+
+```json
+{
+  "react-native": {
+    "messaging_installation_id_enabled": true
+  }
+}
+```
+
+Or set Android `firebase_messaging_installation_id_enabled`, iOS `FirebaseMessagingInstallationIdEnabled`, or Expo `installationIdEnabled: true` — see
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging).
+
+## 2. Agent-oriented search and replace
+
+| Search for                                           | Replace with / action                                                      |
+| ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| `getToken(` (messaging)                              | Prefer `register(` + `onRegistered(`; stop calling `getToken` after opt-in |
+| `onTokenRefresh(`                                    | `onRegistered(`                                                            |
+| `deleteToken(` (messaging)                           | `unregister(`; optionally subscribe with `onUnregistered(`                 |
+| Backend stores of FCM tokens from messaging          | Store FID from `onRegistered` / clear on `unregister` / `onUnregistered`   |
+| Assume `register()` implies APNs                     | Keep `registerDeviceForRemoteMessages` / auto-registration for iOS pushes  |
+| `messaging/installation-id-not-enabled` after opt-in | Confirm native rebuild picked up the flag                                  |
+| `messaging/token-api-disabled`                       | Migrate remaining token call sites off token APIs                          |
+
+## 3. Validate
+
+```bash
+# After native rebuild with the flag on:
+# - register() / onRegistered deliver a FID
+# - getToken / deleteToken / onTokenRefresh reject with messaging/token-api-disabled
+# With the flag off, FID APIs reject with messaging/installation-id-not-enabled
+```
+
+Confirm your backend receives and uses the FID for device targeting after migration.

@@ -21,13 +21,13 @@ Complete steps 1 and 2 from the [Firebase iOS phone auth docs](https://firebase.
 
 Phone auth requires app verification. Automatic verification uses data-only Firebase Cloud Messaging. Data-only FCM needs a physical device with background refresh enabled. On Simulator, or when background refresh is disabled, Auth falls back to reCAPTCHA. Use that path to confirm reCAPTCHA is configured.
 
-For automated testing you can disable app verification via [`AuthSettings.appVerificationDisabledForTesting`](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) before any phone auth methods.
+For automated testing you can disable app verification via [`AuthSettings.appVerificationDisabledForTesting`](https://reference.rnfirebase.io/_react-native-firebase/auth/AuthSettings.html#appverificationdisabledfortesting) before any phone auth methods.
 
 # Android Setup
 
 Complete steps 1 and 2 from the [Firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project).
 
-To force reCAPTCHA instead of Play Integrity during manual testing, set [`appVerificationDisabledForTesting`](https://reference.rnfirebase.io/_react-native-firebase/auth/FirebaseAuthTypes/AuthSettings.html#appVerificationDisabledForTesting) before [`verifyPhoneNumber`](https://reference.rnfirebase.io/_react-native-firebase/auth/verifyPhoneNumber.html).
+To force reCAPTCHA instead of Play Integrity during manual testing, set [`appVerificationDisabledForTesting`](https://reference.rnfirebase.io/_react-native-firebase/auth/AuthSettings.html#appverificationdisabledfortesting) before [`verifyPhoneNumber`](https://reference.rnfirebase.io/_react-native-firebase/auth/verifyPhoneNumber.html).
 
 # Expo Setup
 
@@ -42,6 +42,8 @@ File: `app.json` (or `app.config.js`). Add the plugins, then create a [developme
   }
 }
 ```
+
+On Expo SDK 58+ (UIScene life cycle), the plugin patches `SceneDelegate` so Firebase Auth can handle reCAPTCHA redirect URLs with `Auth.auth().canHandle(_:)` before they reach Expo Router. That matches Firebase’s documented `scene(_:openURLContexts:)` path for an in-app reCAPTCHA return; Auth does not require a cold-start `willConnectTo` handler for this flow.
 
 # Sign-in
 

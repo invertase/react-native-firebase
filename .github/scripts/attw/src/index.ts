@@ -39,6 +39,15 @@ const EXPO_PLUGIN_PACKAGES = [
   'app-distribution',
 ] as const;
 
+/** Roots copied into a temp stage before `yarn pack` (include-not-exclude; Types-AD-5). */
+const PACK_ALLOWLIST_ROOTS = [
+  'package.json',
+  'dist',
+  'lib',
+  'app.plugin.js',
+  'plugin/build',
+] as const;
+
 type AttwConfig = {
   profile?: 'strict' | 'node16' | 'esm-only';
   ignoreRules?: string[];
@@ -136,19 +145,50 @@ function listPublishedPackages(): string[] {
     .sort();
 }
 
+/**
+ * Stage only allowlisted publish roots into a temp dir, then `yarn pack` from
+ * that stage. Avoids walking live package trees (e.g. nested XCTest build/).
+ */
+function stageAllowlistedPackDir(packageDir: string): string {
+  const staging = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-pack-stage-'));
+  for (const root of PACK_ALLOWLIST_ROOTS) {
+    const src = path.join(packageDir, root);
+    if (!fs.existsSync(src)) {
+      continue;
+    }
+    const dest = path.join(staging, root);
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.cpSync(src, dest, { recursive: true });
+  }
+  return staging;
+}
+
+function packPackage(packageDir: string, outputPath: string): void {
+  const staging = stageAllowlistedPackDir(packageDir);
+  try {
+    const pack = spawnSync('yarn', ['pack', '--out', outputPath], {
+      cwd: staging,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    if (pack.status !== 0) {
+      throw new Error(`yarn pack failed: ${pack.stderr || pack.stdout}`);
+    }
+  } finally {
+    try {
+      fs.rmSync(staging, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+  }
+}
+
 function runAttw(packageDir: string, dirName: string, config: AttwConfig): AttwRunResult {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'attw-'));
   const tgz = path.join(tmpDir, `${dirName}.tgz`);
   const jsonFile = path.join(tmpDir, `${dirName}.json`);
 
-  const pack = spawnSync('yarn', ['pack', '--out', tgz], {
-    cwd: packageDir,
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-  if (pack.status !== 0) {
-    throw new Error(`yarn pack failed for ${dirName}: ${pack.stderr || pack.stdout}`);
-  }
+  packPackage(packageDir, tgz);
 
   // Redirect attw's stdout straight to a file descriptor. This guarantees the
   // full JSON report is captured regardless of size (no stdout maxBuffer
@@ -254,17 +294,6 @@ function extractLegacyIssues(data: AttwResult): IssueRow[] {
     }
   }
   return rows;
-}
-
-function packPackage(packageDir: string, outputPath: string): void {
-  const pack = spawnSync('yarn', ['pack', '--out', outputPath], {
-    cwd: packageDir,
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-  if (pack.status !== 0) {
-    throw new Error(`yarn pack failed: ${pack.stderr || pack.stdout}`);
-  }
 }
 
 function checkExpoPlugins(): ExpoPluginFailure[] {

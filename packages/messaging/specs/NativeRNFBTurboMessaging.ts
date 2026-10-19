@@ -19,6 +19,7 @@ export interface Spec extends TurboModule {
     isDeliveryMetricsExportToBigQueryEnabled: boolean;
     isRegisteredForRemoteNotifications?: boolean;
     isNotificationDelegationEnabled?: boolean;
+    isInstallationIdEnabled?: boolean;
   };
 
   getInitialNotification(): Promise<Object | null>;
@@ -28,6 +29,8 @@ export interface Spec extends TurboModule {
   completeNotificationProcessing(): void;
   getToken(appName: string, senderId: string): Promise<string>;
   deleteToken(appName: string, senderId: string): Promise<void>;
+  register(): Promise<void>;
+  unregister(): Promise<void>;
   getAPNSToken(): Promise<string | null>;
   setAPNSToken(token: string, type?: string): Promise<void>;
   getIsHeadless(): Promise<boolean>;

@@ -1,0 +1,44 @@
+diff --git a/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec b/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec
+index d1fe070..f9ad8cf 100644
+--- a/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec
++++ b/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec
+@@ -94,8 +94,15 @@ Pod::Spec.new do |spec|
+         :script => <<-EOS
+         . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+ 
++        # Prefer Xcode CONFIGURATION (and CocoaPods POD_CONFIGURATION_DEBUG) over
++        # grepping GCC_PREPROCESSOR_DEFINITIONS for DEBUG=1. Static CocoaPods Debug
++        # builds often omit DEBUG=1 on hermes-engine, which incorrectly kept the
++        # Release (no-CDP) hermesvm while React-hermes compiled with
++        # HERMES_ENABLE_DEBUGGER=1 - undefined facebook::hermes::cdp::CDPDebugAPI::*.
++        # Track upstream: https://github.com/facebook/react-native/issues/59116
++        # (remove this tests/ patch when a shared CONFIG resolver lands).
+         CONFIG="Release"
+-        if echo $GCC_PREPROCESSOR_DEFINITIONS | grep -q "DEBUG=1"; then
++        if [ "$CONFIGURATION" = "Debug" ] || [ "${POD_CONFIGURATION_DEBUG:-}" = "YES" ] || echo "$GCC_PREPROCESSOR_DEFINITIONS" | grep -q "DEBUG=1" || echo "$GCC_PREPROCESSOR_DEFINITIONS" | grep -q "HERMES_ENABLE_DEBUGGER=1"; then
+           CONFIG="Debug"
+         fi
+ 
+diff --git a/node_modules/react-native/sdks/hermes-engine/utils/replace_hermes_version.js b/node_modules/react-native/sdks/hermes-engine/utils/replace_hermes_version.js
+index 90689d2..b8436d2 100644
+--- a/node_modules/react-native/sdks/hermes-engine/utils/replace_hermes_version.js
++++ b/node_modules/react-native/sdks/hermes-engine/utils/replace_hermes_version.js
+@@ -42,12 +42,14 @@ function shouldReplaceHermesConfiguration(configuration) {
+     }
+   }
+ 
+-  // Assumption: if there is no stored last build, we assume that it was build for debug.
+-  if (!fileExists && configuration === 'Debug') {
++  // Without a recorded last build, always extract the requested configuration.
++  // Assuming Debug when the marker is missing is unsafe: a shared/poisoned Pods
++  // cache can leave a Release (no-CDP) hermesvm destroot with no marker.
++  // Track upstream: https://github.com/facebook/react-native/issues/59116
++  if (!fileExists) {
+     console.log(
+-      'No previous build detected, but Debug Configuration. No need to replace Hermes engine',
++      `No previous build configuration recorded. Will extract Hermes for ${configuration}`,
+     );
+-    return false;
+   }
+ 
+   return true;

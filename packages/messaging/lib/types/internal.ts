@@ -26,16 +26,21 @@ export interface NativeRNFBTurboMessaging {
     isDeliveryMetricsExportToBigQueryEnabled?: boolean;
     isRegisteredForRemoteNotifications?: boolean;
     isNotificationDelegationEnabled?: boolean;
+    isInstallationIdEnabled?: boolean;
   };
   isAutoInitEnabled?: boolean;
   isDeliveryMetricsExportToBigQueryEnabled?: boolean;
   isRegisteredForRemoteNotifications?: boolean;
+  /** Flattened Turbo constant (preferred over getConstants on the routing proxy). */
+  isInstallationIdEnabled?: boolean;
   setAutoInitEnabled(enabled: boolean): Promise<void>;
   getInitialNotification(): Promise<RemoteMessage | null>;
   getDidOpenSettingsForNotification(): Promise<boolean>;
   getIsHeadless(): Promise<boolean>;
   getToken(appName: string, senderId: string): Promise<string>;
   deleteToken(appName: string, senderId: string): Promise<void>;
+  register(): Promise<void>;
+  unregister(): Promise<void>;
   requestPermission(permissions: IOSPermissions): Promise<number>;
   registerForRemoteNotifications(): Promise<void>;
   unregisterForRemoteNotifications(): Promise<void>;

@@ -118,7 +118,7 @@ jobs:
 
       - name: Upload Screen Recording Environment Setup
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always()
         with:
@@ -126,13 +126,13 @@ jobs:
           path: ./recordings/
 
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -171,8 +171,10 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-macos-v2
-          save: "${{ github.ref == 'refs/heads/main' }}"
+          # Sticky content-hash key (append-timestamp: false). Native sources live under packages/*/ios (no packages/*/macos tree).
+          key: ${{ runner.os }}-e2e-macos-v3-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/ios/**', 'tests-macos/macos/Podfile.lock') }}
+          save: "${{ github.ref == 'refs/heads/main' && matrix.iteration == 0 }}"
+          append-timestamp: false
           create-symlink: true
           max-size: 1500M
 
@@ -187,7 +189,7 @@ jobs:
           restore-keys: ${{ runner.os }}-nx-v1
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
         with:
           ruby-version: 3
 
@@ -231,17 +233,23 @@ jobs:
           max_attempts: 3
           command: yarn tests:macos:pod:install
 
+      - name: Resolve firebase-tools version
+        id: firebase-tools
+        run: |
+          VER=$(node -p "require('./node_modules/firebase-tools/package.json').version")
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+
       - name: Firestore Emulator Cache Restore
+        # Restore-only; Android e2e saves firebase-emulators-v2 on main. See okf-bundle/ci-workflows/index.md.
         # https://github.com/actions/cache/releases
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: firestore-emulator-cache
         continue-on-error: true
         with:
-          # The firebase emulators are pure javascript and java, OS-independent
           enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
-          key: firebase-emulators-v1-${{ github.run_id }}
-          restore-keys: firebase-emulators-v1
+          key: firebase-emulators-v2-${{ steps.firebase-tools.outputs.version }}
+          restore-keys: firebase-emulators-v2-
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
@@ -275,8 +283,10 @@ jobs:
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
-          key: ${{ runner.os }}-macos-metro-v1-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-macos-metro-v1
+          # Sticky content-hash key (no run_id). Shared tests/ + packages inputs, plus
+          # tests-macos Metro entry files (macOS Jet projectRoot is tests-macos/).
+          key: ${{ runner.os }}-macos-metro-v2-${{ hashFiles('yarn.lock', 'tests/package.json', 'tests/metro.config.js', 'tests/index.js', 'tests/app.js', 'tests/react-native.config.js', 'tests-macos/package.json', 'tests-macos/metro.config.js', 'tests-macos/index.js', 'tests-macos/react-native.config.js', 'packages/*/package.json', 'packages/*/lib/**') }}
+          restore-keys: ${{ runner.os }}-macos-metro-v2-
 
       - name: Pre-fetch Javascript bundle
         run: |
@@ -301,7 +311,7 @@ jobs:
         run: yarn tests:macos:test-cover
 
       # https://github.com/codecov/codecov-action/releases
-      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         continue-on-error: true
         with:
           files: coverage/lcov.info
@@ -318,7 +328,7 @@ jobs:
 
       - name: Upload Metro Log
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always()
         with:
@@ -327,7 +337,7 @@ jobs:
 
       - name: Upload Screen Recording
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always()
         with:
@@ -336,7 +346,7 @@ jobs:
 
       - name: Upload System Log
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always()
         with:
@@ -345,7 +355,7 @@ jobs:
 
       - name: Upload Firebase emulator script logs
         # https://github.com/actions/upload-artifact/releases
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         continue-on-error: true
         if: always()
         with:
@@ -379,21 +389,10 @@ jobs:
           path: tests-macos/macos/Pods
           key: ${{ steps.pods-cache.outputs.cache-primary-key }}
 
-      - name: Firestore Emulator Cache Save
-        # https://github.com/actions/cache/releases
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: "${{ github.ref == 'refs/heads/main' }}"
-        continue-on-error: true
-        with:
-          # The firebase emulators are pure javascript and java, OS-independent
-          enableCrossOsArchive: true
-          path: ~/.cache/firebase/emulators
-          key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
-
       - name: Metro Bundler Cache Save
         # https://github.com/actions/cache/releases
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        if: "${{ github.ref == 'refs/heads/main' }}"
+        if: github.ref == 'refs/heads/main' && matrix.iteration == 0 && steps.metro-bundler-cache.outputs.cache-hit != 'true'
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}

@@ -21,7 +21,10 @@ describe('start-packager.sh yarn surface', function () {
     expect(src).not.toMatch(/os\.setsid|setsid -w|exec-new-session/);
   });
 
-  it('watch-del this Metro project root and allowlists watch-project trees', function () {
+  it('conditionally watch-del metro root; always allowlists; never del REPO_ROOT', function () {
+    expect(src).toMatch(/e2e_sibling_metro_owns_root/);
+    expect(src).toMatch(/RNFB_METRO_FORCE_WATCHMAN_RESET:-\}" != "1"/);
+    expect(src).toMatch(/watchman skip watch-del \(sibling Metro owns/);
     expect(src).toMatch(/watchman watch-del "\$METRO_ROOT"/);
     expect(src).not.toMatch(/watchman watch-del "\$REPO_ROOT"/);
     expect(src).toMatch(/watchman watch-project "\$METRO_ROOT"/);

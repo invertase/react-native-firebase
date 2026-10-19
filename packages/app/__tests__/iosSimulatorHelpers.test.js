@@ -39,7 +39,7 @@ describe('ios-simulator-helpers (selected Xcode + iOS 27)', function () {
       expect(src).toMatch(/rnfb_resolve_ios_sim_udid_for_name/);
       return;
     }
-    const udid = bashHelper('rnfb_resolve_ios_sim_udid_for_name', ['RNFB E2E iOS slot-1']);
+    const udid = bashHelper('rnfb_resolve_ios_sim_udid_for_name', ['RN E2E iOS slot-1']);
     expect(udid).toMatch(/^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/i);
   });
 });

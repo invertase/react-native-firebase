@@ -11,7 +11,7 @@ jobs:
     runs-on: xcode-27
     permissions:
       id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
-      contents: read
+      contents: write # Lerna createRelease: github (tags + GitHub Release objects)
     env:
       # xcode-27 runner (macOS 27) + 27.0 pin matches tests_e2e_ios.yml; needed for CocoaPods in scripts/version.js
       XCODE_VERSION: '27.0'
@@ -30,7 +30,7 @@ jobs:
       - name: Configure Apple CI (Xcode 27)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
       # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Ruby
         # https://github.com/ruby/setup-ruby/releases
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        uses: ruby/setup-ruby@651ff0d62c5c79bed6d53ec518387aae20e72c1a # v1.329.0
         with:
           ruby-version: 3
       # Pinned cocoapods/xcodeproj from the root Gemfile. yarn tests:ios:pod:install
@@ -90,7 +90,9 @@ jobs:
         env:
           # Packages are configured on npmjs.com as OIDC Trusted Publisher for this workflow.
           # org admin Github Token required for the changelog/tag commit+push
-          # to work via an exception to branch protection rules
+          # to work via an exception to branch protection rules.
+          # Lerna createRelease: github reads process.env.GH_TOKEN specifically.
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
   deploy-api-reference:

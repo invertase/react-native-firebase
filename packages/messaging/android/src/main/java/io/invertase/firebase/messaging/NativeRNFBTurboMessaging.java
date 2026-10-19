@@ -19,6 +19,9 @@ package io.invertase.firebase.messaging;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.util.Log;
 import androidx.core.app.NotificationManagerCompat;
 import com.facebook.fbreact.specs.NativeRNFBTurboMessagingSpec;
@@ -43,6 +46,8 @@ import javax.annotation.Nullable;
 public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
     implements ActivityEventListener {
   private static final String TAG = "Messaging";
+  private static final String META_INSTALLATION_ID_ENABLED =
+      "firebase_messaging_installation_id_enabled";
   ReadableMap initialNotification = null;
   private final HashMap<String, Boolean> initialNotificationMap = new HashMap<>();
   private final TaskExecutorService executorService;
@@ -55,6 +60,47 @@ public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
 
   private ExecutorService getExecutor() {
     return executorService.getExecutor();
+  }
+
+  /**
+   * Reads {@code firebase_messaging_installation_id_enabled} from application meta-data.
+   *
+   * <p>Manifest {@code android:value="true"} may be stored as a boolean, string, or integer
+   * depending on aapt/merge behaviour; {@link Bundle#getBoolean} alone returns the default when the
+   * value is not a boolean, so accept boolean, {@code "true"}, and {@code 1}.
+   */
+  private boolean readInstallationIdEnabled() {
+    try {
+      ReactApplicationContext context = getReactApplicationContext();
+      ApplicationInfo applicationInfo =
+          context
+              .getPackageManager()
+              .getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      Bundle metaData = applicationInfo.metaData;
+      if (metaData == null || !metaData.containsKey(META_INSTALLATION_ID_ENABLED)) {
+        return false;
+      }
+      Object value = metaData.get(META_INSTALLATION_ID_ENABLED);
+      if (value instanceof Boolean) {
+        return (Boolean) value;
+      }
+      if (value instanceof String) {
+        return "true".equalsIgnoreCase((String) value) || "1".equals(value);
+      }
+      if (value instanceof Number) {
+        return ((Number) value).intValue() == 1;
+      }
+      return false;
+    } catch (PackageManager.NameNotFoundException | RuntimeException exception) {
+      Log.w(TAG, "Unable to read " + META_INSTALLATION_ID_ENABLED + " meta-data", exception);
+      return false;
+    }
+  }
+
+  // Package-private so JVM tests can substitute FirebaseMessaging: Mockito static mocks are
+  // thread-bound and register/unregister run on the module executor thread.
+  FirebaseMessaging firebaseMessaging() {
+    return FirebaseMessaging.getInstance();
   }
 
   private WritableMap popRemoteMessageMapFromMessagingStore(String messageId) {
@@ -75,6 +121,7 @@ public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
     constants.put(
         "isNotificationDelegationEnabled",
         FirebaseMessaging.getInstance().isNotificationDelegationEnabled());
+    constants.put("isInstallationIdEnabled", readInstallationIdEnabled());
     return constants;
   }
 
@@ -250,6 +297,44 @@ public class NativeRNFBTurboMessaging extends NativeRNFBTurboMessagingSpec
             task -> {
               if (task.isSuccessful()) {
                 promise.resolve(task.getResult());
+              } else {
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
+              }
+            });
+  }
+
+  @Override
+  public void register(Promise promise) {
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              Tasks.await(firebaseMessaging().register());
+              return null;
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
+                    promise, task.getException());
+              }
+            });
+  }
+
+  @Override
+  public void unregister(Promise promise) {
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              Tasks.await(firebaseMessaging().unregister());
+              return null;
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
               } else {
                 ReactNativeFirebaseModule.rejectPromiseWithExceptionMap(
                     promise, task.getException());

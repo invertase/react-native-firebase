@@ -23,9 +23,15 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
   s.cocoapods_version   = '>= 1.12.0'
-  s.source_files        = "ios/**/*.{h,m,mm,cpp}"
+  s.swift_version       = '5.10'
+  s.source_files        = "ios/**/*.{h,m,mm,cpp,swift}"
   s.private_header_files = "ios/**/*.h"
-  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**'
+  # CocoaPods FileList uses FNM_PATHNAME: `ios/*UnitTests/**` does not match nested
+  # paths like `ios/RNFBAppUnitTests/HostStubs/**` (those would compile into the pod).
+  # CocoaPods FileList uses FNM_PATHNAME: a trailing `/**` alone does not match
+  # nested files (same reason UnitTests use `/**/*`). Exclude the CI-only local
+  # SPM package so its sources are never compiled into the RNFBApp pod.
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*', 'ios/*UnitTests/**/*', 'ios/RNFBFirebase/**/*'
 
   # Fail fast for old architecture users, but safely in case the variable goes away
   # completely in future react-native versions
@@ -42,13 +48,13 @@ Pod::Spec.new do |s|
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES",
   }
 
-  # RNFBUtilsModule.mm uses PHAsset (Photos.framework) to resolve local asset paths.
+  # RNFBUtilsModule+PhotoAssets.m uses PHAsset (Photos.framework) to resolve local asset paths.
   # Not declaring this explicitly used to work by luck (CocoaPods normally relies on
   # this declaration -- not Clang autolinking -- to populate OTHER_LDFLAGS), but with
   # use_frameworks! each pod is a standalone dynamic framework that must resolve its
   # own symbols at its own link step, so the missing declaration now surfaces as
   # "Undefined symbols ... _OBJC_CLASS_$_PHAsset". PhotoKit is available on
-  # tvOS 10+, and this .mm file emits no Clang autolink record, so tvOS needs
+  # tvOS 10+, and this .m file emits no Clang autolink record, so tvOS needs
   # the same explicit link.
   s.ios.frameworks = 'Photos'
   s.osx.frameworks = 'Photos'

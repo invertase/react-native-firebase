@@ -15,39 +15,16 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseFunctions/FirebaseFunctions.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseFunctions/FirebaseFunctions.h>
-#elif __has_include(<FirebaseCore/FirebaseCore.h>)
-#import <FirebaseCore/FirebaseCore.h>
-// SPM: FirebaseFunctions is a pure-Swift module — no ObjC headers available.
-// FIRFunctions instances are created via
-// RNFBFunctionsCallHandler.createFunctions() factory.
-#else
-@import FirebaseCore;
-#endif
-#import <React/RCTUtils.h>
-
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBApp/RNFBRCTEventEmitter.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+// This module intentionally has no Firebase imports and no `*-Swift.h` —
+// see RNFBFunctionsHelper.h. Every Firebase Core / Functions touch (and the
+// Swift CallHandler / StreamHandler) is routed through the plain Objective-C
+// RNFBFunctionsHelper class instead, which can safely import FirebaseCore and
+// the generated Swift interface because it compiles as ObjC, not ObjC++.
 #import "RNFBFunctionsModule.h"
+#import "RNFBApp/RNFBRCTEventEmitter.h"
+#import "RNFBFunctionsHelper.h"
 #import "RNFBFunctionsStreamingRegistry.h"
 #import "RNFBFunctionsTurboModules.h"
-
-#if __has_include(<RNFBFunctions/RNFBFunctions-Swift.h>)
-// This import will work in situations where `use_frameworks!` is in use
-#import <RNFBFunctions/RNFBFunctions-Swift.h>
-#elif __has_include("RNFBFunctions-Swift.h")
-// If `use_frameworks!` is not in use (for example, while using pre-built
-// react-native core) then header imports based on frameworks assumptions fail.
-// So, if frameworks are not available, fall back to importing the header
-// directly, it should be findable from a header search path pointing to the
-// build directory. See firebase-ios-sdk#12611 for more context.
-#import "RNFBFunctions-Swift.h"
-#endif
 
 static RNFBFunctionsStreamingRegistry *streamListeners;
 
@@ -89,50 +66,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
               options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions &)options
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
-  // Use Swift factory — FirebaseFunctions is a pure-Swift SPM module,
-  // cannot be imported directly from .mm files.
-  id functions = [RNFBFunctionsCallHandler createFunctionsForApp:firebaseApp
-                                               customUrlOrRegion:customUrlOrRegion
-                                                    emulatorHost:emulatorHost
-                                                    emulatorPort:(int)emulatorPort];
-
-  id callableData = data.data();
-
-  // In reality, this value is always null, because we always call it with null
-  // data on the javascript side for some reason. Check for that case (which
-  // should be 100% of the time) and set it to an `NSNull` (versus the
-  // `Optional<Any>` Swift will see from `valueForKey` so that FirebaseFunctions
-  // serializer won't have a validation failure for an unknown type.
-  if (callableData == nil) {
-    callableData = [NSNull null];
-  }
-
   std::optional<double> timeout = options.timeout();
-
-  RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
-
-  double timeoutValue = timeout.has_value() ? timeout.value() : 0;
   std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
-  NSNumber *limitedUseAppCheckTokenNumber =
-      limitedUseAppCheckToken.has_value() ? @(limitedUseAppCheckToken.value()) : @(NO);
+  double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  BOOL limitedUse = limitedUseAppCheckToken.has_value() ? limitedUseAppCheckToken.value() : NO;
 
-  [handler callFunctionWithApp:firebaseApp
-                     functions:functions
-                          name:name
-                          data:callableData
-                       timeout:timeoutValue
-       limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
-                    completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
-                      if (error) {
-                        NSMutableDictionary *userInfo =
-                            [NSMutableDictionary dictionaryWithDictionary:error];
-                        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                      } else {
-                        resolve(result);
-                      }
-                    }];
+  [RNFBFunctionsHelper httpsCallableWithAppName:appName
+                              customUrlOrRegion:customUrlOrRegion
+                                   emulatorHost:emulatorHost
+                                   emulatorPort:(int)emulatorPort
+                                           name:name
+                                           data:data.data()
+                                        timeout:timeoutValue
+                        limitedUseAppCheckToken:limitedUse
+                                        resolve:resolve
+                                         reject:reject];
 }
 
 - (void)httpsCallableFromUrl:(NSString *)appName
@@ -145,49 +93,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                          (JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
-  id functions = [RNFBFunctionsCallHandler createFunctionsForApp:firebaseApp
-                                               customUrlOrRegion:customUrlOrRegion
-                                                    emulatorHost:emulatorHost
-                                                    emulatorPort:(int)emulatorPort];
-
-  id callableData = data.data();
-
-  // In reality, this value is always null, because we always call it with null
-  // data on the javascript side for some reason. Check for that case (which
-  // should be 100% of the time) and set it to an `NSNull` (versus the
-  // `Optional<Any>` Swift will see from `valueForKey` so that FirebaseFunctions
-  // serializer won't have a validation failure for an unknown type.
-  if (callableData == nil) {
-    callableData = [NSNull null];
-  }
-
   std::optional<double> timeout = options.timeout();
   std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
-
-  RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
-
   double timeoutValue = timeout.has_value() ? timeout.value() : 0;
-  NSNumber *limitedUseAppCheckTokenNumber =
-      limitedUseAppCheckToken.has_value() ? @(limitedUseAppCheckToken.value()) : @(NO);
+  BOOL limitedUse = limitedUseAppCheckToken.has_value() ? limitedUseAppCheckToken.value() : NO;
 
-  [handler
-      callFunctionWithURLWithApp:firebaseApp
-                       functions:functions
-                             url:url
-                            data:callableData
-                         timeout:timeoutValue
-         limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
-                      completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
-                        if (error) {
-                          NSMutableDictionary *userInfo =
-                              [NSMutableDictionary dictionaryWithDictionary:error];
-                          [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                        } else {
-                          resolve(result);
-                        }
-                      }];
+  [RNFBFunctionsHelper httpsCallableFromUrlWithAppName:appName
+                                     customUrlOrRegion:customUrlOrRegion
+                                          emulatorHost:emulatorHost
+                                          emulatorPort:(int)emulatorPort
+                                                   url:url
+                                                  data:data.data()
+                                               timeout:timeoutValue
+                               limitedUseAppCheckToken:limitedUse
+                                               resolve:resolve
+                                                reject:reject];
 }
 
 #pragma mark -
@@ -247,20 +167,9 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   NSNumber *listenerIdNumber = @((int)listenerId);
 
   if (@available(iOS 15.0, macOS 12.0, *)) {
-    FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
-    id functions = [RNFBFunctionsCallHandler createFunctionsForApp:firebaseApp
-                                                 customUrlOrRegion:customUrlOrRegion
-                                                      emulatorHost:emulatorHost
-                                                      emulatorPort:(int)emulatorPort];
-
-    if (data == nil) {
-      data = [NSNull null];
-    }
-
-    RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
-
     double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+
+    id handler = [RNFBFunctionsHelper createStreamHandler];
 
     void (^eventCallback)(NSDictionary *) = ^(NSDictionary *event) {
       if (![streamListeners shouldForwardEvent:event
@@ -297,22 +206,16 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
       return;
     }
 
-    // Call based on whether url or name is provided
-    if (url != nil) {
-      [handler startStreamWithApp:firebaseApp
-                        functions:functions
-                      functionUrl:url
-                       parameters:data
-                          timeout:timeoutValue
-                    eventCallback:eventCallback];
-    } else {
-      [handler startStreamWithApp:firebaseApp
-                        functions:functions
-                     functionName:name
-                       parameters:data
-                          timeout:timeoutValue
-                    eventCallback:eventCallback];
-    }
+    [RNFBFunctionsHelper startStreamOnHandler:handler
+                                      appName:appName
+                            customUrlOrRegion:customUrlOrRegion
+                                 emulatorHost:emulatorHost
+                                 emulatorPort:(int)emulatorPort
+                                 functionName:name
+                                  functionUrl:url
+                                   parameters:data
+                                      timeout:timeoutValue
+                                eventCallback:eventCallback];
   } else {
     NSDictionary *eventBody = @{
       @"appName" : appName,

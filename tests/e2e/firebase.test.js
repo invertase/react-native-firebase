@@ -43,6 +43,7 @@ const {
   androidAdbSerialAppearTimeoutMs,
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
+const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -1211,12 +1212,20 @@ async function launchAppWithTimeout(launchArgs, { deleteApp = true, timeoutMs } 
   let timer;
 
   try {
+    const launchConfig = {
+      newInstance: true,
+      delete: deleteApp,
+      launchArgs,
+    };
+    // iOS Simulator: UNUserNotificationCenter requestAuthorization completion
+    // never fires while the system prompt is pending (main stays idle). Detox
+    // launchApp permissions uses applesimutils so messaging e2e requestPermission
+    // can settle without a human tap. Android ignores this key.
+    if (device.getPlatform() === 'ios') {
+      launchConfig.permissions = { notifications: 'YES' };
+    }
     await Promise.race([
-      device.launchApp({
-        newInstance: true,
-        delete: deleteApp,
-        launchArgs,
-      }),
+      device.launchApp(launchConfig),
       new Promise((_, reject) => {
         timer = setTimeout(() => {
           const err = new Error(
@@ -1291,6 +1300,33 @@ function killSpawnedProcessTree(proc) {
   }
 }
 
+function dumpAwaitExitStallDiagnostics(err, jetSession) {
+  const jetOutput = String(err?.jetOutput || jetSession?.output || '');
+  const hasMochaTitle = /Jet tests on |^\s*\d+\)\s/m.test(jetOutput);
+  console.error(
+    `[rnfb-e2e] stall-diagnostics jetOutputBytes=${jetOutput.length} mochaTitleSeen=${hasMochaTitle}`,
+  );
+  console.error(`[rnfb-e2e] stall-diagnostics jetOutputTail:\n${jetOutput.slice(-4000)}`);
+
+  // Best-effort TCP snapshot on CI macOS (Jet :8090, control :8091, Metro).
+  const ports = [jetRemotePort(), jetControlPort(), metroPortForHost()];
+  for (const port of ports) {
+    try {
+      const lsof = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN,ESTABLISHED 2>/dev/null || true`, {
+        encoding: 'utf8',
+        timeout: 5000,
+      }).trim();
+      console.error(
+        `[rnfb-e2e] stall-diagnostics lsof :${port}\n${lsof || '(no LISTEN/ESTABLISHED)'}`,
+      );
+    } catch (lsofErr) {
+      console.error(
+        `[rnfb-e2e] stall-diagnostics lsof :${port} failed: ${lsofErr?.message || lsofErr}`,
+      );
+    }
+  }
+}
+
 async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStallTimeoutMs()) {
   let stallTimer;
   const stallPromise = new Promise((_, reject) => {
@@ -1299,13 +1335,23 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
         `[rnfb-e2e] Jet awaiting-jet-exit stalled ${stallMs}ms after launch-ready — aborting cell`,
       );
       err.jetOutput = jetSession.output;
+      // Attempt 2 + iOS sim reboot via isRetryableE2eFailure / retryableAtJetLevel.
+      err.retryableAtJetLevel = true;
       reject(err);
     }, stallMs);
   });
   try {
     return await Promise.race([jetSession.exitPromise, stallPromise]);
   } catch (err) {
-    await killJetForLaunchRetry(jetSession.process);
+    const isAwaitExitStall = /awaiting-jet-exit stalled/.test(err?.message || '');
+    if (isAwaitExitStall) {
+      // Surface in detox-step.log even when Jest wraps the throw as "Jet tests failed!".
+      console.error(err.message);
+      dumpAwaitExitStallDiagnostics(err, jetSession);
+    }
+    // ignoreExit during kill so outer Promise.race keeps this err (retryable stall)
+    // instead of a fresh "Jet tests failed!" from exitPromise.
+    await jetSession.killIgnoringExit(isAwaitExitStall ? 'stall' : 'launch-retry');
     if (!err.jetOutput) {
       err.jetOutput = jetSession.output;
     }
@@ -1317,13 +1363,18 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
   }
 }
 
-async function killJetForLaunchRetry(jetProcess) {
+async function killJetForLaunchRetry(jetProcess, reason = 'launch-retry') {
   if (!jetProcess || jetProcess.killed) {
     return;
   }
 
-  logOrchestrateState('launch-retry-kill-jet');
-  console.warn('[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot');
+  const fromStall = reason === 'stall';
+  logOrchestrateState(fromStall ? 'stall-kill-jet' : 'launch-retry-kill-jet');
+  console.warn(
+    fromStall
+      ? '[rnfb-e2e] stall-kill: killing Jet after await-exit stall'
+      : '[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot',
+  );
   jetProcess.kill('SIGTERM');
   await sleep(500);
   killSpawnedProcessTree(jetProcess);
@@ -1331,11 +1382,13 @@ async function killJetForLaunchRetry(jetProcess) {
   try {
     await ensureTcpPortClosed(
       jetRemotePort(),
-      'launch-retry',
+      fromStall ? 'stall-kill' : 'launch-retry',
       KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS,
     );
   } catch (err) {
-    console.warn(`[rnfb-e2e] launch-retry: Jet port still open after kill: ${err?.message || err}`);
+    console.warn(
+      `[rnfb-e2e] ${fromStall ? 'stall-kill' : 'launch-retry'}: Jet port still open after kill: ${err?.message || err}`,
+    );
   }
 }
 
@@ -1472,10 +1525,27 @@ function createJetSession(jetArgs, testsDir) {
       return output;
     },
     exitPromise,
+    /**
+     * Kill Jet with ignoreExit held so exitPromise does not reject and steal an
+     * outer Promise.race from a retryable caller error (await-exit stall).
+     * Leaves ignoreExit true — session is abandoned or respawned next.
+     */
+    async killIgnoringExit(reason = 'launch-retry') {
+      await killJetIgnoringExit({
+        setIgnoreExit: value => {
+          ignoreExit = value;
+        },
+        kill: () => killJetForLaunchRetry(jetProcess, reason),
+      });
+    },
     async respawnAfterLaunchRetry() {
-      ignoreExit = true;
       try {
-        await killJetForLaunchRetry(jetProcess);
+        await killJetIgnoringExit({
+          setIgnoreExit: value => {
+            ignoreExit = value;
+          },
+          kill: () => killJetForLaunchRetry(jetProcess),
+        });
         output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
         spawnJet();
         await waitForTcpPort(jetRemotePort());

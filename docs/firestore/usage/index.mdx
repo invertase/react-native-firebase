@@ -118,7 +118,7 @@ const products = collection(secondary, 'Products');
 console.log('Named database collection path:', products.path);
 ```
 
-The `collection` function returns a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html) class, which provides
+The `collection` function returns a [`CollectionReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html) class, which provides
 properties and methods to query and fetch the data from Cloud Firestore. We can also directly reference a single document
 on the collection by calling the `doc` function:
 
@@ -134,7 +134,7 @@ const sameUser = doc(db, 'Users', 'ABC');
 console.log('User document path:', userDocument.path, sameUser.path);
 ```
 
-The `doc` function returns a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
+The `doc` function returns a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
 
 Calling `doc` on a `CollectionReference` without a path generates a random document id on the client without any network call. `addDoc` uses the same mechanism. To reach a subcollection, pass a `DocumentReference` as the parent of `collection`, or pass every path segment:
 
@@ -176,8 +176,8 @@ realtime updates when the data within a query changes.
 
 ### One-time read
 
-To read a collection or document once, call `getDocs` on a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html)
-or `getDoc` on a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html):
+To read a collection or document once, call `getDocs` on a [`CollectionReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html)
+or `getDoc` on a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html):
 
 ```js
 import { collection, doc, getDoc, getDocs, getFirestore } from '@react-native-firebase/firestore';
@@ -360,14 +360,14 @@ unsubscribe();
 
 ### Snapshots
 
-Once a query has returned a result, Firestore returns either a [`QuerySnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) (for
-collection queries) or a [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) (for document queries). These snapshots
+Once a query has returned a result, Firestore returns either a [`QuerySnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) (for
+collection queries) or a [`DocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) (for document queries). These snapshots
 provide the ability to view the data, view query metadata (such as whether the data was from local cache), whether the
 document exists or not and more.
 
 #### `QuerySnapshot`
 
-A [`QuerySnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) returned from a collection query allows you to inspect the collection,
+A [`QuerySnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html) returned from a collection query allows you to inspect the collection,
 such as how many documents exist within it, access to the documents within the collection, any changes since the last query
 and more.
 
@@ -387,13 +387,13 @@ getDocs(collection(db, 'Users')).then(querySnapshot => {
 });
 ```
 
-Each child document of a `QuerySnapshot` is a [`QueryDocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QueryDocumentSnapshot.html), which
+Each child document of a `QuerySnapshot` is a [`QueryDocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QueryDocumentSnapshot.html), which
 allows you to access specific information about a document (see below).
 
 #### `DocumentSnapshot`
 
-A [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) is returned from a query to a specific document, or as part
-of the documents returned via a [`QuerySnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html). The snapshot provides the ability
+A [`DocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) is returned from a query to a specific document, or as part
+of the documents returned via a [`QuerySnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/QuerySnapshot.html). The snapshot provides the ability
 to view a documents data, metadata and whether a document actually exists.
 
 To view a documents data, call the `data` method on the snapshot:
@@ -723,7 +723,7 @@ getDocs(query(collection(db, 'Users'), orderBy('age', 'desc'), startAt(30), endA
 
 The above query orders the users by age in descending order, but only returns users whose age is between 30 and 18 (inclusive).
 
-You can further specify a [`DocumentSnapshot`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) instead of a specific value. For example:
+You can further specify a [`DocumentSnapshot`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentSnapshot.html) instead of a specific value. For example:
 
 ```js
 import {
@@ -856,7 +856,7 @@ For a more in-depth look at what is possible when writing data to Firestore plea
 
 ## Adding documents
 
-To add a document to a collection, use `addDoc` with a [`CollectionReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/CollectionReference.html):
+To add a document to a collection, use `addDoc` with a [`CollectionReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/CollectionReference.html):
 
 ```js
 import { addDoc, collection, getFirestore } from '@react-native-firebase/firestore';
@@ -872,7 +872,7 @@ addDoc(collection(db, 'Users'), {
 ```
 
 `addDoc` adds the document to your collection with a random unique ID. If you'd like to specify your own ID,
-call `setDoc` with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html) instead:
+call `setDoc` with a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html) instead:
 
 ```js
 import { collection, doc, getFirestore, setDoc } from '@react-native-firebase/firestore';
@@ -906,7 +906,7 @@ Document data cannot contain `undefined` values. Writing one fails with `Unsuppo
 
 ### Updating documents
 
-The `setDoc` example above replaces any existing data on a given [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
+The `setDoc` example above replaces any existing data on a given [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html).
 if you'd like to update a document instead, use `updateDoc`:
 
 ```js
@@ -1057,7 +1057,7 @@ console.log('Vector embedding written');
 
 ## Removing data
 
-You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://invertase.github.io/react-native-firebase/_react-native-firebase/firestore/types/firestore/DocumentReference.html).:
+You can delete documents within Cloud Firestore using the `deleteDoc` method with a [`DocumentReference`](https://reference.rnfirebase.io/_react-native-firebase/firestore/types/firestore/DocumentReference.html):
 
 ```js
 import { deleteDoc, doc, getFirestore } from '@react-native-firebase/firestore';

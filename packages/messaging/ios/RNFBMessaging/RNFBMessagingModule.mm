@@ -15,24 +15,20 @@
  *
  */
 
-#if __has_include(<Firebase/Firebase.h>)
-#import <Firebase/Firebase.h>
-#elif __has_include(<FirebaseMessaging/FirebaseMessaging.h>)
-#import <FirebaseCore/FirebaseCore.h>
-#import <FirebaseMessaging/FirebaseMessaging.h>
-#else
-@import FirebaseCore;
-@import FirebaseMessaging;
-#endif
+// This module intentionally has no Firebase imports and no `*-Swift.h` —
+// see RNFBMessagingHelper.h. Every FIRMessaging SDK call is routed through
+// the plain Objective-C RNFBMessagingHelper class instead, which can safely
+// `@import` FirebaseMessaging because it compiles as ObjC, not ObjC++.
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
+#import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
+#import "RNFBMessagingHelper.h"
 #import "RNFBMessagingModule.h"
-#import "RNFBMessagingSerializer.h"
 #import "RNFBMessagingTurboModules.h"
 
 @interface RNFBMessagingModule () <NativeRNFBTurboMessagingSpec>
@@ -60,7 +56,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
   appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
 
   if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    if ([RNFBMessagingHelper isApplicationInBackground]) {
       appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
     }
   }
@@ -70,16 +66,18 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 
 - (NSDictionary *)messagingConstantsDictionary {
   NSMutableDictionary *constants = [NSMutableDictionary new];
-  constants[@"isAutoInitEnabled"] =
-      @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
+  constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([RNFBMessagingHelper isAutoInitEnabled])]);
 #if TARGET_IPHONE_SIMULATOR
   constants[@"isRegisteredForRemoteNotifications"] = @NO;
 #else
-  constants[@"isRegisteredForRemoteNotifications"] = @(
-      [RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
+  // Under TurboModules getConstants runs on the JS thread; UIApplication is main-thread only.
+  constants[@"isRegisteredForRemoteNotifications"] =
+      @([RCTConvert BOOL:@([RNFBMessagingHelper isRegisteredForRemoteNotifications])]);
 #endif
   constants[@"isDeliveryMetricsExportToBigQueryEnabled"] =
       @([RCTConvert BOOL:@(_isDeliveryMetricsExportToBigQueryEnabled)]);
+  constants[@"isInstallationIdEnabled"] =
+      @([RCTConvert BOOL:@([RNFBMessagingHelper isInstallationIdEnabled])]);
   return constants;
 }
 
@@ -113,13 +111,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 - (void)setAutoInitEnabled:(BOOL)enabled
                    resolve:(RCTPromiseResolveBlock)resolve
                     reject:(RCTPromiseRejectBlock)reject {
-  @try {
-    [FIRMessaging messaging].autoInitEnabled = enabled;
-  } @catch (NSException *exception) {
-    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-  }
-
-  return resolve([NSNull null]);
+  [RNFBMessagingHelper setAutoInitEnabled:enabled resolve:resolve reject:reject];
 }
 
 - (void)signalBackgroundMessageHandlerSet {
@@ -135,115 +127,35 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
         senderId:(NSString *)senderId
          resolve:(RCTPromiseResolveBlock)resolve
           reject:(RCTPromiseRejectBlock)reject {
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
-    [RNFBSharedUtils
-        rejectPromiseWithUserInfo:reject
-                         userInfo:(NSMutableDictionary *)@{
-                           @"code" : @"unregistered",
-                           @"message" : @"You must be registered for remote "
-                                        @"messages before calling "
-                                        @"getToken, see "
-                                        @"registerDeviceForRemoteMessages(getMessaging()).",
-                         }];
-    return;
-  }
-
-  NSData *apnsToken = [FIRMessaging messaging].APNSToken;
-  if (apnsToken == nil) {
-    DLog(@"RNFBMessaging getToken - no APNS token is available. Firebase "
-         @"requires an APNS token to "
-         @"vend an FCM token in firebase-ios-sdk 10.4.0 and higher. See "
-         @"documentation on "
-         @"setAPNSToken and getAPNSToken.")
-  }
-
-  [[FIRMessaging messaging]
-      retrieveFCMTokenForSenderID:senderId
-                       completion:^(NSString *_Nullable token, NSError *_Nullable error) {
-                         if (error) {
-                           [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                         } else {
-                           resolve(token);
-                         }
-                       }];
+  (void)appName;
+  [RNFBMessagingHelper getTokenWithSenderId:senderId resolve:resolve reject:reject];
 }
 
 - (void)deleteToken:(NSString *)appName
            senderId:(NSString *)senderId
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
-  [[FIRMessaging messaging] deleteFCMTokenForSenderID:senderId
-                                           completion:^(NSError *_Nullable error) {
-                                             if (error) {
-                                               [RNFBSharedUtils rejectPromiseWithNSError:reject
-                                                                                   error:error];
-                                             } else {
-                                               resolve([NSNull null]);
-                                             }
-                                           }];
+  (void)appName;
+  [RNFBMessagingHelper deleteTokenWithSenderId:senderId resolve:resolve reject:reject];
+}
+
+- (void)register:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [RNFBMessagingHelper registerWithResolve:resolve reject:reject];
+}
+
+- (void)unregister:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  [RNFBMessagingHelper unregisterWithResolve:resolve reject:reject];
 }
 
 - (void)getAPNSToken:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  NSData *apnsToken = [FIRMessaging messaging].APNSToken;
-  if (apnsToken) {
-    resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
-  } else {
-#if TARGET_IPHONE_SIMULATOR
-#if !TARGET_CPU_ARM64
-    DLog(@"RNFBMessaging getAPNSToken - Simulator without APNS support "
-         @"detected, with no token "
-         @"set. Use setAPNSToken with an arbitrary string if needed for "
-         @"testing.") resolve([NSNull null]);
-    return;
-#endif
-    DLog(@"RNFBMessaging getAPNSToken - ARM64 Simulator detected, but no APNS "
-         @"token available. "
-         @"APNS token may be possible. macOS13+ / iOS16+ / M1 mac required for "
-         @"assumption to be "
-         @"valid. "
-         @"Use setAPNSToken in testing if needed.");
-#endif
-    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
-      [RNFBSharedUtils
-          rejectPromiseWithUserInfo:reject
-                           userInfo:(NSMutableDictionary *)@{
-                             @"code" : @"unregistered",
-                             @"message" : @"You must be registered for remote "
-                                          @"messages before "
-                                          @"calling getAPNSToken, see "
-                                          @"registerDeviceForRemoteMessages(getMessaging()).",
-                           }];
-      return;
-    }
-    resolve([NSNull null]);
-  }
+  [RNFBMessagingHelper getAPNSToken:resolve reject:reject];
 }
 
 - (void)setAPNSToken:(NSString *)token
                 type:(NSString *)type
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
-  FIRMessagingAPNSTokenType tokenType = FIRMessagingAPNSTokenTypeUnknown;
-  if (type != nil && [@"prod" isEqualToString:type]) {
-    tokenType = FIRMessagingAPNSTokenTypeProd;
-  } else if (type != nil && [@"sandbox" isEqualToString:type]) {
-    tokenType = FIRMessagingAPNSTokenTypeSandbox;
-  }
-
-  NSData *tokenData = [RNFBMessagingSerializer APNSTokenDataFromNSString:token];
-  if (tokenData == nil) {
-    [RNFBSharedUtils
-        rejectPromiseWithUserInfo:reject
-                         userInfo:[@{
-                           @"code" : @"invalid-apns-token",
-                           @"message" : @"APNs token must be a non-empty, even-length hexadecimal "
-                                        @"string."
-                         } mutableCopy]];
-    return;
-  }
-
-  [[FIRMessaging messaging] setAPNSToken:tokenData type:tokenType];
-  resolve([NSNull null]);
+  [RNFBMessagingHelper setAPNSToken:token type:type resolve:resolve reject:reject];
 }
 
 - (void)getIsHeadless:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
@@ -315,26 +227,32 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
     options |= UNAuthorizationOptionProvidesAppNotificationSettings;
   }
 
-  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  [center requestAuthorizationWithOptions:options
-                        completionHandler:^(BOOL granted, NSError *_Nullable error) {
-                          if (error) {
-                            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                          } else {
+  // TurboModule methods run off-main (NewArch-AD-9). On ARM64 iOS Simulator,
+  // requestAuthorizationWithOptions invoked from the JS thread can leave the
+  // completionHandler unfired forever while main stays idle in CFRunLoop.
+  // Dispatch async — never RCTUnsafeExecuteOnMainQueueSync from JS.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:options
+                          completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                            if (error) {
+                              [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+                            } else {
 #if TARGET_IPHONE_SIMULATOR && TARGET_CPU_ARM64
-                            // Intentional: do not call UIKit registerForRemoteNotifications on
-                            // ARM64 Simulator — it can wedge main indefinitely. See
-                            // registerForRemoteNotifications:reject: for the same policy.
-                            DLog(@"RNFBMessaging requestPermission - ARM64 Simulator detected, "
-                                 @"skipping UIKit registerForRemoteNotifications.");
+                              // Intentional: do not call UIKit registerForRemoteNotifications on
+                              // ARM64 Simulator — it can wedge main indefinitely. See
+                              // registerForRemoteNotifications:reject: for the same policy.
+                              DLog(@"RNFBMessaging requestPermission - ARM64 Simulator detected, "
+                                   @"skipping UIKit registerForRemoteNotifications.");
 #else
           dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] registerForRemoteNotifications];
           });
 #endif
-                            [self hasPermission:resolve reject:reject];
-                          }
-                        }];
+                              [self hasPermission:resolve reject:reject];
+                            }
+                          }];
+  });
 }
 
 - (void)registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve
@@ -426,32 +344,34 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 
 - (void)unregisterForRemoteNotifications:(RCTPromiseResolveBlock)resolve
                                   reject:(RCTPromiseRejectBlock)reject {
-  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+  [RNFBMessagingHelper unregisterForRemoteNotificationsOnMain];
   resolve(nil);
 }
 
 - (void)hasPermission:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-  [[UNUserNotificationCenter currentNotificationCenter]
-      getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-        NSNumber *authorizedStatus = @-1;
-        if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
-          authorizedStatus = @-1;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-          authorizedStatus = @0;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-          authorizedStatus = @1;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
-          authorizedStatus = @2;
-        }
-
-        if (@available(iOS 14.0, macCatalyst 14.0, *)) {
-          if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
-            authorizedStatus = @3;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UNUserNotificationCenter currentNotificationCenter]
+        getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+          NSNumber *authorizedStatus = @-1;
+          if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
+            authorizedStatus = @-1;
+          } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
+            authorizedStatus = @0;
+          } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+            authorizedStatus = @1;
+          } else if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+            authorizedStatus = @2;
           }
-        }
 
-        resolve(authorizedStatus);
-      }];
+          if (@available(iOS 14.0, macCatalyst 14.0, *)) {
+            if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
+              authorizedStatus = @3;
+            }
+          }
+
+          resolve(authorizedStatus);
+        }];
+  });
 }
 
 - (void)sendMessage:(NSDictionary *)remoteMessageMap
@@ -468,28 +388,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboMessaging)
 - (void)subscribeToTopic:(NSString *)topic
                  resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject {
-  [[FIRMessaging messaging] subscribeToTopic:topic
-                                  completion:^(NSError *error) {
-                                    if (error) {
-                                      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                                    } else {
-                                      resolve(nil);
-                                    }
-                                  }];
+  [RNFBMessagingHelper subscribeToTopic:topic resolve:resolve reject:reject];
 }
 
 - (void)unsubscribeFromTopic:(NSString *)topic
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
-  [[FIRMessaging messaging] unsubscribeFromTopic:topic
-                                      completion:^(NSError *error) {
-                                        if (error) {
-                                          [RNFBSharedUtils rejectPromiseWithNSError:reject
-                                                                              error:error];
-                                        } else {
-                                          resolve(nil);
-                                        }
-                                      }];
+  [RNFBMessagingHelper unsubscribeFromTopic:topic resolve:resolve reject:reject];
 }
 
 - (void)setDeliveryMetricsExportToBigQuery:(BOOL)enabled

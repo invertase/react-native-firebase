@@ -88,8 +88,8 @@ same platform exclusion.
 
 | Product | Upstream SPM Catalyst gate | RNFB stub | Notes |
 | --- | --- | --- | --- |
-| App Distribution | `FirebaseAppDistributionTarget` is `.iOS` only | `RNFBAppDistributionModule.mm` (`RNFB_APP_DISTRIBUTION_SDK_AVAILABLE`) | Intentionally iOS-tester-only; not proposed for Catalyst |
-| Performance | `FirebasePerformanceTarget` omits `.macCatalyst` | `RNFBPerfModule.mm` (`RNFB_PERF_SDK_AVAILABLE`) | Speculative enablement: [firebase-ios-sdk#16468](https://github.com/firebase/firebase-ios-sdk/pull/16468) |
+| App Distribution | `FirebaseAppDistributionTarget` is `.iOS` only | `RNFBAppDistributionHelper.m` (`RNFB_APP_DISTRIBUTION_SDK_AVAILABLE`) | Intentionally iOS-tester-only; not proposed for Catalyst; helper owns the `#if`, not the TurboModule `.mm` |
+| Performance | `FirebasePerformanceTarget` omits `.macCatalyst` | `RNFBPerfHelper.m` (`RNFB_PERF_SDK_AVAILABLE`; Catalyst skips `@import`) | Speculative enablement: [firebase-ios-sdk#16468](https://github.com/firebase/firebase-ios-sdk/pull/16468); helper stays plain `.m` so iOS/tvOS SPM can `@import` |
 | In-App Messaging | `FirebaseInAppMessagingTarget` omits `.macCatalyst` | `RNFBFiamHelper.m` (`RNFB_FIAM_SDK_AVAILABLE`; Catalyst skips `@import`) | Same speculative PR; helper stays plain `.m` so iOS/tvOS SPM can `@import` |
 
 Until/unless #16468 lands (or upstream declines and the stubs become permanent),
@@ -145,6 +145,28 @@ its queue and constants from `RNFBDatabaseCommon`.
 | Remote Config | `RNFBConfigHelper` |
 | In-App Messaging | `RNFBFiamHelper` |
 | Database | `RNFBDatabase*Helper` classes, plus Firebase-free queue/constants headers |
+| Installations | `RNFBInstallationsHelper` |
+| App Distribution | `RNFBAppDistributionHelper` |
+| Analytics | `RNFBAnalyticsHelper` |
+| App Check | `RNFBAppCheckHelper` |
+| Crashlytics | `RNFBCrashlyticsHelper` |
+| Messaging | `RNFBMessagingHelper` |
+| Functions | `RNFBFunctionsHelper` |
+| Firestore | `RNFBFirestore*Helper` classes (module, document, collection, transaction) |
+| Perf | `RNFBPerfHelper` |
+
+Installations still publishes Objective-C product headers
+(`FirebaseInstallations/FirebaseInstallations.h`), but
+`RNFBInstallationsModule.mm` must not import Firebase or fall through to
+`@import`: keep dual CocoaPods/SPM Firebase imports in the plain `.m` helper
+only.
+
+App Distribution keeps the same Firebase-free `.mm` delegator shape.
+`RNFBAppDistributionHelper.m` owns the CocoaPods/SPM dual-import
+(`Firebase/Firebase.h` or `FirebaseAppDistribution` + `FirebaseCore`) and the
+`RNFB_APP_DISTRIBUTION_SDK_AVAILABLE` unavailable reject when product headers
+are absent (typical Mac Catalyst + SPM). Never `@import` from
+`RNFBAppDistributionModule.mm`.
 
 This is a compile-boundary decision, not a TurboModule bridge API decision, so
 it does not use a `NewArch-AD-*` identifier.

@@ -53,6 +53,42 @@ describe('set', function () {
       snapshot.val().should.eql(value);
     });
 
+    // Upstream #9339: native must decode the iOS null sentinel { __rnfbNull: true }.
+    it('does not store a child that is set to null (#9339)', async function () {
+      const { getDatabase, ref, set, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullChild`);
+
+      await set(dbRef, { a: 1, b: null });
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1 }));
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
+
+    it('removes a nested child that is set to null (#9339)', async function () {
+      const { getDatabase, ref, set, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullNested`);
+
+      await set(dbRef, { a: 1, nested: { c: 2, d: 3 } });
+      await set(dbRef, { a: 1, nested: { c: null, d: 3 } });
+
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(jet.contextify({ a: 1, nested: { d: 3 } }));
+      JSON.stringify(snapshot.val()).should.not.containEql('__rnfbNull');
+    });
+
+    it('removes an existing value when it is set to null (#9339)', async function () {
+      const { getDatabase, ref, set, get } = databaseModular;
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/nullTopLevel`);
+
+      await set(dbRef, { a: 1 });
+      await set(dbRef, null);
+
+      const snapshot = await get(dbRef);
+      snapshot.exists().should.equal(false);
+      should.equal(snapshot.val(), null);
+    });
+
     it('throws if permission defined', async function () {
       const { getDatabase, ref, set } = databaseModular;
       const db = getDatabase();

@@ -42,7 +42,7 @@ E2E_MACOS_APP_PROCESS="${RNFB_MACOS_PRODUCT_NAME:-$E2E_DEFAULT_MACOS_APP_PROCESS
 # When RNFB_MACOS_PRODUCT_NAME is unset (serial / unscoped host wipe), also probe/kill
 # known slotted siblings so parallel leftovers fail host-clear and get released.
 # Same slot ceiling as leftover Android/iOS devices and unscoped port collect.
-E2E_MACOS_SLOTTED_MAX="${E2E_MACOS_SLOTTED_MAX:-$E2E_SLOTTED_MAX}"
+E2E_MACOS_SLOTTED_MAX="$(e2e_effective_slot_max)"
 
 e2e_repo_root() {
   local here
@@ -268,8 +268,9 @@ e2e_android_avd_names_for_release() {
   fi
   echo "$E2E_DEFAULT_ANDROID_AVD"
   if [[ "${E2E_ALL_SLOTS:-0}" == "1" ]]; then
-    local i
-    for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+    local i max
+    max="$(e2e_effective_slot_max)"
+    for ((i = 0; i <= max; i++)); do
       echo "TestingAVD-${i}"
     done
   fi
@@ -283,14 +284,15 @@ e2e_ios_simulator_names_for_release() {
   local slot
   slot="$(e2e_effective_slot)"
   if [[ -n "$slot" ]]; then
-    echo "RNFB E2E iOS slot-${slot}"
+    echo "RN E2E iOS slot-${slot}"
     return 0
   fi
   echo "$E2E_DEFAULT_IOS_SIMULATOR"
   if [[ "${E2E_ALL_SLOTS:-0}" == "1" ]]; then
-    local i
-    for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
-      echo "RNFB E2E iOS slot-${i}"
+    local i max
+    max="$(e2e_effective_slot_max)"
+    for ((i = 0; i <= max; i++)); do
+      echo "RN E2E iOS slot-${i}"
     done
   fi
 }
@@ -415,11 +417,13 @@ e2e_collect_targets() {
   # Leftover slots only with --all-slots. Do not nest this while-read inside the
   # platform loop (bash 3.2 inner `read` steals the outer stdin).
   if [[ "${E2E_ALL_SLOTS:-0}" == "1" ]]; then
+    local max
+    max="$(e2e_effective_slot_max)"
     while read -r lab p; do
       [[ -z "$lab" ]] && continue
       add_port "$p" "$lab"
     done < <(
-      for ((slot = 0; slot <= E2E_SLOTTED_MAX; slot++)); do
+      for ((slot = 0; slot <= max; slot++)); do
         for plat in android ios macos; do
           e2e_slot_block_port_lines "$plat" "$slot"
         done
@@ -480,6 +484,71 @@ e2e_listener_pids() {
   lsof -nP -iTCP:"${port}" -sTCP:LISTEN -t 2>/dev/null || true
 }
 
+# True when cmdline looks like a Metro / react-native packager (not qemu/netsimd).
+e2e_cmdline_is_metro_packager() {
+  local cmd=$1
+  [[ -n "$cmd" ]] || return 1
+  if [[ "$cmd" == *react-native* || "$cmd" == *'/cli.js'* || "$cmd" == *metro* ]]; then
+    return 0
+  fi
+  return 1
+}
+
+# Echo process cmdline for pid (empty if gone). Overridable in tests.
+e2e_process_cmdline() {
+  local pid=$1
+  ps -p "$pid" -o args= 2>/dev/null || true
+}
+
+# Echo process cwd for pid (empty if gone). Overridable in tests.
+e2e_process_cwd() {
+  local pid=$1
+  lsof -a -p "$pid" -d cwd 2>/dev/null | awk '/cwd/ { print $NF; exit }'
+}
+
+# PIDs whose cmdline matches Metro/react-native start — LISTEN not required
+# (covers cold dual-start before either port binds). Overridable in tests.
+e2e_metro_packager_candidate_pids() {
+  local line pid cmd
+  while IFS= read -r line; do
+    [[ -z "${line// /}" ]] && continue
+    line="${line#"${line%%[![:space:]]*}"}"
+    pid="${line%%[[:space:]]*}"
+    [[ "$pid" =~ ^[0-9]+$ ]] || continue
+    cmd="${line#"$pid"}"
+    cmd="${cmd#"${cmd%%[![:space:]]*}"}"
+    if e2e_cmdline_is_metro_packager "$cmd"; then
+      echo "$pid"
+    fi
+  done < <(ps -ax -o pid= -o command= 2>/dev/null || true)
+}
+
+# True when a sibling Metro/react-native packager (cwd == metro_root, metro-like
+# cmdline) is live and is not a listener on our_port. Scans packager candidates
+# via ps (in-flight before LISTEN counts) so android∥ios cold dual-start does not
+# both watch-del. Re-checks cmdline so qemu/netsimd with cwd under tests/ never
+# count. Call after kill_port_listeners; still excludes our_port listeners.
+e2e_sibling_metro_owns_root() {
+  local metro_root=$1
+  local our_port=$2
+  local pid cwd cmd our_pids_space
+  our_pids_space=" $(e2e_listener_pids "$our_port" | tr '\n' ' ') "
+  while IFS= read -r pid; do
+    [[ -z "$pid" || ! "$pid" =~ ^[0-9]+$ ]] && continue
+    case "$our_pids_space" in
+      *" $pid "*) continue ;;
+    esac
+    cmd="$(e2e_process_cmdline "$pid")"
+    e2e_cmdline_is_metro_packager "$cmd" || continue
+    cwd="$(e2e_process_cwd "$pid")"
+    [[ -z "$cwd" ]] && continue
+    if [[ "$cwd" == "$metro_root" ]]; then
+      return 0
+    fi
+  done < <(e2e_metro_packager_candidate_pids)
+  return 1
+}
+
 e2e_android_app_running() {
   local serial=$1 pkg=$2
   adb -s "$serial" shell pidof "$pkg" >/dev/null 2>&1
@@ -495,9 +564,10 @@ e2e_adb_emulator_serials() {
 # Anything else (Detox FreePortFinder 10000–20000 → emulator-16xxx) is stray.
 e2e_android_console_port_allocated() {
   local port=$1
-  local i p
+  local i p max
   [[ "$port" == "${E2E_SERIAL_ANDROID_CONSOLE_PORT:-5554}" ]] && return 0
-  for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+  max="$(e2e_effective_slot_max)"
+  for ((i = 0; i <= max; i++)); do
     p=$(e2e_slot_android_console_port "$i")
     [[ "$port" == "$p" ]] && return 0
   done
@@ -532,8 +602,9 @@ e2e_macos_process_names_for_probe() {
   fi
   echo "$E2E_DEFAULT_MACOS_APP_PROCESS"
   if [[ "${E2E_ALL_SLOTS:-0}" == "1" ]]; then
-    local i
-    for ((i = 0; i <= E2E_SLOTTED_MAX; i++)); do
+    local i max
+    max="$(e2e_effective_slot_max)"
+    for ((i = 0; i <= max; i++)); do
       echo "${E2E_DEFAULT_MACOS_APP_PROCESS}.s${i}"
     done
   fi
@@ -563,8 +634,6 @@ e2e_macos_app_path() {
 
 e2e_ios_sim_booted() {
   local name=$1
-  # Match name in booted devices list
-  xcrun simctl list devices booted 2>/dev/null | grep -F "$name" | grep -q '(Booted)' && return 0
   # Serial/global: any booted counts as busy for iOS clearness when using defaults
   if [[ "$name" == "$E2E_DEFAULT_IOS_SIMULATOR" ]]; then
     local count
@@ -572,5 +641,11 @@ e2e_ios_sim_booted() {
     [[ "${count:-0}" -gt 0 ]]
     return $?
   fi
-  return 1
+  # Slotted checks must be exact: slot-1 must not collide with slot-10.
+  xcrun simctl list devices booted -j 2>/dev/null | node -e "
+    const target = process.argv[1];
+    const input = require('fs').readFileSync(0, 'utf8');
+    const devices = Object.values(JSON.parse(input).devices || {}).flat();
+    process.exit(devices.some(device => device.name === target && device.state === 'Booted') ? 0 : 1);
+  " "$name"
 }

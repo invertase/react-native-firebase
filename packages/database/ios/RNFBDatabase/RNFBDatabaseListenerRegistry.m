@@ -23,9 +23,18 @@
 #import "RNFBApp/RNFBHandleMap.h"
 #endif
 
+#if __has_include(<RNFBDatabase/RNFBDatabase-Swift.h>)
+#import <RNFBDatabase/RNFBDatabase-Swift.h>
+#elif __has_include("RNFBDatabase-Swift.h")
+#import "RNFBDatabase-Swift.h"
+#elif __has_include("RNFBHandleMapStorage-Swift.inc")
+#import "RNFBHandleMapStorage-Swift.inc"
+#else
+#error "RNFBDatabaseListenerRegistryStorage Swift interface not found"
+#endif
+
 @interface RNFBDatabaseListenerRegistry ()
-@property(nonatomic, strong) RNFBHandleMap *map;
-@property(nonatomic, assign) NSInteger occupancy;
+@property(nonatomic, strong) RNFBDatabaseListenerRegistryStorage *storage;
 @end
 
 @implementation RNFBDatabaseListenerRegistry
@@ -33,51 +42,49 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _map = [[RNFBHandleMap alloc] init];
-    _occupancy = 0;
+    _storage = [[RNFBDatabaseListenerRegistryStorage alloc] init];
   }
   return self;
 }
 
 - (BOOL)put:(id)key value:(id)value error:(NSError **)error {
   @synchronized(self) {
-    if ([self.map put:key value:value error:error]) {
-      _occupancy += 1;
+    if ([self.storage putIfAbsent:key value:value]) {
       return YES;
+    }
+    if (error != nil) {
+      NSString *message = [NSString stringWithFormat:@"Handle id already registered: %@", key];
+      *error = [NSError errorWithDomain:RNFBHandleMapErrorDomain
+                                   code:RNFBHandleMapErrorCollision
+                               userInfo:@{NSLocalizedDescriptionKey : message}];
     }
     return NO;
   }
 }
 
 - (id)get:(id)key {
-  return [self.map get:key];
+  return [self.storage get:key];
 }
 
 - (id)take:(id)key {
   @synchronized(self) {
-    id value = [self.map take:key];
-    if (value != nil) {
-      _occupancy -= 1;
-    }
-    return value;
+    return [self.storage take:key];
   }
 }
 
 - (NSArray *)takeAll {
   @synchronized(self) {
-    NSArray *remaining = [self.map takeAll];
-    _occupancy -= (NSInteger)remaining.count;
-    return remaining;
+    return [self.storage takeAll];
   }
 }
 
 - (BOOL)hasEventListener:(id)key {
-  return [self.map get:key] != nil;
+  return [self.storage hasEventListener:key];
 }
 
 - (BOOL)hasListeners {
   @synchronized(self) {
-    return _occupancy > 0;
+    return [self.storage hasListeners];
   }
 }
 

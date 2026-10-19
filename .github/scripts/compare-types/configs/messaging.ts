@@ -11,16 +11,8 @@ const config: PackageConfig = {
   nameMapping: {},
 
   missingInRN: [
-    { name: 'onRegistered', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'onUnregistered', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'register', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'unregister', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
     { name: 'MessagePayload', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'NextFn', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
     { name: 'NotificationPayload', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'Observer', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'RegisterOptions', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
-    { name: 'Unsubscribe', reason: 'Export from the firebase-js-sdk modular API that is intentionally absent from @react-native-firebase/messaging.' },
   ],
 
   extraInRN: [
@@ -69,6 +61,7 @@ const config: PackageConfig = {
     { name: 'isSupported', reason: 'Export shares a name with the firebase-js-sdk but has a different public shape in @react-native-firebase/messaging.' },
     { name: 'onMessage', reason: 'Export shares a name with the firebase-js-sdk but has a different public shape in @react-native-firebase/messaging.' },
     { name: 'GetTokenOptions', reason: 'Export shares a name with the firebase-js-sdk but has a different public shape in @react-native-firebase/messaging.' },
+    { name: 'RegisterOptions', reason: 'serviceWorkerRegistration is typed any because the DOM ServiceWorkerRegistration type is not available to React Native consumers (same as GetTokenOptions). The field is accepted for web parity and ignored on native.' },
     { name: 'Messaging', reason: 'RN Firebase extends the Messaging service interface with native FCM APIs (token lifecycle, permissions, background handlers) beyond the firebase-js-sdk web push surface.' },
   ],
 };

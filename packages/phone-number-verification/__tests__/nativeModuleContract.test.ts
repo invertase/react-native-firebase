@@ -38,9 +38,13 @@ describe('TurboModule direct resolver contract (NewArch-AD-17.1 / NewArch-AD-18 
     const raw = createTurboModuleFixture(mocks);
 
     jest.resetModules();
-    const { setReactNativeModule } =
-      await import('@react-native-firebase/app/dist/module/internal/nativeModule');
-    setReactNativeModule('NativeRNFBTurboPnv', raw);
+    const { TurboModuleRegistry } = await import('react-native');
+    const defaultGet = jest.mocked(TurboModuleRegistry.get).getMockImplementation();
+    jest
+      .mocked(TurboModuleRegistry.get)
+      .mockImplementation(name =>
+        name === 'NativeRNFBTurboPnv' ? (raw as never) : (defaultGet?.(name) ?? null),
+      );
     const { getVerificationSupportInfo } = await import('../lib/index');
 
     await getVerificationSupportInfo();

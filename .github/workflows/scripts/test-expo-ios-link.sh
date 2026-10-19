@@ -67,8 +67,18 @@ if ! grep -q 'class SceneDelegate: ExpoAppSceneDelegate' "$SCENE_DELEGATE"; then
   log "ERROR: SceneDelegate is not the Expo 58 ExpoAppSceneDelegate stub"
   exit 1
 fi
-if grep -qE 'Firebase|FIRApp|FirebaseApp' "$SCENE_DELEGATE"; then
-  log "ERROR: Firebase code in SceneDelegate (RNFB must configure only in AppDelegate)"
+# SceneDelegate may contain the tagged Auth reCAPTCHA openURLContexts callback (Auth.auth().canHandle).
+# Process-global Firebase initialization must still live only in AppDelegate.
+if grep -qE 'FirebaseApp\.configure\(|\[FIRApp[[:space:]]+configure\]|FIRApp\.configure' "$SCENE_DELEGATE"; then
+  log "ERROR: FirebaseApp.configure / FIRApp configure in SceneDelegate (must stay in AppDelegate)"
+  exit 1
+fi
+if ! grep -q '@react-native-firebase/auth-openURL' "$SCENE_DELEGATE"; then
+  log "ERROR: missing Auth reCAPTCHA openURLContexts patch tag in SceneDelegate"
+  exit 1
+fi
+if ! grep -q 'Auth\.auth()\.canHandle' "$SCENE_DELEGATE"; then
+  log "ERROR: SceneDelegate Auth patch must call Auth.auth().canHandle"
   exit 1
 fi
 firebase_configure_count="$(grep -c 'FirebaseApp.configure()' "$APP_DELEGATE" || true)"
@@ -94,7 +104,7 @@ if ! grep -q 'UISceneDelegateClassName' "$INFO_PLIST"; then
   log "ERROR: Info.plist missing UIScene manifest entries"
   exit 1
 fi
-log "PASS: Expo owns SceneDelegate; RNFB configures Firebase once in AppDelegate after App Check; single-scene manifest"
+log "PASS: Expo SceneDelegate has Auth reCAPTCHA canHandle callback; AppDelegate owns exactly one configure after App Check; single-scene manifest"
 log "--- end Expo 58 UIScene / RNFB plugin contract ---"
 
 # Diagnosis: did #9164's rnfirebase_add_spm_core_to_app_target run during
@@ -301,6 +311,7 @@ xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
   ONLY_ACTIVE_ARCH=YES
+  CC=clang CPLUSPLUS=clang++
   -workspace "$WORKSPACE"
   -scheme "$SCHEME"
   -configuration Release

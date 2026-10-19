@@ -170,6 +170,7 @@ public:
 protected:
   NativeRNFBTurboDatabaseQueryCxxSpec(std::shared_ptr<CallInvoker> jsInvoker) : TurboModule(std::string{NativeRNFBTurboDatabaseQueryCxxSpec::kModuleName}, jsInvoker) {
     methodMap_["once"] = MethodMetadata {.argCount = 5, .invoker = __once};
+    methodMap_["get"] = MethodMetadata {.argCount = 4, .invoker = __get};
     methodMap_["on"] = MethodMetadata {.argCount = 3, .invoker = __on};
     methodMap_["off"] = MethodMetadata {.argCount = 2, .invoker = __off};
     methodMap_["keepSynced"] = MethodMetadata {.argCount = 6, .invoker = __keepSynced};
@@ -186,6 +187,17 @@ private:
       count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
       count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt).asArray(rt),
       count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt));
+  }
+
+  static jsi::Value __get(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+    static_assert(
+      bridging::getParameterCount(&T::get) == 5,
+      "Expected get(...) to have 5 parameters");
+    return bridging::callFromJs<jsi::Value>(rt, &T::get,  static_cast<NativeRNFBTurboDatabaseQueryCxxSpec*>(&turboModule)->jsInvoker_, static_cast<T*>(&turboModule),
+      count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+      count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+      count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
+      count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt).asArray(rt));
   }
 
   static jsi::Value __on(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
