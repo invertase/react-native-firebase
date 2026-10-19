@@ -1066,6 +1066,8 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 - **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`. Metro redbox **`Requiring unknown module "undefined"`** → [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
 - **Android** — `adb logcat` (filter your tags)
 
+**Crashlytics on-disk report inspection (iOS):** pending reports live under the app container's `Library/Caches/com.crashlytics.data/<bundle>/v5/reports/active/<execId>/` (`custom_exception_{a,b}.clsrecord`, `user_incremental_kv.clsrecord`). String fields such as the exception `reason` are **hex-encoded**, so a plain-text grep for the error message gives false negatives — hex-decode, or also match the hex form (e.g. `printf '%s' "$MSG" | xxd -p | tr -d '\n'`). The SDK processes and removes `active/` reports on the next app launch, so inspect before relaunching.
+
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … io.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
 
 **Cloud API pressure** — Installations / Remote Config failures with FIS 503 or “Too many server requests” are live-project quota on **any** platform, not emulator issues. See [Firebase testing project — CI triage](firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
