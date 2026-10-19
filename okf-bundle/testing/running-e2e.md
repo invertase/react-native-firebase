@@ -45,6 +45,10 @@ Align the Mac with [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.
 
 **iOS 26.5** simulators or hosts are **runtime-differential context only** (e.g. Metro hostname quirks in [iOS CI § issue 5](../ci-workflows/ios.md#5-metro-unresponsive-at-launch--waitforactive-hang-active-app)). They do **not** replace **iOS 27** for UIScene launch-smoke gates or Xcode 27 closure — [local Tart lab § not proof](local-ios-e2e-reproduction.md#ios-26-5-not-proof).
 
+<a id="ios-physical-device-signing"></a>
+
+**Physical iOS device builds need the Invertase Apple team.** `tests/ios/testing.xcodeproj` uses automatic signing with `DEVELOPMENT_TEAM = YYX2P3XVJ7` and paid-team entitlements (push, Sign in with Apple, associated domains, keychain group), so a device build on a host without that team fails with `No Account for Team "YYX2P3XVJ7"` / `No profiles for 'io.invertase.testing' were found`. Simulators are unaffected. Options: add an Apple ID that belongs to team `YYX2P3XVJ7` in Xcode → Settings → Accounts, or apply a local-only, never-committed bundle-id/team override (needs a matching `GoogleService-Info.plist` and stripped entitlements). Physical-device runs are outside the [agent command policy](agent-command-policy.md) allowlist; agents need explicit user authorisation first.
+
 **Tart VM lab** (`scripts/tart/`) is [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended); use this runbook, not `run-ephemeral.sh`, for contributor e2e.
 
 ## Rules
