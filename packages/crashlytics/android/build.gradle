@@ -68,6 +68,7 @@ android {
 
   defaultConfig {
     multiDexEnabled = true
+    consumerProguardFiles 'proguard-rules.pro'
   }
 
   buildFeatures {

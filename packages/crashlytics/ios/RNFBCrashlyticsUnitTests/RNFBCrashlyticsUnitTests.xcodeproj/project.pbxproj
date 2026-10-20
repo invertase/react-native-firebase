@@ -13,6 +13,7 @@
 		CL1000000000000000000020 /* RNFBCrashlyticsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000021 /* RNFBCrashlyticsHelper.m */; };
 		CL1000000000000000000022 /* RNFBCrashlyticsHelperHostStubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000023 /* RNFBCrashlyticsHelperHostStubTests.m */; };
 		CL1000000000000000000024 /* FIRCrashlyticsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000025 /* FIRCrashlyticsHostStub.m */; };
+		CL1000000000000000000027 /* RNFBCrashlyticsFatalExitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CL1000000000000000000028 /* RNFBCrashlyticsFatalExitTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		CL1000000000000000000021 /* RNFBCrashlyticsHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBCrashlyticsHelper.m; path = ../RNFBCrashlytics/RNFBCrashlyticsHelper.m; sourceTree = SOURCE_ROOT; };
 		CL1000000000000000000023 /* RNFBCrashlyticsHelperHostStubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsHelperHostStubTests.m; sourceTree = "<group>"; };
 		CL1000000000000000000025 /* FIRCrashlyticsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FIRCrashlyticsHostStub.m; path = HostStubs/Firebase/FIRCrashlyticsHostStub.m; sourceTree = "<group>"; };
+		CL1000000000000000000028 /* RNFBCrashlyticsFatalExitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsFatalExitTests.m; sourceTree = "<group>"; };
 		CL1000000000000000000026 /* RNFBCrashlyticsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBCrashlyticsHelper.h; path = ../RNFBCrashlytics/RNFBCrashlyticsHelper.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -62,6 +64,7 @@
 				CL1000000000000000000026 /* RNFBCrashlyticsHelper.h */,
 				CL1000000000000000000021 /* RNFBCrashlyticsHelper.m */,
 				CL1000000000000000000023 /* RNFBCrashlyticsHelperHostStubTests.m */,
+				CL1000000000000000000028 /* RNFBCrashlyticsFatalExitTests.m */,
 				CL1000000000000000000025 /* FIRCrashlyticsHostStub.m */,
 			);
 			name = Sources;
@@ -129,6 +132,7 @@
 				CL1000000000000000000020 /* RNFBCrashlyticsHelper.m in Sources */,
 				CL1000000000000000000024 /* FIRCrashlyticsHostStub.m in Sources */,
 				CL1000000000000000000022 /* RNFBCrashlyticsHelperHostStubTests.m in Sources */,
+				CL1000000000000000000027 /* RNFBCrashlyticsFatalExitTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

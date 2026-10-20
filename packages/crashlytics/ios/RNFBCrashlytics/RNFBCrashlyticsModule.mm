@@ -97,10 +97,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
       RCTLog(
           @"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
     }
-    [self recordJavaScriptError:jsErrorDict];
-
-    ELog(@"Crashlytics - Crash logged. Terminating app.");
-    exit(0);
+    // Coverage exception: this branch ends the process, so neither XCTest nor e2e can observe it.
+    // Keep it a thin delegate; ordering, watchdog and the second-fatal guard live in
+    // RNFBCrashlyticsFatalExit (unit-tested). The promise is intentionally never resolved: that
+    // keeps the JS global handler suspended (no chaining to the previous handler, no
+    // fall-through) until termination.
+    ELog(@"Crashlytics - Logging crash and terminating app.");
+    [[RNFBCrashlyticsFatalExit shared]
+        recordThenTerminate:[self javaScriptErrorRecorder:jsErrorDict]];
+    return;
   } else {
     RCTLog(@"Crashlytics - INFO: crashlytics collection is not enabled, not crashing.");
   }
@@ -193,6 +198,13 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
 }
 
 - (void)recordJavaScriptError:(JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict {
+  [self javaScriptErrorRecorder:jsErrorDict]();
+}
+
+// Converts the codegen struct to Foundation values up front, so the returned block captures no
+// C++ references and can be handed to RNFBCrashlyticsFatalExit.
+- (dispatch_block_t)javaScriptErrorRecorder:
+    (JS::NativeRNFBTurboCrashlytics::JavaScriptErrorObject &)jsErrorDict {
   NSString *message = jsErrorDict.message();
   auto stackFrames = jsErrorDict.frames();
   NSMutableArray *frames = [[NSMutableArray alloc] init];
@@ -206,9 +218,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
     }];
   }
 
-  [RNFBCrashlyticsHelper recordJavaScriptErrorWithMessage:message
-                                                   frames:frames
-                              isUnhandledPromiseRejection:isUnhandledPromiseRejection];
+  return ^{
+    [RNFBCrashlyticsHelper recordJavaScriptErrorWithMessage:message
+                                                     frames:frames
+                                isUnhandledPromiseRejection:isUnhandledPromiseRejection];
+  };
 }
 
 @end
