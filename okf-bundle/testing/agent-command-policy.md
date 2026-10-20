@@ -200,6 +200,8 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
 - Metro `EADDRINUSE` on `:8081` from `yarn tests:packager:jet-reset-cache` or `yarn tests:macos:packager:jet-reset-cache` → [packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) (free `:8081`, then the same yarn target). Not the `:8090` pre-flight kill. Do **not** use the mobile packager for macOS Jet (or vice versa).
 
+<a id="android-java-format"></a>
+
 ### Android Java format
 
 - There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
@@ -305,6 +307,10 @@ Agent shell is zsh: capture exit codes with ${pipestatus[1]} or bare $? — ${PI
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native/Ruby helpers touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
+
+<a id="physical-device-runs"></a>
+
+**Physical-device runs:** builds and runs on physical iOS or Android devices are not on the allowlist; run them only with explicit user authorization.
 
 ## Related docs
 
