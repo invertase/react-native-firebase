@@ -56,3 +56,42 @@
              isUnhandledPromiseRejection:(BOOL)isUnhandledPromiseRejection;
 
 @end
+
+/** Upper bound (seconds) a JS fatal waits for its record to save before the process exits. */
+FOUNDATION_EXPORT const NSTimeInterval RNFBCrashlyticsFatalExitWatchdogTimeout;
+
+/**
+ * Records a JS fatal, then terminates the process once the record has had a chance to save.
+ *
+ * `-[FIRCrashlytics recordExceptionModel:]` saves asynchronously: once Crashlytics' context-init
+ * promise is fulfilled, the save block is dispatched to the main queue. Terminating on the
+ * calling queue right after recording usually loses that save. Instead the terminator is
+ * enqueued on `terminateQueue` (the main queue in production), so it runs FIFO after the save
+ * block. A watchdog on `watchdogQueue` terminates after `watchdogTimeout` if `terminateQueue`
+ * is hung. The terminator runs at most once.
+ *
+ * Known limit: a JS fatal recorded before Crashlytics finished initialising queues its save as a
+ * promise observer instead of a main-queue block, so it can still be lost (unchanged behaviour).
+ * The FIFO ordering also relies on FBLPromise's default dispatch queue being the main queue; if
+ * that changes, only the watchdog bounds the wait.
+ */
+@interface RNFBCrashlyticsFatalExit : NSObject
+
+/** Production instance: terminates with `exit(0)` on the main queue, 2 s watchdog. */
++ (instancetype)shared;
+
+- (instancetype)initWithTerminator:(dispatch_block_t)terminator
+                    terminateQueue:(dispatch_queue_t)terminateQueue
+                     watchdogQueue:(dispatch_queue_t)watchdogQueue
+                   watchdogTimeout:(NSTimeInterval)watchdogTimeout NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/**
+ * Runs `record` synchronously, then schedules termination, even when `record` raises. Returns NO
+ * without running `record` when an earlier call already started terminating (a second fatal
+ * while waiting).
+ */
+- (BOOL)recordThenTerminate:(dispatch_block_t)record;
+
+@end

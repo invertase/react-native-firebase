@@ -35,6 +35,8 @@
 #error "RNFBCrashlyticsDebuggerProbe Swift interface not found"
 #endif
 
+#import <stdatomic.h>
+
 #import "RNFBCrashlyticsHelper.h"
 
 @implementation RNFBCrashlyticsHelper
@@ -104,6 +106,77 @@
   exceptionModel.stackTrace = stackTrace;
 
   [[FIRCrashlytics crashlytics] recordExceptionModel:exceptionModel];
+}
+
+@end
+
+const NSTimeInterval RNFBCrashlyticsFatalExitWatchdogTimeout = 2.0;
+
+@implementation RNFBCrashlyticsFatalExit {
+  dispatch_block_t _terminator;
+  dispatch_queue_t _terminateQueue;
+  dispatch_queue_t _watchdogQueue;
+  NSTimeInterval _watchdogTimeout;
+  atomic_bool _exiting;
+  atomic_bool _terminated;
+}
+
++ (instancetype)shared {
+  static RNFBCrashlyticsFatalExit *shared;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    shared = [[RNFBCrashlyticsFatalExit alloc]
+        initWithTerminator:^{
+          // Coverage exception: ends the process, so no test can run it.
+          exit(0);
+        }
+            terminateQueue:dispatch_get_main_queue()
+             watchdogQueue:dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)
+           watchdogTimeout:RNFBCrashlyticsFatalExitWatchdogTimeout];
+  });
+  return shared;
+}
+
+- (instancetype)initWithTerminator:(dispatch_block_t)terminator
+                    terminateQueue:(dispatch_queue_t)terminateQueue
+                     watchdogQueue:(dispatch_queue_t)watchdogQueue
+                   watchdogTimeout:(NSTimeInterval)watchdogTimeout {
+  if (self = [super init]) {
+    _terminator = [terminator copy];
+    _terminateQueue = terminateQueue;
+    _watchdogQueue = watchdogQueue;
+    _watchdogTimeout = watchdogTimeout;
+    atomic_init(&_exiting, false);
+    atomic_init(&_terminated, false);
+  }
+  return self;
+}
+
+- (BOOL)recordThenTerminate:(dispatch_block_t)record {
+  if (atomic_exchange(&_exiting, true)) {
+    return NO;
+  }
+  @try {
+    record();
+  } @catch (NSException *exception) {
+    // The guard is already set, so terminate anyway rather than leave the app running with every
+    // later fatal ignored.
+    NSLog(@"RNFBCrashlytics: recording JS fatal failed: %@", exception);
+  }
+  dispatch_block_t terminateOnce = ^{
+    [self terminateOnce];
+  };
+  // FIFO behind the Crashlytics save block that recordExceptionModel: enqueued on main.
+  dispatch_async(_terminateQueue, terminateOnce);
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_watchdogTimeout * NSEC_PER_SEC)),
+                 _watchdogQueue, terminateOnce);
+  return YES;
+}
+
+- (void)terminateOnce {
+  if (!atomic_exchange(&_terminated, true)) {
+    _terminator();
+  }
 }
 
 @end

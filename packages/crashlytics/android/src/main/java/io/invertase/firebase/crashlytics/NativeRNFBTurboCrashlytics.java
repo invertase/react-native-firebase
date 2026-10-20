@@ -35,6 +35,9 @@ import java.util.Objects;
 
 public class NativeRNFBTurboCrashlytics extends NativeRNFBTurboCrashlyticsSpec {
   private static final String TAG = "Crashlytics";
+  // Process-wide so a second JS fatal during the bounded wait neither records nor exits again.
+  private static final ReactNativeFirebaseCrashlyticsFatalExit FATAL_EXIT =
+      ReactNativeFirebaseCrashlyticsFatalExit.create();
 
   public NativeRNFBTurboCrashlytics(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -83,10 +86,14 @@ public class NativeRNFBTurboCrashlytics extends NativeRNFBTurboCrashlyticsSpec {
   @Override
   public void crashWithStackPromise(ReadableMap jsErrorMap, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
-      Exception e = recordJavaScriptError(jsErrorMap);
-      e.printStackTrace(System.err);
-      Log.e(TAG, "Crash logged. Terminating app.");
-      System.exit(0);
+      // Coverage exception: this branch ends the process, so neither JVM tests nor e2e can
+      // observe it. Keep it a thin delegate; barrier, timeout, fallback and the second-fatal guard
+      // live in ReactNativeFirebaseCrashlyticsFatalExit (unit-tested). The promise is
+      // intentionally never resolved: that keeps the JS global handler suspended (no chaining to
+      // the previous handler, no fall-through) until termination.
+      Log.e(TAG, "Logging crash and terminating app.");
+      FATAL_EXIT.recordThenTerminate(() -> recordJavaScriptError(jsErrorMap).printStackTrace());
+      return;
     } else {
       Log.i(TAG, "crashlytics collection is not enabled, not crashing.");
     }

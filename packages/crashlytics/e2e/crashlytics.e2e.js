@@ -176,6 +176,27 @@ describe('crashlytics()', function () {
       });
     });
 
+    describe('native crashWithStackPromise()', function () {
+      // The collection-enabled path records the JS fatal and terminates the app, so only the
+      // collection-disabled path can run under e2e. Native re-reads the flag on every call.
+      it('resolves without terminating when collection is disabled', async function () {
+        const { getCrashlytics, setCrashlyticsCollectionEnabled } = crashlyticsModular;
+        const crashlytics = getCrashlytics();
+        const wasEnabled = crashlytics.isCrashlyticsCollectionEnabled;
+        await setCrashlyticsCollectionEnabled(crashlytics, false);
+        try {
+          const result = await crashlytics.native.crashWithStackPromise({
+            message: 'e2e: collection disabled, must not terminate',
+            isUnhandledRejection: false,
+            frames: [{ fn: 'e2eFrame', file: 'crashlytics.e2e.js', line: 1, col: 1 }],
+          });
+          should.not.exist(result);
+        } finally {
+          await setCrashlyticsCollectionEnabled(crashlytics, wasEnabled);
+        }
+      });
+    });
+
     describe('setCrashlyticsCollectionEnabled()', function () {
       it('false', async function () {
         const { getCrashlytics, setCrashlyticsCollectionEnabled } = crashlyticsModular;
