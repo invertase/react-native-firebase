@@ -65,7 +65,14 @@ const defaultConfigForInstance: DefaultConfigForInstance = {};
 const onConfigUpdateListeners: ConfigUpdateListeners = {};
 
 function makeGlobalsAvailable(): void {
-  (navigator as Navigator & { onLine: boolean }).onLine = true;
+  const navigatorObject = globalThis.navigator;
+  if (navigatorObject && !('onLine' in navigatorObject) && Object.isExtensible(navigatorObject)) {
+    Object.defineProperty(navigatorObject, 'onLine', {
+      configurable: true,
+      value: true,
+      writable: true,
+    });
+  }
   makeIDBAvailable();
 }
 
