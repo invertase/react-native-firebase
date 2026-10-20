@@ -17,12 +17,17 @@ package io.invertase.firebase.crashlytics;
  *
  */
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.google.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInternalTest;
+import com.google.firebase.crashlytics.internal.common.CrashlyticsCore;
 import com.google.firebase.crashlytics.internal.concurrency.CrashlyticsWorkers;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -78,5 +83,40 @@ public class ReactNativeFirebaseCrashlyticsFatalExitBarrierTest {
         .get(10, TimeUnit.SECONDS);
 
     assertTrue(eventWritten.get());
+  }
+
+  /**
+   * When the barrier is unavailable (here: an unset {@code crashlyticsWorkers}), the production
+   * barrier fails and the fatal exit waits out the bound, then terminates.
+   */
+  @Test
+  public void productionBarrier_barrierUnavailable_fallsBackToTheBoundedWait() throws Exception {
+    FirebaseCrashlytics crashlytics =
+        ReactNativeFirebaseCrashlyticsInternalTest.crashlyticsWithCore(mock(CrashlyticsCore.class));
+    List<String> events = new ArrayList<>();
+    long[] now = {0};
+    ReactNativeFirebaseCrashlyticsFatalExit fatalExit =
+        new ReactNativeFirebaseCrashlyticsFatalExit(
+            ReactNativeFirebaseCrashlyticsFatalExit.create().barrier,
+            millis -> {
+              events.add("sleep:" + millis);
+              now[0] += millis;
+            },
+            () -> now[0],
+            () -> events.add("exit"),
+            ReactNativeFirebaseCrashlyticsFatalExit.TIMEOUT_MS);
+
+    pool.submit(
+            () -> {
+              try (MockedStatic<FirebaseCrashlytics> firebaseCrashlytics =
+                  mockStatic(FirebaseCrashlytics.class)) {
+                firebaseCrashlytics.when(FirebaseCrashlytics::getInstance).thenReturn(crashlytics);
+                assertTrue(fatalExit.recordThenTerminate(() -> events.add("record")));
+              }
+              return null;
+            })
+        .get(10, TimeUnit.SECONDS);
+
+    assertEquals(Arrays.asList("record", "sleep:2000", "exit"), events);
   }
 }

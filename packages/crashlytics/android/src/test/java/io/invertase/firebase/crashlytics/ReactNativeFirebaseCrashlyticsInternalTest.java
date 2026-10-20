@@ -1,4 +1,4 @@
-package com.google.firebase.crashlytics;
+package io.invertase.firebase.crashlytics;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -16,20 +16,22 @@ package com.google.firebase.crashlytics;
  * limitations under the License.
  *
  */
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.crashlytics.internal.common.CrashlyticsCore;
+import com.google.firebase.crashlytics.internal.concurrency.CrashlyticsWorker;
 import com.google.firebase.crashlytics.internal.concurrency.CrashlyticsWorkers;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,8 +57,14 @@ public class ReactNativeFirebaseCrashlyticsInternalTest {
     pool.shutdownNow();
   }
 
-  /** A FirebaseCrashlytics whose core uses {@code workers}; package-visible for other tests. */
-  public static FirebaseCrashlytics crashlyticsWith(CrashlyticsWorkers workers) throws Exception {
+  /**
+   * A FirebaseCrashlytics whose core uses {@code workers}. Built by reflection because the real
+   * graph is impractical in a unit test: {@code CrashlyticsCore}'s only constructor takes ten SDK
+   * collaborators (FirebaseApp, file store, native component, ...) and {@code
+   * FirebaseCrashlytics}'s constructor is private. So a mock core gets its {@code private final}
+   * workers field set.
+   */
+  static FirebaseCrashlytics crashlyticsWith(CrashlyticsWorkers workers) throws Exception {
     CrashlyticsCore core = mock(CrashlyticsCore.class);
     Field field = CrashlyticsCore.class.getDeclaredField("crashlyticsWorkers");
     field.setAccessible(true);
@@ -64,7 +72,7 @@ public class ReactNativeFirebaseCrashlyticsInternalTest {
     return crashlyticsWithCore(core);
   }
 
-  private static FirebaseCrashlytics crashlyticsWithCore(CrashlyticsCore core) throws Exception {
+  static FirebaseCrashlytics crashlyticsWithCore(CrashlyticsCore core) throws Exception {
     Constructor<FirebaseCrashlytics> constructor =
         FirebaseCrashlytics.class.getDeclaredConstructor(CrashlyticsCore.class);
     constructor.setAccessible(true);
@@ -101,7 +109,7 @@ public class ReactNativeFirebaseCrashlyticsInternalTest {
               });
         });
 
-    Task<Void> barrier =
+    Task<?> barrier =
         ReactNativeFirebaseCrashlyticsInternal.pendingEventWritesBarrier(crashlyticsWith(workers));
     assertFalse(barrier.isComplete());
     barrierCreated.countDown();
@@ -110,59 +118,82 @@ public class ReactNativeFirebaseCrashlyticsInternalTest {
     assertTrue(eventWritten.get());
   }
 
+  /** Every member the barrier reflects exists on the SDK version these tests compile against. */
+  @Test
+  public void reflectedMembers_existOnTheRealSdkClasses() throws Exception {
+    assertNotNull(
+        FirebaseCrashlytics.class.getDeclaredField(
+            ReactNativeFirebaseCrashlyticsInternal.CORE_FIELD));
+    assertNotNull(
+        CrashlyticsCore.class.getDeclaredField(
+            ReactNativeFirebaseCrashlyticsInternal.WORKERS_FIELD));
+    assertNotNull(
+        CrashlyticsWorkers.class.getDeclaredField(
+            ReactNativeFirebaseCrashlyticsInternal.COMMON_FIELD));
+    assertNotNull(
+        CrashlyticsWorkers.class.getDeclaredField(
+            ReactNativeFirebaseCrashlyticsInternal.DISK_WRITE_FIELD));
+    assertNotNull(
+        CrashlyticsWorker.class.getMethod(
+            ReactNativeFirebaseCrashlyticsInternal.SUBMIT_TASK_METHOD, Callable.class));
+    assertNotNull(
+        CrashlyticsWorker.class.getMethod(
+            ReactNativeFirebaseCrashlyticsInternal.SUBMIT_METHOD, Runnable.class));
+  }
+
   @Test
   public void barrier_nullCore_throws() throws Exception {
     FirebaseCrashlytics crashlytics = crashlyticsWithCore(null);
-    assertThrows(
-        NullPointerException.class,
-        () -> ReactNativeFirebaseCrashlyticsInternal.pendingEventWritesBarrier(crashlytics));
+    NullPointerException thrown =
+        assertThrows(
+            NullPointerException.class,
+            () -> ReactNativeFirebaseCrashlyticsInternal.pendingEventWritesBarrier(crashlytics));
+    assertEquals("core", thrown.getMessage());
   }
 
   @Test
-  public void workersOf_unsetWorkersField_throws() {
-    CrashlyticsCore core = mock(CrashlyticsCore.class);
-    assertThrows(
-        NullPointerException.class, () -> ReactNativeFirebaseCrashlyticsInternal.workersOf(core));
-  }
-
-  @Test
-  public void findField_byName_onTheRealSdkClass() throws Exception {
-    Field field =
-        ReactNativeFirebaseCrashlyticsInternal.findField(
-            CrashlyticsCore.class,
-            ReactNativeFirebaseCrashlyticsInternal.WORKERS_FIELD_NAME,
-            CrashlyticsWorkers.class);
-    assertEquals("crashlyticsWorkers", field.getName());
-    assertSame(CrashlyticsWorkers.class, field.getType());
+  public void barrier_unsetWorkersField_throws() throws Exception {
+    FirebaseCrashlytics crashlytics = crashlyticsWithCore(mock(CrashlyticsCore.class));
+    NullPointerException thrown =
+        assertThrows(
+            NullPointerException.class,
+            () -> ReactNativeFirebaseCrashlyticsInternal.pendingEventWritesBarrier(crashlytics));
+    assertEquals("crashlyticsWorkers", thrown.getMessage());
   }
 
   @SuppressWarnings("unused")
-  private static final class RenamedWorkersField {
-    private String unrelated;
-    private CrashlyticsWorkers a;
+  private static class FieldOnBase {
+    private final Object workers = "from base";
   }
 
-  @SuppressWarnings("unused")
-  private static final class NoWorkersField {
-    private String unrelated;
+  private static final class SubclassWithoutTheField extends FieldOnBase {}
+
+  @Test
+  public void read_findsAFieldDeclaredOnASuperclass() throws Exception {
+    assertEquals(
+        "from base",
+        ReactNativeFirebaseCrashlyticsInternal.read(new SubclassWithoutTheField(), "workers"));
   }
 
   @Test
-  public void findField_fallsBackToTheFieldTypeWhenRenamed() throws Exception {
-    Field field =
-        ReactNativeFirebaseCrashlyticsInternal.findField(
-            RenamedWorkersField.class, "crashlyticsWorkers", CrashlyticsWorkers.class);
-    assertEquals("a", field.getName());
-  }
-
-  @Test
-  public void findField_missing_throwsTheByNameFailure() {
+  public void read_missingField_throwsNoSuchField() {
     NoSuchFieldException thrown =
         assertThrows(
             NoSuchFieldException.class,
-            () ->
-                ReactNativeFirebaseCrashlyticsInternal.findField(
-                    NoWorkersField.class, "crashlyticsWorkers", CrashlyticsWorkers.class));
+            () -> ReactNativeFirebaseCrashlyticsInternal.read(new Object(), "crashlyticsWorkers"));
     assertEquals("crashlyticsWorkers", thrown.getMessage());
+  }
+
+  @SuppressWarnings("unused")
+  private static final class WorkersWithoutSubmitMethods {
+    private final Object common = new Object();
+    private final Object diskWrite = new Object();
+  }
+
+  @Test
+  public void barrierOn_missingWorkerMethod_throwsNoSuchMethod() {
+    assertThrows(
+        NoSuchMethodException.class,
+        () -> ReactNativeFirebaseCrashlyticsInternal.barrierOn(new WorkersWithoutSubmitMethods()));
   }
 }
