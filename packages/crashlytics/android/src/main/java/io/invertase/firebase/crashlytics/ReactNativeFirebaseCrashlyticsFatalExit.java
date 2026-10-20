@@ -19,7 +19,6 @@ package io.invertase.firebase.crashlytics;
 
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.google.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInternal;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 

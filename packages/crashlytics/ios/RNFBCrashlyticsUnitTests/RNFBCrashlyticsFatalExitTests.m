@@ -65,6 +65,13 @@
   [self waitForExpectations:@[ drained ] timeout:seconds + 5];
 }
 
+/** Returns once every block already enqueued on serial `queue` has run (a happens-before edge). */
+- (void)drainQueue:(dispatch_queue_t)queue {
+  dispatch_block_t noop = ^{
+  };
+  dispatch_sync(queue, noop);
+}
+
 - (void)testShared_isProductionSingleton {
   XCTAssertNotNil([RNFBCrashlyticsFatalExit shared]);
   XCTAssertEqual([RNFBCrashlyticsFatalExit shared], [RNFBCrashlyticsFatalExit shared]);
@@ -105,10 +112,8 @@
   [self waitForExpectations:@[ terminated ] timeout:5];
   dispatch_resume(watchdogQueue);
   [self drainFor:0.4];  // past the watchdog, which must not terminate again
-  dispatch_sync(watchdogQueue, ^{
-                });
-  dispatch_sync(moduleQueue, ^{
-                });  // happens-before for `started`, written on moduleQueue
+  [self drainQueue:watchdogQueue];
+  [self drainQueue:moduleQueue];  // `started` is written on moduleQueue
 
   XCTAssertTrue(started);
   XCTAssertEqual(terminations, 1u);
@@ -146,8 +151,7 @@
 
   hung = NO;
   dispatch_semaphore_signal(release);
-  dispatch_sync(hungQueue, ^{
-                });  // the queued terminate block has now run
+  [self drainQueue:hungQueue];  // the queued terminate block has now run
 
   XCTAssertTrue(terminatedWhileHung);
   XCTAssertEqual(terminations, 1u);

@@ -185,6 +185,8 @@ describe('crashlytics()', function () {
         const wasEnabled = crashlytics.isCrashlyticsCollectionEnabled;
         await setCrashlyticsCollectionEnabled(crashlytics, false);
         try {
+          // Internal native call: no public API reaches the collection-disabled native branch
+          // without raising a real JS fatal through the global error handler.
           const result = await crashlytics.native.crashWithStackPromise({
             message: 'e2e: collection disabled, must not terminate',
             isUnhandledRejection: false,
