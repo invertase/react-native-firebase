@@ -187,7 +187,33 @@ describe(' firestore().collection().where(AND Filters)', function () {
 
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql('maximum of 10 elements in the value');
+        error.message.should.containEql('maximum of 30 elements in the value');
+        return Promise.resolve();
+      }
+    });
+
+    it('allows in query array length of 30', function () {
+      const { getFirestore, collection, query, and, where } = firestoreModular;
+      const queryArray = Array.from({ length: 30 }, (_, i) => i + 1);
+
+      query(
+        collection(getFirestore(), COLLECTION),
+        and(where('foo.bar', 'in', queryArray), where('foo.baz', '==', 1)),
+      );
+    });
+
+    it('allows up to 30 AND filters and throws for more', function () {
+      const { getFirestore, collection, query, and, where } = firestoreModular;
+      const constraints = length => Array.from({ length }, (_, i) => where(`field${i}`, '==', i));
+
+      query(collection(getFirestore(), COLLECTION), and(...constraints(30)));
+
+      try {
+        query(collection(getFirestore(), COLLECTION), and(...constraints(31)));
+
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Expected 1-30 instances of Filter, but got 31 Filters');
         return Promise.resolve();
       }
     });
