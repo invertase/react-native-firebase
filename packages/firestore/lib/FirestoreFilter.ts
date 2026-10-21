@@ -22,7 +22,11 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
 import { fromDotSeparatedString } from './FieldPath';
-import { OPERATORS } from './FirestoreQueryModifiers';
+import {
+  getInOperatorValueLimit,
+  MAX_COMPOSITE_FILTERS,
+  OPERATORS,
+} from './FirestoreQueryModifiers';
 import { generateNativeData } from './utils/serialize';
 import type { FieldPath } from './FieldPath';
 import type { Primitive } from './types/firestore';
@@ -86,8 +90,10 @@ export function Filter(
 }
 
 Filter.and = function and(...queries: _Filter[]): _Filter {
-  if (queries.length > 10 || queries.length < 1) {
-    throw new Error(`Expected 1-10 instances of Filter, but got ${queries.length} Filters`);
+  if (queries.length > MAX_COMPOSITE_FILTERS || queries.length < 1) {
+    throw new Error(
+      `Expected 1-${MAX_COMPOSITE_FILTERS} instances of Filter, but got ${queries.length} Filters`,
+    );
   }
 
   const validateFilters = queries.every(filter => filter instanceof _Filter);
@@ -118,8 +124,10 @@ function hasOrOperator(obj: _Filter): boolean {
 }
 
 Filter.or = function or(...queries: _Filter[]): _Filter {
-  if (queries.length > 10 || queries.length < 1) {
-    throw new Error(`Expected 1-10 instances of Filter, but got ${queries.length} Filters`);
+  if (queries.length > MAX_COMPOSITE_FILTERS || queries.length < 1) {
+    throw new Error(
+      `Expected 1-${MAX_COMPOSITE_FILTERS} instances of Filter, but got ${queries.length} Filters`,
+    );
   }
 
   const validateFilters = queries.every(filter => filter instanceof _Filter);
@@ -203,11 +211,12 @@ function mapFieldQuery(
       );
     }
 
-    if (value.length > 10) {
+    const maxValues = getInOperatorValueLimit(operator);
+    if (value.length > maxValues) {
       throw new Error(
         `third argument of Filter(*,_ , _) 'value' is invalid. '${String(
           operator,
-        )}' filters support a maximum of 10 elements in the value array.`,
+        )}' filters support a maximum of ${maxValues} elements in the value array.`,
       );
     }
   }

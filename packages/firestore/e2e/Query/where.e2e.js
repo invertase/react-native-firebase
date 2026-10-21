@@ -538,14 +538,14 @@ describe('firestore().collection().where()', function () {
     it("should throw error when 'not-in' filter has a list of more than 10 items", async function () {
       const { getFirestore, collection, query, where } = firestoreModular;
       const ref = collection(getFirestore(), COLLECTION);
-      const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
+      const queryArray = Array.from({ length: 11 }, (_, i) => i + 1);
 
       try {
         query(ref, where('test', 'not-in', queryArray));
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'filters support a maximum of 30 elements in the value array.',
+          'filters support a maximum of 10 elements in the value array.',
         );
         return Promise.resolve();
       }

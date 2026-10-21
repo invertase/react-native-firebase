@@ -39,6 +39,17 @@ export const OPERATORS: Record<string, string> = {
   in: 'IN',
 };
 
+// Firestore query limits: https://firebase.google.com/docs/firestore/query-data/queries#in_not-in_array-contains-any_limits
+const MAX_IN_FILTER_VALUES = 30;
+const MAX_NOT_IN_FILTER_VALUES = 10;
+// Max filters per or()/and(). Firestore separately caps a whole query at 30 OR'd
+// conditions, which the server enforces: https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries
+export const MAX_COMPOSITE_FILTERS = 30;
+
+export function getInOperatorValueLimit(operator: string): number {
+  return OPERATORS[operator] === 'NOT_IN' ? MAX_NOT_IN_FILTER_VALUES : MAX_IN_FILTER_VALUES;
+}
+
 const INEQUALITY: Record<string, boolean> = {
   LESS_THAN: true,
   LESS_THAN_OR_EQUAL: true,
