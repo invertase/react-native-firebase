@@ -71,9 +71,10 @@ FOUNDATION_EXPORT const NSTimeInterval RNFBCrashlyticsFatalExitWatchdogTimeout;
  * is hung. The terminator runs at most once.
  *
  * Known limit: a JS fatal recorded before Crashlytics finished initialising queues its save as a
- * promise observer instead of a main-queue block, so it can still be lost (unchanged behaviour).
- * The FIFO ordering also relies on FBLPromise's default dispatch queue being the main queue; if
- * that changes, only the watchdog bounds the wait.
+ * promise observer instead of a main-queue block, so it can still be lost.
+ * The FIFO ordering also relies on FBLPromise's default dispatch queue being the main queue; if an
+ * app changes it, the save runs off the main queue and the terminator can run first, losing the
+ * report. The watchdog only covers a hung `terminateQueue`.
  */
 @interface RNFBCrashlyticsFatalExit : NSObject
 

@@ -123,6 +123,54 @@
   XCTAssertEqualObjects(FIRCrashlytics.savedExceptionModels.firstObject.name, @"JavaScriptError");
 }
 
+- (void)testRecordThenTerminate_contextInitPending_terminatesBeforeSave {
+  [FIRCrashlytics holdContextInit];
+  FIRCrashlytics.onExceptionModelSaved = ^(FIRExceptionModel *model) {
+    [self appendEvent:[@"save:" stringByAppendingString:model.reason]];
+  };
+  XCTestExpectation *terminated = [self expectationWithDescription:@"terminated"];
+  __block NSUInteger terminations = 0;
+  __block NSUInteger savedAtExit = NSUIntegerMax;
+  __block BOOL recordedAtExit = NO;
+  dispatch_queue_t watchdogQueue =
+      dispatch_queue_create("rnfb.crashlytics.test.watchdog", DISPATCH_QUEUE_SERIAL);
+  dispatch_suspend(watchdogQueue);
+  RNFBCrashlyticsFatalExit *fatalExit = [[RNFBCrashlyticsFatalExit alloc]
+      initWithTerminator:^{
+        terminations += 1;
+        savedAtExit = FIRCrashlytics.savedExceptionModels.count;
+        recordedAtExit = FIRCrashlytics.lastRecordedExceptionModel != nil;
+        [self appendEvent:@"exit"];
+        [FIRCrashlytics fulfillContextInit];
+        [terminated fulfill];
+      }
+          terminateQueue:dispatch_get_main_queue()
+           watchdogQueue:watchdogQueue
+         watchdogTimeout:0.2];
+
+  __block BOOL started = NO;
+  dispatch_queue_t moduleQueue =
+      dispatch_queue_create("rnfb.crashlytics.test.module", DISPATCH_QUEUE_SERIAL);
+  dispatch_async(moduleQueue, ^{
+    started = [fatalExit recordThenTerminate:^{
+      [self recordFatal];
+    }];
+  });
+
+  [self waitForExpectations:@[ terminated ] timeout:5];
+  dispatch_resume(watchdogQueue);
+  [self drainFor:0.4];
+  [self drainQueue:watchdogQueue];
+  [self drainQueue:moduleQueue];
+
+  XCTAssertTrue(started);
+  XCTAssertEqual(terminations, 1u);
+  XCTAssertTrue(recordedAtExit);
+  XCTAssertEqual(savedAtExit, 0u);
+  NSArray *expected = @[ @"exit", @"save:fatal" ];
+  XCTAssertEqualObjects([self eventsSnapshot], expected);
+}
+
 - (void)testWatchdog_terminatesWhenTerminateQueueIsHung {
   dispatch_queue_t hungQueue = dispatch_queue_create("rnfb.crashlytics.test.hung", 0);
   dispatch_semaphore_t release = dispatch_semaphore_create(0);
