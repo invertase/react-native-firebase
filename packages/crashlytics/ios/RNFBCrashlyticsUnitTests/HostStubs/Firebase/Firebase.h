@@ -45,6 +45,11 @@
 @property(class, nonatomic, readonly, copy) NSArray<FIRExceptionModel *> *savedExceptionModels;
 /** Called on the main queue right after a save block runs. */
 @property(class, nonatomic, copy, nullable) void (^onExceptionModelSaved)(FIRExceptionModel *model);
+/** Holds later saves like observers of a pending context-init promise, until fulfillContextInit. */
++ (void)holdContextInit;
+
+/** Dispatches the held saves to the main queue and stops holding new ones. */
++ (void)fulfillContextInit;
 
 + (void)resetTestState;
 

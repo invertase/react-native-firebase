@@ -66,6 +66,8 @@ static NSUInteger sSendUnsentReportsCallCount;
 static FIRExceptionModel *sLastRecordedExceptionModel;
 static NSMutableArray<FIRExceptionModel *> *sSavedExceptionModels;
 static void (^sOnExceptionModelSaved)(FIRExceptionModel *);
+static BOOL sContextInitPending;
+static NSMutableArray<dispatch_block_t> *sPendingSaves;
 // Bumped by resetTestState so saves enqueued by an earlier test are dropped.
 static atomic_uint_fast64_t sSaveGeneration;
 
@@ -74,6 +76,7 @@ static atomic_uint_fast64_t sSaveGeneration;
     sLoggedMessages = [NSMutableArray new];
     sCustomValues = [NSMutableDictionary new];
     sSavedExceptionModels = [NSMutableArray new];
+    sPendingSaves = [NSMutableArray new];
   }
 }
 
@@ -168,6 +171,24 @@ static atomic_uint_fast64_t sSaveGeneration;
   sOnExceptionModelSaved = [onExceptionModelSaved copy];
 }
 
++ (void)holdContextInit {
+  @synchronized(sPendingSaves) {
+    sContextInitPending = YES;
+  }
+}
+
++ (void)fulfillContextInit {
+  NSArray<dispatch_block_t> *saves;
+  @synchronized(sPendingSaves) {
+    sContextInitPending = NO;
+    saves = [sPendingSaves copy];
+    [sPendingSaves removeAllObjects];
+  }
+  for (dispatch_block_t save in saves) {
+    dispatch_async(dispatch_get_main_queue(), save);
+  }
+}
+
 + (void)resetTestState {
   sDidCrashDuringPreviousExecutionValue = NO;
   sCheckForUnsentReportsValue = NO;
@@ -179,6 +200,10 @@ static atomic_uint_fast64_t sSaveGeneration;
   sLastRecordedExceptionModel = nil;
   [sSavedExceptionModels removeAllObjects];
   sOnExceptionModelSaved = nil;
+  @synchronized(sPendingSaves) {
+    sContextInitPending = NO;
+    [sPendingSaves removeAllObjects];
+  }
   atomic_fetch_add(&sSaveGeneration, 1);
 }
 
@@ -224,9 +249,10 @@ static atomic_uint_fast64_t sSaveGeneration;
 - (void)recordExceptionModel:(FIRExceptionModel *)exceptionModel {
   sLastRecordedExceptionModel = exceptionModel;
   // Mirrors FirebaseCrashlytics: once context init is fulfilled, the save block is dispatched to
-  // the main queue and writes synchronously when it runs.
+  // the main queue and writes synchronously when it runs. While init is pending, FBLPromise holds
+  // the block as an observer and dispatches it to the main queue only when the promise fulfills.
   uint_fast64_t generation = atomic_load(&sSaveGeneration);
-  dispatch_async(dispatch_get_main_queue(), ^{
+  dispatch_block_t save = ^{
     if (generation != atomic_load(&sSaveGeneration)) {
       return;
     }
@@ -234,7 +260,14 @@ static atomic_uint_fast64_t sSaveGeneration;
     if (sOnExceptionModelSaved != nil) {
       sOnExceptionModelSaved(exceptionModel);
     }
-  });
+  };
+  @synchronized(sPendingSaves) {
+    if (sContextInitPending) {
+      [sPendingSaves addObject:save];
+      return;
+    }
+  }
+  dispatch_async(dispatch_get_main_queue(), save);
 }
 
 @end
