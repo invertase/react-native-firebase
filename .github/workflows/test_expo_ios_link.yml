@@ -9,6 +9,7 @@ on:
       - '**'
     paths:
       - 'test-expo/**'
+      - 'packages/app/package.json'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
       - 'packages/app/RNFBApp.podspec'
@@ -27,6 +28,7 @@ on:
       - release-v*
     paths:
       - 'test-expo/**'
+      - 'packages/app/package.json'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
       - 'packages/app/RNFBApp.podspec'
@@ -52,7 +54,7 @@ jobs:
   test-expo-ios-link:
     name: test-expo iOS link + launch smoke
     runs-on: xcode-27
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
@@ -86,7 +88,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-expo-link-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-expo/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js') }}
+          key: ${{ runner.os }}-expo-link-ios-v2-xcode27-${{ hashFiles('yarn.lock', 'test-expo/**', 'packages/app/package.json', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js') }}
           append-timestamp: false
           save: ${{ github.ref == 'refs/heads/main' }}
           create-symlink: true
