@@ -78,6 +78,10 @@ yarn tests:jest --watchman=false packages/firestore/__tests__/pipelines.test.ts
 
 Optional: `yarn tests:jest-coverage`.
 
+<a id="jest-ios-slot-1-host-dependency"></a>
+
+**Host-dependent test (darwin).** `packages/app/__tests__/iosSimulatorHelpers.test.js` › "resolves slot-1 UDID on pinned runtime when present" runs live `simctl` on macOS and fails unless an **`RN E2E iOS slot-1`** simulator exists on `RNFB_IOS_SIM_RUNTIME` (default `iOS 27.0`); on Linux it only static-checks the helper. On a Mac without that device the full suite exits 1 whatever the diff is. To provision it: `yarn tests:e2e:setup-ios-sims 2` (creates slot-0 and slot-1; create/reuse-only — [setup count](running-e2e.md#e2e-slot-index), [iOS slot simulators](running-e2e.md#ios-slot-simulators)). When a reviewer cannot provision it, rerun that file alone (`yarn tests:jest --watchman=false packages/app/__tests__/iosSimulatorHelpers.test.js`) to show only that test fails, and record the `jest` row with the real exit and evidence such as `N-1/N suites; 1 host-dependent failure (no slot-1 sim), unrelated to diff`. This exemption does not apply when the diff touches `scripts/e2e/lib/ios-simulator-helpers.sh`, `scripts/e2e/create-ios-simulators.sh`, or that test file.
+
 ## Android JVM unit tests
 
 When `packages/*/android/**` Java bridge/state-machine logic changed (or added under `src/test/java`):
