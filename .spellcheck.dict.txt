@@ -174,7 +174,6 @@ MDX
 microtask
 Minitest
 mlkit
-MLKit
 mono-repo
 multidex
 Multidex

@@ -71,10 +71,11 @@ const EXEMPT_PACKAGES = {
     'deprecation pointer to @react-native-firebase/ai: no compare-types config, no example screen',
 };
 
-/** Docs packages that keep the extraInRN docs mention but have no example screen. */
-const NO_SCREEN = {
-  ml: 'no example screen by design',
-};
+/**
+ * Docs packages that keep the extraInRN docs mention but have no example screen
+ * (none today; kept so a docs-only package can be added with a reason).
+ */
+const NO_SCREEN = {};
 
 /**
  * Config file basename (without .ts) → docs tree / screen / import specifiers /
@@ -434,7 +435,7 @@ function main() {
         detail:
           `no value imports from [${importSpecifiers.join(', ')}] found in ${fileCount} page(s) under ` +
           `${taughtPaths.join(', ')}; fix taughtPaths/importSpecifiers in PACKAGE_OVERRIDES, ` +
-          'or add the package to NO_SCREEN with a reason',
+          'or add a `NO_SCREEN` entry with a reason',
       });
       continue;
     }
