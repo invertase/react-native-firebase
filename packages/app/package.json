@@ -114,7 +114,7 @@
     "react-native": ">=0.60.0-0"
   },
   "dependencies": {
-    "firebase": "13.0.0"
+    "firebase": "13.1.0"
   },
   "devDependencies": {
     "expo": "^55.0.18",
