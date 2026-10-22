@@ -359,10 +359,12 @@ export function waitForPendingWrites(firestore: Firestore): Promise<void> {
 /**
  * Creates a Firestore instance with the given settings.
  *
- * @remarks Returns synchronously for firebase-js-sdk parity; settings are applied through the
- * native bridge in the background. Web-only `settings.localCache` values (`memoryLocalCache`,
- * `persistentLocalCache`, IndexedDB factories) are **not supported**; persistence is controlled
- * by the native Firestore SDK.
+ * @remarks Returns synchronously, as in firebase-js-sdk; settings are applied in the background.
+ * Invalid settings or a failure while applying them are reported with `console.warn`, not thrown.
+ * On iOS and Android, web-only `settings.localCache` values (`memoryLocalCache`,
+ * `persistentLocalCache`, IndexedDB factories) are **not supported** and persistence is
+ * controlled by the native Firestore SDK; on macOS, settings are passed to the firebase-js-sdk
+ * Firestore Lite `initializeFirestore`, which has no local cache or persistence.
  */
 export function initializeFirestore(
   app: FirebaseApp,
@@ -375,7 +377,15 @@ export function initializeFirestore(
     app,
     databaseId,
   ) as unknown as FirestoreInternal;
-  void firestore.settings(settings);
+  const resolvedDatabaseId = (firestore as unknown as FirebaseFirestoreModule)._databaseId;
+  firestore.settings(settings).catch((error: unknown) => {
+    const raw = error instanceof Error ? error.message : String(error);
+    const message = raw.replace(/^firebase\.firestore\(\)\.settings\(\*\) /, '');
+    // eslint-disable-next-line no-console
+    console.warn(
+      `initializeFirestore() could not apply settings for database '${resolvedDatabaseId}': ${message}`,
+    );
+  });
   return firestore as Firestore;
 }
 

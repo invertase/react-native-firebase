@@ -142,7 +142,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | ------ | ------ | ----- | ----- |
 | `logEvent(analytics, …)` | `Promise<void>` | `void` | Fire-and-forget; remove `await` / `.then()` |
 | `initializeAppCheck(app?, options?)` | `Promise<AppCheck>` | `AppCheck` | Returns handle immediately; provider setup continues natively |
-| `initializeFirestore(app, settings, databaseId?)` | `Promise<Firestore>` | `Firestore` | Returns instance immediately; `settings()` runs on native bridge |
+| `initializeFirestore(app, settings, databaseId?)` | `Promise<Firestore>` | `Firestore` | Returns instance immediately; `settings()` runs in the background (native bridge, or web interop on macOS); errors are reported with `console.warn` |
 | `getRemoteConfig(app?, options?)` | `(app?)` only | `(app?, options?: RemoteConfigOptions)` | `options` accepted for parity; no-op on native |
 | `aggregateFieldEqual()` | Not exported | Exported | Aggregate query helper |
 | `LastFetchStatus` literals | — | — | **Unchanged** — native still uses `no_fetch_yet` / `throttled` (documented drift) |
@@ -759,7 +759,7 @@ The namespaced API for `@react-native-firebase/firestore` has been **removed**. 
 
 ## Signature changes
 
-- `initializeFirestore(app, settings, databaseId?)` returns `Firestore` synchronously (previously `Promise<Firestore>`). Remove `await` and `.then()`; settings apply on the native bridge after return.
+- `initializeFirestore(app, settings, databaseId?)` returns `Firestore` synchronously (previously `Promise<Firestore>`). Remove `await` and `.then()`; settings apply in the background after return (on the native bridge, or through the firebase-js-sdk web interop on macOS). Invalid settings or a failure while applying them are reported with `console.warn` instead of an unhandled promise rejection.
 - `TransactionOptions` is now exported. `runTransaction(firestore, updateFunction, options?)` accepts `{ maxAttempts?: number }` and passes the retry limit to the native iOS and Android Firestore SDKs. When `options` is omitted, the native default applies (**5** attempts, matching [firebase-js-sdk `runTransaction`](https://firebase.google.com/docs/reference/js/firestore_.md#runtransaction)). When `maxAttempts` is provided explicitly, values below **1** throw synchronously with `Max attempts must be at least 1` — the same validation as firebase-js-sdk.
 - `aggregateFieldEqual()` and `aggregateQuerySnapshotEqual()` are now exported for aggregate query equality checks (firebase-js-sdk parity).
 - FieldValue `maximum(n)` and `minimum(n)` sentinels from firebase-js-sdk 12.15.0 are not exported yet. Android Firebase Firestore SDK 34.15.0 supports them, but iOS Firebase Firestore SDK 12.15.0 does not expose matching `FIRFieldValue` factories, so React Native Firebase waits for cross-platform support.
