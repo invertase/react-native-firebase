@@ -16,7 +16,7 @@
  */
 
 import { getOrCreateModularInstance } from '@react-native-firebase/app/dist/module/internal';
-import { isObject } from '@react-native-firebase/app/dist/module/common';
+import { isObject, isString } from '@react-native-firebase/app/dist/module/common';
 import { Query as QueryClass } from './FirestoreQuery';
 import { FirebaseFirestoreModule, config } from './FirestoreModule';
 import FirestoreStatics from './FirestoreStatics';
@@ -64,7 +64,7 @@ import type {
   FirestoreAggregateQueryResultInternal,
   QueryWithAggregateInternals,
 } from './types/internal';
-import type { FieldPath } from './FieldPath';
+import { FieldPath } from './FieldPath';
 
 // react-native at least through 0.77 does not correctly support URL.host, which
 // is needed by firebase-js-sdk. It appears that in 0.80+ it is supported, so this
@@ -298,25 +298,22 @@ export function updateDoc<AppModelType, DbModelType extends DocumentData>(
 ): Promise<void>;
 export function updateDoc<AppModelType, DbModelType extends DocumentData>(
   reference: DocumentReference<AppModelType, DbModelType>,
-  fieldOrUpdateData: string | FieldPath | UpdateData<DbModelType>,
-  value?: unknown,
-  ...moreFieldsAndValues: unknown[]
+  ...args: unknown[]
 ): Promise<void> {
   const ref = reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>;
 
-  if (!fieldOrUpdateData) {
+  if (args.length === 0) {
     return ref.update();
   }
 
-  if (!value) {
-    return ref.update(fieldOrUpdateData);
+  const [fieldOrUpdateData, value, ...moreFieldsAndValues] = args;
+
+  if (isString(fieldOrUpdateData) || fieldOrUpdateData instanceof FieldPath) {
+    return ref.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
   }
 
-  if (!Array.isArray(moreFieldsAndValues)) {
-    return ref.update(fieldOrUpdateData, value);
-  }
-
-  return ref.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
+  // As in firebase-js-sdk, extra arguments after non-field update data are ignored.
+  return ref.update(fieldOrUpdateData);
 }
 
 export function addDoc<AppModelType, DbModelType extends DocumentData>(
