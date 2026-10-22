@@ -104,7 +104,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-rn-bare-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-rn-bare/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js') }}
+          key: ${{ runner.os }}-rn-bare-ios-v2-xcode27-${{ hashFiles('yarn.lock', 'test-rn-bare/*', 'test-rn-bare/ios/*', 'test-rn-bare/ios/testrnbare/**', 'test-rn-bare/ios/*.xcodeproj/**', 'packages/app/*', 'packages/app/ios/RNFB*/**', 'packages/app/ios/generated/**', 'packages/app/plugin/**', '!packages/app/ios/**/build/**') }}
           append-timestamp: false
           save: ${{ github.ref == 'refs/heads/main' }}
           create-symlink: true
@@ -178,7 +178,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-rn-bare-dynfb-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-rn-bare/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js', 'packages/app/package.json') }}
+          key: ${{ runner.os }}-rn-bare-dynfb-ios-v2-xcode27-${{ hashFiles('yarn.lock', 'test-rn-bare/*', 'test-rn-bare/ios/*', 'test-rn-bare/ios/testrnbare/**', 'test-rn-bare/ios/*.xcodeproj/**', 'packages/app/*', 'packages/app/ios/RNFB*/**', 'packages/app/ios/generated/**', 'packages/app/plugin/**', '!packages/app/ios/**/build/**') }}
           append-timestamp: false
           save: ${{ github.ref == 'refs/heads/main' }}
           create-symlink: true
