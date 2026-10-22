@@ -176,7 +176,6 @@ Minitest
 mlkit
 mono-repo
 multidex
-Multidex
 multiline
 namespace
 namespaced
