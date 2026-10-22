@@ -531,6 +531,89 @@ function adbShell(serial, command, timeoutMs = 15000) {
   }).trim();
 }
 
+// After ANR / system_server death, boot_completed can still be 1 while package /
+// activity binders are gone — Detox then fails pm install with "Can't find service".
+function androidCoreServicesPresent(serial) {
+  try {
+    const list = adbShell(serial, 'service list', 15000);
+    return {
+      hasPackage: /\bpackage:/.test(list),
+      hasActivity: /\bactivity:/.test(list),
+      list,
+    };
+  } catch (err) {
+    return {
+      hasPackage: false,
+      hasActivity: false,
+      list: '',
+      error: err?.message || String(err),
+    };
+  }
+}
+
+// promisify-child-process leaves "Can't find service: …" on err.stderr while
+// err.message is only "Process exited with code N". Fold so cold-boot matching
+// and retry logs see the device-side fault without reading Detox SPAWN_STDERR alone.
+function foldDetoxChildProcessOutputIntoError(err) {
+  if (!err || typeof err !== 'object') {
+    return err;
+  }
+  const extras = [err.stderr, err.stdout]
+    .filter(part => part != null && String(part).trim().length > 0)
+    .map(part => String(part).trim());
+  if (extras.length === 0) {
+    return err;
+  }
+  const folded = extras.join('\n');
+  const current = String(err.message || '');
+  if (current.includes(folded) || folded.split('\n').every(line => current.includes(line))) {
+    return err;
+  }
+  err.message = current ? `${current}\n${folded}` : folded;
+  return err;
+}
+
+// launchApp timeouts / Jet desync often leave ANR only in Detox console + logcat,
+// or leave boot_completed=1 while package/activity binders are already gone.
+// Best-effort append so shouldColdBootAndroidOnLaunchRetry sees device-side faults.
+function enrichAndroidLaunchFailureWithGuestSignals(err) {
+  if (!err || typeof err !== 'object') {
+    return err;
+  }
+  if (shouldColdBootAndroidOnLaunchRetry(err)) {
+    return err;
+  }
+  try {
+    const serial = resolveAndroidSerial();
+    const services = androidCoreServicesPresent(serial);
+    if (!services.hasPackage || !services.hasActivity) {
+      const missing = [
+        !services.hasPackage ? "Can't find service: package" : null,
+        !services.hasActivity ? "Can't find service: activity" : null,
+      ]
+        .filter(Boolean)
+        .join('\n');
+      err.message = `${err.message || ''}\n${missing}`.trim();
+      console.warn(
+        `[rnfb-e2e] android guest-signal: core services missing package=${services.hasPackage} activity=${services.hasActivity}`,
+      );
+      return err;
+    }
+    const adb = resolveAdbPath();
+    const logTail = execSync(`${adb} -s ${serial} logcat -d -t 400`, {
+      encoding: 'utf8',
+      timeout: 15000,
+    });
+    if (/ANRError|Application Not Responding|ANR in /i.test(logTail)) {
+      err.message = `${err.message || ''}\nANR detected in recent logcat`.trim();
+      console.warn('[rnfb-e2e] android guest-signal: ANR found in recent logcat');
+    }
+  } catch (probeErr) {
+    console.warn(`[rnfb-e2e] android guest-signal probe failed: ${probeErr?.message || probeErr}`);
+  }
+  return err;
+}
+
 function parseGuestLoad1Min(loadavgLine) {
   const first = loadavgLine.trim().split(/\s+/)[0];
   const load = parseFloat(first);
@@ -823,6 +906,21 @@ async function waitForAndroidEmulatorReady() {
       if (provisioned !== '1') {
         stableLoadPolls = 0;
         console.log(`[rnfb-e2e] android-ready probe provisioned=${provisioned} (waiting)`);
+        await sleep(ANDROID_READY_POLL_MS);
+        continue;
+      }
+
+      // Gate before wait-for-handler / pm install: binders must be listed.
+      const coreServices = androidCoreServicesPresent(serial);
+      if (!coreServices.hasPackage || !coreServices.hasActivity) {
+        stableLoadPolls = 0;
+        packageHandlerDone = false;
+        console.log(
+          `[rnfb-e2e] android-ready probe core-services package=${coreServices.hasPackage} ` +
+            `activity=${coreServices.hasActivity}` +
+            (coreServices.error ? ` error=${coreServices.error}` : '') +
+            ' (waiting for service list)',
+        );
         await sleep(ANDROID_READY_POLL_MS);
         continue;
       }
@@ -1395,6 +1493,7 @@ async function killJetForLaunchRetry(jetProcess, reason = 'launch-retry') {
 async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {}) {
   const liveMetro = usesLiveMetro();
   let lastLaunchFailure;
+  let deleteAppAfterColdBoot = false;
 
   for (let launchAttempt = 1; launchAttempt <= LAUNCH_APP_MAX_ATTEMPTS; launchAttempt++) {
     try {
@@ -1411,6 +1510,8 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
           );
           await coldBootAndroidEmulator();
           await waitForAndroidEmulatorReady();
+          // Reinstall after guest death — prior APK/instrumentation may be gone or corrupt.
+          deleteAppAfterColdBoot = true;
         }
         if (onBeforeRelaunch) {
           await onBeforeRelaunch();
@@ -1428,11 +1529,17 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
+      const deleteApp = launchAttempt === 1 || deleteAppAfterColdBoot;
+      deleteAppAfterColdBoot = false;
       await launchAppWithTimeout(launchArgs, {
-        deleteApp: launchAttempt === 1,
+        deleteApp,
       });
       return;
     } catch (err) {
+      foldDetoxChildProcessOutputIntoError(err);
+      if (detoxPlatformKey() === 'android') {
+        enrichAndroidLaunchFailureWithGuestSignals(err);
+      }
       lastLaunchFailure = err;
       console.warn(`[rnfb-e2e] launchApp failure reason=${err?.message || err}`);
       logLaunchInstallState(`after-launch-failure attempt=${launchAttempt}`);
@@ -1691,6 +1798,8 @@ describe('Jet Tests', function () {
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
           } else if (platform === 'android') {
+            foldDetoxChildProcessOutputIntoError(lastFailure);
+            enrichAndroidLaunchFailureWithGuestSignals(lastFailure);
             if (shouldColdBootAndroidOnLaunchRetry(lastFailure)) {
               console.warn('[rnfb-e2e] Android device-side launch failure — cold booting emulator');
               await coldBootAndroidEmulator();
@@ -1717,6 +1826,10 @@ describe('Jet Tests', function () {
         await runJetE2eAttempt(attempt);
         break;
       } catch (err) {
+        foldDetoxChildProcessOutputIntoError(err);
+        if (platform === 'android') {
+          enrichAndroidLaunchFailureWithGuestSignals(err);
+        }
         lastFailure = err;
         logRetryEligibility(err, attempt);
         if (isRetryableCloudQuotaFailure(err?.jetOutput || '')) {
