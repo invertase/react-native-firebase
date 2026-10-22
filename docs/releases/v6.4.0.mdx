@@ -8,7 +8,7 @@ description: 'v6.4.0: Messaging-focused release adding onNotificationOpenedApp()
 ## Features
 
 - `iOS`: added a `Podfile` option to allow using React Native Firebase packages as static frameworks ([`#3253`](https://github.com/invertase/react-native-firebase/issues/3253)) ([`#530f8bb`](https://github.com/invertase/react-native-firebase/commit/530f8bbb51f89f106854dbf1df5ec80211e2cf8b))
-  - see [Static frameworks with CocoaPods](/ios-spm#static-frameworks-with-cocoapods) for the Podfile options in v26. This v6.4.0 note said the option would default to true in the next major release; the default `static_framework` value in the v26 `RNFBApp` podspec is `false`.
+  - this option no longer applies in v27: Firebase Apple SDK 13+ is SPM-only and needs dynamic linkage. See [iOS SPM Support](/ios-spm). This v6.4.0 note said the option would default to true in the next major release; the default `static_framework` value in the `RNFBApp` podspec is `false`.
 
 ### Messaging
 

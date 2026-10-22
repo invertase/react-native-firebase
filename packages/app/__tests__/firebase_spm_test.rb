@@ -253,11 +253,19 @@ class MockBuildType
   end
 end
 
+# `uses_frameworks: false` models a Podfile with no `use_frameworks!` at all:
+# real CocoaPods then reports a `static_library` build type, which is also
+# `static?`, so the check must name that case distinctly in its message.
 class MockTargetDefinition
   attr_reader :build_type
 
-  def initialize(static: false)
-    @build_type = MockBuildType.new(static: static)
+  def initialize(static: false, uses_frameworks: true)
+    @uses_frameworks = uses_frameworks
+    @build_type = uses_frameworks ? MockBuildType.new(static: static) : MockBuildType.static_library
+  end
+
+  def uses_frameworks?
+    @uses_frameworks
   end
 end
 
@@ -272,10 +280,10 @@ end
 class MockAggregateTarget
   attr_reader :user_project, :name, :target_definition
 
-  def initialize(user_project, name: 'Pods-testing', static_linkage: false)
+  def initialize(user_project, name: 'Pods-testing', static_linkage: false, uses_frameworks: true)
     @user_project = user_project
     @name = name
-    @target_definition = MockTargetDefinition.new(static: static_linkage)
+    @target_definition = MockTargetDefinition.new(static: static_linkage, uses_frameworks: uses_frameworks)
   end
 end
 
@@ -467,33 +475,32 @@ class FirebaseSpmTest < Minitest::Test
     Expo.const_set(:PrecompiledModules, precompiled_modules)
   end
 
-  # ── CocoaPods path (spm_dependency NOT defined) ──
+  # ── Missing spm_dependency fails loud (CocoaPods Firebase path removed) ──
 
-  def test_cocoapods_single_pod
+  def test_missing_spm_single_product_fails_loud
     load_firebase_spm
 
     spec = MockSpec.new
-    firebase_dependency(spec, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+    error = assert_raises(Pod::Informative) do
+      firebase_dependency(spec, '13.0.0', ['FirebaseAuth'], 'Firebase/Auth')
+    end
 
-    assert_equal 1, spec.dependencies.length
-    assert_equal 'Firebase/Auth', spec.dependencies[0][:name]
-    assert_equal '12.10.0', spec.dependencies[0][:version]
+    assert_empty spec.dependencies
+    assert_includes error.message, 'spm_dependency'
   end
 
-  def test_cocoapods_multiple_pods
+  def test_missing_spm_multiple_products_fails_loud
     load_firebase_spm
 
     spec = MockSpec.new
-    firebase_dependency(spec, '12.10.0',
-                        ['FirebaseCrashlytics'],
-                        ['Firebase/Crashlytics', 'FirebaseCoreExtension'])
-
-    assert_equal 2, spec.dependencies.length
-    assert_equal 'Firebase/Crashlytics', spec.dependencies[0][:name]
-    assert_equal 'FirebaseCoreExtension', spec.dependencies[1][:name]
-    spec.dependencies.each do |dep|
-      assert_equal '12.10.0', dep[:version]
+    error = assert_raises(Pod::Informative) do
+      firebase_dependency(spec, '13.0.0',
+                          ['FirebaseCrashlytics'],
+                          ['Firebase/Crashlytics', 'FirebaseCoreExtension'])
     end
+
+    assert_empty spec.dependencies
+    assert_includes error.message, 'no longer distributed through CocoaPods'
   end
 
   # ── SPM path (spm_dependency IS defined) ──
@@ -665,17 +672,21 @@ class FirebaseSpmTest < Minitest::Test
 
   # ── $RNFirebaseDisableSPM semantics (must check truthiness, not defined?) ──
 
-  def test_disable_spm_true_forces_cocoapods
+  def test_disable_spm_true_fails_loud_without_cocoapods_pods
     Object.define_method(:spm_dependency) { |*| raise 'spm_dependency should not be called' }
 
     load_firebase_spm
     $RNFirebaseDisableSPM = true
 
     spec = MockSpec.new
-    firebase_dependency(spec, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+    error = assert_raises(Pod::Informative) do
+      firebase_dependency(spec, '13.0.0', ['FirebaseAuth'], 'Firebase/Auth')
+    end
 
-    assert_equal 1, spec.dependencies.length
-    assert_equal 'Firebase/Auth', spec.dependencies[0][:name]
+    assert_empty spec.dependencies
+    assert_includes error.message, 'no longer distributed through CocoaPods'
+    assert_includes error.message, '$RNFirebaseDisableSPM = true'
+    assert_includes error.message, 'use_frameworks! :linkage => :dynamic'
   end
 
   def test_disable_spm_false_still_uses_spm
@@ -741,20 +752,31 @@ class FirebaseSpmTest < Minitest::Test
     assert RNFirebaseSPM.active?
   end
 
-  def test_cocoapods_path_does_not_set_active_flag
+  def test_missing_spm_dependency_fails_loud_without_cocoapods_pods
     load_firebase_spm
 
-    firebase_dependency(MockSpec.new, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+    spec = MockSpec.new
+    error = assert_raises(Pod::Informative) do
+      firebase_dependency(spec, '13.0.0', ['FirebaseAuth'], 'Firebase/Auth')
+    end
+
+    assert_empty spec.dependencies
     refute RNFirebaseSPM.active?
+    assert_includes error.message, 'no longer distributed through CocoaPods'
+    assert_includes error.message, 'spm_dependency'
   end
 
-  def test_disabled_spm_does_not_set_active_flag_even_if_spm_dependency_defined
+  def test_disabled_spm_fails_loud_even_if_spm_dependency_defined
     Object.define_method(:spm_dependency) { |*| raise 'spm_dependency should not be called' }
     load_firebase_spm
     $RNFirebaseDisableSPM = true
 
-    firebase_dependency(MockSpec.new, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+    error = assert_raises(Pod::Informative) do
+      firebase_dependency(MockSpec.new, '13.0.0', ['FirebaseAuth'], 'Firebase/Auth')
+    end
+
     refute RNFirebaseSPM.active?
+    assert_includes error.message, '$RNFirebaseDisableSPM = true'
   end
 
   def test_active_raises_when_flag_set_without_version
@@ -2225,8 +2247,73 @@ class FirebaseSpmTest < Minitest::Test
       rnfirebase_fail_if_spm_static_linkage!(installer)
     end
     assert_includes error.message, 'SPM + static linkage is not supported'
-    assert_includes error.message, 'Pods-testing'
-    assert_includes error.message, '$RNFirebaseDisableSPM = true'
+    assert_includes error.message, '- `use_frameworks! :linkage => :static` ' \
+                                   '(incl. `USE_FRAMEWORKS=static` / Expo `useFrameworks: "static"`): Pods-testing'
+    refute_includes error.message, 'no `use_frameworks!`'
+    assert_static_linkage_fix_wording(error.message)
+  end
+
+  # Remediation wording shared by every static-linkage failure: dynamic
+  # linkage only (Podfile line, `USE_FRAMEWORKS=dynamic` env with its
+  # every-install caveat, Expo plugin config + prebuild with the generated
+  # Podfile.properties.json only for hand-maintained ios/). The SPM opt-out
+  # must not be offered here.
+  def assert_static_linkage_fix_wording(message)
+    assert_includes message, "Fix your Podfile to use dynamic linkage, then run `pod install` again:\n\n  " \
+                             "use_frameworks! :linkage => :dynamic\n"
+    assert_includes message, 'With the stock template Podfile you can instead run ' \
+                             '`USE_FRAMEWORKS=dynamic pod install`, but it must be set for every `pod install` ' \
+                             '(including CI) or linkage reverts to static; the Podfile line above is the durable fix.'
+    assert_includes message, 'Expo: set `ios.useFrameworks` to `"dynamic"` in the `expo-build-properties` ' \
+                             'plugin config, then re-run `npx expo prebuild`'
+    assert_includes message, 'Only if you maintain `ios/` by hand (no prebuild), ' \
+                             'set `"ios.useFrameworks": "dynamic"` in `ios/Podfile.properties.json`'
+    assert_includes message, 'See https://rnfirebase.io/ios-spm'
+    refute_includes message, 'RNFirebaseDisableSPM'
+    refute_includes message, 'disableSPM'
+    refute_includes message, 'Opt out of SPM'
+  end
+
+  def test_fail_fast_names_missing_use_frameworks_as_static_libraries
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    # Stock React Native / bare Expo Podfile: no `use_frameworks!` line, so
+    # CocoaPods builds every pod as a static library. That is static linkage
+    # too, but the message must not only point at a `use_frameworks!` line
+    # the user doesn't have.
+    installer = MockInstaller.new([
+                                    MockAggregateTarget.new(nil, name: 'Pods-testing', uses_frameworks: false)
+                                  ])
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_fail_if_spm_static_linkage!(installer)
+    end
+    assert_includes error.message,
+                    '- no `use_frameworks!` (or `use_frameworks! false`) -- ' \
+                    'pods build as static libraries: Pods-testing'
+    refute_includes error.message, '- `use_frameworks! :linkage => :static`'
+    assert_static_linkage_fix_wording(error.message)
+  end
+
+  def test_fail_fast_groups_static_library_and_static_framework_targets
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    installer = MockInstaller.new([
+                                    MockAggregateTarget.new(nil, name: 'Pods-app', uses_frameworks: false),
+                                    MockAggregateTarget.new(nil, name: 'Pods-ext', static_linkage: true)
+                                  ])
+
+    error = assert_raises(Pod::Informative) do
+      rnfirebase_fail_if_spm_static_linkage!(installer)
+    end
+    expected = <<~DETECTED
+      Detected static pod linkage:
+        - no `use_frameworks!` (or `use_frameworks! false`) -- pods build as static libraries: Pods-app
+        - `use_frameworks! :linkage => :static` (incl. `USE_FRAMEWORKS=static` / Expo `useFrameworks: "static"`): Pods-ext
+    DETECTED
+    assert_includes error.message, expected
   end
 
   def test_fail_fast_ignores_aggregate_targets_own_always_static_build_type

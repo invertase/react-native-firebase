@@ -29,7 +29,6 @@ import { LiveSession } from '../lib/methods/live-session';
 import { WebSocketHandler } from '../lib/websocket';
 import { AIError } from '../lib/errors';
 import { logger } from '../lib/logger';
-import { ReadableStream } from 'web-streams-polyfill';
 import { ApiSettings } from '../lib/types/internal';
 import { GoogleAIBackend } from '../lib/backend';
 import { _LiveClientSetup } from '../lib/types/live-responses';
@@ -112,7 +111,7 @@ describe('LiveSession', function () {
       const sentData = JSON.parse((mockHandler.send as jest.Mock).mock.calls[0]![0] as string);
       expect(sentData).toEqual({
         clientContent: {
-          turns: [{ role: 'user', parts: [{ text: 'Hello there' }] }],
+          turns: [{ role: 'user', parts: [{ type: 'text' as const, text: 'Hello there' }] }],
           turnComplete: true,
         },
       });
@@ -120,8 +119,8 @@ describe('LiveSession', function () {
 
     it('should format and send a message with an array of Parts', async function () {
       const parts = [
-        { text: 'Part 1' },
-        { inlineData: { mimeType: 'image/png', data: 'base64==' } },
+        { type: 'text' as const, text: 'Part 1' },
+        { type: 'inlineData' as const, inlineData: { mimeType: 'image/png', data: 'base64==' } },
       ];
       await session.send(parts);
       expect(mockHandler.send).toHaveBeenCalledTimes(1);
@@ -166,49 +165,6 @@ describe('LiveSession', function () {
     });
   });
 
-  describe('sendMediaChunks()', function () {
-    it('should send a correctly formatted realtimeInput message', async function () {
-      const chunks = [{ data: 'base64', mimeType: 'audio/webm' }];
-      await session.sendMediaChunks(chunks);
-      expect(mockHandler.send).toHaveBeenCalledTimes(1);
-      const sentData = JSON.parse((mockHandler.send as jest.Mock).mock.calls[0]![0] as string);
-      expect(sentData).toEqual({
-        realtimeInput: { mediaChunks: chunks },
-      });
-    });
-  });
-
-  describe('sendMediaStream()', function () {
-    it('should send multiple chunks from a stream', async function () {
-      const stream = new ReadableStream({
-        start(controller) {
-          controller.enqueue({ data: 'chunk1', mimeType: 'audio/webm' });
-          controller.enqueue({ data: 'chunk2', mimeType: 'audio/webm' });
-          controller.close();
-        },
-      });
-
-      await session.sendMediaStream(stream);
-
-      expect(mockHandler.send).toHaveBeenCalledTimes(2);
-      const firstCall = JSON.parse((mockHandler.send as jest.Mock).mock.calls[0]![0] as string);
-      const secondCall = JSON.parse((mockHandler.send as jest.Mock).mock.calls[1]![0] as string);
-      expect(firstCall.realtimeInput.mediaChunks[0].data).toBe('chunk1');
-      expect(secondCall.realtimeInput.mediaChunks[0].data).toBe('chunk2');
-    });
-
-    it('should re-throw an AIError if the stream reader throws', async function () {
-      const errorStream = new ReadableStream({
-        pull(controller) {
-          controller.error(new Error('Stream failed!'));
-        },
-      });
-      const promise = session.sendMediaStream(errorStream);
-      await expect(promise).rejects.toThrow(AIError);
-      await expect(promise).rejects.toThrow(/Stream failed!/);
-    });
-  });
-
   describe('sendFunctionResponses()', function () {
     it('should send all function responses', async function () {
       const functionResponses: FunctionResponse[] = [
@@ -249,7 +205,7 @@ describe('LiveSession', function () {
       })();
 
       mockHandler.simulateServerMessage({
-        serverContent: { modelTurn: { parts: [{ text: 'response 1' }] } },
+        serverContent: { modelTurn: { parts: [{ type: 'text' as const, text: 'response 1' }] } },
       });
       mockHandler.simulateServerMessage({
         toolCall: { functionCalls: [{ name: 'test_func' }] },
@@ -270,7 +226,7 @@ describe('LiveSession', function () {
       expect(responses).toHaveLength(5);
       expect(responses[0]).toEqual({
         type: LiveResponseType.SERVER_CONTENT,
-        modelTurn: { parts: [{ text: 'response 1' }] },
+        modelTurn: { parts: [{ type: 'text' as const, text: 'response 1' }] },
       } as LiveServerContent);
       expect(responses[1]).toEqual({
         type: LiveResponseType.TOOL_CALL,
@@ -480,7 +436,7 @@ describe('LiveSession', function () {
       })();
 
       mockHandler.simulateServerMessage({
-        serverContent: { modelTurn: { parts: [{ text: 'one' }] } },
+        serverContent: { modelTurn: { parts: [{ type: 'text' as const, text: 'one' }] } },
       });
       // Allow the first message to be processed
       await new Promise(r => setTimeout(r, 10));
@@ -499,8 +455,12 @@ describe('LiveSession', function () {
       await session.close();
       await expect(session.send('test')).rejects.toThrow(AIError);
       await expect(session.send('test')).rejects.toThrow(/closed/);
-      await expect(session.sendMediaChunks([])).rejects.toThrow(AIError);
-      await expect(session.sendMediaChunks([])).rejects.toThrow(/closed/);
+      await expect(session.sendAudioRealtime({ data: 'x', mimeType: 'audio/pcm' })).rejects.toThrow(
+        AIError,
+      );
+      await expect(session.sendAudioRealtime({ data: 'x', mimeType: 'audio/pcm' })).rejects.toThrow(
+        /closed/,
+      );
       const generator = session.receive();
       const nextPromise = generator.next();
       await expect(nextPromise).rejects.toThrow(AIError);

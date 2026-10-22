@@ -26,7 +26,7 @@ import {
   getGenerativeModel,
 } from '../lib/index';
 import { AI, AIErrorCode } from '@react-native-firebase/ai';
-import { VertexAIBackend } from '@react-native-firebase/ai';
+import { AgentPlatformBackend } from '@react-native-firebase/ai';
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 function assertAssignable<T, _U extends T>(): void {}
@@ -41,7 +41,7 @@ const fakeAI: AI = {
       appId: 'app-id',
     },
   } as ReactNativeFirebase.FirebaseApp,
-  backend: new VertexAIBackend('us-central1'),
+  backend: new AgentPlatformBackend('us-central1'),
   location: 'us-central1',
 };
 

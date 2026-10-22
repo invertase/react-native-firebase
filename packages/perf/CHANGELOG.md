@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+
+### Features
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+
+### Bug Fixes
+
+- **perf, ios:** avoid id cast shadowed by TurboModule id param ([9556118](https://github.com/invertase/react-native-firebase/commit/955611850796e2589c0286ab4700a4eb6ec5d2a3))
+- **perf, ios:** typedef Swift protocol refs around TurboModule id shadowing ([db9cc60](https://github.com/invertase/react-native-firebase/commit/db9cc60e6eb2eb4331702393e2649f102b7cce70))
+- **perf, ios:** use id casts for Swift protocols in ObjC++ ([1d5c7ca](https://github.com/invertase/react-native-firebase/commit/1d5c7ca28d674d7c3bdd19d085911abccda2b20e))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes

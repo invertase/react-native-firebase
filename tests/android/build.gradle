@@ -10,8 +10,9 @@ buildscript {
 
  ext.ndkVersion = "27.1.12297006"
 
-  // RN 0.88 template / @react-native/gradle-plugin catalog pin. async-storage 3.x metadata is 2.2.0.
-  ext.kotlinVersion = '2.2.0' // https://kotlinlang.org/releases.html
+  // Firebase Auth 25 (BoM 35) ships Kotlin 2.4.0 metadata; compiler must be >= 2.4.0 to consume it.
+  // Newer Kotlin still reads older libs (e.g. async-storage 3.x metadata 2.2.0).
+  ext.kotlinVersion = '2.4.0' // https://kotlinlang.org/releases.html
   ext.supportLibVersion = '1.17.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
   ext.appCompatVersion = '1.7.1' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion

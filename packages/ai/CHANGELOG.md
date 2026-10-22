@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+- **ai:** The Imagen API is removed from @react-native-firebase/ai.
+  getImagenModel(), getTemplateImagenModel(), ImagenImageFormat, and the Imagen
+  request and response types are gone. Generate images with Gemini image models
+  through getGenerativeModel() instead, setting responseModalities and
+  imageConfig on the generation config. See docs/migrating-to-v27.mdx for the
+  full mapping of removed exports and before/after code.
+
+### Features
+
+- **ai:** remove Imagen API ([c503c7f](https://github.com/invertase/react-native-firebase/commit/c503c7f6bdb35df817bb8ca196a7e2666d829227))
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+
+### Bug Fixes
+
+- **ai:** avoid shell execution for fixture tags ([87ae689](https://github.com/invertase/react-native-firebase/commit/87ae689d09ba49beaf66f75b2be3cd828f92555f))
+- **ai:** deprecate Gemini 3/4 unsupported GenerationConfig and Live sampling fields ([68170d9](https://github.com/invertase/react-native-firebase/commit/68170d9a555a6fcf72f3bf63c793fc62db8601b1))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 **Note:** Version bump only for package @react-native-firebase/ai

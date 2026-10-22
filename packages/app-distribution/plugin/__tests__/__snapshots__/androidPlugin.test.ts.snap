@@ -6,7 +6,7 @@ exports[`App distribution Plugin Android Tests applies app distribution classpat
 buildscript {
     ext {
         buildToolsVersion = "29.0.3"
-        minSdkVersion = 21
+        minSdkVersion = 24
         compileSdkVersion = 30
         targetSdkVersion = 30
     }

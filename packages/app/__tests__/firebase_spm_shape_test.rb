@@ -137,6 +137,48 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
       assert Pod::BuildType.static_library.static?
     end
 
+    # Real Pod::Podfile target definitions (no install context needed) for
+    # every Podfile linkage form rnfirebase_fail_if_spm_static_linkage!
+    # distinguishes: `build_type.static?` selects the failing targets and
+    # `uses_frameworks?` splits "no use_frameworks!" (static libraries) from
+    # `use_frameworks! :linkage => :static`. MockTargetDefinition in
+    # firebase_spm_test.rb assumes exactly these pairs.
+    def test_target_definition_static_and_uses_frameworks_match_podfile_linkage
+      podfile = Pod::Podfile.new do
+        # No block: a target with no `use_frameworks!` line at all.
+        target 'NoFrameworks'
+        target 'FrameworksFalse' do
+          use_frameworks! false
+        end
+        target 'StaticFrameworks' do
+          use_frameworks! linkage: :static
+          target 'StaticChild' do
+            inherit! :complete
+          end
+        end
+        target 'DynamicFrameworks' do
+          use_frameworks! linkage: :dynamic
+        end
+      end
+
+      expected = {
+        'NoFrameworks' => [true, false],
+        'FrameworksFalse' => [true, false],
+        'StaticFrameworks' => [true, true],
+        'DynamicFrameworks' => [false, true],
+        'StaticChild' => [true, true]
+      }
+      expected.each do |name, pair|
+        definition = podfile.target_definitions.fetch(name)
+        assert_equal pair, [definition.build_type.static?, definition.uses_frameworks?],
+                     "Pod::Podfile target `#{name}` no longer reports " \
+                     "[build_type.static?, uses_frameworks?] == #{pair.inspect} -- " \
+                     'rnfirebase_fail_if_spm_static_linkage! (and MockTargetDefinition) ' \
+                     'rely on this pair to select and label static-linkage targets.'
+      end
+      assert_equal 'StaticFrameworks', podfile.target_definitions.fetch('StaticChild').parent.name
+    end
+
     def test_pod_target_exposes_name_and_build_type
       assert Pod::PodTarget.method_defined?(:name)
       build_type_defined = Pod::PodTarget.method_defined?(:build_type) ||

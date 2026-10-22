@@ -1,9 +1,9 @@
 ---
 title: Enabling Multidex
-description: 'Legacy and rarely needed: Android multidex steps (multiDexEnabled, the androidx.multidex dependency, MultiDexApplication) for the 64k method-count limit. React Native Firebase v26 requires minSdk 23, where multidex is native.'
+description: 'Legacy and rarely needed: Android multidex steps (multiDexEnabled, the androidx.multidex dependency, MultiDexApplication) for the 64k method-count limit. React Native Firebase v27 requires minSdk 24, where multidex is native.'
 ---
 
-> **Legacy, rarely needed.** `@react-native-firebase/app` v26 sets the default Android `minSdk` to `23` (`sdkVersions.android.minSdk` in its `package.json`). Android 5.0 (API 21) and higher support multidex natively, per the official [Android documentation](https://developer.android.com/studio/build/multidex#mdex-gradle), so apps at `minSdk` 23 do not need the steps below. Use them only if you lower `minSdk` below 21 for a project on an older React Native Firebase major version.
+> **Legacy, rarely needed.** `@react-native-firebase/app` v27 sets the default Android `minSdk` to `24` (`sdkVersions.android.minSdk` in its `package.json`). Android 5.0 (API 21) and higher support multidex natively, per the official [Android documentation](https://developer.android.com/studio/build/multidex#mdex-gradle), so apps at `minSdk` 24 do not need the steps below. Use them only if you lower `minSdk` below 21 for a project on an older React Native Firebase major version.
 
 As more native dependencies are added to a project with a low `minSdk`, it may bump you over the
 64k method limit on the Android build system. Once this limit has been reached, you will start to see the following error
@@ -25,7 +25,7 @@ Open the `/android/app/build.gradle` file. Under `dependencies` add the module, 
 within the `defaultConfig`:
 
 ```groovy
-// Legacy: only for a minSdk below 21. Not needed at React Native Firebase's default minSdk 23.
+// Legacy: only for a minSdk below 21. Not needed at React Native Firebase's default minSdk 24.
 // File: android/app/build.gradle. Add multiDexEnabled to the existing defaultConfig and the dependency to the existing dependencies block.
 android {
     defaultConfig {

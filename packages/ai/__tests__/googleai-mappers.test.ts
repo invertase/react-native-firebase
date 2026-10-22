@@ -47,7 +47,7 @@ import { SpiedFunction } from 'jest-mock';
 
 const fakeModel = 'models/gemini-3.1-flash-lite';
 
-const fakeContents: Content[] = [{ role: 'user', parts: [{ text: 'hello' }] }];
+const fakeContents: Content[] = [{ role: 'user', parts: [{ type: 'text', text: 'hello' }] }];
 
 describe('Google AI Mappers', () => {
   let loggerWarnSpy: SpiedFunction<{
@@ -139,7 +139,9 @@ describe('Google AI Mappers', () => {
       const mappedResponse = mapGenerateContentResponse(googleAIMockResponse);
 
       expect(mappedResponse.candidates).toBeDefined();
-      expect(mappedResponse.candidates?.[0]?.content.parts[0]?.text).toContain('quantum mechanics');
+      expect(
+        (mappedResponse.candidates?.[0]?.content.parts[0] as { text?: string })?.text,
+      ).toContain('quantum mechanics');
 
       // Mapped citations
       expect(mappedResponse.candidates?.[0]?.citationMetadata?.citations[0]?.startIndex).toBe(
@@ -202,7 +204,7 @@ describe('Google AI Mappers', () => {
     it('should map a Vertex AI CountTokensRequest to Google AI format', () => {
       const vertexRequest: CountTokensRequest = {
         contents: fakeContents,
-        systemInstruction: { role: 'system', parts: [{ text: 'Be nice' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'Be nice' }] },
         tools: [{ functionDeclarations: [{ name: 'foo', description: 'bar' }] }],
         generationConfig: { temperature: 0.8 },
       };
@@ -224,7 +226,7 @@ describe('Google AI Mappers', () => {
     it('should map a minimal Vertex AI CountTokensRequest', () => {
       const vertexRequest: CountTokensRequest = {
         contents: fakeContents,
-        systemInstruction: { role: 'system', parts: [{ text: 'Be nice' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'Be nice' }] },
         generationConfig: { temperature: 0.8 },
       };
 
@@ -232,7 +234,7 @@ describe('Google AI Mappers', () => {
         generateContentRequest: {
           model: fakeModel,
           contents: vertexRequest.contents,
-          systemInstruction: { role: 'system', parts: [{ text: 'Be nice' }] },
+          systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'Be nice' }] },
           generationConfig: { temperature: 0.8 },
         },
       };
@@ -247,7 +249,7 @@ describe('Google AI Mappers', () => {
       const candidates: GoogleAIGenerateContentCandidate[] = [
         {
           index: 0,
-          content: { role: 'model', parts: [{ text: 'Cited text' }] },
+          content: { role: 'model', parts: [{ type: 'text', text: 'Cited text' }] },
           citationMetadata: {
             citationSources: [
               { startIndex: 0, endIndex: 5, uri: 'uri1', license: 'MIT' },
@@ -269,7 +271,7 @@ describe('Google AI Mappers', () => {
       const candidates: GoogleAIGenerateContentCandidate[] = [
         {
           index: 0,
-          content: { role: 'model', parts: [{ text: 'Maybe unsafe' }] },
+          content: { role: 'model', parts: [{ type: 'text', text: 'Maybe unsafe' }] },
           safetyRatings: [
             {
               category: HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -300,6 +302,7 @@ describe('Google AI Mappers', () => {
             role: 'model',
             parts: [
               {
+                type: 'inlineData',
                 inlineData: { mimeType: 'video/mp4', data: 'base64==' },
                 videoMetadata: { startOffset: '0s', endOffset: '5s' }, // Unsupported
               },
@@ -320,14 +323,14 @@ describe('Google AI Mappers', () => {
       const candidates: GoogleAIGenerateContentCandidate[] = [
         {
           index: 0,
-          content: { role: 'model', parts: [{ text: 'Simple text' }] },
+          content: { role: 'model', parts: [{ type: 'text', text: 'Simple text' }] },
           finishReason: FinishReason.STOP,
         },
       ];
       const mapped = mapGenerateContentCandidates(candidates);
       expect(mapped[0]?.citationMetadata).toBeUndefined();
       expect(mapped[0]?.safetyRatings).toBeUndefined();
-      expect(mapped[0]?.content?.parts[0]?.text).toBe('Simple text');
+      expect((mapped[0]?.content?.parts[0] as { text?: string })?.text).toBe('Simple text');
       expect(loggerWarnSpy).not.toHaveBeenCalled();
     });
 
@@ -342,7 +345,7 @@ describe('Google AI Mappers', () => {
       const candidates: GoogleAIGenerateContentCandidate[] = [
         {
           index: 0,
-          content: { role: 'model', parts: [{ text: 'Response with URL context' }] },
+          content: { role: 'model', parts: [{ type: 'text', text: 'Response with URL context' }] },
           finishReason: FinishReason.STOP,
           urlContextMetadata: {
             urlMetadata: [
@@ -369,7 +372,7 @@ describe('Google AI Mappers', () => {
       const candidates: GoogleAIGenerateContentCandidate[] = [
         {
           index: 0,
-          content: { role: 'model', parts: [{ text: 'Grounded response' }] },
+          content: { role: 'model', parts: [{ type: 'text', text: 'Grounded response' }] },
           finishReason: FinishReason.STOP,
           groundingMetadata: {
             searchEntryPoint: { renderedContent: '<div class="gsc">Search snippet</div>' },

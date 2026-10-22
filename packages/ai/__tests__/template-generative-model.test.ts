@@ -18,7 +18,7 @@
 import { describe, expect, it, afterEach, jest } from '@jest/globals';
 import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI } from '../lib/public-types';
-import { VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend } from '../lib/backend';
 import { TemplateGenerativeModel } from '../lib/models/template-generative-model';
 import * as generateContentMethods from '../lib/methods/generate-content';
 import { EnhancedGenerateContentResponse, GenerateContentStreamResult } from '../lib/types';
@@ -33,7 +33,7 @@ const fakeAI: AI = {
       appId: 'my-appid',
     },
   } as ReactNativeFirebase.FirebaseApp,
-  backend: new VertexAIBackend('us-central1'),
+  backend: new AgentPlatformBackend('us-central1'),
   location: 'us-central1',
 };
 
@@ -70,7 +70,10 @@ describe('TemplateGenerativeModel', function () {
         .mockResolvedValue({} as any);
       const model = new TemplateGenerativeModel(fakeAI, { timeout: 5000 });
 
-      await model.generateContent(TEMPLATE_ID, TEMPLATE_VARS);
+      await model.generateContent({
+        templateId: TEMPLATE_ID,
+        templateVariables: TEMPLATE_VARS,
+      });
 
       expect(templateGenerateContentSpy).toHaveBeenCalledTimes(1);
       expect(templateGenerateContentSpy).toHaveBeenCalledWith(
@@ -91,10 +94,16 @@ describe('TemplateGenerativeModel', function () {
         baseUrl: 'https://model.example.com',
       });
 
-      await model.generateContent(TEMPLATE_ID, TEMPLATE_VARS, {
-        timeout: 2000,
-        signal: controller.signal,
-      });
+      await model.generateContent(
+        {
+          templateId: TEMPLATE_ID,
+          templateVariables: TEMPLATE_VARS,
+        },
+        {
+          timeout: 2000,
+          signal: controller.signal,
+        },
+      );
 
       expect(templateGenerateContentSpy).toHaveBeenCalledWith(
         model._apiSettings,
@@ -116,7 +125,10 @@ describe('TemplateGenerativeModel', function () {
         .mockResolvedValue({} as any);
       const model = new TemplateGenerativeModel(fakeAI, { timeout: 5000 });
 
-      await model.generateContentStream(TEMPLATE_ID, TEMPLATE_VARS);
+      await model.generateContentStream({
+        templateId: TEMPLATE_ID,
+        templateVariables: TEMPLATE_VARS,
+      });
 
       expect(templateGenerateContentStreamSpy).toHaveBeenCalledTimes(1);
       expect(templateGenerateContentStreamSpy).toHaveBeenCalledWith(
@@ -137,10 +149,16 @@ describe('TemplateGenerativeModel', function () {
         baseUrl: 'https://model.example.com',
       });
 
-      await model.generateContentStream(TEMPLATE_ID, TEMPLATE_VARS, {
-        timeout: 2000,
-        signal: controller.signal,
-      });
+      await model.generateContentStream(
+        {
+          templateId: TEMPLATE_ID,
+          templateVariables: TEMPLATE_VARS,
+        },
+        {
+          timeout: 2000,
+          signal: controller.signal,
+        },
+      );
 
       expect(templateGenerateContentStreamSpy).toHaveBeenCalledWith(
         model._apiSettings,
@@ -175,7 +193,7 @@ describe('TemplateGenerativeModel', function () {
         .spyOn(generateContentMethods, 'templateGenerateContent')
         .mockResolvedValue({
           response: {
-            candidates: [{ content: { parts: [{ text: 'hello back' }] } }],
+            candidates: [{ content: { parts: [{ type: 'text', text: 'hello back' }] } }],
           },
         } as any);
       const model = new TemplateGenerativeModel(fakeAI, {
@@ -198,7 +216,7 @@ describe('TemplateGenerativeModel', function () {
         TEMPLATE_ID,
         expect.objectContaining({
           inputs: TEMPLATE_VARS,
-          contents: [{ role: 'user', parts: [{ text: 'hello' }] }],
+          contents: [{ role: 'user', parts: [{ type: 'text', text: 'hello' }] }],
         }),
         {
           timeout: 2000,
@@ -207,8 +225,8 @@ describe('TemplateGenerativeModel', function () {
         },
       );
       await expect(chat.getHistory()).resolves.toEqual([
-        { role: 'user', parts: [{ text: 'hello' }] },
-        { role: 'model', parts: [{ text: 'hello back' }] },
+        { role: 'user', parts: [{ type: 'text', text: 'hello' }] },
+        { role: 'model', parts: [{ type: 'text', text: 'hello back' }] },
       ]);
     });
 
@@ -221,6 +239,7 @@ describe('TemplateGenerativeModel', function () {
               role: 'model',
               parts: [
                 {
+                  type: 'functionCall',
                   functionCall: {
                     name: 'getWeather',
                     args: { city: 'London' },
@@ -237,7 +256,7 @@ describe('TemplateGenerativeModel', function () {
           {
             content: {
               role: 'model',
-              parts: [{ text: 'It is 72 degrees.' }],
+              parts: [{ type: 'text', text: 'It is 72 degrees.' }],
             },
           },
         ],
@@ -278,12 +297,13 @@ describe('TemplateGenerativeModel', function () {
           contents: [
             {
               role: 'user',
-              parts: [{ text: 'weather in London' }],
+              parts: [{ type: 'text', text: 'weather in London' }],
             },
             {
               role: 'model',
               parts: [
                 {
+                  type: 'functionCall',
                   functionCall: {
                     name: 'getWeather',
                     args: { city: 'London' },
@@ -295,6 +315,7 @@ describe('TemplateGenerativeModel', function () {
               role: 'function',
               parts: [
                 {
+                  type: 'functionResponse',
                   functionResponse: {
                     name: 'getWeather',
                     response: { temperature: 72 },
@@ -309,12 +330,13 @@ describe('TemplateGenerativeModel', function () {
       expect(history).toEqual([
         {
           role: 'user',
-          parts: [{ text: 'weather in London' }],
+          parts: [{ type: 'text', text: 'weather in London' }],
         },
         {
           role: 'model',
           parts: [
             {
+              type: 'functionCall',
               functionCall: {
                 name: 'getWeather',
                 args: { city: 'London' },
@@ -326,6 +348,7 @@ describe('TemplateGenerativeModel', function () {
           role: 'function',
           parts: [
             {
+              type: 'functionResponse',
               functionResponse: {
                 name: 'getWeather',
                 response: { temperature: 72 },
@@ -335,7 +358,7 @@ describe('TemplateGenerativeModel', function () {
         },
         {
           role: 'model',
-          parts: [{ text: 'It is 72 degrees.' }],
+          parts: [{ type: 'text', text: 'It is 72 degrees.' }],
         },
       ]);
     });
@@ -345,7 +368,7 @@ describe('TemplateGenerativeModel', function () {
         .spyOn(generateContentMethods, 'templateGenerateContentStream')
         .mockResolvedValue({
           response: Promise.resolve({
-            candidates: [{ content: { parts: [{ text: 'stream back' }] } }],
+            candidates: [{ content: { parts: [{ type: 'text', text: 'stream back' }] } }],
           }),
         } as any);
       const model = new TemplateGenerativeModel(fakeAI, { timeout: 5000 });
@@ -362,13 +385,13 @@ describe('TemplateGenerativeModel', function () {
         TEMPLATE_ID,
         expect.objectContaining({
           inputs: TEMPLATE_VARS,
-          contents: [{ role: 'user', parts: [{ text: 'hello' }] }],
+          contents: [{ role: 'user', parts: [{ type: 'text', text: 'hello' }] }],
         }),
         { timeout: 5000 },
       );
       await expect(chat.getHistory()).resolves.toEqual([
-        { role: 'user', parts: [{ text: 'hello' }] },
-        { role: 'model', parts: [{ text: 'stream back' }] },
+        { role: 'user', parts: [{ type: 'text', text: 'hello' }] },
+        { role: 'model', parts: [{ type: 'text', text: 'stream back' }] },
       ]);
     });
 
@@ -381,6 +404,7 @@ describe('TemplateGenerativeModel', function () {
               role: 'model',
               parts: [
                 {
+                  type: 'functionCall',
                   functionCall: {
                     name: 'getWeather',
                     args: { city: 'London' },
@@ -397,7 +421,7 @@ describe('TemplateGenerativeModel', function () {
           {
             content: {
               role: 'model',
-              parts: [{ text: 'It is 72 degrees.' }],
+              parts: [{ type: 'text', text: 'It is 72 degrees.' }],
             },
           },
         ],
@@ -438,12 +462,13 @@ describe('TemplateGenerativeModel', function () {
           contents: [
             {
               role: 'user',
-              parts: [{ text: 'weather in London' }],
+              parts: [{ type: 'text', text: 'weather in London' }],
             },
             {
               role: 'model',
               parts: [
                 {
+                  type: 'functionCall',
                   functionCall: {
                     name: 'getWeather',
                     args: { city: 'London' },
@@ -455,6 +480,7 @@ describe('TemplateGenerativeModel', function () {
               role: 'function',
               parts: [
                 {
+                  type: 'functionResponse',
                   functionResponse: {
                     name: 'getWeather',
                     response: { temperature: 72 },
@@ -469,12 +495,13 @@ describe('TemplateGenerativeModel', function () {
       expect(history).toEqual([
         {
           role: 'user',
-          parts: [{ text: 'weather in London' }],
+          parts: [{ type: 'text', text: 'weather in London' }],
         },
         {
           role: 'model',
           parts: [
             {
+              type: 'functionCall',
               functionCall: {
                 name: 'getWeather',
                 args: { city: 'London' },
@@ -486,6 +513,7 @@ describe('TemplateGenerativeModel', function () {
           role: 'function',
           parts: [
             {
+              type: 'functionResponse',
               functionResponse: {
                 name: 'getWeather',
                 response: { temperature: 72 },
@@ -495,7 +523,7 @@ describe('TemplateGenerativeModel', function () {
         },
         {
           role: 'model',
-          parts: [{ text: 'It is 72 degrees.' }],
+          parts: [{ type: 'text', text: 'It is 72 degrees.' }],
         },
       ]);
     });

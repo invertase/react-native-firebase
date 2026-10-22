@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+
+### Features
+
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+
+### Bug Fixes
+
+- **app,database:** resolve platform native module when bundlers apply package exports ([959d91f](https://github.com/invertase/react-native-firebase/commit/959d91fc79d7155d1d9a08e1f836789e6e6d6156))
+- **firestore, ios:** cover transaction HostStub update-block paths and unskip waitForPendingWrites ([fd9422b](https://github.com/invertase/react-native-firebase/commit/fd9422b983fcfc7b405bfaf3c3ce8197a09e12b7))
+- **firestore:** fail iOS transaction timeout without SDK retry ([c91be82](https://github.com/invertase/react-native-firebase/commit/c91be8289cd5f10bcf59f62d7eaa248eee556eec))
+- **firestore:** ignore leftover JS transaction work after id is finished ([2a37b73](https://github.com/invertase/react-native-firebase/commit/2a37b73a11638fb8bb9badb09e40e5a28a0e86bd))
+- **firestore:** reject leftover iOS transaction get as deadline-exceeded ([c7e5836](https://github.com/invertase/react-native-firebase/commit/c7e58361157d13c64ed027d03e01001b7633f833))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes

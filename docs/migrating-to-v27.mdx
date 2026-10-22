@@ -1,46 +1,105 @@
 ---
 title: Migrating to v27
-description: Migrate to React Native Firebase v27 - Firebase JS SDK 12.18.0, messaging corrections, Imagen API removal, and App iOS behavior/header changes.
+description: 'Migrate to React Native Firebase v27 - Firebase Android BoM 35, Apple SDK 13 (SPM-only), JS SDK 13, platform floors, AI API removals, messaging corrections, and ML package removal.'
 previous: /migrating-to-v26
 next: /typescript
 ---
 
-Version 27 bundles several **breaking behavior corrections** and dependency bumps that landed after v26:
+Version 27 is a **native and JS SDK major** plus several earlier breaking corrections:
 
-- **Firebase JS SDK 12.18.0** — on web/macOS (`Platform.other`), `FunctionsError.message` appends an HTTP status suffix and `customData.url` is populated ([#9218](https://github.com/invertase/react-native-firebase/pull/9218)).
+### Upstream SDK majors (new in this release)
+
+| Platform | Pin                               | Floor / install change                                                     |
+| -------- | --------------------------------- | -------------------------------------------------------------------------- |
+| Android  | Firebase BoM **35.0.0**           | `minSdk` **24** (was 23); Kotlin Gradle plugin **≥ 2.4.0**                 |
+| Apple    | Firebase iOS SDK **13.0.0** (SPM) | macOS **11.0** (was 10.15); **SPM-only** Firebase (CocoaPods path removed) |
+| JS       | `firebase` **13.0.0**             | AI Logic API removals / renames (see below)                                |
+
+- **Android** — BoM 35 requires API 24+. Update `minSdkVersion` / `sdkVersions` overrides to **24**. Raise the Kotlin Gradle plugin to **≥ 2.4.0** (`firebase-auth` 25 ships Kotlin 2.4.0 metadata). See [Platforms](/platforms).
+- **Apple** — Firebase 13 is distributed only via Swift Package Manager. Remove `$RNFirebaseDisableSPM` / Expo `disableSPM`. Use `use_frameworks! :linkage => :dynamic`. See [iOS SPM Support](/ios-spm). Google Sign-In + Firebase 13 may still hit App Check resolve conflicts — see [Ecosystem compatibility tips](/migrating-to-v27#ecosystem-compatibility-tips) and [iOS SPM Support § Google Sign-In caveat](/ios-spm#google-sign-in-caveat).
+- **JS / AI** — Align with Firebase JS SDK 13 / `@firebase/ai@3`: use `AgentPlatformBackend` (default location **`global`**) instead of removed `VertexAIBackend`; template `generateContent` takes a `TemplateRequest`; remove `LiveSession.sendMediaChunks` / `sendMediaStream` (use realtime senders); drop `totalBillableCharacters` and related removed fields.
+
+### Other v27 breaks (already on this line)
+
 - **Cloud Messaging** — four documented runtime contracts are enforced after previous accidental shapes ([#9246](https://github.com/invertase/react-native-firebase/pull/9246), [#9247](https://github.com/invertase/react-native-firebase/pull/9247), [#9252](https://github.com/invertase/react-native-firebase/pull/9252), [#9254](https://github.com/invertase/react-native-firebase/pull/9254)).
 - **Imagen API removed** from `@react-native-firebase/ai` after Google shut down the Imagen models as a service on **2026-08-17**. Generate images with a Gemini image model through `getGenerativeModel()` instead.
 - **App (iOS)** — `initializeApp` reads `automaticDataCollectionEnabled` as a real boolean, and public App headers no longer re-export FirebaseCore / Photos ([#9337](https://github.com/invertase/react-native-firebase/pull/9337)).
+- **ML package removed** — `@react-native-firebase/ml` is discontinued and no longer published with v27.
+- **FunctionsError (web/macOS)** — earlier JS SDK enrichment of `FunctionsError.message` / `customData.url` on `Platform.other` (see section below; still applies under JS 13).
 
 If you are upgrading from v25 or earlier, complete [Migrating to v26](/migrating-to-v26) first — the namespaced API removal and New Architecture requirement still apply.
 
 ## Table of contents
 
 - [Agent-assisted migration](/migrating-to-v27#agent-assisted-migration)
-- [Firebase JS SDK 12.18.0](/migrating-to-v27#firebase-js-sdk-12180)
+- [Upstream SDK majors](/migrating-to-v27#upstream-sdk-majors)
+- [Firebase JS / FunctionsError](/migrating-to-v27#firebase-js--functionserror)
 - [Cloud Messaging](/migrating-to-v27#cloud-messaging)
   - [String APNs sound → `notification.ios.sound`](/migrating-to-v27#string-apns-sound--notificationiossound)
   - [iOS `sentTime` is epoch milliseconds](/migrating-to-v27#ios-senttime-is-epoch-milliseconds)
   - [iOS badge is a string](/migrating-to-v27#ios-badge-is-a-string)
   - [`onMessageSent` receives a string message ID](/migrating-to-v27#onmessagesent-receives-a-string-message-id)
+- [AI Logic breaking removals](/migrating-to-v27#ai-logic-breaking-removals)
 - [Removed Imagen API](/migrating-to-v27#removed-imagen-api)
   - [Example](/migrating-to-v27#example)
 - [App (iOS)](/migrating-to-v27#app-ios)
   - [`automaticDataCollectionEnabled` is a boolean](/migrating-to-v27#automaticdatacollectionenabled-is-a-boolean)
   - [Public headers no longer import FirebaseCore / Photos](/migrating-to-v27#public-headers-no-longer-import-firebasecore--photos)
+- [Removed ML package](/migrating-to-v27#removed-ml-package)
+- [Ecosystem compatibility tips](/migrating-to-v27#ecosystem-compatibility-tips)
+  - [Kotlin ≥ 2.4.0 (supported)](/migrating-to-v27#kotlin--240-supported)
+  - [Unsupported older-Kotlin workaround](/migrating-to-v27#unsupported-older-kotlin-workaround)
+  - [AsyncStorage / KSP](/migrating-to-v27#asyncstorage--ksp)
+  - [Google Sign-In + Firebase 13 SPM](/migrating-to-v27#google-sign-in--firebase-13-spm)
 - [Automated migration checklist](/migrating-to-v27#automated-migration-checklist)
+
+# Upstream SDK majors
+
+### Migration actions
+
+1. Bump all `@react-native-firebase/*` packages to v27 together.
+2. Android: set `minSdkVersion` / any `react-native` `versions.android.minSdk` override to **24**; set `kotlinVersion` / the Kotlin Gradle plugin to **≥ 2.4.0**.
+3. iOS: remove `$RNFirebaseDisableSPM = true` and Expo `ios.disableSPM`; ensure `use_frameworks! :linkage => :dynamic` (or Expo `useFrameworks: "dynamic"`); raise macOS deployment target to **11.0** if you ship macOS.
+4. JS: ensure the app resolves `firebase@13` (RNFB pins it on `@react-native-firebase/app`).
+5. AI: apply the [AI Logic breaking removals](/migrating-to-v27#ai-logic-breaking-removals) below.
+
+# AI Logic breaking removals
+
+These match Firebase JS SDK 13 / `@firebase/ai@3`:
+
+| Removed / changed                                 | Replacement                                                                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `VertexAIBackend` / `BackendType.VERTEX_AI`       | `AgentPlatformBackend` / `BackendType.AGENT_PLATFORM` (default location **`global`**, was `us-central1` for Vertex) |
+| `generateContent(templateId, vars, …)` positional | `generateContent({ templateId, templateVariables, toolConfig? })` (`TemplateRequest`)                               |
+| `LiveSession.sendMediaChunks` / `sendMediaStream` | `sendTextRealtime` / `sendAudioRealtime` / `sendVideoRealtime`                                                      |
+| `CountTokensResponse.totalBillableCharacters`     | Use `totalTokens`                                                                                                   |
+| `Part` without `type`                             | Discriminated union with `type: 'text' \| 'inlineData' \| …`                                                        |
+
+`GenerationConfig` / `LiveGenerationConfig` sampling fields (`temperature`, `topP`, `topK`, `presencePenalty`, `frequencyPenalty`) and `candidateCount` remain on the types but are **`@deprecated`** for Gemini 3.x / 4.x — omit them for those models. They are not removed in v27.
+
+```js
+import { getApp } from '@react-native-firebase/app';
+import { getAI, AgentPlatformBackend, getTemplateGenerativeModel } from '@react-native-firebase/ai';
+
+const ai = getAI(getApp(), { backend: new AgentPlatformBackend() }); // location defaults to global
+const templates = getTemplateGenerativeModel(ai);
+await templates.generateContent({
+  templateId: 'my-template',
+  templateVariables: { name: 'Ada' },
+});
+```
+
+# Firebase JS / FunctionsError
 
 ## Agent-assisted migration
 
 This guide is written to be **complete enough for an automated first pass**. We recommend feeding this document to your coding agent, then asking it to analyze your codebase against each relevant section below and produce a concrete change list (or PR) for the packages you use. The [Automated migration checklist](/migrating-to-v27#automated-migration-checklist) at the end is structured for that workflow.
 
-# Firebase JS SDK 12.18.0
-
 **PR:** [#9218](https://github.com/invertase/react-native-firebase/pull/9218)
 
-React Native Firebase pins **firebase-js-sdk 12.18.0**. On **web and macOS** (`Platform.other`), Cloud Functions uses the JS SDK callable path. That path now enriches `FunctionsError` (aliased as `HttpsError` in React Native Firebase):
+React Native Firebase pins **firebase-js-sdk 13.x**. On **web and macOS** (`Platform.other`), Cloud Functions uses the JS SDK callable path. That path enriches `FunctionsError` (aliased as `HttpsError` in React Native Firebase) — behavior introduced in JS SDK 12.18.0 and still present in 13:
 
-| Change                          | Before                      | After (v27 / JS SDK 12.18.0)                                                                   | Who              |
+| Change                          | Before                      | After (v27 / JS SDK 13)                                                                        | Who              |
 | ------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------- | ---------------- |
 | `FunctionsError.message`        | Exact server message string | Message plus a trailing ` [<httpStatus>]` suffix (for example `Invalid test requested. [400]`) | Web / macOS only |
 | `FunctionsError.customData.url` | Not present                 | Request URL string on `customData`                                                             | Web / macOS only |
@@ -159,7 +218,9 @@ onMessageSent(messaging, messageId => {
 
 # Removed Imagen API
 
-Nothing else in `@react-native-firebase/ai` changed. `getGenerativeModel()`, `getTemplateGenerativeModel()`, `TemplateGenerativeModel`, and Gemini image generation are unaffected.
+This section covers **only Imagen API removals**. Other `@react-native-firebase/ai` breaking removals and renames (`VertexAIBackend` → `AgentPlatformBackend`, positional template `generateContent` → `TemplateRequest`, `sendMedia*` → realtime senders, and related fields) are listed in [AI Logic breaking removals](/migrating-to-v27#ai-logic-breaking-removals) — that table remains authoritative for the rest of the AI Logic API breaks.
+
+Imagen exports and `generateImages` are gone. Use `getGenerativeModel()` / `getTemplateGenerativeModel()` with a Gemini image model (`responseModalities` + `imageConfig`) instead.
 
 ## Removed exports
 
@@ -285,6 +346,62 @@ These public App headers **no longer** import FirebaseCore or Photos. Forward de
 #import <Photos/Photos.h>
 ```
 
+# Removed ML package
+
+`@react-native-firebase/ml` is **removed** in v27. The package had already been mostly discontinued: Firebase no longer ships the legacy ML APIs this module wrapped, and the React Native Firebase surface exposed no public APIs.
+
+### Migration actions
+
+1. Remove `@react-native-firebase/ml` from your dependencies (`yarn remove @react-native-firebase/ml` or equivalent).
+2. Delete any imports of `@react-native-firebase/ml` (for example `getML`) — they no longer resolve.
+3. For on-device ML Kit features, use [Google ML Kit](https://developers.google.com/ml-kit/) via the community [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit) modules.
+4. To call Cloud Vision from your app, prefer Firebase Authentication and Cloud Functions as a managed gateway. See the [vision-annotate-images](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images) Functions sample.
+
+# Ecosystem compatibility tips
+
+Third-party native modules and host toolchain pins sometimes need small adjustments when moving to BoM 35 / Firebase Apple 13. The **supported** Android path is Kotlin **≥ 2.4.0** ([Platforms](/platforms)). The items below collect common ecosystem notes and unsupported workarounds — React Native Firebase does **not** ship these flags or property overrides for you.
+
+## Kotlin ≥ 2.4.0 (supported)
+
+Firebase Android BoM **35** / `firebase-auth` **25** ships Kotlin **2.4.0** metadata. Raise the Kotlin Gradle plugin to **≥ 2.4.0** so the compiler can read that metadata. This is the supported path; see [Platforms](/platforms).
+
+## Unsupported older-Kotlin workaround
+
+> **Unsupported.** Prefer Kotlin **≥ 2.4.0**. The `-Xskip-metadata-version-check` approach below is **not recommended**, may break if your app or another module calls Firebase Auth **Kotlin** APIs, and React Native Firebase offers **no support** for failures that follow from it. React Native Firebase does **not** ship this compiler flag.
+
+If you must stay on an older Kotlin compiler temporarily, add the flag on the **auth** module's `KotlinCompile` tasks from the **app** `android/build.gradle` (preferred over patching `node_modules`):
+
+```groovy
+// android/build.gradle — UNSUPPORTED workaround; prefer Kotlin ≥ 2.4.0
+subprojects { subproject ->
+  def n = subproject.name
+  if (n.contains('react-native-firebase_auth') || n.contains('@react-native-firebase_auth')) {
+    subproject.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+      kotlinOptions.freeCompilerArgs += ['-Xskip-metadata-version-check']
+    }
+  }
+}
+```
+
+Autolinking project names vary (`react-native-firebase_auth`, `@react-native-firebase_auth`). Adjust the `name` match if your Gradle project path differs. As a last resort you can drop an equivalent `tasks.withType(...KotlinCompile)` block into `node_modules/@react-native-firebase/auth/android/build.gradle` and persist it with [patch-package](https://www.npmjs.com/package/patch-package) — prefer the app-level `subprojects` pattern so you do not patch `node_modules` when avoidable.
+
+## AsyncStorage / KSP
+
+`@react-native-async-storage/async-storage` **3.1.1** (and similar releases) may lack a KSP mapping for Kotlin **2.4.0**. Until upstream maps 2.4.0, pin a known KSP in the app's `android/gradle.properties`:
+
+```properties
+AsyncStorage_kspVersion=2.3.12
+```
+
+Other native modules that use KSP may need analogous overrides until their maintainers publish mappings for Kotlin 2.4.0.
+
+## Google Sign-In + Firebase 13 SPM
+
+Google Sign-In alongside Firebase 13 can fail App Check resolution on SPM and
+CocoaPods for different reasons. See
+[iOS SPM Support § Google Sign-In caveat](/ios-spm#google-sign-in-caveat)
+for current upstream status on each path.
+
 # Automated migration checklist
 
 Use this section when running scripted or agent-assisted upgrades from v26 → v27.
@@ -297,22 +414,30 @@ yarn add @react-native-firebase/app@^27.0.0 …
 cd ios && pod install
 ```
 
-Confirm the lockfiles resolve **firebase** / firebase-js-sdk **12.18.0+**.
+Confirm the lockfiles resolve **firebase** / firebase-js-sdk **13.0.0**, Android BoM **35**, and iOS SPM Firebase **13.0.0**. Confirm Android `minSdk` **24** and macOS **11.0**.
 
 ## 2. Agent-oriented search and replace
 
 For each area you use, search the listed symbols and apply the replacements:
 
-| Area                      | Search for                                                                             | Replace with / action                                                                         |
-| ------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Functions (web/macOS)     | `e.message ===`, `error.message ===` on callable failures                              | Tolerate trailing ` [<digits>]`; optionally read `customData.url` on `Platform.other` only    |
-| Messaging sound           | `notification.sound` (string APNs sound)                                               | `notification.ios.sound`                                                                      |
-| Messaging `sentTime`      | string/`parseInt`/`* 1000` on `sentTime` (iOS)                                         | Use numeric epoch-ms directly                                                                 |
-| Messaging badge           | numeric use of `notification.ios.badge`                                                | Parse string (`Number(...)`) when a number is required                                        |
-| Messaging `onMessageSent` | `({ messageId })` / `.messageId` in the listener                                       | Use the string argument directly                                                              |
-| AI Imagen                 | `getImagenModel`, `getTemplateImagenModel`, `ImagenModel`, `Imagen*`, `generateImages` | `getGenerativeModel` / `getTemplateGenerativeModel` with `responseModalities` + `imageConfig` |
-| App iOS data collection   | `automaticDataCollectionEnabled` in `initializeApp` options                            | Use an explicit boolean; `false` / `0` / `null` / absent now disable collection               |
-| App iOS native headers    | compile errors for `FIRApp` / `FIROptions` / `PHAsset` after including RNFB headers    | `#import <FirebaseCore/FirebaseCore.h>` and/or `#import <Photos/Photos.h>` at the call site   |
+| Area                      | Search for                                                                             | Replace with / action                                                                                                                                                                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Android floor             | `minSdkVersion` / `minSdk` **23** (or lower)                                           | **24**                                                                                                                                                                                                                                                     |
+| Android Kotlin            | `kotlinVersion` / Kotlin Gradle plugin below **2.4.0**                                 | **≥ 2.4.0** (BoM 35 / `firebase-auth` 25 metadata)                                                                                                                                                                                                         |
+| iOS DisableSPM            | `$RNFirebaseDisableSPM`, Expo `disableSPM: true`                                       | Remove; use SPM + `use_frameworks! :linkage => :dynamic`                                                                                                                                                                                                   |
+| Functions (web/macOS)     | `e.message ===`, `error.message ===` on callable failures                              | Tolerate trailing ` [<digits>]`; optionally read `customData.url` on `Platform.other` only                                                                                                                                                                 |
+| Messaging sound           | `notification.sound` (string APNs sound)                                               | `notification.ios.sound`                                                                                                                                                                                                                                   |
+| Messaging `sentTime`      | string/`parseInt`/`* 1000` on `sentTime` (iOS)                                         | Use numeric epoch-ms directly                                                                                                                                                                                                                              |
+| Messaging badge           | numeric use of `notification.ios.badge`                                                | Parse string (`Number(...)`) when a number is required                                                                                                                                                                                                     |
+| Messaging `onMessageSent` | `({ messageId })` / `.messageId` in the listener                                       | Use the string argument directly                                                                                                                                                                                                                           |
+| AI backend                | `VertexAIBackend`, `BackendType.VERTEX_AI`                                             | `AgentPlatformBackend` / `AGENT_PLATFORM` (document `global` default)                                                                                                                                                                                      |
+| AI templates              | positional `generateContent(templateId, vars, …)`                                      | `generateContent({ templateId, templateVariables, toolConfig? })`                                                                                                                                                                                          |
+| AI live media             | `sendMediaChunks`, `sendMediaStream`                                                   | `sendTextRealtime` / `sendAudioRealtime` / `sendVideoRealtime`                                                                                                                                                                                             |
+| AI tokens                 | `totalBillableCharacters`                                                              | `totalTokens`                                                                                                                                                                                                                                              |
+| AI Imagen                 | `getImagenModel`, `getTemplateImagenModel`, `ImagenModel`, `Imagen*`, `generateImages` | `getGenerativeModel` / `getTemplateGenerativeModel` with `responseModalities` + `imageConfig`                                                                                                                                                              |
+| App iOS data collection   | `automaticDataCollectionEnabled` in `initializeApp` options                            | Use an explicit boolean; `false` / `0` / `null` / absent now disable collection                                                                                                                                                                            |
+| App iOS native headers    | compile errors for `FIRApp` / `FIROptions` / `PHAsset` after including RNFB headers    | `#import <FirebaseCore/FirebaseCore.h>` and/or `#import <Photos/Photos.h>` at the call site                                                                                                                                                                |
+| ML package                | `@react-native-firebase/ml`, `getML`                                                   | Remove the dependency; use [react-native-mlkit](https://www.npmjs.com/org/react-native-mlkit) or Cloud Vision via Functions ([sample](https://github.com/firebase/functions-samples/tree/3515b7f38a3c598cdb20152a263372e81719ecda/vision-annotate-images)) |
 
 ## 3. Validate
 
@@ -325,12 +450,13 @@ yarn compile
 
 ## Related PRs (v27 breaking changes)
 
-| Area                                       | PR                                                                    |
-| ------------------------------------------ | --------------------------------------------------------------------- |
-| Firebase JS SDK 12.18.0 / `FunctionsError` | [#9218](https://github.com/invertase/react-native-firebase/pull/9218) |
-| Messaging — APNs string sound path         | [#9246](https://github.com/invertase/react-native-firebase/pull/9246) |
-| Messaging — iOS `sentTime` epoch-ms        | [#9247](https://github.com/invertase/react-native-firebase/pull/9247) |
-| Messaging — iOS badge string               | [#9252](https://github.com/invertase/react-native-firebase/pull/9252) |
-| Messaging — `onMessageSent` string ID      | [#9254](https://github.com/invertase/react-native-firebase/pull/9254) |
-| AI — Imagen API removal                    | [#9275](https://github.com/invertase/react-native-firebase/pull/9275) |
-| App iOS — ADC boolean + header imports     | [#9337](https://github.com/invertase/react-native-firebase/pull/9337) |
+| Area                                                                   | PR                                                                    |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Firebase JS SDK 12.18.0 / `FunctionsError`                             | [#9218](https://github.com/invertase/react-native-firebase/pull/9218) |
+| Messaging — APNs string sound path                                     | [#9246](https://github.com/invertase/react-native-firebase/pull/9246) |
+| Messaging — iOS `sentTime` epoch-ms                                    | [#9247](https://github.com/invertase/react-native-firebase/pull/9247) |
+| Messaging — iOS badge string                                           | [#9252](https://github.com/invertase/react-native-firebase/pull/9252) |
+| Messaging — `onMessageSent` string ID                                  | [#9254](https://github.com/invertase/react-native-firebase/pull/9254) |
+| AI — Imagen API removal                                                | [#9275](https://github.com/invertase/react-native-firebase/pull/9275) |
+| App iOS — ADC boolean + header imports                                 | [#9337](https://github.com/invertase/react-native-firebase/pull/9337) |
+| SDK majors (Android 35 / Apple 13 / JS 13), ML removal, AI Logic JS 13 | [#9372](https://github.com/invertase/react-native-firebase/pull/9372) |

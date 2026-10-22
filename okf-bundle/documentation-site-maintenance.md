@@ -66,7 +66,7 @@ Removed packages (e.g. Dynamic Links) have no TypeDoc module — fall back to `m
 - [ ] `yarn reference:api` succeeds
 - [ ] All `docs.json` redirect targets verified (200)
 - [ ] New legacy paths identified and redirected or explicitly deferred with rationale
-- [ ] Docs checks (`yarn lint:markdown`, `yarn lint:spellcheck`, `yarn docs:tsc:check`, `yarn docs:member:check`, `yarn lint:docs-links`) when `docs/**` or docs tooling changed: [validation checklist § lint and formatting](testing/validation-checklist.md#lint-and-formatting) (docs row and [§ docs lint gotchas](testing/validation-checklist.md#docs-lint-gotchas); OKF-only diffs do not run those)
+- [ ] Docs checks (`yarn lint:markdown`, `yarn lint:spellcheck`, `yarn docs:tsc:check`, `yarn docs:member:check`, `yarn lint:docs-links`) when `docs/**` or docs tooling changed: [validation checklist § lint and formatting](testing/validation-checklist.md#lint-and-formatting) (docs row and [§ docs lint gotchas](testing/validation-checklist.md#docs-lint-gotchas); OKF-only diffs do not run those). **Missing `lint:docs-links` evidence when `docs/**` was touched is serious** ([change authoring § work types](testing/change-authoring-workflow.md#work-types))
 
 **Validation commands:** [validation checklist § API reference](testing/validation-checklist.md#api-reference-and-type-parity), [§ lint and formatting](testing/validation-checklist.md#lint-and-formatting).
 

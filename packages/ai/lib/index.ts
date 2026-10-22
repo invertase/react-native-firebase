@@ -17,7 +17,7 @@
 
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import { AgentPlatformBackend, Backend, GoogleAIBackend, VertexAIBackend } from './backend';
+import { AgentPlatformBackend, Backend, GoogleAIBackend } from './backend';
 import { AIErrorCode, LiveModelParams, ModelParams, RequestOptions } from './types';
 import { AI, AIOptions } from './public-types';
 import { AIError } from './errors';
@@ -29,7 +29,7 @@ export * from './public-types';
 export { ChatSession, ChatSessionBase, TemplateChatSession } from './methods/chat-session';
 export { LiveSession } from './methods/live-session';
 export * from './requests/schema-builder';
-export { Backend, GoogleAIBackend, VertexAIBackend, AgentPlatformBackend } from './backend';
+export { Backend, GoogleAIBackend, AgentPlatformBackend } from './backend';
 export { GenerativeModel, AIError, AIModel, LiveGenerativeModel, TemplateGenerativeModel };
 
 /**
@@ -69,10 +69,7 @@ export function getAI(app: ReactNativeFirebase.FirebaseApp = getApp(), options?:
     auth: options?.auth || null,
   };
 
-  const location =
-    backend instanceof VertexAIBackend || backend instanceof AgentPlatformBackend
-      ? backend.location
-      : '';
+  const location = backend instanceof AgentPlatformBackend ? backend.location : '';
 
   return {
     app,

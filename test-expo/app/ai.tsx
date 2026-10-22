@@ -16,7 +16,6 @@ import {
   ResponseModality,
   Schema,
   ThinkingLevel,
-  VertexAIBackend,
   getAI,
   getGenerativeModel,
   getLiveGenerativeModel,
@@ -153,26 +152,12 @@ export default function AiScreen() {
           })
         }
       />
-      <Text style={styles.warning}>
-        WARNING: VertexAIBackend is deprecated. Prefer AgentPlatformBackend.
-      </Text>
-      <AppButton
-        title="VertexAIBackend (deprecated)"
-        onPress={() =>
-          run('VertexAIBackend', () => {
-            const backend = new VertexAIBackend('us-central1');
-            const instance = getAI(getApp(), { backend });
-            return { backendType: instance.backend.backendType };
-          })
-        }
-      />
       <AppButton
         title="BackendType"
         onPress={() =>
           run('BackendType', () => ({
             GOOGLE_AI: BackendType.GOOGLE_AI,
             AGENT_PLATFORM: BackendType.AGENT_PLATFORM,
-            VERTEX_AI: BackendType.VERTEX_AI,
           }))
         }
       />
@@ -257,7 +242,7 @@ export default function AiScreen() {
             const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
             const streamResult = await model.generateContentStream([
               'What can you see?',
-              { inlineData: { mimeType: 'image/png', data: TINY_PNG_BASE64 } },
+              { type: 'inlineData', inlineData: { mimeType: 'image/png', data: TINY_PNG_BASE64 } },
             ]);
             let text = '';
             for await (const chunk of streamResult.stream) {
@@ -287,11 +272,13 @@ export default function AiScreen() {
               history: [
                 {
                   role: 'user',
-                  parts: [{ text: 'Hello, I have 2 dogs in my house.' }],
+                  parts: [{ type: 'text', text: 'Hello, I have 2 dogs in my house.' }],
                 },
                 {
                   role: 'model',
-                  parts: [{ text: 'Great to meet you. What would you like to know?' }],
+                  parts: [
+                    { type: 'text', text: 'Great to meet you. What would you like to know?' },
+                  ],
                 },
               ],
               generationConfig: { maxOutputTokens: 100 },
@@ -358,6 +345,7 @@ export default function AiScreen() {
             const functionResult = await fetchWeather(functionCall.args);
             response = await chat.sendMessage([
               {
+                type: 'functionResponse',
                 functionResponse: {
                   name: functionCall.name,
                   response: functionResult,
@@ -599,10 +587,12 @@ export default function AiScreen() {
               },
             });
             const response = await model.generateContent('Draw a red bicycle on a beach at sunset');
-            const parts = response.response.candidates?.[0]?.content?.parts ?? [];
-            const imagePart = parts.find(part => part.inlineData?.mimeType?.startsWith('image/'));
+            const imageParts = response.response.inlineDataParts() ?? [];
+            const imagePart = imageParts.find(part =>
+              part.inlineData.mimeType.startsWith('image/'),
+            );
             return {
-              mimeType: imagePart?.inlineData?.mimeType ?? null,
+              mimeType: imagePart?.inlineData.mimeType ?? null,
               aspectRatio: ImageConfigAspectRatio.LANDSCAPE_16x9,
               imageSize: ImageConfigImageSize.SIZE_1K,
               responseModality: ResponseModality.IMAGE,
@@ -815,17 +805,16 @@ export default function AiScreen() {
         onPress={() =>
           run('TemplateGenerativeModel.generateContent', async () => {
             const templateModel = getTemplateGenerativeModel(ai);
-            const response = await templateModel.generateContent(
-              'weather-assistant-template',
-              { city: 'Boston' },
-              undefined,
-              {
+            const response = await templateModel.generateContent({
+              templateId: 'weather-assistant-template',
+              templateVariables: { city: 'Boston' },
+              toolConfig: {
                 retrievalConfig: {
                   latLng: { latitude: 42.3601, longitude: -71.0589 },
                   languageCode: 'en-US',
                 },
               },
-            );
+            });
             return response.response.text();
           })
         }
@@ -839,10 +828,10 @@ export default function AiScreen() {
         onPress={() =>
           run('TemplateGenerativeModel.generateContentStream', async () => {
             const templateModel = getTemplateGenerativeModel(ai);
-            const streamResult = await templateModel.generateContentStream(
-              'weather-assistant-template',
-              { city: 'Boston' },
-            );
+            const streamResult = await templateModel.generateContentStream({
+              templateId: 'weather-assistant-template',
+              templateVariables: { city: 'Boston' },
+            });
             let text = '';
             for await (const chunk of streamResult.stream) {
               text += chunk.text();

@@ -3,6 +3,117 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **ios:** drop CocoaPods Firebase matrix; SPM-only
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+- **ml:** remove discontinued @react-native-firebase/ml package
+- **app, ios:** RNFBSharedUtils.h, RCTConvert+FIRApp.h, and
+  RCTConvert+FIROptions.h no longer import FirebaseCore; RNFBUtilsModule.h
+  no longer imports Photos. Add the import at the call site if you need
+  those types. See docs/migrating-to-v27.mdx.
+- **app, ios:** initializeApp now reads automaticDataCollectionEnabled as a
+  boolean. Previously any non-nil value (including JS false) enabled collection
+  via pointer cast; false, 0, null, and absent now disable it. See
+  docs/migrating-to-v27.mdx.
+- **ai:** The Imagen API is removed from @react-native-firebase/ai.
+  getImagenModel(), getTemplateImagenModel(), ImagenImageFormat, and the Imagen
+  request and response types are gone. Generate images with Gemini image models
+  through getGenerativeModel() instead, setting responseModalities and
+  imageConfig on the generation config. See docs/migrating-to-v27.mdx for the
+  full mapping of removed exports and before/after code.
+
+### Features
+
+- **ai:** remove Imagen API ([c503c7f](https://github.com/invertase/react-native-firebase/commit/c503c7f6bdb35df817bb8ca196a7e2666d829227))
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+- **app, sdk:** bump Firebase Android SDK to 34.19.0 ([ca054bc](https://github.com/invertase/react-native-firebase/commit/ca054bc2fdcb298575f1e7412aa8b02540d53def))
+- **app, sdk:** bump Firebase iOS SDK to 12.19.0 ([95dca6a](https://github.com/invertase/react-native-firebase/commit/95dca6a4eeb849bc2910946e1477694635bee6b7))
+- **app, sdk:** bump Firebase JS SDK to 12.18.0 ([5e2617d](https://github.com/invertase/react-native-firebase/commit/5e2617dcddfd55f10f441f2e9d83fe7b4681470e))
+- **app, sdk:** bump Firebase JS SDK to 12.19.0 ([34d0318](https://github.com/invertase/react-native-firebase/commit/34d031849146527ab9b9ee3ba4fbd207bdab0803))
+- **database:** get() uses the native one-shot read on Android and web ([65cf63c](https://github.com/invertase/react-native-firebase/commit/65cf63c963b3914a4aa0e450caefae7a621d383b)), closes [firebase-ios-sdk#12168](https://github.com/invertase/firebase-ios-sdk/issues/12168)
+- **messaging:** add FID register and onRegistered ([ca301b2](https://github.com/invertase/react-native-firebase/commit/ca301b27673fbef5270d37fc6e49aa80df80069b))
+- **messaging:** add messaging_installation_id_enabled firebase.json opt-in ([e9c9741](https://github.com/invertase/react-native-firebase/commit/e9c9741a65a76cc102d2d27ff675c453fd506243))
+- **ml:** remove discontinued @react-native-firebase/ml package ([58622b1](https://github.com/invertase/react-native-firebase/commit/58622b1a24a32008fd33ff56346cceb4f71bc29f))
+- **test-expo:** add Expo Router example with a route per package ([#9313](https://github.com/invertase/react-native-firebase/issues/9313)) ([50a946a](https://github.com/invertase/react-native-firebase/commit/50a946ab4f6c11670890940b55e8bb71f6332dcf))
+
+### Bug Fixes
+
+- **ai:** avoid shell execution for fixture tags ([87ae689](https://github.com/invertase/react-native-firebase/commit/87ae689d09ba49beaf66f75b2be3cd828f92555f))
+- **ai:** deprecate Gemini 3/4 unsupported GenerationConfig and Live sampling fields ([68170d9](https://github.com/invertase/react-native-firebase/commit/68170d9a555a6fcf72f3bf63c793fc62db8601b1))
+- **analytics, messaging:** dedupe GoogleUtilities classes under SPM dynamic frameworks ([#9327](https://github.com/invertase/react-native-firebase/issues/9327)) ([b70ba88](https://github.com/invertase/react-native-firebase/commit/b70ba889e215df4b123aacb0c830551f18b14fe8)), closes [#9322](https://github.com/invertase/react-native-firebase/issues/9322) [#9322](https://github.com/invertase/react-native-firebase/issues/9322)
+- **app-check:** drop the unused indent fallback ([c147145](https://github.com/invertase/react-native-firebase/commit/c1471450b06019dd718f59a8a1b4c5bf941cc1bb))
+- **app-check:** install the provider factory before configure ([f366a64](https://github.com/invertase/react-native-firebase/commit/f366a640bd8256c83cfab9a3516ed95f0722534f))
+- **app, android:** bind nullable recent-task fields before use ([bed8c71](https://github.com/invertase/react-native-firebase/commit/bed8c71313cd3c0bf60bf9a9d86417ae550ec98f))
+- **app, android:** harden RecentTaskInfo null and JSON parse ([908400b](https://github.com/invertase/react-native-firebase/commit/908400b230cfd5d7d4406da9bb350332d6bc8c4c))
+- **app, expo:** match scene-based AppDelegate for Expo SDK 58 config plugin ([dce165d](https://github.com/invertase/react-native-firebase/commit/dce165d7283a30060c5b08066cf5841d9247105a))
+- **app, ios:** clarify SPM static linkage error when use_frameworks is absent ([cdf99cd](https://github.com/invertase/react-native-firebase/commit/cdf99cde79d46be737b671096e1cc3af7a14f58f))
+- **app, ios:** import ObjC NullSentinelDecoder in SharedUtils ([9a565c8](https://github.com/invertase/react-native-firebase/commit/9a565c879edc11c18b5c7ffca92c7f22e2b639e7))
+- **app, ios:** pin SPM Firebase SDK and retain Measurement ObjC categories ([7e271af](https://github.com/invertase/react-native-firebase/commit/7e271afecab65ef150140056171265e9c9ca621c))
+- **app, ios:** read automaticDataCollectionEnabled as a boolean ([cc18140](https://github.com/invertase/react-native-firebase/commit/cc181400e465895bdb012eff881209315adaed70))
+- **app, ios:** stop re-exporting FirebaseCore and Photos from App headers ([0a5116f](https://github.com/invertase/react-native-firebase/commit/0a5116f38c4d5ee49027efa277be0adda85e16e9))
+- **app, ios:** tighten the dynamic Firebase probe and import guard ([cac843c](https://github.com/invertase/react-native-firebase/commit/cac843c09156237751274073c67b6105fa7b4188))
+- **app, sdk:** finish firebase-js-sdk 12.18.0 pin and Other HttpsError assertions ([56cb41d](https://github.com/invertase/react-native-firebase/commit/56cb41df9763ef51bfb368745490daf5a5099e0b))
+- **app, storage:** link Photos framework on tvOS ([56f5c1f](https://github.com/invertase/react-native-firebase/commit/56f5c1fcf83bc89d8cd80f019696e13bc96578dd))
+- **app, tests:** ignore iOS host stubs in TurboModule spec parity lookup ([e2f515d](https://github.com/invertase/react-native-firebase/commit/e2f515da36a180d16d6f6002886c17f6fd511749))
+- **app,database:** resolve platform native module when bundlers apply package exports ([959d91f](https://github.com/invertase/react-native-firebase/commit/959d91fc79d7155d1d9a08e1f836789e6e6d6156))
+- **app:** apply the same firebase.json injection fix to the test-rn-bare fixture ([51c5269](https://github.com/invertase/react-native-firebase/commit/51c52697dc0be541d43079aef22a3c2035e02b8b))
+- **app:** import e2e native module resolver via internal barrel ([93f51ff](https://github.com/invertase/react-native-firebase/commit/93f51fff8b2b4f1355bc213f5f98fbbf7986c7e0))
+- **app:** reject unsafe deepSet path segments ([ec3ac24](https://github.com/invertase/react-native-firebase/commit/ec3ac2455b30cfabc501845364623d9ab55e7193))
+- **app:** restore vendor EventEmitter for RN macOS 0.78 ([6b13c9d](https://github.com/invertase/react-native-firebase/commit/6b13c9d468abde5b5acc990e43a3d3fd6c7a140e))
+- **app:** seed automaticDataCollectionEnabled from the native initializeApp result ([5d187f9](https://github.com/invertase/react-native-firebase/commit/5d187f9271f183ccac4d7b70e233a4ccd2145fd0))
+- **app:** stop evaluating firebase.json content as Ruby/Python source in ios_config.sh ([d333ab3](https://github.com/invertase/react-native-firebase/commit/d333ab39a83454606d9ede4aa4a3c031a63cf898))
+- **app:** support Expo 58 scene lifecycle ([01f450f](https://github.com/invertase/react-native-firebase/commit/01f450faa25c515cc9bee867af55f3f68e809fc0))
+- **app:** swizzle null sentinels after codegen converters load ([bcff184](https://github.com/invertase/react-native-firebase/commit/bcff18471b187bda0476c8bbc76e4c216de58ec2))
+- **attw:** pack from allowlisted stage to avoid XCTest build walks ([7c2e3ef](https://github.com/invertase/react-native-firebase/commit/7c2e3ef7eef42937827294f1d8ff53971b24aecb))
+- **auth, analytics, remote-config:** unwrap iOS null sentinels on Object args ([53fdb6a](https://github.com/invertase/react-native-firebase/commit/53fdb6a1c273d4125cff69e33b2d0af6bfd7d6dc))
+- **auth, android:** accept null keys in auth cache registry get/take ([211c6cf](https://github.com/invertase/react-native-firebase/commit/211c6cff37c004c06134242cf84e670afd52eff5))
+- **auth:** apply the reCAPTCHA openURL fix on the UIScene life cycle ([327fbe3](https://github.com/invertase/react-native-firebase/commit/327fbe319ba238c4f50aadc85ed687225b0804c8))
+- **auth:** remove sensitive authentication logs ([57c5d1c](https://github.com/invertase/react-native-firebase/commit/57c5d1c993e8497148cd40a706fb40ebe01426ef))
+- **build:** pin json gem to 2.x so CocoaPods still accepts quirks_mode ([fa3f29d](https://github.com/invertase/react-native-firebase/commit/fa3f29d815bdb6e4ee31aacf154a91c749b7c9a1))
+- **ci, ios:** fail Expo launch smoke when xcodebuild settings fail ([d4363aa](https://github.com/invertase/react-native-firebase/commit/d4363aae251f6c8809783b783e993c0771e369e8))
+- **ci, ios:** key the iOS Pods cache by build mode ([e6bc849](https://github.com/invertase/react-native-firebase/commit/e6bc8496811000b6f927f2c8603fcf994658a520))
+- **ci, ios:** poll Expo launch-smoke key-window instead of a fixed sleep ([1372076](https://github.com/invertase/react-native-firebase/commit/1372076e14e604debd571472bcbab9b4444b9158))
+- **ci:** unblock Yarn hardened CI and Xcode 27 iOS archive ([9c63630](https://github.com/invertase/react-native-firebase/commit/9c636307e9f87e106e802f5d39d2be32ef2cecdb))
+- **crashlytics, ios:** resolve target-folder GoogleService-Info.plist for SPM dSYM upload ([a2b7e57](https://github.com/invertase/react-native-firebase/commit/a2b7e5789b6df07d3aa2729f734582de6a5feb92)), closes [#9304](https://github.com/invertase/react-native-firebase/issues/9304)
+- **database, android:** settle keepSynced promise after SDK apply ([61100f2](https://github.com/invertase/react-native-firebase/commit/61100f27700eda0b5f69ec21ebd991ca97ce316d))
+- **database, android:** surface onDisconnect errors; cover deny reject arms ([1a4a4d6](https://github.com/invertase/react-native-firebase/commit/1a4a4d63e5f41042d9ddba55375b6a758f9829d5))
+- **database:** decode iOS null sentinels before writes ([501bec8](https://github.com/invertase/react-native-firebase/commit/501bec812fab11614cae0622a93b6d16687819dd))
+- **database:** keep get() from cancelling any keepSynced at the location on Android ([befb08c](https://github.com/invertase/react-native-firebase/commit/befb08c2f225ea65031ffa71ad173a68cf411dfd)), closes [firebase-android-sdk#8433](https://github.com/invertase/firebase-android-sdk/issues/8433)
+- **database:** only fall back to once() for locations kept synced ([6a7eddb](https://github.com/invertase/react-native-firebase/commit/6a7eddb837f6c003eaa6f6da8697e4b402da4861))
+- **database:** skip once retry after observer-shaped get errors ([6e18ddf](https://github.com/invertase/react-native-firebase/commit/6e18ddffa2f74445b843dc0d992b41232254ccb3))
+- **docs:** fail lint:spellcheck when frontmatter cannot be parsed ([e15477f](https://github.com/invertase/react-native-firebase/commit/e15477fb5fcc90a71e8cb8214d6d5b0ebae3273d))
+- **e2e:** drop a stale functions build lock when its holder is gone ([8f67c93](https://github.com/invertase/react-native-firebase/commit/8f67c935aa818bb32623fe7fc23962f9d077f5f8))
+- **e2e:** skip watchman watch-del when a sibling Metro owns the root ([7695132](https://github.com/invertase/react-native-firebase/commit/769513224d0e6f9bb6fb2a98c578411a5016615d))
+- **firestore, ios:** cover transaction HostStub update-block paths and unskip waitForPendingWrites ([fd9422b](https://github.com/invertase/react-native-firebase/commit/fd9422b983fcfc7b405bfaf3c3ce8197a09e12b7))
+- **firestore:** fail iOS transaction timeout without SDK retry ([c91be82](https://github.com/invertase/react-native-firebase/commit/c91be8289cd5f10bcf59f62d7eaa248eee556eec))
+- **firestore:** ignore leftover JS transaction work after id is finished ([2a37b73](https://github.com/invertase/react-native-firebase/commit/2a37b73a11638fb8bb9badb09e40e5a28a0e86bd))
+- **firestore:** reject leftover iOS transaction get as deadline-exceeded ([c7e5836](https://github.com/invertase/react-native-firebase/commit/c7e58361157d13c64ed027d03e01001b7633f833))
+- **messaging, ios:** guard AppDelegate window access for UIScene apps ([79c2d72](https://github.com/invertase/react-native-firebase/commit/79c2d72a7a61bccd41395e8c44b32ead9810d4bc))
+- **messaging, ios:** hop notification permission APIs onto the main queue ([3fde064](https://github.com/invertase/react-native-firebase/commit/3fde064e34094760a1395e8fa9753ad4917eaec7))
+- **messaging, ios:** hop remaining UIApplication register APIs onto main queue ([07e4562](https://github.com/invertase/react-native-firebase/commit/07e45624f6a7be8a8a47cfb46b3fd29a0553c003))
+- **messaging, ios:** normalize sent time ([0b48006](https://github.com/invertase/react-native-firebase/commit/0b4800658e4aa535563abbcd8bb12b279ad9139b))
+- **messaging, ios:** port UIScene window guard after rebase ([7cd8f14](https://github.com/invertase/react-native-firebase/commit/7cd8f14ac841d4f5378bf53454b34d50493a619b))
+- **messaging, ios:** read isRegisteredForRemoteNotifications on main queue in getConstants ([87a30dc](https://github.com/invertase/react-native-firebase/commit/87a30dcf07882fab22a642946048ad50702ed967))
+- **messaging, ios:** serialize notification badges as strings ([c6a8e85](https://github.com/invertase/react-native-firebase/commit/c6a8e85816186189e09ac33da19078d5a6845c8a))
+- **messaging, ios:** validate sent-time format ([7b39040](https://github.com/invertase/react-native-firebase/commit/7b39040bf48abdc8d8c16af81c516c9ba449a767))
+- **messaging:** detect the iOS APNs environment from the provisioning profile ([56a4141](https://github.com/invertase/react-native-firebase/commit/56a414144c87f467965952ad40d9afe6365800b3))
+- **messaging:** nest iOS string sounds correctly ([a34ce00](https://github.com/invertase/react-native-firebase/commit/a34ce007833e3ba3ba13a5a46cf82c7f38ef1282))
+- **messaging:** pass sent message IDs to listeners ([05bcd71](https://github.com/invertase/react-native-firebase/commit/05bcd71bd25c6fc7b2f8b4a4118ad6cea4e056a3))
+- **messaging:** read flattened isInstallationIdEnabled Turbo constant ([7f65512](https://github.com/invertase/react-native-firebase/commit/7f655122737ad0cc57b4965c43452ba94dc86aa1))
+- **messaging:** rethrow onRegistered replay error and drop the subscription ([56d071e](https://github.com/invertase/react-native-firebase/commit/56d071e08bb94616da87fb3c76f9645c12835eb8))
+- **perf, ios:** avoid id cast shadowed by TurboModule id param ([9556118](https://github.com/invertase/react-native-firebase/commit/955611850796e2589c0286ab4700a4eb6ec5d2a3))
+- **perf, ios:** typedef Swift protocol refs around TurboModule id shadowing ([db9cc60](https://github.com/invertase/react-native-firebase/commit/db9cc60e6eb2eb4331702393e2649f102b7cce70))
+- **perf, ios:** use id casts for Swift protocols in ObjC++ ([1d5c7ca](https://github.com/invertase/react-native-firebase/commit/1d5c7ca28d674d7c3bdd19d085911abccda2b20e))
+- **tests, ios:** keep the debug Hermes engine on debug builds ([60d871e](https://github.com/invertase/react-native-firebase/commit/60d871e12240dd2c71dca2bc2deb1461911de439))
+- **tests:** exclude dist output from Jest coverage collection ([97f72c1](https://github.com/invertase/react-native-firebase/commit/97f72c1ae0b01af2cd909e345bff4d35e6a32ad7))
+
+### Continuous Integration
+
+- **ios:** drop CocoaPods Firebase matrix; SPM-only ([89e270f](https://github.com/invertase/react-native-firebase/commit/89e270f3d1f4c1f3c22e32ca539ebe3da30dbd7e))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Features

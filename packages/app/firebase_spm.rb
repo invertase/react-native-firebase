@@ -174,16 +174,15 @@ module RNFirebaseSPM
   end
 end
 
-# Helper to declare Firebase dependencies with SPM support and CocoaPods fallback.
+# Helper to declare Firebase dependencies via Swift Package Manager.
 #
 # When `spm_dependency` is available (React Native >= 0.75), it declares the
-# Firebase iOS SDK as a Swift Package dependency. Otherwise, it falls back to
-# the traditional CocoaPods `s.dependency` declaration.
+# Firebase iOS SDK as a Swift Package dependency.
 #
-# Set `$RNFirebaseDisableSPM = true` in your Podfile to force CocoaPods-only
-# dependency resolution. You must disable SPM when using `use_frameworks! :linkage => :static`
-# because static frameworks cause each pod to embed Firebase SPM products,
-# resulting in duplicate symbol linker errors.
+# Firebase Apple SDK 13+ is distributed exclusively through SPM and binary
+# zips — CocoaPods trunk stopped at 12.19.0. `$RNFirebaseDisableSPM = true`
+# and Expo `disableSPM: true` therefore fail `pod install` / prebuild loudly
+# instead of declaring missing CocoaPods Firebase 13 pods.
 #
 # firebase-ios-sdk SPM products are plain `.library(...)` (automatic linkage),
 # not `.library(type: .dynamic)`. See:
@@ -193,7 +192,7 @@ end
 # build and run; static pod linkage collides those per-pod copies at link time.
 # Dynamic pods avoid the link failure but still embed a private copy per pod,
 # so third-party pods cannot share one FirebaseCore/FirebaseApp with RNFB
-# under SPM (use `$RNFirebaseDisableSPM = true` + CocoaPods for that).
+# under SPM.
 #
 # Returns true only when `$RNFirebaseDisableSPM` has been explicitly set to `true`.
 #
@@ -202,6 +201,22 @@ end
 # don't silently switch to CocoaPods.
 def rnfirebase_spm_disabled?
   defined?($RNFirebaseDisableSPM) && $RNFirebaseDisableSPM == true
+end
+
+# User-facing error when a Podfile or Expo config asks for CocoaPods Firebase
+# (DisableSPM / missing `spm_dependency`). Firebase 13+ is SPM-only.
+def rnfirebase_fail_cocoapods_firebase!(reason)
+  raise Pod::Informative, <<~MESSAGE
+    [react-native-firebase] Firebase Apple SDK is no longer distributed through CocoaPods (#{reason}).
+
+    Firebase 13.0.0 and later ship exclusively via Swift Package Manager and binary distributions. React Native Firebase resolves Firebase through SPM and requires:
+
+      use_frameworks! :linkage => :dynamic
+
+    Remove `$RNFirebaseDisableSPM = true` from your Podfile (and Expo `ios.disableSPM` / `disableSPM: true` from the `@react-native-firebase/app` config plugin). React Native 0.75+ is required for `spm_dependency`.
+
+    See https://rnfirebase.io/ios-spm and https://firebase.google.com/docs/ios/cocoapods-deprecation
+  MESSAGE
 end
 
 # Normalizes a build setting value that Xcode/Xcodeproj may represent as
@@ -562,8 +577,7 @@ end
 # (`duplicate symbol`). Under dynamic pod linkage the app builds, but each
 # dynamic framework still keeps a private copy (runtime class duplication /
 # split FirebaseApp registries). There is no supported combination of RNFB's
-# SPM mode with static linkage; the fix is always to switch to dynamic
-# linkage or opt out of SPM entirely.
+# SPM mode with static linkage; the fix is to switch to dynamic linkage.
 #
 # Raises `Pod::Informative` -- CocoaPods' own user-facing error class, which
 # `pod install` prints as a plain, readable message with no Ruby backtrace --
@@ -589,16 +603,40 @@ def rnfirebase_fail_if_spm_static_linkage!(installer)
   end
   return if static_targets.empty?
 
-  target_names = static_targets.map(&:name).join(', ')
+  # `build_type.static?` is true for two different Podfiles: no
+  # `use_frameworks!` at all (CocoaPods' default static libraries -- the stock
+  # React Native / bare Expo Podfile) and `use_frameworks! :linkage => :static`.
+  # Name the one the user actually has so they can find it in their Podfile.
+  library_targets, framework_targets = static_targets.partition do |target|
+    !target.target_definition.uses_frameworks?
+  end
+  detected = []
+  unless library_targets.empty?
+    library_label = 'no `use_frameworks!` (or `use_frameworks! false`) -- pods build as static libraries'
+    detected << "  - #{library_label}: #{library_targets.map(&:name).join(', ')}"
+  end
+  unless framework_targets.empty?
+    framework_label = '`use_frameworks! :linkage => :static` ' \
+                      '(incl. `USE_FRAMEWORKS=static` / Expo `useFrameworks: "static"`)'
+    detected << "  - #{framework_label}: #{framework_targets.map(&:name).join(', ')}"
+  end
 
   raise Pod::Informative, <<~MESSAGE
-    [react-native-firebase] SPM + static linkage is not supported (target(s): #{target_names}).
+    [react-native-firebase] SPM + static linkage is not supported.
 
-    firebase-ios-sdk's Swift Package products are automatic libraries (not `type: .dynamic`), so each react-native-firebase pod that resolves Firebase via SPM embeds its own copy. With `use_frameworks! :linkage => :static` those copies collide at link time as duplicate-symbol errors.
+    Detected static pod linkage:
+    #{detected.join("\n")}
 
-    Fix one of the following in your Podfile, then run `pod install` again:
-      - Use dynamic linkage: `use_frameworks! :linkage => :dynamic`
-      - Opt out of SPM: set `$RNFirebaseDisableSPM = true` before any target block, then use the static or dynamic linkage your project requires.
+    firebase-ios-sdk's Swift Package products are automatic libraries (not `type: .dynamic`), so each react-native-firebase pod that resolves Firebase via SPM embeds its own copy. With static pod linkage those copies collide at link time as duplicate-symbol errors.
+
+    Fix your Podfile to use dynamic linkage, then run `pod install` again:
+
+      use_frameworks! :linkage => :dynamic
+
+    With the stock template Podfile you can instead run `USE_FRAMEWORKS=dynamic pod install`, but it must be set for every `pod install` (including CI) or linkage reverts to static; the Podfile line above is the durable fix.
+    Expo: set `ios.useFrameworks` to `"dynamic"` in the `expo-build-properties` plugin config, then re-run `npx expo prebuild`. Only if you maintain `ios/` by hand (no prebuild), set `"ios.useFrameworks": "dynamic"` in `ios/Podfile.properties.json`.
+
+    See https://rnfirebase.io/ios-spm
   MESSAGE
 end
 
@@ -1611,53 +1649,44 @@ end
 rnfirebase_hook_cocoapods_post_install!
 
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)
-# @param version [String] Firebase SDK version (e.g., '12.10.0')
+# @param version [String] Firebase SDK version (e.g., '13.0.0')
 # @param spm_products [Array<String>] SPM product names (e.g., ['FirebaseAuth'])
-# @param pods [Array<String>, String] CocoaPods dependency names with optional version
-#   Can be a single string like 'Firebase/Auth' or an array like ['Firebase/Messaging', 'FirebaseCoreExtension']
-def firebase_dependency(spec, version, spm_products, pods)
-  if defined?(spm_dependency) && !rnfirebase_spm_disabled?
-    # Tracked ourselves (rather than inspecting RN's internal `SPM` object's
-    # dependency list) so `rnfirebase_add_spm_embed_phase` doesn't depend on
-    # any RN-internal state shape -- only on whether *we* ever took this path.
-    if rnfirebase_probe_dynamic_firebase?
-      RNFirebaseSPM.activate!(version, mode: :umbrella)
-      if defined?(Pod::UI)
-        Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
-                     "Using local #{RNFIREBASE_SPM_UMBRELLA_PRODUCT} SPM probe " \
-                     '(RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE=1)'
-      end
-      # Do not attach the package product to the pod target. Xcode propagates
-      # a direct Swift-package dependency's transitive Clang include/module
-      # paths into that target, which makes FirebaseCore and
-      # FirebaseInstallations headers visible to RNFBApp Objective-C++.
-      # rnfirebase_add_spm_core_to_app_target owns the package product.
-      # rnfirebase_apply_spm_build_settings links the dynamic framework and,
-      # for this probe only, orders it ahead of RNFBApp via an aggregate
-      # productRef that is not RNFBApp's packageProductDependencies entry.
-    else
-      RNFirebaseSPM.activate!(version, mode: :remote)
-      if defined?(Pod::UI)
-        Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
-                     "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
-      end
-      spm_dependency(spec,
-                     url: RNFirebaseSPM.url,
-                     requirement: rnfirebase_spm_package_requirement(version),
-                     products: spm_products)
-    end
-  else
+# @param pods [Array<String>, String] Legacy CocoaPods names (ignored — Firebase 13+ is SPM-only)
+#   Kept for call-site compatibility with existing podspecs.
+def firebase_dependency(spec, version, spm_products, _pods)
+  rnfirebase_fail_cocoapods_firebase!('$RNFirebaseDisableSPM = true') if rnfirebase_spm_disabled?
+  unless defined?(spm_dependency)
+    rnfirebase_fail_cocoapods_firebase!('React Native < 0.75 — `spm_dependency` is unavailable')
+  end
+
+  # Tracked ourselves (rather than inspecting RN's internal `SPM` object's
+  # dependency list) so `rnfirebase_add_spm_embed_phase` doesn't depend on
+  # any RN-internal state shape -- only on whether *we* ever took this path.
+  if rnfirebase_probe_dynamic_firebase?
+    RNFirebaseSPM.activate!(version, mode: :umbrella)
     if defined?(Pod::UI)
-      if rnfirebase_spm_disabled?
-        Pod::UI.puts "#{"[react-native-firebase] #{spec.name}: ".yellow}SPM disabled ($RNFirebaseDisableSPM = true), using CocoaPods for Firebase dependencies" # rubocop:disable Layout/LineLength
-      elsif !defined?(spm_dependency)
-        Pod::UI.puts "#{"[react-native-firebase] #{spec.name}: ".yellow}SPM not available (React Native < 0.75), using CocoaPods for Firebase dependencies" # rubocop:disable Layout/LineLength
-      end
+      Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
+                   "Using local #{RNFIREBASE_SPM_UMBRELLA_PRODUCT} SPM probe " \
+                   '(RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE=1)'
     end
-    pods = [pods] unless pods.is_a?(Array)
-    pods.each do |pod|
-      spec.dependency pod, version
+    # Do not attach the package product to the pod target. Xcode propagates
+    # a direct Swift-package dependency's transitive Clang include/module
+    # paths into that target, which makes FirebaseCore and
+    # FirebaseInstallations headers visible to RNFBApp Objective-C++.
+    # rnfirebase_add_spm_core_to_app_target owns the package product.
+    # rnfirebase_apply_spm_build_settings links the dynamic framework and,
+    # for this probe only, orders it ahead of RNFBApp via an aggregate
+    # productRef that is not RNFBApp's packageProductDependencies entry.
+  else
+    RNFirebaseSPM.activate!(version, mode: :remote)
+    if defined?(Pod::UI)
+      Pod::UI.puts "[react-native-firebase] #{spec.name}: ".yellow +
+                   "Using SPM for Firebase dependency resolution (products: #{spm_products.join(', ')})"
     end
+    spm_dependency(spec,
+                   url: RNFirebaseSPM.url,
+                   requirement: rnfirebase_spm_package_requirement(version),
+                   products: spm_products)
   end
 end
 

@@ -36,9 +36,9 @@ yarn add @react-native-firebase/ai
 | **Platforms** | Android, iOS, and Web (pure JavaScript) |
 | **New Architecture** | **Not required**. Pure JavaScript package with no native TurboModule. |
 
-**Platform notes:** React Native does not ship browser `Blob` / `Buffer` helpers for every multi-modal path; you may need a third-party encoder for file bytes. Browser-only Live helpers such as `startAudioConversation()` are not exported. Hybrid Chrome on-device inference and the Prompt API types are not available. `getGenerativeModel` / `getLiveGenerativeModel` throw an `AIError` with code `no-model` if `model` is missing. With `GoogleAIBackend`, a request whose `safetySettings` set `SafetySetting.method` rejects with an `AIError` with code `unsupported`. Prefer `GoogleAIBackend` or `AgentPlatformBackend`; `VertexAIBackend` remains exported but is deprecated.
+**Platform notes:** React Native does not ship browser `Blob` / `Buffer` helpers for every multi-modal path; you may need a third-party encoder for file bytes. Browser-only Live helpers such as `startAudioConversation()` are not exported. Hybrid Chrome on-device inference and the Prompt API types are not available. `getGenerativeModel` / `getLiveGenerativeModel` throw an `AIError` with code `no-model` if `model` is missing. With `GoogleAIBackend`, a request whose `safetySettings` set `SafetySetting.method` rejects with an `AIError` with code `unsupported`. Use `GoogleAIBackend` or `AgentPlatformBackend`; `VertexAIBackend` was removed in v27.
 
-React Native Firebase exports `getAI`, `getGenerativeModel`, `getLiveGenerativeModel`, `getTemplateGenerativeModel`, `GoogleAIBackend`, `AgentPlatformBackend`, deprecated `VertexAIBackend`, `Schema`, `BackendType`, `AIError`, `AIErrorCode`, model classes, Live session types, and schema helpers. Each runtime entry point used below is explained in the section that uses it. Extra type-only exports relative to the Firebase JS SDK include the deprecated `GroundingAttribution` and `ObjectSchemaInterface`. Response enum constants such as `FinishReason`, `BlockReason`, `HarmProbability`, `HarmSeverity`, `Modality`, `Outcome`, `Language`, `SchemaType`, `URLRetrievalStatus`, and `LiveResponseType` describe values you read from responses. Compare against them when you branch on a response; they are not taught individually. `InferenceMode` belongs to the browser-only hybrid inference feature.
+React Native Firebase exports `getAI`, `getGenerativeModel`, `getLiveGenerativeModel`, `getTemplateGenerativeModel`, `GoogleAIBackend`, `AgentPlatformBackend`, `Schema`, `BackendType`, `AIError`, `AIErrorCode`, model classes, Live session types, and schema helpers. Each runtime entry point used below is explained in the section that uses it. Extra type-only exports relative to the Firebase JS SDK include the deprecated `GroundingAttribution` and `ObjectSchemaInterface`. React Native Firebase also exports `ChatSessionBase`, the shared base class behind the `ChatSession` and `TemplateChatSession` implementations; you do not create it yourself. Response enum constants such as `FinishReason`, `BlockReason`, `HarmProbability`, `HarmSeverity`, `Modality`, `Outcome`, `Language`, `SchemaType`, `URLRetrievalStatus`, and `LiveResponseType` describe values you read from responses. Compare against them when you branch on a response; they are not taught individually. `InferenceMode` belongs to the browser-only hybrid inference feature.
 
 This page covers the client modular API (`@react-native-firebase/ai`). These official Firebase AI Logic topics are not covered here, each for the reason given:
 
@@ -68,7 +68,7 @@ If you need to call the Gemini API directly from your mobile or web app, rather 
 
 `getAI(app?, options?)` returns an `AI` instance for the default app (or the `FirebaseApp` you pass). Default backend is `GoogleAIBackend` (Gemini Developer API). Pass `AgentPlatformBackend` for the Agent Platform Gemini API (location defaults to `global`). React Native Firebase injects optional `auth` and `appCheck` module references on `AIOptions` instead of firebase-js-sdk providers, so `getAI`, `AI`, and `AIOptions` differ in shape from the web SDK. `AIOptions` also accepts `useLimitedUseAppCheckTokens` (default `false`).
 
-`VertexAIBackend` is deprecated; prefer `AgentPlatformBackend`.
+`VertexAIBackend` was removed in v27; use `AgentPlatformBackend`.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -83,19 +83,6 @@ function createAiInstances() {
   console.log('Google AI backend type:', googleAi.backend.backendType);
   console.log('Agent Platform backend type:', agentPlatformAi.backend.backendType);
   return { googleAi, agentPlatformAi };
-}
-```
-
-Deprecated backend (prefer `AgentPlatformBackend`):
-
-```js
-// WARNING: VertexAIBackend is deprecated. Prefer AgentPlatformBackend.
-import { getApp } from '@react-native-firebase/app';
-import { VertexAIBackend, getAI } from '@react-native-firebase/ai';
-
-function createDeprecatedVertexAi() {
-  const ai = getAI(getApp(), { backend: new VertexAIBackend('us-central1') });
-  return ai;
 }
 ```
 
@@ -168,7 +155,7 @@ async function generateFromImageAndText() {
 
   const response = await model.generateContentStream([
     prompt,
-    { inlineData: { mimeType: 'image/png', data: base64Emoji } },
+    { type: 'inlineData', inlineData: { mimeType: 'image/png', data: base64Emoji } },
   ]);
 
   let text = '';
@@ -205,9 +192,8 @@ async function summarizePdf(encodedPdf) {
   const ai = getAI(app);
   const model = getGenerativeModel(ai, { model: 'gemini-3.1-flash-lite' });
 
-  const pdfPart = { inlineData: { mimeType: 'application/pdf', data: encodedPdf } };
   const result = await model.generateContent([
-    pdfPart,
+    { type: 'inlineData', inlineData: { mimeType: 'application/pdf', data: encodedPdf } },
     'Summarize this document in three bullet points.',
   ]);
 
@@ -388,11 +374,11 @@ async function runChatSession() {
     history: [
       {
         role: 'user',
-        parts: [{ text: 'Hello, I have 2 dogs in my house.' }],
+        parts: [{ type: 'text', text: 'Hello, I have 2 dogs in my house.' }],
       },
       {
         role: 'model',
-        parts: [{ text: 'Great to meet you. What would you like to know?' }],
+        parts: [{ type: 'text', text: 'Great to meet you. What would you like to know?' }],
       },
     ],
     generationConfig: {
@@ -496,6 +482,7 @@ async function runFunctionCalling() {
   const functionResult = await fetchWeather(functionCall.args);
   result = await chat.sendMessage([
     {
+      type: 'functionResponse',
       functionResponse: {
         name: functionCall.name,
         response: functionResult,
@@ -590,18 +577,15 @@ async function generateWithAutomaticFunctionCalling() {
 }
 ```
 
-## Count tokens and billable characters
+## Count tokens
 
 Generative AI models break down data into units called tokens for processing. Each Gemini model has a [maximum number of tokens](https://firebase.google.com/docs/ai-logic/models) that it can handle in a prompt and response.
 
-The below shows you how to get an estimate of token count and the number of billable characters for a request.
-
-`totalBillableCharacters` is deprecated and may be **undefined** for Gemini 3.x models such as `gemini-3.1-flash-lite`. Prefer `totalTokens`, and check `totalBillableCharacters` for presence before logging or billing on it.
+The below shows you how to get an estimate of token count for a request. `totalBillableCharacters` was removed in Firebase JS SDK 13 / React Native Firebase v27, so use `totalTokens`.
 
 `countTokens()` counts the input only, before you send a request, and the [official guide](https://firebase.google.com/docs/ai-logic/count-tokens) says calling it is free. To see input and output counts for a request you already made, read `response.usageMetadata`: `promptTokenCount`, `candidatesTokenCount` (output without thinking tokens), `thoughtsTokenCount`, and `totalTokenCount`. While streaming, `usageMetadata` appears only on the last chunk; read it as `chunk.usageMetadata` on the chunks from `result.stream`. The input count includes system instructions and tools. Gemini Live API models do not support `countTokens()`.
 
 ```js
-// WARNING: totalBillableCharacters is deprecated. Prefer totalTokens.
 import { getApp } from '@react-native-firebase/app';
 import { getAI, getGenerativeModel } from '@react-native-firebase/ai';
 
@@ -612,20 +596,16 @@ async function countPromptTokens() {
 
   const textCount = await model.countTokens('Write a story about a magic backpack.');
   console.log(`Total tokens: ${textCount.totalTokens}`);
-  if (textCount.totalBillableCharacters !== undefined) {
-    console.log(`Total billable characters: ${textCount.totalBillableCharacters}`);
-  }
 
   const prompt = "What's in this picture?";
   const imageAsBase64 =
     'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAApgAAAKYB3X3/OAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVEiJtZZPbBtFFMZ/M7ubXdtdb1xSFyeilBapySVU8h8OoFaooFSqiihIVIpQBKci6KEg9Q6H9kovIHoCIVQJJCKE1ENFjnAgcaSGC6rEnxBwA04Tx43t2FnvDAfjkNibxgHxnWb2e/u992bee7tCa00YFsffekFY+nUzFtjW0LrvjRXrCDIAaPLlW0nHL0SsZtVoaF98mLrx3pdhOqLtYPHChahZcYYO7KvPFxvRl5XPp1sN3adWiD1ZAqD6XYK1b/dvE5IWryTt2udLFedwc1+9kLp+vbbpoDh+6TklxBeAi9TL0taeWpdmZzQDry0AcO+jQ12RyohqqoYoo8RDwJrU+qXkjWtfi8Xxt58BdQuwQs9qC/afLwCw8tnQbqYAPsgxE1S6F3EAIXux2oQFKm0ihMsOF71dHYx+f3NND68ghCu1YIoePPQN1pGRABkJ6Bus96CutRZMydTl+TvuiRW1m3n0eDl0vRPcEysqdXn+jsQPsrHMquGeXEaY4Yk4wxWcY5V/9scqOMOVUFthatyTy8QyqwZ+kDURKoMWxNKr2EeqVKcTNOajqKoBgOE28U4tdQl5p5bwCw7BWquaZSzAPlwjlithJtp3pTImSqQRrb2Z8PHGigD4RZuNX6JYj6wj7O4TFLbCO/Mn/m8R+h6rYSUb3ekokRY6f/YukArN979jcW+V/S8g0eT/N3VN3kTqWbQ428m9/8k0P/1aIhF36PccEl6EhOcAUCrXKZXXWS3XKd2vc/TRBG9O5ELC17MmWubD2nKhUKZa26Ba2+D3P+4/MNCFwg59oWVeYhkzgN/JDR8deKBoD7Y+ljEjGZ0sosXVTvbc6RHirr2reNy1OXd6pJsQ+gqjk8VWFYmHrwBzW/n+uMPFiRwHB2I7ih8ciHFxIkd/3Omk5tCDV1t+2nNu5sxxpDFNx+huNhVT3/zMDz8usXC3ddaHBj1GHj/As08fwTS7Kt1HBTmyN29vdwAw+/wbwLVOJ3uAD1wi/dUH7Qei66PfyuRj4Ik9is+hglfbkbfR3cnZm7chlUWLdwmprtCohX4HUtlOcQjLYCu+fzGJH2QRKvP3UNz8bWk1qMxjGTOMThZ3kvgLI5AzFfo379UAAAAASUVORK5CYII=';
-  const imagePart = { inlineData: { mimeType: 'image/png', data: imageAsBase64 } };
 
-  const multiModalCount = await model.countTokens([prompt, imagePart]);
+  const multiModalCount = await model.countTokens([
+    prompt,
+    { type: 'inlineData', inlineData: { mimeType: 'image/png', data: imageAsBase64 } },
+  ]);
   console.log(`Total tokens: ${multiModalCount.totalTokens}`);
-  if (multiModalCount.totalBillableCharacters !== undefined) {
-    console.log(`Total billable characters: ${multiModalCount.totalBillableCharacters}`);
-  }
 
   const generated = await model.generateContent('Write a story about a magic backpack.');
   const usage = generated.response.usageMetadata;
@@ -671,8 +651,8 @@ async function generateImageWithGemini() {
   });
 
   const result = await model.generateContent('Draw a red bicycle on a beach at sunset');
-  const parts = result.response.candidates?.[0]?.content?.parts ?? [];
-  const imagePart = parts.find(part => part.inlineData?.mimeType?.startsWith('image/'));
+  const imageParts = result.response.inlineDataParts() ?? [];
+  const imagePart = imageParts.find(part => part.inlineData.mimeType.startsWith('image/'));
   console.log('Generated image mime type', imagePart?.inlineData?.mimeType);
   return imagePart?.inlineData?.mimeType;
 }
@@ -848,7 +828,6 @@ async function startLiveSession() {
   const liveModel = getLiveGenerativeModel(ai, {
     model: 'gemini-2.5-flash-native-audio-preview-12-2025',
     generationConfig: {
-      temperature: 0.8,
       responseModalities: [ResponseModality.AUDIO],
       outputAudioTranscription: {},
     },
@@ -889,7 +868,7 @@ A `LiveSession` accepts several kinds of input. Each method rejects with an `AIE
 - `sendVideoRealtime({ mimeType, data })` sends individual video frames at 1 frame per second; `image/jpeg` is recommended for `mimeType`.
 - `sendFunctionResponses(functionResponses)` answers a `toolCall` message. Match each response to the call by `name` (and `id` when the call has one).
 
-`sendMediaChunks()` and `sendMediaStream()` are deprecated; use the methods above instead.
+`sendMediaChunks()` and `sendMediaStream()` were removed in v27; use the methods above instead.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -1024,7 +1003,7 @@ async function resumeAfterGoingAwayNotice(session, resumptionHandle) {
 
 Server prompt templates keep your prompt, schema, and model configuration on the server. The app sends only the template ID and the input variables. Create and test the template in the Firebase console; the client calls are below. `getTemplateGenerativeModel(ai, requestOptions?)` returns a `TemplateGenerativeModel`, which is in beta and can change in backwards-incompatible ways (Firebase calls server prompt templates a Preview feature). Per the official [get started](https://firebase.google.com/docs/ai-logic/server-prompt-templates/get-started) and [best practices](https://firebase.google.com/docs/ai-logic/server-prompt-templates/best-practices-and-considerations) pages, templates work with any Gemini model Firebase AI Logic supports except Gemini Live API models, and they do not support bidirectional streaming (Live), hybrid or on-device inference, or constraining output to a fixed list of values.
 
-`generateContent(templateId, templateVariables, singleRequestOptions?, templateToolConfig?)` runs a template once. `generateContentStream()` takes the same arguments and returns a stream, and `startChat({ templateId, templateVariables })` starts a multi-turn `TemplateChatSession`. For multi-turn use, the template text must contain the `{{history}}` tag where the SDK injects the conversation turns (see [multi-turn interactions](https://firebase.google.com/docs/ai-logic/server-prompt-templates/multi-turn-interactions)). Functions the model may call are listed in the `tools` section at the top of the template, not when you create the model. You can also pass `tools` to `startChat()` to supply the function definitions from client code, which override the template's definitions while the template still lists each function name.
+`generateContent(request, singleRequestOptions?)` runs a template once, where `request` is a `TemplateRequest` with `templateId`, `templateVariables`, and an optional `toolConfig`. `generateContentStream()` takes the same arguments and returns a stream, and `startChat({ templateId, templateVariables })` starts a multi-turn `TemplateChatSession`. For multi-turn use, the template text must contain the `{{history}}` tag where the SDK injects the conversation turns (see [multi-turn interactions](https://firebase.google.com/docs/ai-logic/server-prompt-templates/multi-turn-interactions)). Functions the model may call are listed in the `tools` section at the top of the template, not when you create the model. You can also pass `tools` to `startChat()` to supply the function definitions from client code, which override the template's definitions while the template still lists each function name.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -1035,13 +1014,15 @@ async function runTemplate() {
   const ai = getAI(app);
   const templateModel = getTemplateGenerativeModel(ai);
 
-  const result = await templateModel.generateContent('my-first-template-v1-0-0', {
-    customerName: 'Jane',
+  const result = await templateModel.generateContent({
+    templateId: 'my-first-template-v1-0-0',
+    templateVariables: { customerName: 'Jane' },
   });
   console.log(result.response.text());
 
-  const streamResult = await templateModel.generateContentStream('my-first-template-v1-0-0', {
-    customerName: 'Jane',
+  const streamResult = await templateModel.generateContentStream({
+    templateId: 'my-first-template-v1-0-0',
+    templateVariables: { customerName: 'Jane' },
   });
   let streamedText = '';
   for await (const chunk of streamResult.stream) {
@@ -1061,7 +1042,7 @@ async function runTemplate() {
 
 ### Retrieval config
 
-Pass `templateToolConfig` with a `retrievalConfig` as the fourth argument of `generateContent()` or `generateContentStream()`. For `startChat()`, pass `toolConfig` with a `retrievalConfig` in the chat parameters instead.
+Pass `toolConfig` with a `retrievalConfig` in the `TemplateRequest` you give `generateContent()` or `generateContentStream()`. For `startChat()`, pass `toolConfig` with a `retrievalConfig` in the chat parameters instead.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -1072,17 +1053,16 @@ async function runTemplateWithRetrievalConfig() {
   const ai = getAI(app);
   const templateModel = getTemplateGenerativeModel(ai);
 
-  const result = await templateModel.generateContent(
-    'weather-assistant-template',
-    { city: 'Boston' },
-    undefined,
-    {
+  const result = await templateModel.generateContent({
+    templateId: 'weather-assistant-template',
+    templateVariables: { city: 'Boston' },
+    toolConfig: {
       retrievalConfig: {
         latLng: { latitude: 42.3601, longitude: -71.0589 },
         languageCode: 'en-US',
       },
     },
-  );
+  });
 
   console.log(result.response.text());
   return result.response.text();

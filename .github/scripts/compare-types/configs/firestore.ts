@@ -127,6 +127,49 @@ const config: PackageConfig = {
 
     // --- Types / Interfaces ---
     {
+      name: 'BsonObjectId',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible BSON ObjectId value type. RN Firebase ' +
+        'Firestore is native-backed; Android/iOS Firestore SDKs do not expose a public ' +
+        'BsonObjectId constructor or serializer for this type.',
+    },
+    {
+      name: 'BsonTimestamp',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible BSON Timestamp value type. Native ' +
+        'Android/iOS Firestore SDKs do not expose an equivalent public BSON timestamp type.',
+    },
+    {
+      name: 'Decimal128Value',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible Decimal128 value type. Native Android/iOS ' +
+        'Firestore SDKs do not expose a public Decimal128 constructor for RN bridging.',
+    },
+    {
+      name: 'Int32Value',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible Int32 value type. Native Android/iOS ' +
+        'Firestore SDKs do not expose a public Int32Value type for RN bridging.',
+    },
+    {
+      name: 'MaxKey',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible MaxKey sentinel. Native Android/iOS ' +
+        'Firestore SDKs do not expose MaxKey for typed document values.',
+    },
+    {
+      name: 'MinKey',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible MinKey sentinel. Native Android/iOS ' +
+        'Firestore SDKs do not expose MinKey for typed document values.',
+    },
+    {
+      name: 'RegexValue',
+      reason:
+        'firebase-js-sdk 13 MongoDB-compatible Regex value type. Native Android/iOS ' +
+        'Firestore SDKs do not expose a public RegexValue constructor for RN bridging.',
+    },
+    {
       name: 'FirestoreErrorCode',
       reason:
         'Union type of all Firestore error codes. RN Firebase uses ' +
@@ -264,6 +307,13 @@ const config: PackageConfig = {
   // Different shape
   // ---------------------------------------------------------------------------
   differentShape: [
+    {
+      name: 'ChildTypes',
+      reason:
+        'UpdateData helper type added in firebase-js-sdk 13. RN Firebase mirrors the same ' +
+        'conditional (Record child union | T); declaration formatting/normalization differs ' +
+        'in compare-types output but the public type semantics match.',
+    },
     {
       name: 'deleteAllPersistentCacheIndexes',
       reason:

@@ -133,7 +133,7 @@ describe('LiveGenerativeModel', function () {
       {
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         generationConfig: { temperature: 0.8 },
-        systemInstruction: { role: 'system', parts: [{ text: 'Be a pirate' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'Be a pirate' }] },
       },
       mockHandler,
     );
@@ -159,7 +159,7 @@ describe('LiveGenerativeModel', function () {
           inputAudioTranscription: {},
           outputAudioTranscription: {},
         },
-        systemInstruction: { role: 'system', parts: [{ text: 'Be a pirate' }] },
+        systemInstruction: { role: 'system', parts: [{ type: 'text', text: 'Be a pirate' }] },
       },
       mockHandler,
     );

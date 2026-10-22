@@ -3,7 +3,7 @@
  * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -24,13 +24,13 @@ import {
   RequestOptions,
   SingleRequestOptions,
   StartTemplateChatParams,
-  TemplateToolConfig,
+  TemplateRequest,
 } from '../types';
 import { AI, GenerateContentStreamResult } from '../public-types';
 import { ApiSettings } from '../types/internal';
 import { mergeRequestOptions } from '../requests/request-options';
 import { initApiSettings } from './utils';
-import { TemplateChatSession } from '../methods/chat-session';
+import { TemplateChatSession, TemplateChatSessionImpl } from '../methods/chat-session';
 
 /**
  * {@link GenerativeModel} APIs that execute on a server-side template.
@@ -62,24 +62,21 @@ export class TemplateGenerativeModel {
    * Makes a single non-streaming call to the model and returns an object
    * containing a single {@link GenerateContentResponse}.
    *
-   * @param templateId - The ID of the server-side template to execute.
-   * @param templateVariables - A key-value map of variables to populate the
-   * template with.
+   * @param request - The request parameters for using a server prompt template.
+   * @param singleRequestOptions - Optional. Options to use for this request.
    *
    * @beta
    */
   async generateContent(
-    templateId: string,
-    templateVariables: Record<string, unknown>,
+    request: TemplateRequest,
     singleRequestOptions?: SingleRequestOptions,
-    templateToolConfig?: TemplateToolConfig,
   ): Promise<GenerateContentResult> {
     return templateGenerateContent(
       this._apiSettings,
-      templateId,
+      request.templateId,
       {
-        inputs: templateVariables,
-        ...(templateToolConfig && { toolConfig: templateToolConfig }),
+        inputs: request.templateVariables,
+        ...(request.toolConfig !== undefined && { toolConfig: request.toolConfig }),
       },
       mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
@@ -91,24 +88,21 @@ export class TemplateGenerativeModel {
    * streaming response as well as a promise that returns the final aggregated
    * response.
    *
-   * @param templateId - The ID of the server-side template to execute.
-   * @param templateVariables - A key-value map of variables to populate the
-   * template with.
+   * @param request - The request parameters for using a server prompt template.
+   * @param singleRequestOptions - Optional. Options to use for this request.
    *
    * @beta
    */
   async generateContentStream(
-    templateId: string,
-    templateVariables: Record<string, unknown>,
+    request: TemplateRequest,
     singleRequestOptions?: SingleRequestOptions,
-    templateToolConfig?: TemplateToolConfig,
   ): Promise<GenerateContentStreamResult> {
     return templateGenerateContentStream(
       this._apiSettings,
-      templateId,
+      request.templateId,
       {
-        inputs: templateVariables,
-        ...(templateToolConfig && { toolConfig: templateToolConfig }),
+        inputs: request.templateVariables,
+        ...(request.toolConfig !== undefined && { toolConfig: request.toolConfig }),
       },
       mergeRequestOptions(this.requestOptions, singleRequestOptions),
     );
@@ -124,6 +118,6 @@ export class TemplateGenerativeModel {
    * @beta
    */
   startChat(params: StartTemplateChatParams): TemplateChatSession {
-    return new TemplateChatSession(this._apiSettings, params, this.requestOptions);
+    return new TemplateChatSessionImpl(this._apiSettings, params, this.requestOptions);
   }
 }

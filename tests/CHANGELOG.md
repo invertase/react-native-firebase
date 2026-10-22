@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- **ios:** drop CocoaPods Firebase matrix; SPM-only
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13
+- **ml:** remove discontinued @react-native-firebase/ml package
+- **ai:** The Imagen API is removed from @react-native-firebase/ai.
+  getImagenModel(), getTemplateImagenModel(), ImagenImageFormat, and the Imagen
+  request and response types are gone. Generate images with Gemini image models
+  through getGenerativeModel() instead, setting responseModalities and
+  imageConfig on the generation config. See docs/migrating-to-v27.mdx for the
+  full mapping of removed exports and before/after code.
+
+### Features
+
+- **ai:** remove Imagen API ([c503c7f](https://github.com/invertase/react-native-firebase/commit/c503c7f6bdb35df817bb8ca196a7e2666d829227))
+- **app, sdk:** bump Firebase Android 35, Apple 13, and JS 13 ([0ca03d1](https://github.com/invertase/react-native-firebase/commit/0ca03d11b0c271fb37cfbee8a0c3074a21969f0b))
+- **app, sdk:** bump Firebase iOS SDK to 12.19.0 ([95dca6a](https://github.com/invertase/react-native-firebase/commit/95dca6a4eeb849bc2910946e1477694635bee6b7))
+- **app, sdk:** bump Firebase JS SDK to 12.19.0 ([34d0318](https://github.com/invertase/react-native-firebase/commit/34d031849146527ab9b9ee3ba4fbd207bdab0803))
+- **ml:** remove discontinued @react-native-firebase/ml package ([58622b1](https://github.com/invertase/react-native-firebase/commit/58622b1a24a32008fd33ff56346cceb4f71bc29f))
+
+### Bug Fixes
+
+- **app, ios:** pin SPM Firebase SDK and retain Measurement ObjC categories ([7e271af](https://github.com/invertase/react-native-firebase/commit/7e271afecab65ef150140056171265e9c9ca621c))
+- **app, sdk:** finish firebase-js-sdk 12.18.0 pin and Other HttpsError assertions ([56cb41d](https://github.com/invertase/react-native-firebase/commit/56cb41df9763ef51bfb368745490daf5a5099e0b))
+- **app:** stop evaluating firebase.json content as Ruby/Python source in ios_config.sh ([d333ab3](https://github.com/invertase/react-native-firebase/commit/d333ab39a83454606d9ede4aa4a3c031a63cf898))
+- **messaging, ios:** hop notification permission APIs onto the main queue ([3fde064](https://github.com/invertase/react-native-firebase/commit/3fde064e34094760a1395e8fa9753ad4917eaec7))
+- **messaging:** nest iOS string sounds correctly ([a34ce00](https://github.com/invertase/react-native-firebase/commit/a34ce007833e3ba3ba13a5a46cf82c7f38ef1282))
+- **tests, ios:** keep the debug Hermes engine on debug builds ([60d871e](https://github.com/invertase/react-native-firebase/commit/60d871e12240dd2c71dca2bc2deb1461911de439))
+
+### Continuous Integration
+
+- **ios:** drop CocoaPods Firebase matrix; SPM-only ([89e270f](https://github.com/invertase/react-native-firebase/commit/89e270f3d1f4c1f3c22e32ca539ebe3da30dbd7e))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes

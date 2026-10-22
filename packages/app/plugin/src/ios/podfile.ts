@@ -1,39 +1,36 @@
 import { ConfigPlugin, withPodfile } from '@expo/config-plugins';
-import {
-  mergeContents,
-  removeGeneratedContents,
-} from '@expo/config-plugins/build/utils/generateCode';
+import { removeGeneratedContents } from '@expo/config-plugins/build/utils/generateCode';
 
 import { PluginConfigType } from '../pluginConfig';
 
 const TAG = '@react-native-firebase/app-disableSPM';
-const ANCHOR = /prepare_react_native_project!/;
-const FLAG = '$RNFirebaseDisableSPM = true';
 
-// The flag must be defined before any target block so firebase_spm.rb sees it
-// when pods are declared - anchoring just after `prepare_react_native_project!`
-// guarantees that in the Podfile Expo generates.
+const DISABLE_SPM_UNSUPPORTED =
+  '[react-native-firebase] ios.disableSPM is no longer supported. ' +
+  'Firebase Apple SDK 13+ is distributed only through Swift Package Manager. ' +
+  'Remove `disableSPM` from the `@react-native-firebase/app` config plugin and ' +
+  'use dynamic frameworks (`expo-build-properties` ios.useFrameworks: "dynamic"). ' +
+  'See https://rnfirebase.io/ios-spm';
+
+// Historically injected `$RNFirebaseDisableSPM = true` before target blocks.
+// Firebase 13+ is SPM-only: enabling this option must fail loudly, and any
+// leftover generated flag is stripped on prebuild.
 export function setAppPodfileDisableSPM(src: string, enabled: boolean = false): string {
-  if (!enabled) {
-    return removeGeneratedContents(src, TAG) ?? src;
+  if (enabled) {
+    throw new Error(DISABLE_SPM_UNSUPPORTED);
   }
 
-  return mergeContents({
-    src,
-    newSrc: FLAG,
-    tag: TAG,
-    anchor: ANCHOR,
-    offset: 1,
-    comment: '#',
-  }).contents;
+  return removeGeneratedContents(src, TAG) ?? src;
 }
 
 export const withIosDisableSPM: ConfigPlugin<PluginConfigType> = (config, props) => {
+  if (props?.ios?.disableSPM === true) {
+    throw new Error(DISABLE_SPM_UNSUPPORTED);
+  }
+
   return withPodfile(config, config => {
-    config.modResults.contents = setAppPodfileDisableSPM(
-      config.modResults.contents,
-      props?.ios?.disableSPM === true,
-    );
+    // Strip a leftover DisableSPM flag from older prebuilds; never re-add it.
+    config.modResults.contents = setAppPodfileDisableSPM(config.modResults.contents, false);
 
     return config;
   });

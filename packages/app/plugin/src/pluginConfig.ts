@@ -4,8 +4,10 @@ export interface PluginConfigType {
 
 export interface PluginConfigTypeIos {
   /**
-   * Sets `$RNFirebaseDisableSPM = true` in the Podfile, forcing Firebase
-   * dependencies to be installed with CocoaPods instead of Swift Package Manager.
+   * @deprecated Firebase Apple SDK 13+ is SPM-only. Setting this to `true`
+   * fails Expo prebuild / `pod install` — CocoaPods no longer distributes Firebase.
+   * Remove this option and use `use_frameworks! :linkage => :dynamic` (via
+   * `expo-build-properties` `ios.useFrameworks: "dynamic"`).
    *
    * @platform ios iOS
    */

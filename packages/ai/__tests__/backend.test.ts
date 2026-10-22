@@ -3,7 +3,7 @@
  * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 import { describe, it, expect } from '@jest/globals';
-import { AgentPlatformBackend, GoogleAIBackend, VertexAIBackend } from '../lib/backend';
+import { AgentPlatformBackend, GoogleAIBackend } from '../lib/backend';
 import { BackendType } from '../lib/public-types';
-import { DEFAULT_LOCATION, LEGACY_DEFAULT_LOCATION } from '../lib/constants';
+import { DEFAULT_LOCATION } from '../lib/constants';
 
 describe('Backend', () => {
   describe('GoogleAIBackend', () => {
@@ -38,7 +38,7 @@ describe('Backend', () => {
   });
 
   describe('AgentPlatformBackend', () => {
-    it('should set backendType to AGENT_PLATFORM', () => {
+    it('should set backendType to AGENT_PLATFORM with global default', () => {
       const backend = new AgentPlatformBackend();
       expect(backend.backendType).toBe(BackendType.AGENT_PLATFORM);
       expect(backend.location).toBe(DEFAULT_LOCATION);
@@ -64,42 +64,6 @@ describe('Backend', () => {
 
     it('builds model and template paths with location', () => {
       const backend = new AgentPlatformBackend('europe-west1');
-      expect(backend._getModelPath('my-project', 'models/gemini')).toBe(
-        '/v1beta/projects/my-project/locations/europe-west1/models/gemini',
-      );
-      expect(backend._getTemplatePath('my-project', 'tmpl')).toBe(
-        '/v1beta/projects/my-project/locations/europe-west1/templates/tmpl',
-      );
-    });
-  });
-
-  describe('VertexAIBackend', () => {
-    it('should set backendType to VERTEX_AI', () => {
-      const backend = new VertexAIBackend();
-      expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe(LEGACY_DEFAULT_LOCATION);
-    });
-
-    it('should set a custom location', () => {
-      const backend = new VertexAIBackend('test-location');
-      expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe('test-location');
-    });
-
-    it('should use a default location if location is empty string', () => {
-      const backend = new VertexAIBackend('');
-      expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe(LEGACY_DEFAULT_LOCATION);
-    });
-
-    it('uses default location if location is null', () => {
-      const backend = new VertexAIBackend(null as any);
-      expect(backend.backendType).toBe(BackendType.VERTEX_AI);
-      expect(backend.location).toBe(LEGACY_DEFAULT_LOCATION);
-    });
-
-    it('builds model and template paths with location', () => {
-      const backend = new VertexAIBackend('europe-west1');
       expect(backend._getModelPath('my-project', 'models/gemini')).toBe(
         '/v1beta/projects/my-project/locations/europe-west1/models/gemini',
       );
