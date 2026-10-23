@@ -9,6 +9,7 @@
 ## Working
 
 - Run from repo root; install once with `yarn`.
+- **Mellifera integration:** pasteable agentic prompt lives in the mellifera repo — [AGENTS.md § Integrate Mellifera](https://github.com/invertase/mellifera/blob/main/AGENTS.md#integrate-mellifera-pasteable-prompt). Do not paste or restate it here. Spill apply pattern: [running-e2e.md § Mellifera spill](okf-bundle/testing/running-e2e.md#mellifera-spill-overlapping-full); layers: [e2e-parallel-design.md § RNFB / Mellifera / Tart](okf-bundle/testing/e2e-parallel-design.md#rnfb-mellifera-tart-layers).
 - **Agent shell commands:** [agent-command-policy.md](okf-bundle/testing/agent-command-policy.md) only (allowlist). E2e additionally [running-e2e.md § agent rule](okf-bundle/testing/running-e2e.md#agent-rule-read-first).
 - Follow local package patterns; check `type-test.ts`, `__tests__/`, and plugin dirs before public API/platform changes.
 - Start with `okf-bundle/index.md` for repo-specific implementation/testing/maintenance knowledge.

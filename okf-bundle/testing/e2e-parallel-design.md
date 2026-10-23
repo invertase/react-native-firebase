@@ -81,7 +81,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 | Layer | Owns | Must not |
 |-------|------|----------|
 | **RNFB e2e** | Ports, devices, `export-slot-env`, packager, emulator, check/release, `:build` / `:test-cover`. Parallel = all platforms at once, and multiple same-platform runs via **slots** + extra worktrees. | Read `tests/mellifera.env.json`; change native build settings; invent a second runbook |
-| **Mellifera** | Leases. A user **publishes** that a host has available RNFB e2e slots; Mellifera **executes** RNFB e2e using those slots (export `RNFB_*`, then `yarn tests:*`). | Detox/Gradle/Watchman/runbook order; `--mellifera` inside core check/release |
+| **Mellifera** | Leases. A user **publishes** that a host has available RNFB e2e slots; Mellifera **executes** RNFB e2e using those slots (export `RNFB_*`, then `yarn tests:*`). Pasteable integrator prompt (out-of-tree): [mellifera AGENTS.md § Integrate Mellifera](https://github.com/invertase/mellifera/blob/main/AGENTS.md#integrate-mellifera-pasteable-prompt) — pointer only; do not paste. | Detox/Gradle/Watchman/runbook order; `--mellifera` inside core check/release |
 | **Tart** | Fully separate speculative VM system. A published Mellifera slot **may** be a process inside a Tart VM. Lab path [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended) during Xcode 27 / iOS 27 ratchet. | Define RNFB e2e commands or justify Debug Detox flags |
 
 > Mellifera is additive. Serial `yarn tests:*` never requires it. Older drafts called macOS `macos-global`; superseded by `macos-slot-N` + `RNFB_MACOS_PRODUCT_NAME`.
@@ -564,7 +564,7 @@ Work-queue rows for implementation are ephemeral — not duplicated here per [do
 * [Running e2e tests](running-e2e.md) — canonical commands, change bar, [slot lifecycle](running-e2e.md#slot-lifecycle), [slot index](running-e2e.md#e2e-slot-index)
 * [Coverage design](coverage-design.md) — per-platform artifact policy
 * [Firebase testing project](firebase-testing-project.md) — emulator vs cloud
-* Mellifera coordinator — co-developed out-of-tree; see [§ RNFB e2e, Mellifera, and Tart](#rnfb-mellifera-tart-layers) (not shipped in the contention PR)
+* Mellifera coordinator — co-developed out-of-tree; see [§ RNFB e2e, Mellifera, and Tart](#rnfb-mellifera-tart-layers). Integrator prompt: [mellifera AGENTS.md § Integrate Mellifera](https://github.com/invertase/mellifera/blob/main/AGENTS.md#integrate-mellifera-pasteable-prompt) (pointer only; not shipped in the contention PR)
 * [scripts/tart/README.md](../../scripts/tart/README.md) — separate VM system
 * [Change authoring workflow § host rule](change-authoring-workflow.md#host-rule) — serial default; slotted exception via running-e2e
 * [Agent command policy](agent-command-policy.md) — allowlisted `yarn tests:*`
