@@ -1,6 +1,6 @@
 ---
 title: Cloud Messaging
-description: 'Cloud Messaging: getMessaging/isSupported, FCM tokens (getToken/deleteToken/onTokenRefresh), permissions, foreground/background handlers, topics, APNs helpers, auto-init, delivery-metrics export, Expo config plugin options, firebase.json keys, and RN payload types (RemoteMessage, Notification, MessagePriority).'
+description: 'Cloud Messaging: getMessaging/isSupported, Installation ID registration (register/unregister/onRegistered/onUnregistered), deprecated FCM tokens (getToken/deleteToken/onTokenRefresh), permissions, foreground/background handlers, topics, APNs helpers, auto-init, delivery-metrics export, Expo config plugin options, firebase.json keys, and RN payload types (RemoteMessage, Notification, MessagePriority).'
 next: /messaging/usage/ios-setup
 previous: /functions/writing-deploying-functions
 ---
@@ -123,7 +123,7 @@ await setNotificationDelegationEnabled(messaging, true);
 
 ## Installation ID messaging (optional)
 
-Firebase Installation ID (FID) registration (`register` / `onRegistered`) is available but **off by default**.
+Firebase Installation ID (FID) registration (`register` / `onRegistered`) is **off by default**. Opt in before calling it.
 For the migration path (API mapping, opt-in, error codes, checklist), see
 [Migrating to Installation ID](/messaging/migrating-to-installation-id).
 Deep usage samples (native keys, Expo plugin, listeners): [Installation ID messaging](/messaging/server-integration#installation-id-messaging).
@@ -179,14 +179,13 @@ All modular functions are exported on both platforms. Platform-specific ones beh
 | --- | --- | --- |
 | `getAPNSToken`, `setAPNSToken` | iOS | Android: `getAPNSToken` resolves `null`, `setAPNSToken` resolves without doing anything. |
 | `registerDeviceForRemoteMessages`, `unregisterDeviceForRemoteMessages` | iOS | Android: resolve without doing anything. `isDeviceRegisteredForRemoteMessages` always returns `true` on Android. |
-| `requestPermission` | iOS prompt | Android: resolves `AuthorizationStatus.AUTHORIZED` without prompting. |
 | `getDidOpenSettingsForNotification`, `setOpenSettingsForNotificationsHandler` | iOS | Android: `getDidOpenSettingsForNotification` resolves `false`, the handler is never called. |
 | `getIsHeadless` | iOS | Android: resolves `false`. |
 | `sendMessage`, `onMessageSent`, `onSendError` | Android | iOS: `sendMessage` throws an `Error` in JavaScript, the listeners never fire. |
 | `onDeletedMessages` | Android | iOS: the listener never fires. |
 | `isNotificationDelegationEnabled`, `setNotificationDelegationEnabled` | Android | iOS: `isNotificationDelegationEnabled` returns `false`, `setNotificationDelegationEnabled` resolves without doing anything. |
 
-React Native Firebase also exports helpers with no firebase-js-sdk equivalent: `SDK_VERSION`, the token, permission and APNs helpers, topic subscribe APIs, background handlers, and the payload types (`RemoteMessage`, `Notification`, `MessagePriority`, and related). Each is explained in the section that uses it. The firebase-js-sdk Installation ID registration functions (`register`, `unregister`, `onRegistered`, `onUnregistered`) do not exist in React Native Firebase: use `getToken` and `onTokenRefresh`. See [Migrating to v26, Platform behavior differences](/migrating-to-v26#platform-behavior-differences).
+React Native Firebase also exports helpers with no firebase-js-sdk equivalent: `SDK_VERSION`, the token, registration and APNs helpers, topic subscribe APIs, background handlers, and the payload types (`RemoteMessage`, `Notification`, `MessagePriority`, and related). Each is explained in the section that uses it.
 
 # What does it do
 
@@ -221,7 +220,61 @@ const supported = await isSupported(getMessaging());
 console.log('Messaging supported:', supported);
 ```
 
-## FCM registration tokens
+## Installation ID registration (latest)
+
+This is the latest way to register a device with FCM. Use `register` to register this app instance with FCM, and `onRegistered` to receive its Firebase Installation ID (FID). Store the FID on your backend if you send to individual devices (see [Server Integration](/messaging/server-integration)).
+
+Installation ID messaging is **off by default**. Opt in first (see [Installation ID messaging](#installation-id-messaging-optional)), otherwise `register` and `unregister` reject, and `onRegistered` and `onUnregistered` throw, with `messaging/installation-id-not-enabled`.
+
+`register` does not register the device with APNs on iOS. Use auto-registration (the default) or [`registerDeviceForRemoteMessages`](#auto-registration-ios) so remote pushes can arrive.
+
+`onRegistered` returns an unsubscribe function. A new subscriber receives the cached FID immediately while the app is still registered, and later registrations and FID rotations fire as usual.
+
+```js
+import { getMessaging, onRegistered, register } from '@react-native-firebase/messaging';
+
+async function registerDevice() {
+  const messaging = getMessaging();
+
+  const unsubscribe = onRegistered(messaging, installationId => {
+    console.log('Registered with FID:', installationId);
+  });
+
+  await register(messaging);
+
+  // Call unsubscribe() when the listener is no longer needed, for example in an effect cleanup.
+  return unsubscribe;
+}
+```
+
+`unregister` removes this app instance's FCM registration so its current FID is no longer active. Use it when a user logs out (see [Signing out users](/messaging/server-integration#signing-out-users)). `onUnregistered` only fires for an `unregister` call that completes after you subscribe. Call `register` again to get a new registration.
+
+```js
+import {
+  getMessaging,
+  onUnregistered,
+  register,
+  unregister,
+} from '@react-native-firebase/messaging';
+
+async function resetRegistration() {
+  const messaging = getMessaging();
+
+  const unsubscribe = onUnregistered(messaging, installationId => {
+    console.log('Unregistered FID:', installationId);
+  });
+
+  await unregister(messaging);
+  await register(messaging);
+
+  // Call unsubscribe() when the listener is no longer needed, for example in an effect cleanup.
+  return unsubscribe;
+}
+```
+
+## FCM registration tokens (deprecated)
+
+The Messaging token APIs `getToken`, `deleteToken` and `onTokenRefresh` are deprecated. Firebase JS 12.14+, Android Messaging 25.1+ and Apple 12.18+ deprecated the FCM token APIs in favor of Installation ID registration (`register` / `onRegistered`, and `unregister` / `onUnregistered` in place of `deleteToken`). The token APIs still work while Installation ID messaging is off. Once you opt in, `getToken` and `deleteToken` reject and `onTokenRefresh` throws with `messaging/token-api-disabled`.
 
 Use `getToken` to read the FCM registration token for this app instance, and `onTokenRefresh` when the token rotates. Store the token on your backend if you send to individual devices (see [Server Integration](/messaging/server-integration)).
 
@@ -232,6 +285,7 @@ On iOS, `getToken` rejects with `messaging/unregistered` when the app is not reg
 `onTokenRefresh` returns an unsubscribe function. The listener is only called while the app is in the foreground.
 
 ```js
+// DEPRECATED: prefer register() above. Still works while Installation ID messaging is off.
 import { getMessaging, getToken, onTokenRefresh } from '@react-native-firebase/messaging';
 
 const messaging = getMessaging();
@@ -250,6 +304,7 @@ unsubscribe();
 `deleteToken` invalidates the current token immediately and permanently: messages sent to it fail. Use it when a user logs out (see [Signing out users](/messaging/server-integration#signing-out-users)). The next `getToken` call returns a new token.
 
 ```js
+// DEPRECATED: prefer unregister() and register() above. Still works while Installation ID messaging is off.
 import { getMessaging, deleteToken, getToken } from '@react-native-firebase/messaging';
 
 const messaging = getMessaging();
@@ -259,9 +314,10 @@ const newToken = await getToken(messaging);
 console.log('New FCM token:', newToken);
 ```
 
-`NativeTokenOptions` overrides the defaults per platform:
+`register` has no equivalent of these per-platform options. For `getToken` and `deleteToken`, `NativeTokenOptions` overrides the defaults per platform:
 
 ```js
+// DEPRECATED: register() takes no per-platform options. Still works while Installation ID messaging is off.
 import { Platform } from 'react-native';
 import { getMessaging, getToken } from '@react-native-firebase/messaging';
 
@@ -276,44 +332,32 @@ console.log('FCM token:', token);
 
 ## iOS - Requesting permissions
 
-> **Deprecated:** `requestPermission`, `hasPermission`, and `AuthorizationStatus` in `@react-native-firebase/messaging` are deprecated. Prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) instead. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
-
-iOS prevents messages containing notification (or 'alert') payloads from being displayed unless you have received explicit permission from the user.
+iOS prevents messages containing notification (or 'alert') payloads from being displayed unless you have received explicit permission from the user. Request it with `requestNotifications` from [react-native-permissions](https://github.com/zoontek/react-native-permissions). If your app uses Expo, use [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) to request notification permission instead.
 
 > To learn more about local notifications, view the [Notifications](/messaging/notifications) documentation.
 
-This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
-
 ```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import {
-  getMessaging,
-  requestPermission,
-  AuthorizationStatus,
-} from '@react-native-firebase/messaging';
+// codeblock-ignore: imports react-native-permissions, a third-party package that is not a dependency of React Native Firebase
+import { requestNotifications } from 'react-native-permissions';
 
 async function requestUserPermission() {
-  const messaging = getMessaging();
-  const authStatus = await requestPermission(messaging);
-  const enabled =
-    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
+  const { status } = await requestNotifications(['alert', 'badge', 'sound']);
+  const enabled = status === 'granted';
 
   if (enabled) {
-    console.log('Authorization status:', authStatus);
+    console.log('Authorization status:', status);
   }
 }
 
 await requestUserPermission();
 ```
 
-The permissions API for iOS provides finer control over permissions and how they're handled within your
+The options passed to `requestNotifications` give finer control over how notifications are handled within your
 application. To learn more, view the advanced [iOS Permissions](/messaging/ios-permissions) documentation.
 
 ## Android - Requesting permissions
 
-> **Deprecated:** `requestPermission` and `hasPermission` in `@react-native-firebase/messaging` are deprecated. On Android, `requestPermission` always resolves to `AuthorizationStatus.AUTHORIZED` without prompting (all API levels). `hasPermission` is not a no-op: it resolves from `NotificationManagerCompat.areNotificationsEnabled()`. Prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) for notification permission requests. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
-
-On Android API level 32 and below, you do not need to request user permission. For API level 33+ you must request the permission using React Native `PermissionsAndroid`, or a related module such as `react-native-permissions` or `expo-notifications`:
+On Android API level 32 and below, you do not need to request user permission. For API level 33+ you must request the `POST_NOTIFICATIONS` permission. `requestNotifications` from `react-native-permissions` does that on Android, or you can use React Native `PermissionsAndroid`:
 
 ```js
 import { PermissionsAndroid, Platform } from 'react-native';
@@ -435,7 +479,7 @@ The `remoteMessage` property contains all of the information about the message s
 any custom data (via the `data` property) and notification data. To learn more, view the [`RemoteMessage`](https://reference.rnfirebase.io/_react-native-firebase/messaging/types/messaging/RemoteMessage.html)
 API reference.
 
-If the `RemoteMessage` payload contains a `notification` property when sent to the `onMessage` handler, Android does not show a notification to the user, and neither does iOS unless `messaging_ios_foreground_presentation_options` is configured (see [Foreground Presentation Options (iOS)](#foreground-presentation-options-ios)). Instead, you could trigger a [local notification](/messaging/notifications#advanced-local-notifications)
+If the `RemoteMessage` payload contains a `notification` property when sent to the `onMessage` handler, Android does not show a notification to the user, and neither does iOS unless `messaging_ios_foreground_presentation_options` is configured (see [Foreground Presentation Options (iOS)](#foreground-presentation-options-ios)). Instead, you could trigger a local notification with a library of your choice
 or update the in-app UI to signal a new notification.
 
 ### Deleted messages
@@ -453,8 +497,6 @@ unsubscribe();
 ```
 
 ### Background & Quit state messages
-
-> Note: If you use `@notifee/react-native` since v7.0.0, `onNotificationOpenedApp` and `getInitialNotification` will no longer trigger as Notifee will handle the event.
 
 When the application is in a background or quit state, the `onMessage` handler will not be called when receiving messages.
 Instead, you need to setup a background callback handler via the `setBackgroundMessageHandler` method.
@@ -765,12 +807,11 @@ console.log('Still registered:', isDeviceRegisteredForRemoteMessages(messaging))
 ```
 
 > **ARM64 iOS Simulator:** React Native Firebase intentionally does **not** call UIKit
-> `registerForRemoteNotifications` on Apple Silicon Simulator builds (registration,
-> auto-registration, and `requestPermission`'s APNs side-effect). Calling that API can block the
+> `registerForRemoteNotifications` on Apple Silicon Simulator builds (registration
+> and auto-registration). Calling that API can block the
 > main thread indefinitely. `registerDeviceForRemoteMessages` therefore stays pending until a
 > ~10 second **global-queue** timer rejects with `messaging/registration-timeout`.
-> `requestPermission` still resolves with `AuthorizationStatus` (it does **not** reject with that
-> code). You will not get a real APNs device token on that simulator, so use a physical iOS device
+> You will not get a real APNs device token on that simulator, so use a physical iOS device
 > when you need end-to-end push registration. If `registerDeviceForRemoteMessages` is called again
 > before a prior attempt settles, the earlier promise rejects with
 > `messaging/registration-superseded`. See
@@ -778,7 +819,7 @@ console.log('Still registered:', isDeviceRegisteredForRemoteMessages(messaging))
 
 ## APNs device tokens (iOS)
 
-`getAPNSToken` and `setAPNSToken` are **iOS only**. Use `getAPNSToken` when another push provider (or your own server) needs the raw APNs device token rather than the FCM registration token. It resolves the token as a hexadecimal string, or `null` when no token is available (and always `null` on Android). On iOS it rejects with `messaging/unregistered` when the app is not registered for remote notifications, and it resolves `null` on a simulator that has no APNs support.
+`getAPNSToken` and `setAPNSToken` are **iOS only**. Use `getAPNSToken` when another push provider (or your own server) needs the raw APNs device token rather than the Firebase Installation ID. It resolves the token as a hexadecimal string, or `null` when no token is available (and always `null` on Android). On iOS it rejects with `messaging/unregistered` when the app is not registered for remote notifications, and it resolves `null` on a simulator that has no APNs support.
 
 Use `setAPNSToken` when your `AppDelegate` (or another library) receives the APNs token and you need to hand it to Firebase Messaging yourself. `token` must be a string and `type` is `'prod'`, `'sandbox'`, or `'unknown'` (the default). A non-string `token` or an invalid `type` throws an `Error` synchronously on both platforms. On iOS, `token` must also be a non-empty, even-length hexadecimal string, otherwise the call throws an `Error` before reaching the native module. On Android, `setAPNSToken` resolves without doing anything.
 
@@ -827,10 +868,10 @@ These options only apply when no other `UNUserNotificationCenter` delegate (for 
 
 ## Auto initialization
 
-Firebase generates an Instance ID, which FCM uses to generate a registration token (or, when Installation ID messaging is
-enabled, to register via FID — see [Migrating to Installation ID](/messaging/migrating-to-installation-id) and
-[Installation ID messaging](/messaging/server-integration#installation-id-messaging))
-and which Analytics uses for data collection.
+Firebase generates an Instance ID, which FCM uses to register this app instance via its FID when Installation ID messaging is
+enabled (see [Migrating to Installation ID](/messaging/migrating-to-installation-id) and
+[Installation ID messaging](/messaging/server-integration#installation-id-messaging)),
+or to generate a registration token otherwise, and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
 you do not need to change this behavior.
 
@@ -902,8 +943,7 @@ your application. You can change what Channel is used by updating the `messaging
 }
 ```
 
-Creating and managing Channels is outside of the scope of the React Native Firebase library, however external libraries
-such as [Notifee](https://notifee.app/react-native/docs/android/channels) can provide such functionality.
+Creating and managing Channels is outside of the scope of the React Native Firebase library.
 
 ## Notification Color
 

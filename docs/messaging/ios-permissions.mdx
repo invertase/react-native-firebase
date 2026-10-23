@@ -1,6 +1,6 @@
 ---
 title: iOS Permissions
-description: 'Deprecated iOS notification permission APIs requestPermission()/hasPermission(): AuthorizationStatus values, provisional authorization, and why to prefer react-native-permissions or expo-notifications instead.'
+description: 'iOS notification permissions with react-native-permissions: requestNotifications(), checkNotifications(), permission options, provisional authorization, and the in-app notification settings button.'
 next: /messaging/notifications
 previous: /messaging/usage/ios-setup
 ---
@@ -9,9 +9,7 @@ previous: /messaging/usage/ios-setup
 
 - `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then `cd ios && pod install`.
 - Native Firebase config and [iOS Messaging Setup](/messaging/usage/ios-setup) completed (Push Notifications, Background Modes, APNs). From v26, New Architecture is required for packages with a native bridge.
-- Prefer [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) for notification permission requests. The Messaging permission APIs on this page are deprecated (see [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283)).
-
-> **Deprecated:** Notification permission APIs (`requestPermission`, `hasPermission`, `AuthorizationStatus`, and `IOSPermissions`) in `@react-native-firebase/messaging` are deprecated and will be removed in a future major release. Use [react-native-permissions](https://github.com/zoontek/react-native-permissions) or [expo-notifications](https://docs.expo.dev/versions/latest/sdk/notifications/) for notification permission requests on iOS and Android instead. See [issue #6283](https://github.com/invertase/react-native-firebase/issues/6283).
+- [react-native-permissions](https://github.com/zoontek/react-native-permissions) installed and set up for iOS notifications (see its setup guide).
 
 ## Understanding permissions
 
@@ -21,28 +19,26 @@ Notifications cannot be shown to users if the user has not "granted" your applic
 
 In order to receive a "granted" status, you must request permission from your user (see below). The user can either accept or decline your request to grant permissions. If granted, notifications will be displayed based on the permission settings which were requested.
 
-If the user declines the request, you cannot re-request permission, trying to request permission again will immediately return a "denied" status without any user interaction - instead the user must manually enable notification permissions from the iOS Settings UI.
+If the user declines the request, you cannot re-request permission, trying to request permission again will immediately return a "blocked" status without any user interaction - instead the user must manually enable notification permissions from the iOS Settings UI.
 
 ## Requesting permissions
 
-Permission must be requested from your users in order to display remote notifications from FCM, via the
-`requestPermission` API:
+Permission must be requested from your users in order to display remote notifications from FCM. Use `requestNotifications` from `react-native-permissions`:
 
 ```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+// codeblock-ignore: imports react-native-permissions, a third-party package that is not a dependency of React Native Firebase
+import { requestNotifications } from 'react-native-permissions';
 
 async function requestUserPermission() {
-  const messaging = getMessaging();
-  const authorizationStatus = await requestPermission(messaging);
+  const { status } = await requestNotifications(['alert', 'badge', 'sound']);
 
-  console.log('Permission status:', authorizationStatus);
+  console.log('Permission status:', status);
 }
 
 await requestUserPermission();
 ```
 
-`requestPermission` is an iOS permission API. On Android it resolves `AuthorizationStatus.AUTHORIZED` (`1`) without showing a dialog and without reading the notification setting, and `hasPermission` reads the current Android notification setting instead. On Android 13 and above, request the `POST_NOTIFICATIONS` permission with another library.
+On iOS the result `status` is one of `granted`, `denied` (not requested yet), `blocked` (declined, so the user must change it in Settings) or `unavailable`. On Android 13 and above, `requestNotifications` requests the `POST_NOTIFICATIONS` permission for you.
 
 Once a user has selected a permission status, iOS prevents the permission dialog from being displayed again. This allows the users of your application full control of how notifications are handled:
 
@@ -53,69 +49,48 @@ Once a user has selected a permission status, iOS prevents the permission dialog
 
 Although overall notification permission can be granted, the permissions can be further broken down into settings.
 
-Settings are used by the device to control notifications behavior, for example alerting the user with sound. When requesting permission, you can provide a custom object of settings if you wish to override the defaults. This is demonstrated in the following example:
+Settings are used by the device to control notifications behavior, for example alerting the user with sound. When requesting permission, you pass the list of options you want. Omit an option to leave it out of the request. This is demonstrated in the following example:
 
 ```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+// codeblock-ignore: imports react-native-permissions, a third-party package that is not a dependency of React Native Firebase
+import { requestNotifications } from 'react-native-permissions';
 
-const messaging = getMessaging();
-
-await requestPermission(messaging, {
-  sound: false,
-  announcement: true,
-  alert: true,
-  badge: true,
-  carPlay: true,
-  provisional: false,
-  providesAppNotificationSettings: false,
-});
+await requestNotifications(['alert', 'badge', 'carPlay']);
 ```
 
-The full list of permission settings can be seen in the table below along with their default values:
+The options `requestNotifications` accepts on iOS:
 
 {/* prettier-ignore */}
-| Permission | Default | Description |
-| --- | --- | --- |
-| `alert` | `true` | Sets whether notifications can be displayed to the user on the device. |
-| `announcement` | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods. |
-| `badge` | `true` | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications. |
-| `carPlay` | `true` | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/). |
-| `criticalAlert` | `false` | Requests the critical alerts authorization, which lets notifications play a sound even when the device is muted or Do Not Disturb is on. Apple requires an entitlement for it. |
-| `provisional` | `false` | Sets whether provisional permissions are granted. See [Provisional authorization](/messaging/ios-permissions#provisional-authorization) for more information. |
-| `sound` | `true` | Sets whether a sound will be played when a notification is displayed on the device. |
-| `providesAppNotificationSettings` | `false` | Indicates the system to display a button for in-app notification settings. |
-
-Every value must be a boolean and every key must be one of the names above. On iOS, `requestPermission` throws an `Error` synchronously for an unknown key or a non-boolean value. Keys you omit keep the default from the table.
+| Option | Description |
+| --- | --- |
+| `alert` | Sets whether notifications can be displayed to the user on the device. |
+| `badge` | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications. |
+| `carPlay` | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/). |
+| `criticalAlert` | Requests the critical alerts authorization, which lets notifications play a sound even when the device is muted or Do Not Disturb is on. Apple requires an entitlement for it. |
+| `provisional` | Sets whether provisional permissions are granted. See [Provisional authorization](/messaging/ios-permissions#provisional-authorization) for more information. |
+| `sound` | Sets whether a sound will be played when a notification is displayed on the device. |
+| `providesAppSettings` | Indicates the system to display a button for in-app notification settings. |
 
 The settings provided will be stored by the device and will be visible in the iOS Settings UI for your application.
 
 If the permission dialog has already been presented to the user and you wish to update the existing permission settings
-(e.g. enabling sound), the setting will be silently updated and the `requestPermission` call will instantly resolve without showing a dialog.
+(e.g. enabling sound), the setting will be silently updated and the `requestNotifications` call will instantly resolve without showing a dialog.
 
 #### Reading current status
 
-In some cases, you may wish to read the current permission status. The `requestPermission`
-API used above resolves an enum that returns the current status.
-
-For example:
+In some cases, you may wish to read the current permission status without showing a dialog. Use `checkNotifications`:
 
 ```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import {
-  getMessaging,
-  requestPermission,
-  AuthorizationStatus,
-} from '@react-native-firebase/messaging';
+// codeblock-ignore: imports react-native-permissions, a third-party package that is not a dependency of React Native Firebase
+import { checkNotifications } from 'react-native-permissions';
 
 async function checkApplicationPermission() {
-  const messaging = getMessaging();
-  const authorizationStatus = await requestPermission(messaging);
+  const { status, settings } = await checkNotifications();
 
-  if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
-    console.log('User has notification permissions enabled.');
-  } else if (authorizationStatus === AuthorizationStatus.PROVISIONAL) {
-    console.log('User has provisional notification permissions.');
+  if (status === 'granted') {
+    console.log('User has notification permissions enabled.', settings);
+  } else if (status === 'denied') {
+    console.log('Notification permission has not been requested yet.');
   } else {
     console.log('User has notification permissions disabled');
   }
@@ -124,41 +99,21 @@ async function checkApplicationPermission() {
 await checkApplicationPermission();
 ```
 
-The value returned is a number value, which can be mapped to one of the following values from `AuthorizationStatus`:
-
-- `-1` = `AuthorizationStatus.NOT_DETERMINED`: Permission has not yet been requested for your application.
-- `0` = `AuthorizationStatus.DENIED`: The user has denied notification permissions.
-- `1` = `AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
-- `2` = `AuthorizationStatus.PROVISIONAL`: [Provisional authorization](/messaging/ios-permissions#provisional-authorization) has been granted.
-- `3` = `AuthorizationStatus.EPHEMERAL`: The app is authorized to create notifications for a limited amount of time. Used for app clips.
-
 To help improve the chances of the user granting your app permission, it is recommended that permission is requested at a time which makes
 sense during the flow of your application (e.g. starting a new chat), where the user would expect to receive such notifications.
-
-It is also possible to fetch the current permission status without requesting permission, by calling the `hasPermission` API instead:
-
-```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import { getMessaging, hasPermission, AuthorizationStatus } from '@react-native-firebase/messaging';
-
-const status = await hasPermission(getMessaging());
-console.log('hasPermission:', status, status === AuthorizationStatus.AUTHORIZED);
-```
 
 ### Provisional authorization
 
 Devices on iOS 12+ can use provisional authorization. This type of permission system allows for notification
 permission to be instantly granted without displaying a dialog to your user. The permission allows notifications to be displayed quietly, meaning they are only visible within the device notification center.
 
-To enable provisional notifications, pass an object to the `requestPermission` method, with the `provisional` key set to `true`:
+To enable provisional notifications, include `provisional` in the options passed to `requestNotifications`:
 
 ```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+// codeblock-ignore: imports react-native-permissions, a third-party package that is not a dependency of React Native Firebase
+import { requestNotifications } from 'react-native-permissions';
 
-await requestPermission(getMessaging(), {
-  provisional: true,
-});
+await requestNotifications(['provisional']);
 ```
 
 Users can then choose a permission option via the notification itself, and select whether they can continue to display quietly, display prominently or not at all.
@@ -167,13 +122,13 @@ Users can then choose a permission option via the notification itself, and selec
 
 Devices on iOS 12+ can provide a button in iOS Notifications Settings _(at OS level: `Settings -> [App name] -> Notifications`)_ to redirect users to in-app notifications settings.
 
-1. Request `providesAppNotificationSettings` permissions:
+1. Request `providesAppSettings` permissions:
 
 ```js
-// DEPRECATED: prefer react-native-permissions or expo-notifications. See issue #6283.
-import { getMessaging, requestPermission } from '@react-native-firebase/messaging';
+// codeblock-ignore: imports react-native-permissions, a third-party package that is not a dependency of React Native Firebase
+import { requestNotifications } from 'react-native-permissions';
 
-await requestPermission(getMessaging(), { providesAppNotificationSettings: true });
+await requestNotifications(['alert', 'providesAppSettings']);
 ```
 
 2. Handle interaction when the app is in a background state. `setOpenSettingsForNotificationsHandler` and `getDidOpenSettingsForNotification` are iOS features: on Android the handler is never called and `getDidOpenSettingsForNotification` resolves `false`. Register the open-settings handler in the entry file **before** `AppRegistry.registerComponent` (same placement rule as `setBackgroundMessageHandler`):

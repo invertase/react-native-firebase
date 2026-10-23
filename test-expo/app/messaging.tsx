@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import {
-  AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
   SDK_VERSION,
@@ -13,7 +12,6 @@ import {
   getIsHeadless,
   getMessaging,
   getToken,
-  hasPermission,
   isAutoInitEnabled,
   isDeliveryMetricsExportToBigQueryEnabled,
   isDeviceRegisteredForRemoteMessages,
@@ -23,10 +21,12 @@ import {
   onMessage,
   onMessageSent,
   onNotificationOpenedApp,
+  onRegistered,
   onSendError,
   onTokenRefresh,
+  onUnregistered,
+  register,
   registerDeviceForRemoteMessages,
-  requestPermission,
   sendMessage,
   setAPNSToken,
   setAutoInitEnabled,
@@ -34,6 +34,7 @@ import {
   setNotificationDelegationEnabled,
   setOpenSettingsForNotificationsHandler,
   subscribeToTopic,
+  unregister,
   unregisterDeviceForRemoteMessages,
   unsubscribeFromTopic,
 } from '@react-native-firebase/messaging';
@@ -95,7 +96,52 @@ export default function MessagingScreen() {
         onPress={() => run('isSupported', () => isSupported(getMessaging()))}
       />
 
-      <Text style={styles.section}>Tokens</Text>
+      <Text style={styles.section}>Installation ID</Text>
+      <Text style={styles.hint}>
+        Needs the Installation ID flag (messaging_installation_id_enabled). Without it these reject
+        with messaging/installation-id-not-enabled.
+      </Text>
+      <AppButton title="register" onPress={() => run('register', () => register(getMessaging()))} />
+      <AppButton
+        title="onRegistered (install)"
+        onPress={() =>
+          run('onRegistered', () => {
+            const unsubscribe = onRegistered(getMessaging(), () => {
+              // Registration events arrive asynchronously; inspect device logs if needed.
+            });
+            trackUnsubscribe(unsubscribe);
+            return 'listener installed';
+          })
+        }
+      />
+      <AppButton
+        title="onUnregistered (install)"
+        onPress={() =>
+          run('onUnregistered', () => {
+            const unsubscribe = onUnregistered(getMessaging(), () => {
+              // Unregistration events arrive asynchronously; inspect device logs if needed.
+            });
+            trackUnsubscribe(unsubscribe);
+            return 'listener installed';
+          })
+        }
+      />
+      <View style={styles.warnBlock}>
+        <AppButton
+          title="unregister"
+          variant="secondary"
+          onPress={() => run('unregister', () => unregister(getMessaging()))}
+        />
+        <Text style={styles.warnText}>
+          Warning: the current FID is no longer active afterwards. Call register to get a new one.
+        </Text>
+      </View>
+
+      <Text style={styles.section}>Tokens (deprecated)</Text>
+      <Text style={styles.hint}>
+        Deprecated in favor of register / onRegistered. These work only while the Installation ID
+        flag is off and reject with messaging/token-api-disabled when it is on.
+      </Text>
       <AppButton title="getToken" onPress={() => run('getToken', () => getToken(getMessaging()))} />
       <AppButton
         title="onTokenRefresh (install)"
@@ -120,35 +166,6 @@ export default function MessagingScreen() {
           afterwards to get a new one.
         </Text>
       </View>
-
-      <Text style={styles.section}>Permissions (deprecated)</Text>
-      <View style={styles.warnBlock}>
-        <AppButton
-          title="requestPermission"
-          variant="secondary"
-          onPress={() => run('requestPermission', () => requestPermission(getMessaging()))}
-        />
-        <Text style={styles.warnText}>
-          Warning: deprecated. On iOS this shows the system permission dialog once. On Android it
-          resolves AUTHORIZED (1) without showing a dialog.
-        </Text>
-      </View>
-      <AppButton
-        title="hasPermission"
-        onPress={() => run('hasPermission', () => hasPermission(getMessaging()))}
-      />
-      <AppButton
-        title="AuthorizationStatus"
-        onPress={() =>
-          run('AuthorizationStatus', () => ({
-            NOT_DETERMINED: AuthorizationStatus.NOT_DETERMINED,
-            DENIED: AuthorizationStatus.DENIED,
-            AUTHORIZED: AuthorizationStatus.AUTHORIZED,
-            PROVISIONAL: AuthorizationStatus.PROVISIONAL,
-            EPHEMERAL: AuthorizationStatus.EPHEMERAL,
-          }))
-        }
-      />
 
       <Text style={styles.section}>Message handlers</Text>
       <AppButton

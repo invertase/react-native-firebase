@@ -123,22 +123,6 @@ export default function FunctionsScreen() {
           })
         }
       />
-      <Text style={styles.warning}>
-        WARNING: useFunctionsEmulator is deprecated; invalid origins throw.
-      </Text>
-      <AppButton
-        title="useFunctionsEmulator (deprecated; can throw)"
-        onPress={() =>
-          run('useFunctionsEmulator', () => {
-            // WARNING: deprecated; invalid origins throw.
-            functions.useFunctionsEmulator(
-              `http://${getFunctionsEmulatorHost()}:${FUNCTIONS_EMULATOR_PORT}`,
-            );
-            emulatorConnected = true;
-            return `http://${getFunctionsEmulatorHost()}:${FUNCTIONS_EMULATOR_PORT}`;
-          })
-        }
-      />
 
       <Text style={styles.section}>Callables</Text>
       <AppButton

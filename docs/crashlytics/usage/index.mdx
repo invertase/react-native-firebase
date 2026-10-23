@@ -46,7 +46,7 @@ Once installed, you must complete the following additional setup steps for Andro
 | **Platforms** | Android, iOS (native Firebase SDK) |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** Crashlytics is native-only. The firebase-js-sdk does not ship a modular public API for this product, so there is no web parity surface under `firebase/crashlytics`. Crashlytics supports only the default Firebase app. React Native Firebase exports `SDK_VERSION`, `getCrashlytics`, `log`, `setUserId`, `setAttribute`, `setAttributes`, `recordError`, `crash`, `setCrashlyticsCollectionEnabled`, `checkForUnsentReports`, `sendUnsentReports`, `deleteUnsentReports`, `didCrashOnPreviousExecution` and the `Crashlytics` instance type. The package type declarations also contain a legacy `Statics` interface and a `FirebaseApp` alias, but the package entry point does not export either. Each export is explained in the section that uses it.
+**Platform notes:** Crashlytics is native-only. The firebase-js-sdk does not ship a modular public API for this product, so there is no web parity surface under `firebase/crashlytics`. Crashlytics supports only the default Firebase app. React Native Firebase exports `SDK_VERSION`, `getCrashlytics`, `log`, `setUserId`, `setAttribute`, `setAttributes`, `recordError`, `crash`, `setCrashlyticsCollectionEnabled`, `checkForUnsentReports`, `sendUnsentReports`, `deleteUnsentReports`, `didCrashOnPreviousExecution` and the `Crashlytics` instance type. The package type declarations also contain a legacy `Statics` interface, but the package entry point does not export it. Each export is explained in the section that uses it.
 
 # What does it do
 
@@ -98,8 +98,6 @@ function readCrashlyticsInstance() {
 ```
 
 `Crashlytics` is the TypeScript type of that instance (methods such as `log` and `recordError` take a `Crashlytics` as their first argument).
-
-The entry point does not export a `FirebaseApp` type. Import `FirebaseApp` from `@react-native-firebase/app` when you need it.
 
 ## Crash Attributes
 

@@ -36,9 +36,9 @@ yarn add @react-native-firebase/ai
 | **Platforms** | Android, iOS, and Web (pure JavaScript) |
 | **New Architecture** | **Not required**. Pure JavaScript package with no native TurboModule. |
 
-**Platform notes:** React Native does not ship browser `Blob` / `Buffer` helpers for every multi-modal path; you may need a third-party encoder for file bytes. Browser-only Live helpers such as `startAudioConversation()` are not exported. Hybrid Chrome on-device inference and the Prompt API types are not available. `getGenerativeModel` / `getLiveGenerativeModel` throw an `AIError` with code `no-model` if `model` is missing. With `GoogleAIBackend`, a request whose `safetySettings` set `SafetySetting.method` rejects with an `AIError` with code `unsupported`. Use `GoogleAIBackend` or `AgentPlatformBackend`; `VertexAIBackend` was removed in v27.
+**Platform notes:** React Native does not ship browser `Blob` / `Buffer` helpers for every multi-modal path; you may need a third-party encoder for file bytes. Browser-only Live helpers such as `startAudioConversation()` are not exported. Hybrid Chrome on-device inference and the Prompt API types are not available. `getGenerativeModel` / `getLiveGenerativeModel` throw an `AIError` with code `no-model` if `model` is missing. With `GoogleAIBackend`, a request whose `safetySettings` set `SafetySetting.method` rejects with an `AIError` with code `unsupported`. Use `GoogleAIBackend` or `AgentPlatformBackend`.
 
-React Native Firebase exports `getAI`, `getGenerativeModel`, `getLiveGenerativeModel`, `getTemplateGenerativeModel`, `GoogleAIBackend`, `AgentPlatformBackend`, `Schema`, `BackendType`, `AIError`, `AIErrorCode`, model classes, Live session types, and schema helpers. Each runtime entry point used below is explained in the section that uses it. Extra type-only exports relative to the Firebase JS SDK include the deprecated `GroundingAttribution` and `ObjectSchemaInterface`. React Native Firebase also exports `ChatSessionBase`, the shared base class behind the `ChatSession` and `TemplateChatSession` implementations; you do not create it yourself. Response enum constants such as `FinishReason`, `BlockReason`, `HarmProbability`, `HarmSeverity`, `Modality`, `Outcome`, `Language`, `SchemaType`, `URLRetrievalStatus`, and `LiveResponseType` describe values you read from responses. Compare against them when you branch on a response; they are not taught individually. `InferenceMode` belongs to the browser-only hybrid inference feature.
+React Native Firebase exports `getAI`, `getGenerativeModel`, `getLiveGenerativeModel`, `getTemplateGenerativeModel`, `GoogleAIBackend`, `AgentPlatformBackend`, `Schema`, `BackendType`, `AIError`, `AIErrorCode`, model classes, Live session types, and schema helpers. Each runtime entry point used below is explained in the section that uses it. Extra type-only exports relative to the Firebase JS SDK include `ObjectSchemaInterface`. React Native Firebase also exports `ChatSessionBase`, the shared base class behind the `ChatSession` and `TemplateChatSession` implementations; you do not create it yourself. Response enum constants such as `FinishReason`, `BlockReason`, `HarmProbability`, `HarmSeverity`, `Modality`, `Outcome`, `Language`, `SchemaType`, `URLRetrievalStatus`, and `LiveResponseType` describe values you read from responses. Compare against them when you branch on a response; they are not taught individually. `InferenceMode` belongs to the browser-only hybrid inference feature.
 
 This page covers the client modular API (`@react-native-firebase/ai`). These official Firebase AI Logic topics are not covered here, each for the reason given:
 
@@ -67,8 +67,6 @@ If you need to call the Gemini API directly from your mobile or web app, rather 
 ## Get an AI instance and choose a backend
 
 `getAI(app?, options?)` returns an `AI` instance for the default app (or the `FirebaseApp` you pass). Default backend is `GoogleAIBackend` (Gemini Developer API). Pass `AgentPlatformBackend` for the Agent Platform Gemini API (location defaults to `global`). React Native Firebase injects optional `auth` and `appCheck` module references on `AIOptions` instead of firebase-js-sdk providers, so `getAI`, `AI`, and `AIOptions` differ in shape from the web SDK. `AIOptions` also accepts `useLimitedUseAppCheckTokens` (default `false`).
-
-`VertexAIBackend` was removed in v27; use `AgentPlatformBackend`.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -273,7 +271,7 @@ async function generateWithSystemInstruction() {
 
 ## Model parameters
 
-Configure decoding and output with `generationConfig` on `getGenerativeModel()` (`temperature`, `topP`, `topK`, `maxOutputTokens`, and related fields). Live sessions use `LiveGenerationConfig` instead.
+Configure output with `generationConfig` on `getGenerativeModel()` (`maxOutputTokens`, `stopSequences`, `responseMimeType`, and related fields). Live sessions use `LiveGenerationConfig` instead.
 
 ```js
 import { getApp } from '@react-native-firebase/app';
@@ -285,9 +283,8 @@ async function generateWithModelParameters() {
   const model = getGenerativeModel(ai, {
     model: 'gemini-3.1-flash-lite',
     generationConfig: {
-      temperature: 0.2,
-      topP: 0.9,
       maxOutputTokens: 256,
+      stopSequences: ['END'],
     },
   });
 
@@ -581,7 +578,7 @@ async function generateWithAutomaticFunctionCalling() {
 
 Generative AI models break down data into units called tokens for processing. Each Gemini model has a [maximum number of tokens](https://firebase.google.com/docs/ai-logic/models) that it can handle in a prompt and response.
 
-The below shows you how to get an estimate of token count for a request. `totalBillableCharacters` was removed in Firebase JS SDK 13 / React Native Firebase v27, so use `totalTokens`.
+The below shows you how to get an estimate of token count for a request. `countTokens()` resolves with `totalTokens`.
 
 `countTokens()` counts the input only, before you send a request, and the [official guide](https://firebase.google.com/docs/ai-logic/count-tokens) says calling it is free. To see input and output counts for a request you already made, read `response.usageMetadata`: `promptTokenCount`, `candidatesTokenCount` (output without thinking tokens), `thoughtsTokenCount`, and `totalTokenCount`. While streaming, `usageMetadata` appears only on the last chunk; read it as `chunk.usageMetadata` on the chunks from `result.stream`. The input count includes system instructions and tools. Gemini Live API models do not support `countTokens()`.
 
@@ -660,7 +657,7 @@ async function generateImageWithGemini() {
 
 ## Ground responses with Google Search
 
-Add a `googleSearch` tool so Gemini can ground answers in web results. Prefer `groundingMetadata` on candidates. `GroundingAttribution` is a deprecated legacy type retained in React Native Firebase declarations for compatibility (type-only; not used by the Expo example screen).
+Add a `googleSearch` tool so Gemini can ground answers in web results.
 
 When using Grounding with Google Search you must comply with the [Gemini API terms](https://ai.google.dev/gemini-api/terms#grounding-with-google-search) for your API provider.
 

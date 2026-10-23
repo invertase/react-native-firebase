@@ -165,25 +165,7 @@ function createRnfbAppCheckProvider() {
 }
 ```
 
-`ReactNativeFirebaseAppCheckProvider.getToken()` exists to satisfy the `AppCheckProvider` interface. Calling it from JavaScript returns a rejected Promise (`getToken() must be called after configure() and is handled by native modules`). Use modular `getToken(appCheckInstance)` after `initializeAppCheck` instead.
-
-```js
-import { ReactNativeFirebaseAppCheckProvider } from '@react-native-firebase/app-check';
-
-async function callProviderGetToken() {
-  // WARNING: this always rejects. Use getToken(appCheck) from the modular API instead.
-  const provider = new ReactNativeFirebaseAppCheckProvider();
-  provider.configure({
-    android: { provider: 'debug' },
-    apple: { provider: 'debug' },
-  });
-  try {
-    await provider.getToken();
-  } catch (error) {
-    console.log('Provider getToken rejected:', error.message);
-  }
-}
-```
+Do not call `getToken()` on a `ReactNativeFirebaseAppCheckProvider` instance. It only satisfies the `AppCheckProvider` interface and always rejects, because native modules fetch the token. Use modular `getToken(appCheckInstance)` after `initializeAppCheck` instead (see [Get a token](#get-a-token)).
 
 ## Initialize App Check
 
