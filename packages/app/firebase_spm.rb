@@ -76,6 +76,18 @@ module RNFirebaseSPM
       end
     end
 
+    # Default Firebase iOS SDK version (`sdkVersions.ios.firebase`) from the
+    # app's own package.json, cached like `url`. Used by
+    # `rnfirebase_cocoapods_requirement` to tell the shipped default apart
+    # from a version the user pinned themselves.
+    def default_version
+      @default_version ||= begin
+        app_package_path = File.join(__dir__, 'package.json')
+        app_package = JSON.parse(File.read(app_package_path))
+        app_package['sdkVersions']['ios']['firebase']
+      end
+    end
+
     # Records that `firebase_dependency` (below) took the SPM path for at
     # least one podspec in this install, and which Firebase SDK `version` it
     # resolved with. Called once, from `firebase_dependency` itself, the
@@ -133,6 +145,7 @@ module RNFirebaseSPM
       @active = nil
       @version = nil
       @url = nil
+      @default_version = nil
     end
   end
 end
@@ -1200,6 +1213,30 @@ end
 
 rnfirebase_hook_cocoapods_post_install!
 
+# CocoaPods requirement for a Firebase iOS SDK pod dependency.
+#
+# SPM resolves from the firebase-ios-sdk git repo, where every release tags all
+# products, so an exact version always exists. CocoaPods publishes per pod, and
+# a patch release only republishes the pods that changed (12.19.3 exists for
+# `Firebase`, `FirebaseCore` and `FirebaseFirestore` only). An exact
+# `s.dependency 'FirebaseAnalytics/Core', '12.19.3'` therefore cannot resolve.
+#
+# When `version` is the shipped default (`sdkVersions.ios.firebase`), return a
+# compatible-release requirement for its minor line (`~> 12.19.0`) so each pod
+# resolves to its newest patch. Any other value is a version the user pinned via
+# `$FirebaseSDKVersion` / `FIREBASE_SDK_VERSION` and stays an exact pin.
+#
+# @param version [String] Firebase SDK version (e.g., '12.19.3')
+# @return [String] CocoaPods requirement (e.g., '~> 12.19.0') or `version` unchanged
+def rnfirebase_cocoapods_requirement(version)
+  return version unless version == RNFirebaseSPM.default_version
+
+  match = /\A(\d+)\.(\d+)\.\d+\z/.match(version)
+  return version unless match
+
+  "~> #{match[1]}.#{match[2]}.0"
+end
+
 # @param spec [Pod::Specification] The podspec object (the `s` in podspec DSL)
 # @param version [String] Firebase SDK version (e.g., '12.10.0')
 # @param spm_products [Array<String>] SPM product names (e.g., ['FirebaseAuth'])
@@ -1228,8 +1265,9 @@ def firebase_dependency(spec, version, spm_products, pods)
       end
     end
     pods = [pods] unless pods.is_a?(Array)
+    requirement = rnfirebase_cocoapods_requirement(version)
     pods.each do |pod|
-      spec.dependency pod, version
+      spec.dependency pod, requirement
     end
   end
 end

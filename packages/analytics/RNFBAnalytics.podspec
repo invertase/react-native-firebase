@@ -76,7 +76,7 @@ Pod::Spec.new do |s|
         Pod::UI.puts "#{s.name}: Using FirebaseAnalytics/IdentitySupport with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
         Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
       end
-      s.dependency          'FirebaseAnalytics/IdentitySupport', firebase_sdk_version
+      s.dependency          'FirebaseAnalytics/IdentitySupport', rnfirebase_cocoapods_requirement(firebase_sdk_version)
     end
   end
 
