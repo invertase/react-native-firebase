@@ -32,6 +32,10 @@ yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote
 
 **JDK 21+ on `PATH`** for `yarn tests:emulator:start`: `firebase-tools` refuses older Java (`firebase-tools no longer supports Java version before 21`). Same host fix as [`yarn lint:android` § needs JDK 21+](agent-command-policy.md#android-java-format).
 
+<a id="android-release-build-r8-missing-class"></a>
+
+**`yarn tests:android:build:release` exits 1 at `:app:minifyReleaseAndroidTestWithR8`.** R8 reports a missing class `com.google.protobuf.GeneratedMessageLite$MergeFromVisitor` referenced from the accessibility-test-framework protos (suggested rules: `tests/android/app/build/outputs/mapping/releaseAndroidTest/missing_rules.txt`). `assembleRelease` finishes first, so `tests/android/app/build/outputs/apk/release/app-release.apk` is still built (check its timestamp); only the Detox androidTest APK is missing, so `android.emu.release` cannot run until the androidTest R8 failure is fixed.
+
 <a id="apple-host-toolchain-local"></a>
 
 ### Apple host toolchain (local)
