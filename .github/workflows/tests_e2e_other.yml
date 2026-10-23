@@ -172,7 +172,8 @@ jobs:
         name: Xcode Compile Cache
         with:
           # Sticky content-hash key (append-timestamp: false). Native sources live under packages/*/ios (no packages/*/macos tree).
-          key: ${{ runner.os }}-e2e-macos-v3-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/ios/**', 'tests-macos/macos/Podfile.lock') }}
+          # Same Post-cache hashFiles constraint as tests_e2e_ios.yml (native sources under packages/*/ios).
+          key: ${{ runner.os }}-e2e-macos-v4-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/package.json', 'packages/*/ios/RNFB*/**', 'packages/*/ios/generated/**', 'packages/app/plugin/**', 'tests-macos/macos/Podfile.lock', '!packages/*/ios/**/build/**') }}
           save: "${{ github.ref == 'refs/heads/main' && matrix.iteration == 0 }}"
           append-timestamp: false
           create-symlink: true

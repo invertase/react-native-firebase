@@ -199,7 +199,8 @@ jobs:
         name: Xcode Compile Cache
         with:
           # Sticky content-hash key (append-timestamp: false). SPM-only matrix (no cocoapods leg); debug/release stay distinct.
-          key: ${{ runner.os }}-e2e-${{ matrix.buildmode }}-ios-v5-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/ios/**', 'tests/ios/Podfile.lock') }}
+          # Narrow globs: Post-cache re-hash of packages/*/ios/** walks UnitTests/build and can exceed hashFiles 120s.
+          key: ${{ runner.os }}-e2e-${{ matrix.buildmode }}-ios-v6-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/package.json', 'packages/*/ios/RNFB*/**', 'packages/*/ios/generated/**', 'packages/app/plugin/**', 'tests/ios/Podfile.lock', '!packages/*/ios/**/build/**') }}
           save: "${{ github.ref == 'refs/heads/main' && matrix.iteration == 0 }}"
           append-timestamp: false
           create-symlink: true
@@ -646,7 +647,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           # Sticky content-hash key (append-timestamp: false). SPM-only archive job.
-          key: ${{ runner.os }}-e2e-archive-ios-v3-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/ios/**', 'tests/ios/Podfile.lock') }}
+          key: ${{ runner.os }}-e2e-archive-ios-v4-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/package.json', 'packages/*/ios/RNFB*/**', 'packages/*/ios/generated/**', 'packages/app/plugin/**', 'tests/ios/Podfile.lock', '!packages/*/ios/**/build/**') }}
           save: "${{ github.ref == 'refs/heads/main' }}"
           append-timestamp: false
           create-symlink: true
