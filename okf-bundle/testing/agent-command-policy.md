@@ -221,6 +221,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 
 - **Do not** invent `cd tests && yarn install`, then bare `./gradlew` from an arbitrary cwd.
 - Unit: **`yarn tests:android:unit`** only. Runner choice and `@Config` / `sdk` policy: [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
+- **Proving a change:** the package's `testDebugUnitTest` task must actually execute; Gradle can reuse results and report it `UP-TO-DATE`, which proves nothing new. Force execution with `yarn tests:android:unit --rerun-tasks` (Yarn appends the flag to `./gradlew rnfbDebugUnitTests`; this pass-through is allowed), and validation evidence must state the task executed, not `UP-TO-DATE`.
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
