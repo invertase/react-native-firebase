@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.1](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v26.4.1) (2026-10-23)
+
+### Bug Fixes
+
+- **app, ios:** use compatible Firebase pod requirement on CocoaPods ([1c5e5af](https://github.com/invertase/react-native-firebase/commit/1c5e5af0c81c8373c08ec50c82db1d9f29267e98))
+
 ## [26.4.0](https://github.com/invertase/react-native-firebase/compare/v26.3.3...v26.4.0) (2026-09-05)
 
 ### Bug Fixes
