@@ -34,7 +34,7 @@ If you have started to receive a `app:mergeDexDebug` error after adding Cloud Fi
 | **Platforms**        | Android, iOS (native Firebase SDK); macOS via firebase-js-sdk web interop                      |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** IndexedDB persistence and `memoryLocalCache` / `persistentLocalCache` are **web only**. Native persistence is controlled by the iOS/Android Firestore SDK. `initializeFirestore` is async on React Native.
+**Platform notes:** On iOS and Android, the web-only `localCache` values (`memoryLocalCache`, `persistentLocalCache`, IndexedDB factories) are **not supported**, and persistence is controlled by the native Firestore SDK. On macOS, settings are passed to the firebase-js-sdk Firestore Lite `initializeFirestore`, which has no local cache or persistence. `initializeFirestore` returns `Firestore` synchronously; settings apply in the background after return (on the native bridge, or through the firebase-js-sdk web interop on macOS), and settings errors are reported with `console.warn`.
 
 # What does it do
 
@@ -139,6 +139,18 @@ function User({ userId }) {
 ```
 
 Realtime changes via `onSnapshot` can be applied to both collections and documents.
+
+Listener errors, such as a permission error, are delivered to `onError` (or `observer.error`). A lone `onNext`
+callback is never called with an error. If no error handler is given, the error is logged with `console.error`.
+Unlike firebase-js-sdk, `setLogLevel('silent')` does not suppress this log. To handle errors, pass an error callback:
+
+```js
+const unsubscribe = onSnapshot(
+  doc(collection(db, 'Users'), userId),
+  documentSnapshot => console.log('User data: ', documentSnapshot.data()),
+  error => console.error('Listener failed: ', error),
+);
+```
 
 ### Snapshots
 
@@ -686,11 +698,9 @@ sensitive information). `initializeFirestore` must be called before any Firestor
 import { getApp } from '@react-native-firebase/app';
 import { initializeFirestore } from '@react-native-firebase/firestore';
 
-async function bootstrap() {
-  await initializeFirestore(getApp(), {
-    persistence: false, // disable offline persistence
-  });
-}
+const db = initializeFirestore(getApp(), {
+  persistence: false, // disable offline persistence
+});
 ```
 
 ## Data bundles
