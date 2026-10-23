@@ -193,14 +193,18 @@ jobs:
           path: ~/Library/Detox/ios
           key: ${{ runner.os }}-detox-framework-cache-${{ steps.workflow-variables.outputs.xcode-version }}
 
+      # Precompute key: hashFiles re-runs on Post-cache and can exceed 120s on dirty trees.
+      - name: Compute Xcode compile cache key
+        id: xcode_cache_key
+        run: echo "key=$(bash .github/workflows/scripts/compute-xcode-ccache-key.sh e2e-ios)" >> "$GITHUB_OUTPUT"
+
       # Detox is compiled during yarn install, using Xcode, set up cache first
       # https://github.com/hendrikmuhs/ccache-action/releases
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
           # Sticky content-hash key (append-timestamp: false). SPM-only matrix (no cocoapods leg); debug/release stay distinct.
-          # Narrow globs: Post-cache re-hash of packages/*/ios/** walks UnitTests/build and can exceed hashFiles 120s.
-          key: ${{ runner.os }}-e2e-${{ matrix.buildmode }}-ios-v6-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/package.json', 'packages/*/ios/RNFB*/**', 'packages/*/ios/generated/**', 'packages/app/plugin/**', 'tests/ios/Podfile.lock', '!packages/*/ios/**/build/**') }}
+          key: ${{ runner.os }}-e2e-${{ matrix.buildmode }}-ios-v7-xcode27-${{ steps.xcode_cache_key.outputs.key }}
           save: "${{ github.ref == 'refs/heads/main' && matrix.iteration == 0 }}"
           append-timestamp: false
           create-symlink: true
@@ -643,11 +647,15 @@ jobs:
           key: ${{ runner.os }}-ios-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-ios-yarn-v1
 
+      - name: Compute Xcode compile cache key
+        id: xcode_cache_key
+        run: echo "key=$(bash .github/workflows/scripts/compute-xcode-ccache-key.sh e2e-ios)" >> "$GITHUB_OUTPUT"
+
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
           # Sticky content-hash key (append-timestamp: false). SPM-only archive job.
-          key: ${{ runner.os }}-e2e-archive-ios-v4-xcode27-${{ hashFiles('yarn.lock', 'packages/*/*.podspec', 'packages/*/package.json', 'packages/*/ios/RNFB*/**', 'packages/*/ios/generated/**', 'packages/app/plugin/**', 'tests/ios/Podfile.lock', '!packages/*/ios/**/build/**') }}
+          key: ${{ runner.os }}-e2e-archive-ios-v5-xcode27-${{ steps.xcode_cache_key.outputs.key }}
           save: "${{ github.ref == 'refs/heads/main' }}"
           append-timestamp: false
           create-symlink: true
