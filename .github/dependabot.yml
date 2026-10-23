@@ -16,6 +16,14 @@ updates:
       semver-patch-days: 7
     labels:
       - 'dependencies'
+    # Batch noisy minor/patch bumps; keep majors as individual PRs for review.
+    groups:
+      npm-minor-and-patch:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
 
   - package-ecosystem: 'github-actions'
     # Workflow files stored in the
@@ -27,6 +35,11 @@ updates:
       default-days: 7
     labels:
       - 'dependencies'
+    # Actions bumps are high-volume and usually compatible; one PR per interval.
+    groups:
+      github-actions:
+        patterns:
+          - '*'
 
   # Root Gemfile (CocoaPods, xcodeproj, SimpleCov, RuboCop)
   - package-ecosystem: 'bundler'
@@ -40,3 +53,11 @@ updates:
       semver-patch-days: 7
     labels:
       - 'dependencies'
+    # Test-only Gemfile; batch minor/patch, leave majors ungrouped.
+    groups:
+      bundler-minor-and-patch:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
