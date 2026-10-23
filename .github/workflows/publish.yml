@@ -86,7 +86,11 @@ jobs:
             echo "No changes detected, no versions bumped."
           fi
           echo "Syncing unpublished versions with package registry..."
-          yarn lerna publish from-package --yes --loglevel trace
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            yarn lerna publish from-package --yes --loglevel trace
+          else
+            yarn lerna publish from-package --yes --loglevel trace --dist-tag "${{ github.ref_name }}"
+          fi
         env:
           # Packages are configured on npmjs.com as OIDC Trusted Publisher for this workflow.
           # org admin Github Token required for the changelog/tag commit+push
