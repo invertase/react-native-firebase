@@ -61,16 +61,6 @@ about security or implementing a HTTP request library.
 Functions deployed to Firebase have unique names, allowing you to easily identify which endpoint you wish to send a request to.
 To learn more about deploying Functions to Firebase, view the [Writing & Deploying Functions](/functions/writing-deploying-functions) documentation.
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Functions package version string exported from `@react-native-firebase/functions`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/functions`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/functions';
-
-console.log('Functions package version:', SDK_VERSION);
-```
-
 ## Emulator
 
 Use `connectFunctionsEmulator` before any callable or stream calls when talking to the Local Emulator Suite (the Functions emulator listens on port `5001` by default). It throws if `port` is not a number.
@@ -270,4 +260,14 @@ async function callEuropeCallable() {
   const response = await listProducts({ page: 1, limit: 15 });
   console.log('Europe products:', response.data);
 }
+```
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Functions package version string exported from `@react-native-firebase/functions`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/functions`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/functions';
+
+console.log('Functions package version:', SDK_VERSION);
 ```

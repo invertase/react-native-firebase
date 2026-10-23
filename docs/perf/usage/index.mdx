@@ -87,16 +87,6 @@ To learn more, view the [Firebase Performance Monitoring documentation](https://
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Performance Monitoring package version string exported from `@react-native-firebase/perf`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/performance`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/perf';
-
-console.log('Performance package version:', SDK_VERSION);
-```
-
 ## Get a Performance instance
 
 `getPerformance` returns the `FirebasePerformance` module instance for the default Firebase app. Passing `getApp()` still resolves that same default-app instance. Performance Monitoring does not support secondary Firebase apps.
@@ -304,3 +294,13 @@ Set `perf_collection_deactivated` to `true` to switch Performance Monitoring off
 ```
 
 Both options are read when the app is built, so rebuild the app after you change them. On Android they set the `firebase_performance_collection_enabled` and `firebase_performance_collection_deactivated` manifest values described in [Disable Firebase Performance Monitoring](https://firebase.google.com/docs/perf-mon/disable-sdk). On iOS they set the matching keys in the app's `Info.plist`.
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase Performance Monitoring package version string exported from `@react-native-firebase/perf`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/performance`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/perf';
+
+console.log('Performance package version:', SDK_VERSION);
+```

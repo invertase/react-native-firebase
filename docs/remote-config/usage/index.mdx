@@ -65,16 +65,6 @@ Each parameter has a unique key and values. Values can target conditions (such a
 
 Do not store confidential data in parameter keys or values. Remote Config data is encrypted in transit, but end users can read any default or fetched parameter available to their app instance (see [Remote Config parameters and conditions](https://firebase.google.com/docs/remote-config/parameters?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=remote-config)).
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Remote Config package version string exported from `@react-native-firebase/remote-config`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/remote-config`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/remote-config';
-
-console.log('Remote Config package version:', SDK_VERSION);
-```
-
 ## Get a Remote Config instance
 
 `getRemoteConfig(app?)` returns the `RemoteConfig` instance for the default app, or for the `FirebaseApp` you pass. Optional `RemoteConfigOptions` (`templateId`, `initialFetchResponse`) are accepted for type parity with firebase-js-sdk but are ignored on React Native Firebase. Web-only bootstrap fields such as `FetchType`, `FirebaseRolloutMetadata`, and `FetchResponse.rollouts` are not surfaced here.
@@ -475,4 +465,14 @@ function configureRemoteConfigLogLevel() {
   const remoteConfig = getRemoteConfig();
   setLogLevel(remoteConfig, 'debug');
 }
+```
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Remote Config package version string exported from `@react-native-firebase/remote-config`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/remote-config`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/remote-config';
+
+console.log('Remote Config package version:', SDK_VERSION);
 ```

@@ -77,16 +77,6 @@ App Check works with Firebase products such as Realtime Database, Cloud Firestor
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase App Check package version string exported from `@react-native-firebase/app-check`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/app-check`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/app-check';
-
-console.log('App Check package version:', SDK_VERSION);
-```
-
 ## Register Firebase apps
 
 Before App Check can issue production tokens, register each Android and Apple app in the Firebase console for the attestation provider you will use. Follow **project setup / Step 1** in the matching Firebase guides (console registration only; client initialization on this page uses the React Native API):
@@ -467,3 +457,13 @@ Until `initializeAppCheck` configures a provider, the iOS native module does not
 ## Missing `providerOptions` (synchronous throw)
 
 If you pass a provider without `providerOptions` on native platforms, modular `initializeAppCheck` throws synchronously with `Invalid configuration: no provider or no provider options defined.` before native `configureProvider`. Catch that with a normal `try`/`catch` around the call; there is no Promise rejection to `await` for this case.
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase App Check package version string exported from `@react-native-firebase/app-check`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/app-check`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/app-check';
+
+console.log('App Check package version:', SDK_VERSION);
+```

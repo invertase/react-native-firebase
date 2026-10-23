@@ -86,16 +86,6 @@ Native SDKs also fetch campaigns on a low-frequency schedule (about once per day
 
 Create and publish campaigns under [In-App Messaging](https://console.firebase.google.com/project/_/inappmessaging) in the Firebase Console (style, targeting, schedule, trigger events). Eligible devices show messages when a trigger fires and display is not suppressed.
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase In-App Messaging package version string exported from `@react-native-firebase/in-app-messaging`. The firebase-js-sdk does not export `SDK_VERSION` from a `firebase/in-app-messaging` entry point (that modular product does not exist).
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/in-app-messaging';
-
-console.log('In-App Messaging package version:', SDK_VERSION);
-```
-
 ## Get an In-App Messaging instance
 
 `getInAppMessaging(app?)` returns the `InAppMessaging` instance for the default app, or for the `FirebaseApp` you pass. This module does **not** support secondary Firebase apps: passing a non-default app throws. Prefer omitting `app` or passing `getApp()`.
@@ -206,4 +196,14 @@ On Android the package writes the same flag into a manifest `meta-data` entry (a
     "in_app_messaging_auto_collection_enabled": false
   }
 }
+```
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase In-App Messaging package version string exported from `@react-native-firebase/in-app-messaging`. The firebase-js-sdk does not export `SDK_VERSION` from a `firebase/in-app-messaging` entry point (that modular product does not exist).
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/in-app-messaging';
+
+console.log('In-App Messaging package version:', SDK_VERSION);
 ```

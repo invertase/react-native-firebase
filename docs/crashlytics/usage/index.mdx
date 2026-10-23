@@ -68,18 +68,6 @@ Crashlytics also supports sending JavaScript stack traces to the Firebase consol
 
 > In debug builds on Android and iOS, Crashlytics collection is disabled unless `crashlytics_debug_enabled` is `true` in `firebase.json`. While collection is disabled, the native module ignores `setUserId`, `setAttribute`, `setAttributes` and `recordError` calls, and `crash` does nothing. To enable collection in debug builds, view the [enable debug crash logs](/crashlytics/usage#enable-debug-crash-logs) documentation.
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Crashlytics package version string exported from `@react-native-firebase/crashlytics`. The firebase-js-sdk does not export `SDK_VERSION` from a Crashlytics entry point (there is no `@firebase/crashlytics` modular package).
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/crashlytics';
-
-console.log('Crashlytics package version:', SDK_VERSION);
-```
-
-The legacy `Statics` interface describes the old `firebase.crashlytics` statics shape that exposed `SDK_VERSION`. The entry point does not export it, so import `SDK_VERSION` from `@react-native-firebase/crashlytics`.
-
 ## Get a Crashlytics instance
 
 `getCrashlytics` returns the `Crashlytics` module instance for the default Firebase app only. Crashlytics does not support secondary Firebase apps. Passing `getApp()` still resolves that same default-app instance. The firebase-js-sdk does not ship this helper.
@@ -399,3 +387,15 @@ try {
   [RNFBCrashlyticsNativeHelper recordNativeError:error];
 }
 ```
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase Crashlytics package version string exported from `@react-native-firebase/crashlytics`. The firebase-js-sdk does not export `SDK_VERSION` from a Crashlytics entry point (there is no `@firebase/crashlytics` modular package).
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/crashlytics';
+
+console.log('Crashlytics package version:', SDK_VERSION);
+```
+
+The legacy `Statics` interface describes the old `firebase.crashlytics` statics shape that exposed `SDK_VERSION`. The entry point does not export it, so import `SDK_VERSION` from `@react-native-firebase/crashlytics`.

@@ -199,16 +199,6 @@ The module also provides basic support for displaying local notifications, to le
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Messaging package version string exported from `@react-native-firebase/messaging`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/messaging`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/messaging';
-
-console.log('Messaging package version:', SDK_VERSION);
-```
-
 ## Check support
 
 `isSupported` reports whether Cloud Messaging can run on this device. On React Native it always resolves `true` on iOS. On Android it resolves `true` when Google Play services is available and `false` otherwise. The firebase-js-sdk `isSupported()` takes no messaging instance and checks browser Push API support instead; React Native Firebase takes the `Messaging` instance for API shape consistency with other modular calls.
@@ -962,3 +952,13 @@ The library provides a set of [predefined colors](https://github.com/invertase/r
 ```
 
 Note that only predefined colors can be used in `firebase.json`. If you want to use a custom color defined in your application resources, then you should set it in the `AndroidManifest.xml` instead (define the color in `android/app/src/main/res/values/colors.xml`, then reference it from `android/app/src/main/AndroidManifest.xml` with `com.google.firebase.messaging.default_notification_color` and `tools:replace="android:resource"`).
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase Messaging package version string exported from `@react-native-firebase/messaging`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/messaging`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/messaging';
+
+console.log('Messaging package version:', SDK_VERSION);
+```

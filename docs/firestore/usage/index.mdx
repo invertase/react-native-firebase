@@ -51,16 +51,6 @@ latency or Internet connectivity.
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Firestore package version string exported from `@react-native-firebase/firestore`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/firestore`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/firestore';
-
-console.log('Firestore package version:', SDK_VERSION);
-```
-
 ## Emulator
 
 Call `connectFirestoreEmulator` before any Firestore reads, writes, or listeners when talking to the Local Emulator Suite (the Firestore emulator listens on port `8080` by default). The call takes a non-empty host and a numeric port. It applies once per app and database: a second call for the same instance is ignored by the native layer, so do not use it to switch hosts at runtime. See also [Cloud Firestore Emulator](/firestore/emulator).
@@ -1601,3 +1591,13 @@ The package also exports these classes. You normally receive instances from the 
 | `FieldValue` | `serverTimestamp()`, `increment()`, `arrayUnion()`, `arrayRemove()`, and `deleteField()` |
 | `VectorValue` | `vector()` |
 | `QueryConstraint`, `QueryFieldFilterConstraint`, `QueryCompositeFilterConstraint`, `QueryOrderByConstraint`, `QueryLimitConstraint`, `QueryStartAtConstraint`, `QueryEndAtConstraint` | `where()`, `and()`, `or()`, `orderBy()`, `limit()`, `limitToLast()`, `startAt()`, `startAfter()`, `endAt()`, and `endBefore()` |
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Firestore package version string exported from `@react-native-firebase/firestore`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/firestore`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/firestore';
+
+console.log('Firestore package version:', SDK_VERSION);
+```

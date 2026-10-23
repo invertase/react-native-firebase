@@ -60,16 +60,6 @@ The Storage module also provides support for multiple buckets.
 
 You can view your buckets on the [Firebase Console](https://console.firebase.google.com/project/_/storage/files).
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Storage package version string exported from `@react-native-firebase/storage`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/storage`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/storage';
-
-console.log('Storage package version:', SDK_VERSION);
-```
-
 ## Emulator
 
 Use `connectStorageEmulator` before any Storage uploads, downloads, metadata calls, list calls, or task listeners when talking to the Local Emulator Suite (the Cloud Storage emulator listens on port `9199` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine.
@@ -686,4 +676,14 @@ const customAppDefault = getStorage(app);
 console.log('Default bucket app:', defaultStorageBucket.app.name);
 console.log('Secondary bucket app:', secondaryStorageBucket.app.name);
 console.log('Custom app default bucket:', customAppDefault.app.name);
+```
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Storage package version string exported from `@react-native-firebase/storage`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/storage`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/storage';
+
+console.log('Storage package version:', SDK_VERSION);
 ```

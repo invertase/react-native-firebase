@@ -54,18 +54,6 @@ Analytics automatically logs some [events](https://support.google.com/analytics/
 
 Analytics offers a wealth of [Predefined Events](/analytics/usage#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](/analytics/usage#custom-events). If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Analytics package version string exported from `@react-native-firebase/analytics`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/analytics`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/analytics';
-
-console.log('Analytics package version:', SDK_VERSION);
-```
-
-The legacy `Statics` interface describes the old `firebase.analytics` statics shape that exposed `SDK_VERSION`. The entry point does not export it, so import `SDK_VERSION` from `@react-native-firebase/analytics`.
-
 ## Get an Analytics instance
 
 `getAnalytics` returns the Analytics instance for the default Firebase app. `initializeAnalytics(app, options)` is provided for firebase-js-sdk API parity; on React Native Firebase it returns the same instance as `getAnalytics(app)` and ignores web-only `AnalyticsSettings`. `isSupported()` always resolves `true` on React Native (on web the firebase-js-sdk checks browser cookies/IndexedDB).
@@ -580,4 +568,14 @@ if (__DEV__) {
 }
 
 AppRegistry.registerComponent(appName, () => App);
+```
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase Analytics package version string exported from `@react-native-firebase/analytics`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/analytics`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/analytics';
+
+console.log('Analytics package version:', SDK_VERSION);
 ```

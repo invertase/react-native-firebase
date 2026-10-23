@@ -51,16 +51,6 @@ To learn more, view the [Firebase Realtime Database documentation](https://fireb
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase package version string exported from `@react-native-firebase/database`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/database`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/database';
-
-console.log('Database package version:', SDK_VERSION);
-```
-
 ## Emulator
 
 Use `connectDatabaseEmulator` before any Realtime Database reads or writes when talking to the Local Emulator Suite (the Realtime Database emulator listens on port `9000` by default). On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine.
@@ -715,3 +705,13 @@ enablePersistence();
 ```
 
 For more on persistence, view the [Offline Support](/database/offline-support) documentation.
+
+# Package version
+
+`SDK_VERSION` is the React Native Firebase package version string exported from `@react-native-firebase/database`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/database`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/database';
+
+console.log('Database package version:', SDK_VERSION);
+```

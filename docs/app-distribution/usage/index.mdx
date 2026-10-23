@@ -111,16 +111,6 @@ The [official Firebase App Distribution documentation](https://firebase.google.c
 
 Most of App Distribution is build upload and tester management outside the app. The React Native Firebase module exposes the **iOS** in-app new-version alert APIs so you can sign testers in and check for updates from JavaScript. Those modular helpers reject on Android and other non-iOS platforms.
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase App Distribution package version string exported from `@react-native-firebase/app-distribution`. The firebase-js-sdk does not export `SDK_VERSION` from a `firebase/app-distribution` entry point (that modular product does not exist).
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/app-distribution';
-
-console.log('App Distribution package version:', SDK_VERSION);
-```
-
 ## Get an App Distribution instance
 
 `getAppDistribution(app?)` returns the `AppDistribution` instance for the default app, or for the `FirebaseApp` you pass. This module does **not** support secondary Firebase apps: passing a non-default app throws. Prefer omitting `app` or passing `getApp()`.
@@ -215,3 +205,13 @@ async function promptIfUpdateAvailable() {
 ## Types only (not runtime)
 
 `AppDistribution` and `AppDistributionRelease` are TypeScript interfaces re-exported from `@react-native-firebase/app-distribution` for annotating the value returned by `getAppDistribution` and `checkForUpdate`. They have no runtime value. Keep them out of the Expo example screen; import them with `import type` only when you need annotations in TypeScript source.
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase App Distribution package version string exported from `@react-native-firebase/app-distribution`. The firebase-js-sdk does not export `SDK_VERSION` from a `firebase/app-distribution` entry point (that modular product does not exist).
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/app-distribution';
+
+console.log('App Distribution package version:', SDK_VERSION);
+```

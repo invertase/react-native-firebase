@@ -48,16 +48,6 @@ Firebase Authentication integrates tightly with other Firebase services, and it 
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Auth package version string exported from `@react-native-firebase/auth`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/auth`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/auth';
-
-console.log('Auth package version:', SDK_VERSION);
-```
-
 ## Emulator
 
 Use `connectAuthEmulator` before any Auth calls when talking to the Local Emulator Suite (the Authentication emulator listens on port `9099` by default). Pass a full URL. On Android emulators, use `10.0.2.2` instead of `localhost` / `127.0.0.1` so the guest can reach the host machine.
@@ -888,3 +878,13 @@ method:
 - [Email Link Sign-In](/auth/email-link-auth) (passwordless App Links / Universal Links).
 - [OpenID Connect](/auth/oidc-auth).
 - [Multi-factor Auth](/auth/multi-factor-auth).
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Auth package version string exported from `@react-native-firebase/auth`. The firebase-js-sdk does not export `SDK_VERSION` from `@firebase/auth`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/auth';
+
+console.log('Auth package version:', SDK_VERSION);
+```

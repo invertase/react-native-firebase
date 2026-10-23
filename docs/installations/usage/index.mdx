@@ -54,16 +54,6 @@ Each configured `FirebaseApp` has a corresponding single instance of Installatio
 
 # Usage
 
-## Package version
-
-`SDK_VERSION` is the React Native Firebase Installations package version string exported from `@react-native-firebase/installations`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/installations`.
-
-```js
-import { SDK_VERSION } from '@react-native-firebase/installations';
-
-console.log('Installations package version:', SDK_VERSION);
-```
-
 ## Get an Installations instance
 
 `getInstallations(app?)` returns the `Installations` instance for the default app, or for the `FirebaseApp` you pass. The public instance exposes `app` only. Use the modular helpers below instead of instance methods.
@@ -159,4 +149,14 @@ function subscribeToIdChanges() {
   });
   return unsubscribe;
 }
+```
+
+## Package version
+
+`SDK_VERSION` is the React Native Firebase Installations package version string exported from `@react-native-firebase/installations`. The firebase-js-sdk does not export `SDK_VERSION` from `firebase/installations`.
+
+```js
+import { SDK_VERSION } from '@react-native-firebase/installations';
+
+console.log('Installations package version:', SDK_VERSION);
 ```
