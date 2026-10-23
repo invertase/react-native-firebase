@@ -573,6 +573,10 @@ canceled to free up device resources. If you wish to override this value, set th
 }
 ```
 
+When the app is not running, messages that arrive while React Native is still starting are queued and passed to the handler
+in arrival order once it is ready. The same timeout also limits that wait: if React Native is not ready in time, the queued
+messages are dropped and the handler is not called for them. A value of `0` or less disables the timeout.
+
 ## Notification Channel ID
 
 On Android, any message which displays a [Notification](/messaging/notifications) use a default Notification Channel
