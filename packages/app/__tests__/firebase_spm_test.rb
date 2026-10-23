@@ -461,6 +461,50 @@ class FirebaseSpmTest < Minitest::Test
     end
   end
 
+  # The shipped default is declared as a compatible-release requirement on
+  # CocoaPods: a patch release only republishes the pods that changed, so an
+  # exact pin for every pod cannot resolve.
+  def test_cocoapods_default_version_uses_compatible_release_requirement
+    load_firebase_spm
+    default_version = RNFirebaseSPM.default_version
+    major, minor = default_version.split('.')
+
+    spec = MockSpec.new
+    firebase_dependency(spec, default_version,
+                        ['FirebaseCrashlytics'],
+                        ['Firebase/Crashlytics', 'FirebaseCoreExtension'])
+
+    assert_equal 2, spec.dependencies.length
+    spec.dependencies.each do |dep|
+      assert_equal "~> #{major}.#{minor}.0", dep[:version]
+    end
+  end
+
+  def test_cocoapods_user_pinned_version_stays_exact
+    load_firebase_spm
+
+    spec = MockSpec.new
+    firebase_dependency(spec, '12.10.0', ['FirebaseAuth'], 'Firebase/Auth')
+
+    assert_equal '12.10.0', spec.dependencies[0][:version]
+  end
+
+  def test_cocoapods_requirement_helper_matches_default_version
+    load_firebase_spm
+    default_version = RNFirebaseSPM.default_version
+    major, minor = default_version.split('.')
+
+    assert_equal "~> #{major}.#{minor}.0", rnfirebase_cocoapods_requirement(default_version)
+    assert_equal '12.10.0', rnfirebase_cocoapods_requirement('12.10.0')
+  end
+
+  def test_cocoapods_requirement_helper_keeps_non_release_default_exact
+    load_firebase_spm
+    RNFirebaseSPM.instance_variable_set(:@default_version, '12.19.0-rc.1')
+
+    assert_equal '12.19.0-rc.1', rnfirebase_cocoapods_requirement('12.19.0-rc.1')
+  end
+
   # ── SPM path (spm_dependency IS defined) ──
 
   def test_spm_single_product
