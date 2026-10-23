@@ -93,6 +93,7 @@ jobs:
   deploy-api-reference:
     name: 'Deploy API Reference'
     needs: publish_npm
+    if: success() && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy-api-reference.yml
     permissions:
       contents: read
