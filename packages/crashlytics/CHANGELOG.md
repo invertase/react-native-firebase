@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
+
+### Bug Fixes
+
+- **crashlytics, ios:** time out SPM upload-symbols so a stalled upload cannot hang the build ([1cdb7de](https://github.com/invertase/react-native-firebase/commit/1cdb7de24ef5ca12a24cf599cce11d3d8797cbb2))
+- **crashlytics:** reach Android Crashlytics internals by reflection only ([c3f15e3](https://github.com/invertase/react-native-firebase/commit/c3f15e37b1f53e0a81469183e896003ea6e80141))
+- **crashlytics:** save JS fatal report before exiting when chaining is disabled ([cfd00b6](https://github.com/invertase/react-native-firebase/commit/cfd00b65754186aad0f765f61a5db3f19e84b716))
+
 ## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
 
 ### ⚠ BREAKING CHANGES
