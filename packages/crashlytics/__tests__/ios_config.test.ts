@@ -46,6 +46,13 @@ echo "error: stub forced failure" >&2
 exit 1
 `;
 
+// Never returns on its own — simulates a stalled network request in upload-symbols.
+// `exec` keeps this a single process like the real binary, so the timeout's SIGALRM
+// kills the hang itself rather than an orphaned child holding the output pipes open.
+const HANGS_STUB = `#!/usr/bin/env bash
+exec sleep 60
+`;
+
 const ALWAYS_SUCCEEDS_STUB = `#!/usr/bin/env bash
 exit 0
 `;
@@ -90,12 +97,13 @@ describe('Crashlytics ios_config.sh SPM dSYM upload', function () {
     rmSync(projectDir, { recursive: true, force: true });
   });
 
-  function runIosConfig() {
+  function runIosConfig(extraEnv: Record<string, string> = {}) {
     return spawnSync('bash', [SCRIPT_PATH], {
       cwd: projectDir,
       encoding: 'utf8',
       env: {
         PATH: process.env.PATH,
+        ...extraEnv,
         PROJECT_DIR: projectDir,
         TARGET_NAME: targetName,
         BUILD_DIR: buildDir,
@@ -156,6 +164,24 @@ describe('Crashlytics ios_config.sh SPM dSYM upload', function () {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('warning:');
     expect(result.stdout).toContain('upload-symbols (SPM) failed');
+  });
+
+  it('warns and continues without failing the build when SPM upload-symbols hangs past the timeout', function () {
+    const targetFolderPlist = join(projectDir, targetName, 'GoogleService-Info.plist');
+    mkdirSync(join(projectDir, targetName), { recursive: true });
+    writeFileSync(targetFolderPlist, 'plist-contents');
+
+    writeFileSync(uploadSymbolsPath, HANGS_STUB);
+    chmodSync(uploadSymbolsPath, 0o755);
+
+    const startedAt = Date.now();
+    const result = runIosConfig({ RNFB_CRASHLYTICS_UPLOAD_TIMEOUT_SEC: '1' });
+    const elapsedMs = Date.now() - startedAt;
+
+    expect(result.status).toBe(0);
+    expect(elapsedMs).toBeLessThan(30000);
+    expect(result.stdout).toContain('warning:');
+    expect(result.stdout).toContain('failed or timed out');
   });
 });
 
