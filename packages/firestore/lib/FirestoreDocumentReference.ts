@@ -202,31 +202,16 @@ export default class DocumentReference<
     throwIfLiteSdkSnapshotListenerUnsupported();
 
     let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: ListenSource };
-    let callback: (
-      snapshot: DocumentSnapshot<AppModelType, DbModelType> | null,
-      error: Error | null,
-    ) => void;
     let onNext: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void;
     let onError: (error: Error) => void;
 
     try {
       const options = parseSnapshotArgs(args);
       snapshotListenOptions = options.snapshotListenOptions;
-      callback = options.callback;
       onNext = options.onNext;
       onError = options.onError;
     } catch (e) {
       throw new Error(`firebase.firestore().doc().onSnapshot(*) ${(e as Error).message}`);
-    }
-
-    function handleSuccess(documentSnapshot: DocumentSnapshot<AppModelType, DbModelType>): void {
-      callback(documentSnapshot, null);
-      onNext(documentSnapshot);
-    }
-
-    function handleError(error: Error): void {
-      callback(null, error);
-      onError(error);
     }
 
     const listenerId = _id++;
@@ -235,7 +220,7 @@ export default class DocumentReference<
       this._firestore.eventNameForApp(`firestore_document_sync_event:${listenerId}`),
       (event: { body: FirestoreSyncEventBodyInternal }) => {
         if (event.body.error) {
-          handleError(NativeError.fromEvent(event.body.error, 'firestore'));
+          onError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
           const snapshot = event.body.snapshot;
           if (!snapshot) return;
@@ -244,7 +229,7 @@ export default class DocumentReference<
             snapshot,
             this._converter as unknown as FirestoreDataConverter<DocumentData, DocumentData> | null,
           ) as DocumentSnapshot<AppModelType, DbModelType>;
-          handleSuccess(documentSnapshot);
+          onNext(documentSnapshot);
         }
       },
     );
