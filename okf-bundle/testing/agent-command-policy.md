@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Agent command policy
-description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, Expo example typecheck and documented-path iOS link, RN CLI prebuilt RNCore iOS build, and workflow-friction logging. Supersedes improvised diagnostics.
+description: Canonical allowlist for agent shell commands — install, prepare, validation, e2e, Mellifera session wrappers, Expo example typecheck and documented-path iOS link, RN CLI prebuilt RNCore iOS build, and workflow-friction logging. Supersedes improvised diagnostics.
 tags: [testing, validation, agents, workflow, yarn]
 timestamp: 2026-10-01T00:00:00Z
 ---
@@ -58,6 +58,7 @@ Single source for **which shell commands agents may run** in this repo. E2e `yar
 | Slotted parallel                                                | [running e2e § slot lifecycle](running-e2e.md#slot-lifecycle) — `eval "$(yarn tests:e2e:export-slot-env <platform> N)"` then the **same** `yarn tests:packager:*` / `yarn tests:emulator:start` / `pod:install` / `:build` / `:test-cover` as serial. macOS packager is `yarn tests:macos:packager:*` (`tests-macos/`); mobile is `yarn tests:packager:*` (`tests/`) | ad-hoc port math; second lifecycle helpers as the runbook; rsync between local worktrees; host flock; Metro-after-build; disabling Swift explicit modules; Debug `RCT_NO_LAUNCH_PACKAGER` as a Metro fix; using the mobile packager for macOS Jet (or vice versa) |
 | TurboModule codegen (all migrated / CI)                         | `yarn codegen:verify` (wipe + regen + diff); `yarn codegen:all` for local regen via package scripts                                                                                                                         | ad-hoc CLI without wipe; inventing alternate codegen yarn scripts — see [TurboModule codegen](#turbomodule-codegen)                                           |
 | Workflow friction — read the inventory at item pickup; record friction met during the work | `yarn frog list` (current friction inventory); `yarn frog log` (interactive — record the friction just encountered)                                                                                              | Direct/global `frog`; `npx` / `yarn dlx` (and other package-runner downloads); reading, grepping, or hand-editing storage; ad-hoc friction records; inventing other `frog` subcommands or flags |
+| Mellifera desk, worktree session, source sync, and remote exec | [Mellifera command policy](#mellifera-command-policy) | curl or fetch against Mellifera HTTP APIs; bare `mellifera-cli` for these flows; reading a grant URL; opening a remote shell; a local-only apply claimed as the remote run |
 
 <a id="dynamic-firebase-probe-derived-data"></a>
 
@@ -167,6 +168,9 @@ rg 'RN_E2E_SLOT_BASE_NAME' tests/node_modules/detox/src/devices/allocation/drive
 | Ad-hoc Metro / emulator start                                                                                                                                                    | Use `yarn tests:packager:jet` (iOS/Android) or `yarn tests:macos:packager:jet` (macOS), `yarn tests:emulator:start` ([running e2e](running-e2e.md#rules)) |
 | Direct `xcrun simctl delete` / `erase` / `rename` / `create` (and `simctl delete all` / `unavailable`, `simctl shutdown all`) as e2e device management                            | Destroys devices other worktrees, repos, or operators may be mid-run on. Provision with `yarn tests:e2e:setup-ios-sims` (create/reuse-only), free with `yarn tests:e2e:release --devices` (shutdown only). Legacy-simulator removal is human-operator — [migration](running-e2e.md#ios-slot-simulator-migration) |
 | Spawn / PATH probes to “test” Jet or genversion                                                                                                                                  | Log triage only; fix product code and re-run canonical command                      |
+| curl or fetch against Mellifera HTTP APIs                                                                                                                                       | [Mellifera command policy](#mellifera-command-policy) — wrappers only               |
+| Reading a grant URL, or opening a remote shell, sftp, or scp for a grant                                                                                                        | `yarn tests:mellifera:remote-sync` then `yarn tests:mellifera:exec`                 |
+| `--clear-whole-host` on a multi-slot session                                                                                                                                    | Release the worktree session; do not clear the whole host                           |
 
 ## Known traps
 
@@ -305,12 +309,45 @@ iOS Ruby (SPM helpers): yarn tests:ios:ruby — never ad-hoc ruby packages/app/_
 JS lint vendor flood under packages/app/__tests__/vendor/: local Bundler tree, not product lint. Never invent delete-vendor as the lint gate. See #js-lint-bundler-vendor.
 Agent shell is zsh: capture exit codes with ${pipestatus[1]} or bare $? — ${PIPESTATUS[0]} is bash-only and expands to empty. See #agent-shell-is-zsh.
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
+Mellifera: okf-bundle/testing/agent-command-policy.md#mellifera-command-policy — yarn tests:mellifera:* only. Remote commands are remote-sync, then exec, then release on the issuing core. A local-only apply is not remote execution. An exec that is the whole task may omit sync. exec --rsh carrying rsync --server is the sync transport. bare --wait is not a supported command. Never curl or fetch against Mellifera HTTP APIs, hand-write port math, paste session tokens, or assume a fixed desk slot set. Never --clear-whole-host on a multi-slot session.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native/Ruby helpers touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
 
 <a id="physical-device-runs"></a>
 
 **Physical-device runs:** builds and runs on physical iOS or Android devices are not on the allowlist; run them only with explicit user authorization.
+
+<a id="mellifera-command-policy"></a>
+
+## Mellifera command policy
+
+Allowlisted commands for the local desk, the worktree session, source sync, and remote execution. Packaged `mellifera-cli` is resolved from `PATH` or `MELLIFERA_CLI`. Wrappers pass flags through. They do not read Mellifera config, call the Mellifera HTTP API, read a grant URL, or start a remote shell.
+
+Bare `mellifera-cli` is only for Mellifera product development, where no wrapper applies. `bare --wait is not a supported command.`
+
+After apply, run the canonical commands in [running e2e](running-e2e.md) (`yarn tests:*`, including `yarn test:full --slot N`). Never use curl or fetch against Mellifera HTTP APIs, hand-write port math, paste session tokens, or assume a fixed desk slot set. E2e packager, emulator, and Detox commands stay in the [running e2e agent rule](running-e2e.md#agent-rule-read-first).
+
+A remote command needs a preceding `yarn tests:mellifera:remote-sync` of the current source. A local-only apply is not remote execution. Two exceptions: an `exec` that is the whole task, and `exec --rsh` while it carries `rsync --server` (that invocation is the sync transport). Release stays on the issuing core. Multi-slot sessions never use `--clear-whole-host`.
+
+`yarn tests:mellifera:remote-sync` rsyncs this checkout to the remote grant's initial directory. `--rsh` is the resolved CLI plus `exec --rsh`. `--filter FILE` selects the merge filter; when omitted, the filter is `scripts/e2e/mellifera-remote-sync.rsync-filter`.
+
+| Intent | Command | Never use instead |
+| --- | --- | --- |
+| Local core status | `yarn tests:mellifera:status` | bare `mellifera-cli`; curl or fetch against the Mellifera HTTP API |
+| Diagnostics and the next action | `yarn tests:mellifera:doctor` | bare `mellifera-cli`; curl or fetch against the Mellifera HTTP API |
+| Register desk slots | `yarn tests:mellifera:register` | bare `mellifera-cli`; a fixed desk slot set |
+| Unregister the desk | `yarn tests:mellifera:unregister` | bare `mellifera-cli` |
+| Donate, or retract with `--retract` passed through | `yarn tests:mellifera:donate` | bare `mellifera-cli`; a second retract command |
+| Reserve a worktree session | `yarn tests:mellifera:reserve` | bare `mellifera-cli`; `bare --wait` (not a supported command); a deadline added by the wrapper |
+| Show the worktree session | `yarn tests:mellifera:session:show` | bare `mellifera-cli` |
+| Clear the worktree session record | `yarn tests:mellifera:session:clear` | bare `mellifera-cli`; `--clear-whole-host` |
+| Map a slot grant onto runner env | `yarn tests:mellifera:apply` | bare `mellifera-cli`; treating apply as remote execution |
+| Reserve, then map the grant | `yarn tests:mellifera:reserve-apply` | splitting or rewriting flags; adding a deadline; `bare --wait` (not a supported command) |
+| Sync the current source to the remote grant | `yarn tests:mellifera:remote-sync` | reading a grant URL; sftp or scp; a shim in front of `exec --rsh`; a local destination |
+| Run a command on the remote grant | `yarn tests:mellifera:exec -- <command>` | a remote command with no preceding remote-sync; an agent-opened remote shell |
+| Release on the issuing core | `yarn tests:mellifera:release` | releasing through a different core |
+| Wrapper pass-through check | `yarn tests:mellifera:assert-cli-wrappers` | a hand-rolled HTTP probe of the local core |
+| Apply mapping check | `yarn tests:mellifera:assert-apply-reservation` | a fixed slot list treated as the product band |
 
 ## Related docs
 

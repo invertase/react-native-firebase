@@ -1,0 +1,16 @@
+# Default rsync merge filter for remote source sync.
+# Pass --filter FILE to replace this list for one run.
+# Dependencies and build output are omitted. The remote install recreates them.
+# Version-control metadata is omitted; the remote tree is a source copy.
+
+- node_modules/
+- .git/
+- .nx/
+- .yarn/cache/
+- .yarn/unplugged/
+- Pods/
+- build/
+- dist/
+- .cxx/
+- *.apk
+- *.log

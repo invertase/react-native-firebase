@@ -85,22 +85,35 @@ function usage() {
 }
 
 /**
- * Desk spill/local grant: placement "slot" + integer slot index.
- * Rejects placement "host" / slot 0 host grants and scaler unitId substitutes.
+ * Shared desk band. In-band indexes are still bound by export-slot-env.
+ * Assert samples are not a second definition of this band.
+ */
+const SLOT_BAND_MIN = 0;
+const SLOT_BAND_MAX = 7;
+
+/**
+ * Desk grant: placement "slot" and an integer slot in the shared band.
+ * Host placement fails with unsupported-placement. An index outside the band
+ * fails with slot-out-of-range. Do not infer a slot from another placement.
  */
 function resolveDeskSlot(reserve) {
   const placement = reserve.placement;
   const slot = reserve.slot;
   if (placement !== 'slot') {
     throw new Error(
-      `mellifera-apply-reservation requires placement "slot" with a desk slot index; ` +
-        `got placement=${JSON.stringify(placement)} slot=${JSON.stringify(slot)} ` +
-        `(host/scaler grants are not export-slot-env binds; do not use unitId)`,
+      `unsupported-placement: mellifera-apply-reservation requires placement "slot"; ` +
+        `got placement=${JSON.stringify(placement)} slot=${JSON.stringify(slot)}. ` +
+        `Do not infer a slot.`,
     );
   }
   if (typeof slot !== 'number' || !Number.isInteger(slot)) {
     throw new Error(
-      `mellifera-apply-reservation requires integer slot from the requester result; got ${JSON.stringify(slot)}`,
+      `mellifera-apply-reservation requires an integer slot from the requester result; got ${JSON.stringify(slot)}`,
+    );
+  }
+  if (slot < SLOT_BAND_MIN || slot > SLOT_BAND_MAX) {
+    throw new Error(
+      `slot-out-of-range: shared supported band is ${SLOT_BAND_MIN}-${SLOT_BAND_MAX}; got ${slot}`,
     );
   }
   return slot;

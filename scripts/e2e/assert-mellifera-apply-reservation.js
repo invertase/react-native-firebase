@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * Unit assert: mellifera-apply-reservation maps placement:"slot" + slot N to the
- * same ports/device names as export-slot-env <platform> N for android|ios|macos
- * × slots 2|3|4. Run: node scripts/e2e/assert-mellifera-apply-reservation.js
+ * same ports/device names as export-slot-env <platform> N for android|ios|macos.
+ * Slot fixtures are samples, not the product band: shared-band edges plus one
+ * interior index. Run: yarn tests:mellifera:assert-apply-reservation
  */
 'use strict';
 
@@ -17,7 +18,8 @@ const APPLY = path.join(SCRIPT_DIR, 'mellifera-apply-reservation.js');
 const EXPORT_SLOT_ENV = path.join(SCRIPT_DIR, 'export-slot-env.sh');
 
 const PLATFORMS = ['android', 'ios', 'macos'];
-const SLOTS = [2, 3, 4];
+// Samples, not the product band: shared-band edges and one interior index.
+const SLOTS = [0, 3, 7];
 
 /** Ports + device identities that must match export-slot-env for the active platform. */
 const COMPARE_KEYS = [
@@ -99,21 +101,21 @@ function runApply(reserve, envFile, portsFile) {
   });
 }
 
-function expectApplyFails(reserve, envFile, portsFile) {
+function expectApplyFails(reserve, envFile, portsFile, code) {
   try {
     execFileSync(process.execPath, [APPLY, JSON.stringify(reserve), envFile, portsFile], {
       encoding: 'utf8',
       cwd: REPO_ROOT,
       stdio: ['pipe', 'pipe', 'pipe'],
     });
-    throw new Error('expected apply to fail');
+    throw new Error(`expected apply to fail with ${code}`);
   } catch (err) {
     if (err.status !== 1) {
       throw err;
     }
     const stderr = String(err.stderr || '');
-    if (!/placement "slot"|export-slot-env binds/i.test(stderr)) {
-      throw new Error(`expected placement rejection, got stderr: ${stderr}`);
+    if (!stderr.includes(code)) {
+      throw new Error(`expected ${code}, got stderr: ${stderr}`);
     }
   }
 }
@@ -151,11 +153,19 @@ function main() {
   const envFile = path.join(tmp, 'rnfb.env');
   const portsFile = path.join(tmp, 'mellifera.env.json');
 
-  // Reject host placement (scaler / provisioned) — not an export-slot-env bind.
+  // Host placement is not a slot bind. Slot 0 on that grant must not be inferred.
   expectApplyFails(
     { placement: 'host', slot: 0, sessionId: 's-host', env: {} },
     path.join(tmp, 'reject-host.env'),
     path.join(tmp, 'reject-host.json'),
+    'unsupported-placement',
+  );
+
+  expectApplyFails(
+    { placement: 'slot', slot: 8, sessionId: 's-oor', env: {} },
+    path.join(tmp, 'reject-oor.env'),
+    path.join(tmp, 'reject-oor.json'),
+    'slot-out-of-range',
   );
 
   for (const slot of SLOTS) {

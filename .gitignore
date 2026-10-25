@@ -562,6 +562,9 @@ GoogleService-Info.plist
 
 tests/harness.overrides.js
 tests/e2e-slots.env.json
+tests/mellifera.env.json
+tests/mellifera-platform/
+tests/.mellifera-session.env
 .github/workflows/scripts/.e2e-emulator-*.json
 
 # RNFB TurboModule codegen — misplaced iOS provider stubs under Android output paths
