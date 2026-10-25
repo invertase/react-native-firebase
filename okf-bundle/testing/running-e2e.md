@@ -16,7 +16,7 @@ Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI
 
 <a id="agent-rule-read-first"></a>
 
-**Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
+**Never invoke the test runner (Jet), Detox, Metro, or emulators directly.** Use **only** the repo-root `yarn tests:*` commands defined in this document (for example `yarn tests:packager:jet`, `yarn tests:emulator:start`, `yarn tests:<platform>:test-cover`). Mellifera desk, worktree session, source sync, and remote exec use the `yarn tests:mellifera:*` commands in [Mellifera command policy](agent-command-policy.md#mellifera-command-policy). The daily path is [Daily path for Mellifera](#mellifera-daily-path). Do not run `jet`, `npx jet`, `yarn jet`, `detox test`, `cd tests && …`, or ad-hoc Metro/emulator start commands. When another doc mentions e2e, Jet, Detox, or pre-flight, follow the link to this runbook — do not infer commands from log output or implementation details.
 
 Install, prepare, validation, the workspace Expo example / documented-path iOS **link** closer (`yarn test-expo:ios:link`), and the RN CLI prebuilt RNCore iOS **build** fixture (`yarn test-rn-bare:ios:build`) are **not** in this doc — they live in [agent command policy](agent-command-policy.md). Those commands are **not** Detox e2e. E2e stays exclusively `yarn tests:*`. **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
@@ -327,7 +327,7 @@ MACOS_APP="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
 
 <a id="host-clear-probes"></a>
 
-**Host-clear probes** — `yarn tests:e2e:check` / `yarn tests:e2e:release` (scripts under `scripts/e2e/`). They resolve [configurable e2e environment](#configurable-e2e-environment) first, else **serial defaults only**. **Exit 0 = clear.** Mellifera does **not** feed these commands a JSON file — it exports the same `RNFB_*` env, then calls these yarn targets ([e2e parallel design § layers](e2e-parallel-design.md#rnfb-mellifera-tart-layers)).
+**Host-clear probes** — `yarn tests:e2e:check` / `yarn tests:e2e:release` (scripts under `scripts/e2e/`). They resolve [configurable e2e environment](#configurable-e2e-environment) first, else **serial defaults only**. **Exit 0 = clear.** `RNFB_MELLIFERA` and a Mellifera session record do not change these scripts. RNFB maps the grant onto `RNFB_*`, then calls these yarn targets ([e2e parallel design § layers](e2e-parallel-design.md#rnfb-mellifera-tart-layers)).
 
 `yarn tests:e2e:check` **default** reports Jet + apps + simulators — not Metro/emulator ports (those are [services ready](#2-services-ready)). Pass `--services` to treat Metro/emulator as BUSY. `--platform=android|ios|macos` scopes devices ([global device scoping](#global-device-scoping)). Android host-clear also flags **stray `emulator-*` serials** (console ports outside serial **5554** and slotted **5556+2n**) as BUSY — leftover Detox FreePortFinder **10000–20000** guests (`emulator-16xxx`) must not report CLEAR. `yarn tests:e2e:release` emu-kills those strays even without `--devices`.
 
@@ -764,7 +764,7 @@ yarn tests:<platform>:test-cover
 yarn tests:e2e:release [--devices]                      # optional
 ```
 
-No second lifecycle (no host flock, no Metro-after-build, no slotted packager/test-cover yarn aliases, no `clean-slot-build-artifacts`). Collision control is **slot identity + check/release**. Mellifera leases slots; Tart may host a slot VM — [layers](e2e-parallel-design.md#rnfb-mellifera-tart-layers).
+No second lifecycle (no host flock, no Metro-after-build, no slotted packager/test-cover yarn aliases, no `clean-slot-build-artifacts`). Collision control is **slot identity + check/release**. Mellifera leases, federates, and connects; RNFB maps and runs; Tart may host a slot VM — [layers](e2e-parallel-design.md#rnfb-mellifera-tart-layers).
 
 <a id="e2e-slot-index"></a>
 
@@ -801,7 +801,7 @@ yarn test:full --verbose                    # stream output (default: compact st
 
 <a id="mellifera-spill-overlapping-full"></a>
 
-**Mellifera spill (donated desk slots):** when three worktrees run overlapping `yarn test:full --slot 2`, `--slot 3`, and `--slot 4` through Mellifera bastion `connectUrl` sessions, follow the mellifera operator procedure — [Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). Apply grants with [`scripts/e2e/mellifera-apply-reservation.js`](../../scripts/e2e/mellifera-apply-reservation.js) (`placement: "slot"` + slot index). Do **not** pass `--clear-whole-host` (kills sibling slots). That dogfood **accepts** the host-global CocoaPods / trunk CDN risk of overlapping Apple `pod:install` inside those three commands ([Overlapping Apple `pod:install`](#slot-lifecycle) above); Mellifera owns the spill session shape, not a second e2e runbook. Overlapping verify under those three commands: [Overlapping verify / Jest](#overlapping-verify-jest).
+**Mellifera spill (donated desk slots):** overlapping `yarn test:full --slot N` runs use one worktree per grant. `N` is that grant's [slot index](#e2e-slot-index). Bastion session shape stays in Mellifera — [Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). RNFB maps the grant and runs the suite — [remote spill](#remote-spill). Apply with `yarn tests:mellifera:apply` (`placement: "slot"` and the slot index). Do **not** pass `--clear-whole-host` (kills sibling slots). Overlapping Apple `pod:install` keeps the host-global CocoaPods / trunk CDN risk under [slot lifecycle](#slot-lifecycle). Overlapping verify: [Overlapping verify / Jest](#overlapping-verify-jest).
 
 Slotted mode: no e2e retries (fail-fast). Serial mode: up to 3 `:test-cover` attempts per platform. Slotted e2e uses distinct Metro listeners (`tests/` for android+ios, `tests-macos/` for macos) and **three Firebase emulator suites** (one `yarn tests:emulator:start` per platform subshell after `export-slot-env <platform> N`) — no serial Metro switch.
 
@@ -854,7 +854,7 @@ Keep exported env in the **same shell**. `export-slot-env` loads full `RNFB_{AND
 | `ORG_GRADLE_PROJECT_reactNativeDevServerPort`                                                                                                                            | Android Gradle Metro port baked into the APK's `react_native_dev_server_port` resource at build time. **Set automatically** by `yarn tests:android:build` (`RNFB_ANDROID_METRO_PORT` → `RCT_METRO_PORT` → `RNFB_METRO_PORT` → `JET_METRO_PORT` → `8081`) — only export it yourself when building Android outside that script (e.g. `detox build` invoked directly). Detox's `reversePorts` (`tests/.detoxrc.js`) already forwards the same slotted Metro port; this var makes the APK actually _ask_ for that port. `yarn tests:android:test-cover` asserts that baked integer matches the active Metro port after `e2e_sanitize_serial_env` (serial **8081**, slotted `RNFB_ANDROID_METRO_PORT`). A slot-baked **12007** APK plus serial host wait/reverse **8081** is APP_STATUS `currentStatus` / `isReady` hang — host Metro prefetch of `:8081` still succeeds. Re-`:build` in the same env; do not skip `:build` after a slotted APK in this worktree. |
 | `SIMCTL_CHILD_RCT_METRO_PORT`                                                                                                                                            | iOS simulator child Metro port                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `RNFB_E2E_DEBUG`                                                                                                                                                         | Verbose `[rnfb-e2e]` port resolution logging in app helpers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `RNFB_MELLIFERA`                                                                                                                                                         | Mellifera-only. Must **not** change RNFB `yarn tests:e2e:check` / `release` behavior. Mellifera maps a reservation to `RNFB_*` env, then calls those yarn targets                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `RNFB_MELLIFERA`                                                                                                                                                         | Mellifera-only. Must **not** change `yarn tests:e2e:check` / `release`. The session record does not change those scripts either. RNFB maps the grant; Mellifera does not call these yarn targets                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 See [host-clear probes](#host-clear-probes) (`yarn tests:e2e:check` / `yarn tests:e2e:release`).
 
@@ -1087,6 +1087,52 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … io.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
 
 **Cloud API pressure** — Installations / Remote Config failures with FIS 503 or “Too many server requests” are live-project quota on **any** platform, not emulator issues. See [Firebase testing project — CI triage](firebase-testing-project.md#ci-triage-cloud-api-quota-pressure).
+
+<a id="mellifera-daily-path"></a>
+
+## Daily path for Mellifera
+
+Mellifera reserves capacity and, on spill, the remote connection. RNFB maps the grant and runs the suite. Tart may host the remote worker. Commands: [Mellifera command policy](agent-command-policy.md#mellifera-command-policy). A present Mellifera config file is not proof the core or federation is ready. Bastion and cluster setup stay in Mellifera [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). Do not restate that procedure.
+
+1. [Local desk](#local-desk) — register, and donate only when this host should serve spill.
+2. [Worktree session](#worktree-session) — reserve, apply, run with `grant.slot`, release on the issuing core.
+3. [Remote spill](#remote-spill) — when the grant checkout mode is remote. A local apply is not that run.
+
+<a id="local-desk"></a>
+
+### Plane A — local desk
+
+Start the local core from the Mellifera checkout or its host service. `yarn tests:mellifera:status` and `yarn tests:mellifera:doctor` report each layer; doctor names the next action. Register a caller-chosen subset of the [slot index](#e2e-slot-index) band with `yarn tests:mellifera:register`. Donate a caller-chosen subset of those registered slots with `yarn tests:mellifera:donate`. Local scheduling prefers a free slot that was not donated; a donated slot stays locally usable until a spill takes it. Pass `--retract` through `yarn tests:mellifera:donate` to stop new spill placement. Retract does not preempt a grant already in flight. `yarn tests:mellifera:unregister` drops the desk. Core start does not donate. Desk flags and standing-offer rules: [mellifera-cli § Desk](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#desk).
+
+<a id="worktree-session"></a>
+
+### Plane B — worktree session
+
+`yarn tests:mellifera:reserve` is the layered reserve: one call, local supply first, then an existing donated offer. Flags pass through, including `--local-wait-ms`, `--remote-wait-ms`, `--allow-autoscale`, `--no-autoscale`, and `--timeout-ms`. Journey, phases, and failure codes: [mellifera-cli § Layered reserve](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#layered-reserve). When no local slot and no donated offer is available, reserve can fail with `autoscale-not-configured` and no grant — [mellifera-cli § Autoscale stub](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#autoscale-stub). `bare --wait is not a supported command.`
+
+The packed CLI writes the current-worktree pointer under `~/.mellifera/sessions/` (mode 0600) unless `--no-state`. The core lease is authoritative. Two worktrees get two records. `yarn tests:mellifera:session:show` reports `live`, `expired`, or `missing`. `yarn tests:mellifera:session:clear` removes the pointer and does not release. Field list: [mellifera-cli § Worktree session](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#worktree-session). RNFB does not write that record.
+
+`yarn tests:mellifera:reserve-apply` reserves, then maps `placement: "slot"` and `grant.slot` onto runner env. `yarn tests:mellifera:apply` only maps. Generated `tests/mellifera-platform/` input and `tests/mellifera.env.json` are not the session record. `RNFB_MELLIFERA` and the session record do not change [check or release](#host-clear-probes).
+
+Then run the [Law](#slot-lifecycle) or `yarn test:full --slot N` with `N` equal to `grant.slot`. Release with `yarn tests:mellifera:release` on the issuing core, including when the run fails. Multi-slot sessions never use `--clear-whole-host`.
+
+<a id="remote-spill"></a>
+
+### Plane C — remote spill
+
+Same reserve. A remote grant has `checkoutMode: remote` and a `connectUrl`. Do not read that URL, open a shell, or copy the Mellifera config file. The remote image supplies node, corepack/yarn, and rsync. A donated worker may be recycled between runs; do not rely on a previous remote tree. Bastion prerequisites: [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb).
+
+`yarn tests:mellifera:exec` is the transport ([mellifera-cli § Exec](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#exec)). It streams stdout and stderr and returns the remote exit status. It does not sync, install, apply, or release.
+
+1. Keep release on the issuing core (`yarn tests:mellifera:release`) on success, command failure, and a dropped remote shell.
+2. `yarn tests:mellifera:remote-sync` copies this checkout to the grant's initial directory. `--rsh` is the resolved CLI plus `exec --rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`.
+3. `yarn tests:mellifera:exec -- yarn install --immutable`
+4. On that remote checkout, run the suite with the grant's slot: `yarn tests:mellifera:exec -- yarn test:full --slot N`. Omit `-w` so the command stays in the synced directory. Device inventory, when missing, is the same [setup commands](#e2e-slot-index) through `exec`. The [Law](#slot-lifecycle) is unchanged.
+5. The suite's streamed output and exit status are the result. Log files follow [full suite](#run-full-tests) on the remote host.
+
+A local-only apply is not this run. A remote command other than the two exceptions below needs a preceding `yarn tests:mellifera:remote-sync`. Exceptions: an `exec` that is the whole task (a probe; it does not run the suite), and `exec --rsh` while it carries `rsync --server`.
+
+Overlapping grants: [Mellifera spill](#mellifera-spill-overlapping-full).
 
 ## Before merge (PR handoff)
 

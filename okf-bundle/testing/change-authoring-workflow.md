@@ -201,7 +201,8 @@ Do not send every finding to `documentation`.
 
 On a shared dev host during change authoring:
 
-- One unslotted `:test-cover` at a time — never overlap **unit-focused**-tier and **area-focused**-tier runs. Slotted cross-platform concurrency (distinct worktrees/ports/devices): [running e2e § parallel topology](running-e2e.md#parallel-e2e-topology).
+- One unslotted `:test-cover` at a time — never overlap **unit-focused**-tier and **area-focused**-tier runs. That serial rule does not use Mellifera. Slotted cross-platform concurrency (distinct worktrees/ports/devices): [running e2e § parallel topology](running-e2e.md#parallel-e2e-topology).
+- Overlapping slotted work reserves first and releases on the issuing core when the run finishes or fails: `yarn tests:mellifera:reserve` or `yarn tests:mellifera:reserve-apply`, then `yarn tests:mellifera:release`. Path: [Mellifera daily path](running-e2e.md#mellifera-daily-path). Commands: [Mellifera command policy](agent-command-policy.md#mellifera-command-policy).
 - Every run starts from [running e2e § pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes, services ready, **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)**, harness tier).
 - Use only [canonical e2e commands](running-e2e.md#rules). Startup-fail markers → [startup fail-fast poll](running-e2e.md#startup-fail-fast-poll) (do not wait the full `launchApp` timeout). Stalled runs → [stalled run detection](running-e2e.md#stalled-run-detection).
 
