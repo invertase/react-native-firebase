@@ -20,6 +20,8 @@ Canonical local e2e commands. Use **only** these commands. `-ci` variants are CI
 
 Install, prepare, validation, the workspace Expo example / documented-path iOS **link** closer (`yarn test-expo:ios:link`), and the RN CLI prebuilt RNCore iOS **build** fixture (`yarn test-rn-bare:ios:build`) are **not** in this doc — they live in [agent command policy](agent-command-policy.md). Those commands are **not** Detox e2e. E2e stays exclusively `yarn tests:*`. **Before any native `:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
+<a id="prerequisites-once-per-checkout"></a>
+
 ## Prerequisites (once per checkout)
 
 ```bash
@@ -604,16 +606,22 @@ If this recurs: `pgrep -x io.invertase.testing` — if still alive after the don
 
 ## Typical loop
 
-```bash
-# Background (once):
-yarn tests:emulator:start
-yarn tests:packager:jet            # iOS/Android
-# yarn tests:macos:packager:jet    # when running macOS Jet instead
+iOS is one order. On a shared host, slot env is loaded before the packager or emulator. `yarn tests:ios:pod:install` is a separate prior step. `yarn tests:ios:build` compiles only and does not install pods. `yarn tests:ios:test-cover` does not build. The agent emulator command is `yarn tests:emulator:start` (`yarn tests:emulator:start-ci` is CI-only). The agent test command is `yarn tests:ios:test-cover` (`yarn tests:ios:test` is a different script). After the packager starts, its status body contains `packager-status:running`, then [services ready](#2-services-ready) repeats that check after the build.
 
-# Per platform (rebuild when native changed). Apple :build compiles only —
-# full e2e requires pod:install as a separate prior step (skip for Android).
+```bash
+# iOS
 yarn tests:ios:pod:install
-yarn tests:ios:build && yarn tests:ios:test-cover
+yarn tests:ios:build
+yarn tests:e2e:check --platform=ios          # host-clear
+yarn tests:emulator:start                    # long-running
+yarn tests:packager:jet                      # long-running; status body contains packager-status:running
+# services-ready, then:
+yarn tests:ios:test-cover
+
+# Android / macOS. Apple :build compiles only — pod:install is a separate prior step (skip for Android).
+yarn tests:emulator:start
+yarn tests:packager:jet
+# yarn tests:macos:packager:jet              # when running macOS Jet instead
 yarn tests:android:build && yarn tests:android:test-cover
 yarn tests:macos:pod:install
 yarn tests:macos:build && yarn tests:macos:test-cover
@@ -750,15 +758,32 @@ Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080
 
 **Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. Populate each instance with `git worktree add` (or clone) + `yarn` in **that** tree — never `rsync` sources between local slot worktrees. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim + distinct macOS `PRODUCT_NAME`). Example: `3× android + 3× ios + 3× macos` ⇒ three worktrees. Do **not** launch two of the same platform from one worktree — native products, Detox configs, coverage, and (macOS) one `macos/build` tree are not multi-instance-safe. Why: [e2e parallel design](e2e-parallel-design.md). iOS derived data is `tests/ios/build`; macOS is `tests-macos/macos/build`. Do **not** change Swift explicit-module (or other) xcodebuild settings to paper over concurrent builds — [infrastructure change bar](#e2e-infrastructure-change-bar).
 
-**The Law — same runbook as serial:** set slot env, then **only** [Rules §1–4](#rules):
+**The Law — same runbook as serial:** load slot env in this shell, then use the [Rules §1–4](#rules) yarn scripts. On a shared host, load that env before the first packager or emulator start. iOS is one order: `yarn tests:ios:pod:install`, then `yarn tests:ios:build` (compiles only; does not install pods), then host-clear, then `yarn tests:emulator:start` and `yarn tests:packager:jet`, then [services ready](#2-services-ready) (Metro status contains `packager-status:running` after the build), then `yarn tests:ios:test-cover`. The agent emulator command is `yarn tests:emulator:start` (`yarn tests:emulator:start-ci` is CI-only). The agent test command is `yarn tests:ios:test-cover`. `yarn tests:ios:test` is a different script. `:test-cover` does not build; the native app has to exist first. Mellifera iOS runs wrap this order — [Plane B](#worktree-session).
 
 ```bash
+# iOS
 eval "$(yarn tests:e2e:clear-slot-env)"                 # serial only: drop leftover export-slot-env
-eval "$(yarn tests:e2e:export-slot-env <platform> N)"   # omit for serial defaults; N is the slot index
+eval "$(yarn tests:e2e:export-slot-env ios N)"          # omit for serial defaults; N is the slot index
+yarn tests:ios:pod:install                              # separate prior step; :build does not install pods
+yarn tests:ios:build                                    # compiles only; does not run tests
+yarn tests:e2e:check --platform=ios                     # host-clear
+yarn tests:emulator:start                               # long-running; not the CI-only -ci script
+yarn tests:packager:jet                                 # long-running; status body contains packager-status:running
+# services-ready (that status check after the build), then:
+yarn tests:ios:test-cover                               # does not build
+yarn tests:e2e:release [--devices]                      # optional
+```
+
+Android and macOS keep slot env, then packager, emulator, `:build`, and `:test-cover`. macOS `pod:install` stays a separate prior step before `yarn tests:macos:build`. That block is not the iOS order.
+
+```bash
+# Android or macOS
+eval "$(yarn tests:e2e:clear-slot-env)"                 # serial only: drop leftover export-slot-env
+eval "$(yarn tests:e2e:export-slot-env <platform> N)"   # android or macos; omit for serial defaults
 yarn tests:e2e:check                                    # optional; default = serial-only; slotted = env from the line above
-yarn tests:packager:jet                                 # or yarn tests:macos:packager:jet
+yarn tests:packager:jet                                 # macos: yarn tests:macos:packager:jet
 yarn tests:emulator:start
-yarn tests:<platform>:pod:install                       # Apple, when needed — serialize across worktrees (shared CocoaPods CDN)
+yarn tests:macos:pod:install                            # macOS, when needed — serialize across worktrees (shared CocoaPods CDN)
 yarn tests:<platform>:build                             # compiles only; does not invoke pod install
 yarn tests:<platform>:test-cover
 yarn tests:e2e:release [--devices]                      # optional
@@ -1028,7 +1053,7 @@ ls ~/Library/Detox/ios/framework/*/Detox.framework
 ls ~/Library/Detox/ios/xcuitest-runner/*/
 ```
 
-Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:pod:install` (when pods may be stale) → `yarn tests:ios:build` (if native changed; compiles only) → `yarn tests:ios:test-cover`.
+Then resume the iOS order in [Typical loop](#typical-loop).
 
 CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
 
@@ -1114,7 +1139,19 @@ The packed CLI writes the current-worktree pointer under `~/.mellifera/sessions/
 
 `yarn tests:mellifera:reserve-apply` reserves, then maps `placement: "slot"` and `grant.slot` onto runner env. `yarn tests:mellifera:apply` only maps. Generated `tests/mellifera-platform/` input and `tests/mellifera.env.json` are not the session record. `RNFB_MELLIFERA` and the session record do not change [check or release](#host-clear-probes).
 
-Then run the [Law](#slot-lifecycle) or `yarn test:full --slot N` with `N` equal to `grant.slot`. Release with `yarn tests:mellifera:release` on the issuing core, including when the run fails. Multi-slot sessions never use `--clear-whole-host`.
+**iOS e2e** (a single-platform run, not the pre-merge full gate) follows one order. The toolchain list is [Prerequisites](#prerequisites-once-per-checkout) and [Apple host toolchain](#apple-host-toolchain-local). Host-clear versus services-ready is [Pre-flight](#pre-flight-is-the-host-clear-to-start): host-clear is before the packager and emulator; services-ready is after both are up. `yarn test:full --slot N`, with `N` equal to `grant.slot`, is the [pre-merge full gate](#run-full-tests). The same iOS command order is [the Law](#slot-lifecycle) and [Typical loop](#typical-loop).
+
+1. Host toolchain from those prerequisite sections.
+2. Root `yarn`. Wait for exit 0. Before `:build`, the [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) still applies (fmt podspec **≥ 12.1.0**).
+3. `yarn tests:mellifera:reserve`, then `yarn tests:mellifera:apply`, then source the iOS env apply printed, in the same shell as the later `yarn tests:*` commands. On a shared host, that env is loaded before the first packager or emulator start, and before `:build`, so the build selects the slotted iOS config. `RNFB_E2E_SLOT` is the granted slot.
+4. `yarn tests:ios:pod:install`. Wait for exit 0. Pod install is a separate prior step. `:build` does not install pods.
+5. `yarn tests:ios:build`. Wait for exit 0. It compiles only. It does not install pods and it does not run tests. The native app at `tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app` has to exist before `:test-cover`.
+6. Host-clear: `yarn tests:e2e:check --platform=ios` exits 0 ([host clear](#1-host-clear)). When the granted slot base is missing, `yarn tests:e2e:setup-ios-sims` with a count that includes that index ([setup count](#e2e-slot-index)), then check again.
+7. `yarn tests:emulator:start` (long-running; [backgrounding](#backgrounding-long-running-services)). The agent command is this script. `yarn tests:emulator:start-ci` is CI-only.
+8. `yarn tests:packager:jet` (long-running). It can exit 0 after daemonizing. Wait until the packager status body contains `packager-status:running` ([services ready](#2-services-ready)). `RCT_METRO_PORT` comes from the sourced slot env.
+9. [Services ready](#2-services-ready) in that same env. The Metro status check is after the build, and the body contains `packager-status:running`.
+10. `yarn tests:ios:test-cover`. The agent command is `:test-cover`. `yarn tests:ios:test` is a different script. `:test-cover` does not build.
+11. `yarn tests:mellifera:release` on the issuing core, including when the run fails. Multi-slot sessions never use `--clear-whole-host`.
 
 <a id="remote-spill"></a>
 
