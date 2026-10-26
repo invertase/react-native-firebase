@@ -599,6 +599,11 @@ final class RNFBFirestorePipelineNodeBuilder {
         }
 
         if let map = currentValue as? [String: Any] {
+          if let geoPoint = RNFBFirestorePipelineParser.serializedGeoPoint(map) {
+            box.value = geoPoint
+            continue
+          }
+
           if isSerializedExpressionLike(map) {
             box.value = try coerceExpression(map, fieldName: currentFieldName)
             continue
@@ -847,6 +852,11 @@ final class RNFBFirestorePipelineNodeBuilder {
 
     guard let value = map["value"] else {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
+    }
+
+    if let valueMap = value as? [String: Any],
+       let geoPoint = RNFBFirestorePipelineParser.serializedGeoPoint(valueMap) {
+      return geoPoint
     }
 
     return value
