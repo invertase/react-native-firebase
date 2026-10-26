@@ -1054,6 +1054,14 @@ describe('Firestore pipelines runtime', function () {
       .serialize();
 
     expect(exprPipeline.stages[0].options.query).toBeDefined();
+    expect(exprPipeline.stages[0].options.query.args[0]).toMatchObject({
+      exprType: 'Function',
+      name: 'geoDistance',
+      args: [
+        { exprType: 'Field', path: 'location' },
+        { exprType: 'Constant', value: { __kind: 'geoPoint', latitude: 0, longitude: 0 } },
+      ],
+    });
     expect(exprPipeline.stages[0].options.sort).toBeDefined();
     expect(exprPipeline.stages[0].options.addFields).toHaveLength(1);
     expect(field('x').geoDistance).toBeDefined();
