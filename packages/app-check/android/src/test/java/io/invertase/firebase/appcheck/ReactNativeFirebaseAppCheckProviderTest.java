@@ -21,17 +21,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import android.util.Log;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.AppCheckProvider;
 import com.google.firebase.appcheck.AppCheckToken;
+import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -182,14 +190,12 @@ public class ReactNativeFirebaseAppCheckProviderTest {
   public void configure_unknownName_throwsWithValidProviderList() {
     TestProvider provider = new TestProvider();
 
-    try {
-      provider.configure("[DEFAULT]", "safetyNet", null);
-      fail("expected RuntimeException");
-    } catch (RuntimeException e) {
-      assertEquals(
-          "Unknown provider name \"safetyNet\". Valid providers are: debug, playIntegrity.",
-          e.getMessage());
-    }
+    RuntimeException e =
+        assertThrows(
+            RuntimeException.class, () -> provider.configure("[DEFAULT]", "safetyNet", null));
+    assertEquals(
+        "Unknown provider name \"safetyNet\". Valid providers are: debug, playIntegrity.",
+        e.getMessage());
     assertNull(provider.delegateProvider);
   }
 
@@ -198,12 +204,10 @@ public class ReactNativeFirebaseAppCheckProviderTest {
     TestProvider provider = new TestProvider();
     provider.configure("[DEFAULT]", "debug", "token-123");
 
-    try {
-      provider.configure("[DEFAULT]", "safetyNet", null);
-      fail("expected RuntimeException");
-    } catch (RuntimeException e) {
-      assertTrue(e.getMessage().contains("Unknown provider name \"safetyNet\""));
-    }
+    RuntimeException e =
+        assertThrows(
+            RuntimeException.class, () -> provider.configure("[DEFAULT]", "safetyNet", null));
+    assertTrue(e.getMessage().contains("Unknown provider name \"safetyNet\""));
 
     assertNull(provider.delegateProvider);
     Task<AppCheckToken> task = provider.getToken();
@@ -220,12 +224,10 @@ public class ReactNativeFirebaseAppCheckProviderTest {
     provider.configure("[DEFAULT]", "debug", "token-123");
     provider.getFirebaseAppFailure = new IllegalStateException("x");
 
-    try {
-      provider.configure("[DEFAULT]", "debug", "token-123");
-      fail("expected RuntimeException");
-    } catch (RuntimeException e) {
-      assertEquals("x", e.getMessage());
-    }
+    RuntimeException e =
+        assertThrows(
+            RuntimeException.class, () -> provider.configure("[DEFAULT]", "debug", "token-123"));
+    assertEquals("x", e.getMessage());
 
     assertNull(provider.delegateProvider);
     Task<AppCheckToken> task = provider.getToken();
@@ -267,5 +269,131 @@ public class ReactNativeFirebaseAppCheckProviderTest {
     assertNull(NativeRNFBTurboAppCheck.buildConfigDebugToken("null"));
     assertEquals("abc-123", NativeRNFBTurboAppCheck.buildConfigDebugToken("abc-123"));
     assertNull(NativeRNFBTurboAppCheck.buildConfigDebugToken(null));
+  }
+
+  @Test
+  public void tokenErrorCode_providerNotReadyWrappedByTasksAwait_isProviderNotReady() {
+    Exception notReady = new ReactNativeFirebaseAppCheckProvider().getToken().getException();
+    Exception wrapped = new ExecutionException(notReady);
+
+    assertEquals("provider-not-ready", NativeRNFBTurboAppCheck.tokenErrorCode(wrapped));
+    assertEquals(
+        ReactNativeFirebaseAppCheckProvider.PROVIDER_NOT_READY_MESSAGE,
+        NativeRNFBTurboAppCheck.tokenErrorMessage(wrapped));
+  }
+
+  @Test
+  public void tokenErrorCode_limitedUseProviderNotReady_isProviderNotReady() {
+    Exception notReady =
+        new ReactNativeFirebaseAppCheckProvider().getLimitedUseToken().getException();
+
+    assertEquals("provider-not-ready", NativeRNFBTurboAppCheck.tokenErrorCode(notReady));
+    assertEquals(
+        "provider-not-ready",
+        NativeRNFBTurboAppCheck.tokenErrorCode(new ExecutionException(notReady)));
+  }
+
+  @Test
+  public void tokenErrorCode_otherFailures_isTokenError() {
+    Exception delegateFailure = new ExecutionException(new Exception("fake-delegate"));
+    Exception noFactory = new Exception("No AppCheckProvider installed.");
+    Exception sameMessage =
+        new IllegalStateException(ReactNativeFirebaseAppCheckProvider.PROVIDER_NOT_READY_MESSAGE);
+
+    assertEquals("token-error", NativeRNFBTurboAppCheck.tokenErrorCode(delegateFailure));
+    assertEquals("token-error", NativeRNFBTurboAppCheck.tokenErrorCode(noFactory));
+    assertEquals("token-error", NativeRNFBTurboAppCheck.tokenErrorCode(sameMessage));
+    assertEquals(
+        "token-error",
+        NativeRNFBTurboAppCheck.tokenErrorCode(new ExecutionException((Throwable) null)));
+    assertEquals(
+        delegateFailure.getMessage(), NativeRNFBTurboAppCheck.tokenErrorMessage(delegateFailure));
+  }
+
+  private static ReactNativeFirebaseAppCheckProviderFactory factoryWith(
+      String appName, ReactNativeFirebaseAppCheckProvider provider) {
+    ReactNativeFirebaseAppCheckProviderFactory factory =
+        new ReactNativeFirebaseAppCheckProviderFactory();
+    factory.providers.put(appName, provider);
+    return factory;
+  }
+
+  @Test
+  public void isProviderReady_noProvider_isFalse() {
+    assertFalse(new ReactNativeFirebaseAppCheckProviderFactory().isProviderReady("[DEFAULT]"));
+  }
+
+  @Test
+  public void isProviderReady_providerWithNullDelegate_isFalse() {
+    ReactNativeFirebaseAppCheckProviderFactory factory =
+        factoryWith("[DEFAULT]", new ReactNativeFirebaseAppCheckProvider());
+
+    assertFalse(factory.isProviderReady("[DEFAULT]"));
+  }
+
+  @Test
+  public void isProviderReady_configuredProvider_isTrueOnlyForThatApp() {
+    TestProvider provider = new TestProvider();
+    provider.configure("[DEFAULT]", "debug", null);
+    ReactNativeFirebaseAppCheckProviderFactory factory = factoryWith("[DEFAULT]", provider);
+
+    assertTrue(factory.isProviderReady("[DEFAULT]"));
+    assertFalse(factory.isProviderReady("secondaryFromNative"));
+  }
+
+  @Test
+  public void isProviderReady_failedReconfigure_isFalse() {
+    TestProvider provider = new TestProvider();
+    provider.configure("[DEFAULT]", "debug", null);
+    ReactNativeFirebaseAppCheckProviderFactory factory = factoryWith("[DEFAULT]", provider);
+
+    assertThrows(RuntimeException.class, () -> provider.configure("[DEFAULT]", "safetyNet", null));
+
+    assertFalse(factory.isProviderReady("[DEFAULT]"));
+  }
+
+  @Test
+  public void rejectIfProviderNotReady_notReady_rejectsWithProviderNotReady() {
+    Promise promise = mock(Promise.class);
+    WritableMap map = mock(WritableMap.class);
+    try (MockedStatic<Arguments> arguments = mockStatic(Arguments.class)) {
+      when(Arguments.createMap()).thenReturn(map);
+
+      assertTrue(
+          NativeRNFBTurboAppCheck.rejectIfProviderNotReady(
+              new ReactNativeFirebaseAppCheckProviderFactory(), "[DEFAULT]", promise));
+      assertTrue(
+          NativeRNFBTurboAppCheck.rejectIfProviderNotReady(
+              factoryWith("[DEFAULT]", new ReactNativeFirebaseAppCheckProvider()),
+              "[DEFAULT]",
+              promise));
+    }
+
+    verify(promise, times(2))
+        .reject(
+            "provider-not-ready",
+            ReactNativeFirebaseAppCheckProvider.PROVIDER_NOT_READY_MESSAGE,
+            map);
+    verify(map, times(2)).putString("code", "provider-not-ready");
+    verify(map, times(2))
+        .putString("message", ReactNativeFirebaseAppCheckProvider.PROVIDER_NOT_READY_MESSAGE);
+  }
+
+  @Test
+  public void rejectIfProviderNotReady_ready_doesNotTouchPromise() {
+    TestProvider provider = new TestProvider();
+    provider.configure("[DEFAULT]", "debug", null);
+    Promise promise = mock(Promise.class);
+
+    assertFalse(
+        NativeRNFBTurboAppCheck.rejectIfProviderNotReady(
+            factoryWith("[DEFAULT]", provider), "[DEFAULT]", promise));
+    verifyNoInteractions(promise);
+  }
+
+  @Test
+  public void tokenErrorCodeAndMessage_nullException_doNotThrow() {
+    assertEquals("token-error", NativeRNFBTurboAppCheck.tokenErrorCode(null));
+    assertNull(NativeRNFBTurboAppCheck.tokenErrorMessage(null));
   }
 }

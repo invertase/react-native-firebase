@@ -40,6 +40,12 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
   static final String PROVIDER_NOT_READY_MESSAGE =
       "App Check provider is not ready. Call initializeAppCheck before requesting tokens.";
 
+  static final class ProviderNotReadyException extends IllegalStateException {
+    ProviderNotReadyException() {
+      super(PROVIDER_NOT_READY_MESSAGE);
+    }
+  }
+
   volatile AppCheckProvider delegateProvider;
 
   @NonNull
@@ -66,7 +72,7 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
 
   private static Task<AppCheckToken> providerNotReady(String method) {
     Log.d(LOGTAG, "Provider::" + method + " - provider not ready (no delegate configured)");
-    return Tasks.forException(new IllegalStateException(PROVIDER_NOT_READY_MESSAGE));
+    return Tasks.forException(new ProviderNotReadyException());
   }
 
   public void configure(String appName, String providerName, String debugToken) {
@@ -113,7 +119,6 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
     if (debugToken == null) {
       return DebugAppCheckProviderFactory.getInstance().create(app);
     }
-    // To use this token, create debug provider with a local secret provider + thread pool
     ExecutorService executor = Executors.newCachedThreadPool();
     return new DebugAppCheckProvider(
         app,

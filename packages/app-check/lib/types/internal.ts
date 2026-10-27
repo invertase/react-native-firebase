@@ -34,17 +34,16 @@ export type AppCheckInternal = AppCheck & {
   /**
    * Activate App Check
    * On iOS calling this activates App Check with the DeviceCheck provider, using the token auto refresh default or
-   * the specific value (if configured) in firebase.json. Before `activate` or `initializeAppCheck` is called, the
-   * native App Check provider is pending and `getToken` / `getLimitedUseToken` fail closed with
-   * `appCheck/provider-not-ready`.
-   * On Android if you call this it will install the PlayIntegrity provider in release builds, the Debug provider if debuggable.
+   * the specific value (if configured) in firebase.json.
+   * On Android and iOS, before `activate` or `initializeAppCheck` is called, the native App Check provider is pending
+   * and `getToken` / `getLimitedUseToken` fail closed with `appCheck/provider-not-ready`.
+   * On Android this configures the PlayIntegrity provider through `initializeAppCheck`, in debug and release builds.
    * On both platforms you may use this method to alter the token refresh setting after startup.
    * On iOS if you want to set a specific AppCheckProviderFactory (for instance to FIRAppCheckDebugProviderFactory or
    * FIRAppAttestProvider) you must manually do that in your AppDelegate.m prior to calling [FIRApp configure]
    *
    * @deprecated use initializeAppCheck to gain access to all platform providers and firebase-js-sdk v9 compatibility
-   * @param siteKeyOrProvider - This is ignored, Android uses DebugProviderFactory if the app is debuggable (https://firebase.google.com/docs/app-check/android/debug-provider)
-   *                            Android uses PlayIntegrityProviderFactory for release builds.
+   * @param siteKeyOrProvider - This is ignored, Android uses the PlayIntegrity provider.
    *                            iOS uses DeviceCheckProviderFactory by default unless altered in AppDelegate.m manually
    * @param isTokenAutoRefreshEnabled - If true, enables SDK to automatically
    * refresh AppCheck token as needed. If not a boolean, it falls back to firebase.json
