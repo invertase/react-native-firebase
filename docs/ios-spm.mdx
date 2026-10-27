@@ -26,9 +26,9 @@ CocoaPods**. The last CocoaPods release is **12.19.0**. See Google's
 ## Requirements and defaults
 
 - React Native **0.75 or newer** is required (`spm_dependency`).
-- SPM is the only supported Firebase install path for this major.
+- v27 is **SPM-only**. SPM is the only supported Firebase install path.
 - `$RNFirebaseDisableSPM = true` and Expo `ios.disableSPM: true` **fail**
-  `pod install` / prebuild — they do not install CocoaPods Firebase 13 pods.
+  `pod install` / prebuild. They do not install CocoaPods Firebase 13 pods.
 - SPM requires CocoaPods 1.10 or newer for the React Native pod integration.
   React Native 0.75+ templates already satisfy this requirement.
 - SPM pins the Firebase iOS SDK to the exact version in
@@ -163,6 +163,7 @@ post_install do |installer|
   react_native_post_install(
     installer,
     config[:reactNativePath],
+    # your existing options
   )
 
   rnfirebase_apply_spm_build_settings(installer)

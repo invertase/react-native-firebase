@@ -63,7 +63,7 @@ If you are instead manually adjusting your Android and iOS projects (this is not
 
 To enable Firebase on the native Android and iOS platforms, create and download the Firebase config files for each platform from your Firebase project. Then provide paths to the downloaded `google-services.json` and `GoogleService-Info.plist` files in the following `app.json` fields: [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile). See the example configuration below.
 
-For iOS, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm) on React Native 0.75+. SPM requires dynamic frameworks — configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) with `"useFrameworks": "dynamic"`. See the example configuration below.
+For iOS, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager](/ios-spm) (v27 is SPM-only) on React Native 0.75+. SPM requires dynamic frameworks — configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) with `"useFrameworks": "dynamic"`. See the example configuration below.
 
 The following is an example `app.json` to enable the React Native Firebase modules App, Auth and Crashlytics, that specifies the Firebase config files for both mobile platforms, and that sets the application ID to the example value of `com.mycorp.myapp` (change to match your own).
 
@@ -128,7 +128,7 @@ The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = t
 
 #### Dynamic frameworks (required)
 
-Firebase Apple SDK 13+ is **SPM-only**. Do **not** pass `disableSPM: true` to the `@react-native-firebase/app` config plugin or set `"useFrameworks": "static"`. `pod install` and prebuild fail with either. Set `"useFrameworks": "dynamic"` through `expo-build-properties` instead. See [iOS SPM Support](/ios-spm) for details. Write this into `app.json` / `app.config.js` **before** the next `npx expo prebuild --clean`:
+React Native Firebase v27 (Firebase Apple SDK 13+) is **SPM-only**. Do **not** pass `disableSPM: true` to the `@react-native-firebase/app` config plugin or set `"useFrameworks": "static"`. `pod install` and prebuild fail with either. Set `"useFrameworks": "dynamic"` through `expo-build-properties` instead. See [iOS SPM Support](/ios-spm) for details. Write this into `app.json` / `app.config.js` **before** the next `npx expo prebuild --clean`:
 
 ```json
 // File: app.json (or app.config.js). Dynamic frameworks for SPM. Apply before npx expo prebuild --clean.
@@ -222,7 +222,7 @@ apply plugin: 'com.google.gms.google-services'
 
 ### 3. React Native CLI - iOS Setup
 
-To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added to your project, and you must enable frameworks in CocoaPods
+To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added to your project, and you must enable dynamic frameworks (v27 is SPM-only, see [Dynamic frameworks in the Podfile](#dynamic-frameworks-in-the-podfile-required) below).
 
 #### Generating iOS credentials
 
@@ -292,9 +292,9 @@ Open `/ios/{projectName}/AppDelegate.mm` (or `AppDelegate.m` on older React Nati
 
 Merge the `[FIRApp configure]` call into your existing method rather than replacing the whole method if your `AppDelegate` already performs additional setup.
 
-#### Altering CocoaPods to use frameworks
+#### Dynamic frameworks in the Podfile (required)
 
-Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks. On React Native 0.75+, React Native Firebase resolves the Firebase Apple SDK with [Swift Package Manager by default](/ios-spm), which **requires dynamic linkage**.
+React Native Firebase v27 is **SPM-only**: it resolves the Firebase Apple SDK with [Swift Package Manager](/ios-spm) on React Native 0.75+, which **requires dynamic linkage**.
 
 Open the file `./ios/Podfile` and add this line at the top level, after `prepare_react_native_project!` and before your `target` block. Do this **before** `pod install`:
 
@@ -303,7 +303,7 @@ Open the file `./ios/Podfile` and add this line at the top level, after `prepare
 use_frameworks! :linkage => :dynamic
 ```
 
-Do **not** combine RNFB's default SPM mode with `use_frameworks! :linkage => :static` — `pod install` rejects that combination. Firebase Apple SDK 13+ also cannot use CocoaPods Firebase or `$RNFirebaseDisableSPM`, so stay on dynamic SPM linkage. Full requirements, Expo notes, and troubleshooting are in [iOS SPM Support](/ios-spm).
+Do **not** use `use_frameworks! :linkage => :static` (or omit `use_frameworks!`). `pod install` rejects static linkage with SPM. There is no CocoaPods Firebase path to fall back to. Full requirements, Expo notes, and troubleshooting are in [iOS SPM Support](/ios-spm).
 
 ### 4. Autolinking & rebuilding
 

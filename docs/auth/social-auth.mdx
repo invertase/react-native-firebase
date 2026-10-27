@@ -313,13 +313,22 @@ For bare React Native projects, most configuration is already in place when usin
 
 #### Using Google Sign-In
 
+The examples below use the version 16 API of `@react-native-google-signin/google-signin` (16.x). Install it in your app:
+
+```bash
+yarn add @react-native-google-signin/google-signin
+```
+
 Initialize the Google SDK with any required scopes and the `webClientId` from `android/app/google-services.json` as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Pick the `client_id` with `client_type: 3`.
+
+`GoogleSignin.signIn()` resolves with a response object. Use `isSuccessResponse` to check it, then read the ID token from `response.data.idToken`. A canceled sign-in resolves with `type: 'cancelled'` instead of throwing.
 
 ```js
 // codeblock-ignore: @react-native-google-signin/google-signin is a third-party package; install it in your app
+// Google Sign-In v16 API (@react-native-google-signin/google-signin 16.x)
 import React from 'react';
 import { Button } from 'react-native';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, isSuccessResponse } from '@react-native-google-signin/google-signin';
 import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 
 GoogleSignin.configure({
@@ -328,14 +337,13 @@ GoogleSignin.configure({
 
 async function onGoogleButtonPress() {
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  const signInResult = await GoogleSignin.signIn();
+  const response = await GoogleSignin.signIn();
 
-  // From @react-native-google-signin/google-signin v13+, prefer signInResult.data?.idToken.
-  // Older library versions returned idToken on the top-level result object.
-  let idToken = signInResult.data?.idToken;
-  if (!idToken) {
-    idToken = signInResult.idToken;
+  if (!isSuccessResponse(response)) {
+    throw new Error('Google Sign-In was canceled');
   }
+
+  const idToken = response.data.idToken;
   if (!idToken) {
     throw new Error('No ID token found');
   }
@@ -619,14 +627,19 @@ With the free `@react-native-google-signin/google-signin` (`GoogleSignin`) API:
 
 ```js
 // codeblock-ignore: @react-native-google-signin/google-signin is a third-party package; install it in your app
+// Google Sign-In v16 API (@react-native-google-signin/google-signin 16.x)
 import { GoogleAuthProvider, getAuth, linkWithCredential } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, isSuccessResponse } from '@react-native-google-signin/google-signin';
 
 async function onGoogleLinkButtonPress() {
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-  const signInResult = await GoogleSignin.signIn();
+  const response = await GoogleSignin.signIn();
 
-  const idToken = signInResult.data?.idToken ?? signInResult.idToken;
+  if (!isSuccessResponse(response)) {
+    throw new Error('Google Sign-In was canceled');
+  }
+
+  const idToken = response.data.idToken;
   if (!idToken) {
     throw new Error('No ID token found');
   }
