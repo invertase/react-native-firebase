@@ -83,6 +83,48 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
     return enabled;
   }
 
+  static String activateProviderName(boolean isDebuggable) {
+    return isDebuggable ? "debug" : "playIntegrity";
+  }
+
+  // build.gradle stringifies an unset FIREBASE_APP_CHECK_DEBUG_TOKEN env var as "null".
+  static String buildConfigDebugToken(String buildConfigValue) {
+    return "null".equals(buildConfigValue) ? null : buildConfigValue;
+  }
+
+  static boolean isProviderNotReady(Throwable error) {
+    for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+      if (cause instanceof ReactNativeFirebaseAppCheckProvider.ProviderNotReadyException) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static String tokenErrorCode(Throwable error) {
+    return isProviderNotReady(error) ? "provider-not-ready" : "token-error";
+  }
+
+  static String tokenErrorMessage(Throwable error) {
+    if (isProviderNotReady(error)) {
+      return ReactNativeFirebaseAppCheckProvider.PROVIDER_NOT_READY_MESSAGE;
+    }
+    return error != null ? error.getMessage() : null;
+  }
+
+  static boolean rejectIfProviderNotReady(
+      ReactNativeFirebaseAppCheckProviderFactory factory, String appName, Promise promise) {
+    if (factory.isProviderReady(appName)) {
+      return false;
+    }
+    Log.d(LOGTAG, "provider not ready for app " + appName + " (delegateProvider null)");
+    rejectPromiseWithCodeAndMessage(
+        promise,
+        "provider-not-ready",
+        ReactNativeFirebaseAppCheckProvider.PROVIDER_NOT_READY_MESSAGE);
+    return true;
+  }
+
   public NativeRNFBTurboAppCheck(ReactApplicationContext reactContext) {
     super(reactContext);
     this.executorService = new TaskExecutorService("UniversalAppCheckModule");
@@ -146,21 +188,21 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
           FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName));
       firebaseAppCheck.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
 
-      if (isAppDebuggable()) {
+      boolean isDebuggable = isAppDebuggable();
+      String debugToken = null;
+      if (isDebuggable) {
         Log.d(LOGTAG, "app is debuggable, configuring AppCheck for testing mode");
-        if (BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN != "null") {
+        debugToken = buildConfigDebugToken(BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN);
+        if (debugToken != null) {
           Log.d(LOGTAG, "debug app check token found in BuildConfig. Installing known token.");
-          providerFactory.configure(appName, "debug", BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN);
         } else {
           Log.d(
               LOGTAG,
               "no debug app check token found in BuildConfig. Check Log for dynamic test token to"
                   + " configure in console.");
-          providerFactory.configure(appName, "debug", null);
         }
-      } else {
-        providerFactory.configure(appName, "safetyNet", null);
       }
+      providerFactory.configure(appName, activateProviderName(isDebuggable), debugToken);
 
       FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName))
           .installAppCheckProviderFactory(providerFactory);
@@ -185,6 +227,9 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
   public void getToken(String appName, boolean forceRefresh, Promise promise) {
     Log.d(LOGTAG, "getToken appName/forceRefresh: " + appName + "/" + forceRefresh);
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    if (rejectIfProviderNotReady(providerFactory, appName, promise)) {
+      return;
+    }
     Tasks.call(
             getExecutor(),
             () ->
@@ -198,12 +243,13 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
                 tokenResultMap.putString("token", task.getResult().getToken());
                 promise.resolve(tokenResultMap);
               } else {
+                Exception exception = task.getException();
                 Log.e(
                     LOGTAG,
                     "RNFB: Unknown error while fetching AppCheck token "
-                        + task.getException().getMessage());
+                        + tokenErrorMessage(exception));
                 rejectPromiseWithCodeAndMessage(
-                    promise, "token-error", task.getException().getMessage());
+                    promise, tokenErrorCode(exception), tokenErrorMessage(exception));
               }
             });
   }
@@ -212,6 +258,9 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
   public void getLimitedUseToken(String appName, Promise promise) {
     Log.d(LOGTAG, "getLimitedUseToken appName: " + appName);
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    if (rejectIfProviderNotReady(providerFactory, appName, promise)) {
+      return;
+    }
 
     Tasks.call(
             getExecutor(),
@@ -225,12 +274,13 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
                 tokenResultMap.putString("token", task.getResult().getToken());
                 promise.resolve(tokenResultMap);
               } else {
+                Exception exception = task.getException();
                 Log.e(
                     LOGTAG,
                     "Unknown error while fetching limited-use AppCheck token "
-                        + task.getException().getMessage());
+                        + tokenErrorMessage(exception));
                 rejectPromiseWithCodeAndMessage(
-                    promise, "token-error", task.getException().getMessage());
+                    promise, tokenErrorCode(exception), tokenErrorMessage(exception));
               }
             });
   }
