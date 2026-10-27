@@ -174,10 +174,8 @@ MDX
 microtask
 Minitest
 mlkit
-MLKit
 mono-repo
 multidex
-Multidex
 multiline
 namespace
 namespaced

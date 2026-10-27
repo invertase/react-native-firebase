@@ -1,6 +1,6 @@
 ---
 title: Migrating to v25
-description: Migrate to React Native Firebase v25.
+description: 'Migrate to v25: package-scoped modular type and export renames across Cloud Storage, Realtime Database, Remote Config, Performance Monitoring, Installations, App Check and Auth (deprecated provider helpers, multi-factor and phone auth signature changes).'
 previous: /migrating-to-v24
 next: /migrating-to-v26
 ---
@@ -91,6 +91,7 @@ Modular Storage types now match firebase-js-sdk. The namespaced API (`firebase.s
 ## Example: modular references and uploads
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { getStorage, refFromURL, child } from '@react-native-firebase/storage';
 
@@ -100,6 +101,7 @@ await fileRef.putFile(localPath);
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getStorage, ref, putFile } from '@react-native-firebase/storage';
 
@@ -111,6 +113,7 @@ await putFile(fileRef, localPath);
 ## Example: types and task constants
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { getStorage, FirebaseStorageTypes } from '@react-native-firebase/storage';
 
@@ -120,6 +123,7 @@ function onState(snapshot: FirebaseStorageTypes.TaskSnapshot) {
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getStorage, ref, uploadBytesResumable, TaskState, type TaskSnapshot } from '@react-native-firebase/storage';
 
@@ -148,6 +152,7 @@ Modular RTDB types (`DatabaseReference`, `Query`, `DataSnapshot`, `OnDisconnect`
 ## Example: server timestamps
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { getDatabase, ref, set, ServerValue } from '@react-native-firebase/database';
 
@@ -164,6 +169,7 @@ await set(ref(getDatabase(), 'posts/1'), { createdAt: serverTimestamp() });
 ## Example: modular query helpers
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously — instance methods typed on modular references
 import {
   getDatabase,
@@ -209,6 +215,7 @@ Modular Remote Config now uses firebase-js-sdk type names and instance propertie
 ## Example: fetch and read values
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import {
   getRemoteConfig,
@@ -226,6 +233,7 @@ console.log(flag.value, flag.source);
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import {
   getRemoteConfig,
@@ -267,6 +275,7 @@ console.log(flag.asString(), flag.getSource());
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { getPerformance } from '@react-native-firebase/perf';
 
@@ -301,6 +310,7 @@ Modular `getInstallations()` returns a firebase-js-sdk-shaped `Installations` ob
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { getInstallations } from '@react-native-firebase/installations';
 
@@ -309,6 +319,7 @@ const id = await installations.getId();
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getInstallations, getId } from '@react-native-firebase/installations';
 
@@ -335,6 +346,7 @@ The most common updates are:
 - Keep using `ReactNativeFirebaseAppCheckProvider` on React Native when you need native provider selection for Android / Apple / web.
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import appCheck, { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 
@@ -346,6 +358,7 @@ instance.getToken().then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => 
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { getApp } from '@react-native-firebase/app';
 import {
@@ -443,6 +456,7 @@ The following RN Firebase-specific provider classes are **deprecated in v25**. U
 | `OIDCProvider`      | `OAuthProvider`                                |
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (deprecated)
 import { AppleAuthProvider } from '@react-native-firebase/auth';
 const credential = AppleAuthProvider.credential(idToken, rawNonce);
@@ -454,6 +468,7 @@ const credential = provider.credential({ idToken, rawNonce });
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (deprecated)
 import { OIDCAuthProvider } from '@react-native-firebase/auth';
 const credential = OIDCAuthProvider.credential('sample-provider', idToken, accessToken);

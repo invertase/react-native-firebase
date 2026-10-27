@@ -78,6 +78,7 @@ These match Firebase JS SDK 13 / `@firebase/ai@3`:
 `GenerationConfig` / `LiveGenerationConfig` sampling fields (`temperature`, `topP`, `topK`, `presencePenalty`, `frequencyPenalty`) and `candidateCount` remain on the types but are **`@deprecated`** for Gemini 3.x / 4.x — omit them for those models. They are not removed in v27.
 
 ```js
+import { getApp } from '@react-native-firebase/app';
 import { getAI, AgentPlatformBackend, getTemplateGenerativeModel } from '@react-native-firebase/ai';
 
 const ai = getAI(getApp(), { backend: new AgentPlatformBackend() }); // location defaults to global
@@ -112,6 +113,7 @@ React Native Firebase pins **firebase-js-sdk 13.x**. On **web and macOS** (`Plat
 3. If you need the HTTP status or request URL, read them from the suffix / `customData.url` on web/macOS only; keep a native fallback path for iOS/Android.
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (exact match — breaks on web/macOS after 12.18.0)
 if (e.message === 'Invalid test requested.') {
   /* … */
@@ -143,6 +145,7 @@ String-valued APNs sounds are serialized at the documented `message.notification
 | `message.notification.sound` (string) | `message.notification.ios.sound` (string) |
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 const sound = message.notification?.sound;
 
@@ -163,6 +166,7 @@ On iOS, `RemoteMessage.sentTime` is a **number** of epoch **milliseconds**, matc
 Android behavior is unchanged. Remove `parseInt` / string comparisons that assumed seconds.
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (iOS)
 const sentMs = Number(message.sentTime) * 1000;
 
@@ -181,6 +185,7 @@ iOS `aps.badge` is serialized as a **string**, matching `RemoteMessage.notificat
 | number (for example `7`) | string (for example `"7"`) |
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 const badge = message.notification?.ios?.badge; // number on iOS
 
@@ -199,6 +204,7 @@ const badge = Number(message.notification?.ios?.badge ?? 0);
 | `{ messageId: string }` | `string`           |
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 onMessageSent(messaging, ({ messageId }) => {
   console.log(messageId);
@@ -239,6 +245,7 @@ Imagen exports and `generateImages` are gone. Use `getGenerativeModel()` / `getT
 ## Example
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously (removed)
 import { getApp } from '@react-native-firebase/app';
 import { getAI, getImagenModel, ImagenAspectRatio } from '@react-native-firebase/ai';
@@ -307,6 +314,7 @@ These changes landed with the App native Swift/Kotlin port. Most apps that only 
 3. If you relied on the old bug (passing a non-boolean non-nil value, or `false` while still seeing collection), set an explicit boolean for the behavior you want.
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 import { initializeApp } from '@react-native-firebase/app';
 
 // Now false / null / absent disable collection; only true enables it.

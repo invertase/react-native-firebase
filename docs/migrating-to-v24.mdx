@@ -1,6 +1,6 @@
 ---
 title: Migrating to v24
-description: Migrate to React Native Firebase v24.
+description: "Migrate to v24: Firestore TypeScript generic types for DocumentReference/Query/CollectionReference with separate type exports, and Cloud Functions becoming a TurboModule that requires React Native's New Architecture."
 previous: /migrating-to-v23
 next: /migrating-to-v25
 ---
@@ -18,6 +18,7 @@ Additionally, to match the JS SDK, they are now exported separately at the root,
 Most commonly these types will be affected: `CollectionReference`, `DocumentReference`, `DocumentSnapshot`, `QueryDocumentSnapshot`, `QuerySnapshot`, `Query`.
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Previously
 import { doc, getFirestore, onSnapshot, FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
@@ -29,6 +30,7 @@ onSnapshot(doc(getFirestore(), 'foo', 'foo'), {
 ```
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 // Now
 import { doc, getFirestore, onSnapshot, DocumentSnapshot } from '@react-native-firebase/firestore';
 

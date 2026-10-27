@@ -1,19 +1,32 @@
 ---
 title: iOS Notification Images
-description: Displaying an image in an iOS notification.
+description: Create a Notification Service Extension target in Xcode and call the Firebase extension helper to show images in iOS push notifications. The CocoaPods Firebase recipe for the extension target is not supported on Firebase Apple SDK 13+ (SPM-only).
 next: /messaging/server-integration
 previous: /messaging/notifications
 ---
+
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/messaging` installed (`npm install --save @react-native-firebase/app @react-native-firebase/messaging` or `yarn add @react-native-firebase/app @react-native-firebase/messaging`), then `cd ios && pod install`.
+- [iOS Messaging Setup](/messaging/usage/ios-setup) completed (Push Notifications, Background Modes, APNs key linked in Firebase Console). From v26, New Architecture is required for packages with a native bridge.
+- Xcode `>= 26.2`, iOS deployment target `15.0`, firebase-ios-sdk `13.1.1` (default pin).
+- A physical iOS device for end-to-end image notification delivery testing.
 
 This is a quick guide to display an image in an incoming notification. Android handles this out of the box so this extra setup is **only necessary for iOS**.
 
 > If you want to know more about the specifics of this setup read the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image).
 
-**🚨 Before you start**
-Be sure you already have Cloud Messaging installed and set up. In case you don't [get started here](/messaging/usage).
+## Supported install path
 
-**🏁 Ready to start**
-The following steps will guide you through how to add a new target to your application to support payloads with an image. Open Xcode and let's get started.
+React Native Firebase iOS builds resolve Firebase through Swift Package Manager (SPM), and Firebase Apple SDK 13+ is SPM-only. See [iOS SPM Support](/ios-spm) for the supported install path and Podfile requirements.
+
+Adding `pod 'Firebase/Messaging'` to a `target 'ImageNotification'` block in the Podfile (with `use_frameworks! :linkage => :static`) is not supported. CocoaPods does not distribute Firebase Apple SDK 13+, and static pod linkage is not allowed with SPM.
+
+This page documents how to create the extension target and the extension code. It does not document how to link `FirebaseMessaging` into the extension target under SPM. React Native Firebase does not verify that setup, so follow the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image) for it and confirm the result on a physical device.
+
+## Steps
+
+Open Xcode and follow the steps below to add a Notification Service Extension target that can populate rich notification content (including images).
 
 ### Step 1 - Add a notification service extension
 
@@ -24,40 +37,22 @@ The following steps will guide you through how to add a new target to your appli
 
 ![step-1](/assets/messaging/ios-notification-images-step-1.gif)
 
-### Step 2 - Add target to the Podfile
-
-Ensure that your new extension has access to Firebase/Messaging pod by adding it in the Podfile:
-
-- From the Navigator open the Podfile: **Pods > Podfile**
-- Scroll down to the bottom of the file and add
-
-> Notification Service Extension image recipes that previously relied on CocoaPods Firebase are incompatible with Firebase Apple SDK 13+ (SPM-only). Prefer an extension setup compatible with SPM, or keep the extension's Firebase pin aligned with RNFB's SPM version. See [iOS SPM Support](/ios-spm).
-
-```Ruby
-target 'ImageNotification' do
-  use_frameworks! :linkage => :static
-  pod 'Firebase/Messaging'
-end
-```
-
-- Install or update your pods using `pod install` from the `ios` folder
-
-![step-2](/assets/messaging/ios-notification-images-step-2.gif)
-
-### Step 3 - Use the extension helper (Objective-C)
+### Step 2 - Use the extension helper (Objective-C)
 
 > If you selected to create your extension as a Swift project, jump to the next section.
 
-At this point everything should still be running normally. This is the final step which is invoking the extension helper.
+This step invokes the extension helper. It requires `FirebaseMessaging` to be linked into the `ImageNotification` target (see [Supported install path](#supported-install-path)).
 
 - From the navigator select your `ImageNotification` extension
 - Open the `NotificationService.m` file
-- At the top of the file import `FirebaseMessaging.h` right after the `NotificationService.h` as shown below
+- At the top of the file import the `FirebaseMessaging` module right after the `NotificationService.h` as shown below
 
 ```diff
 #import "NotificationService.h"
-+ #import "FirebaseMessaging.h"
++ @import FirebaseMessaging;
 ```
+
+The exact import can depend on how `FirebaseMessaging` is linked into the extension target. If the module import does not resolve in your setup, use the form from the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image).
 
 - then replace everything from line 25 to 28 with the extension helper
 
@@ -69,22 +64,24 @@ At this point everything should still be running normally. This is the final ste
 + [[FIRMessaging extensionHelper] populateNotificationContent:self.bestAttemptContent withContentHandler:contentHandler];
 ```
 
-![step-3](/assets/messaging/ios-notification-images-step-3.gif)
+![step-2](/assets/messaging/ios-notification-images-step-3.gif)
 
-### Step 3 - Use the extension helper (Swift)
+### Step 2 - Use the extension helper (Swift)
 
-At this point everything should still be running normally. This is the final step which is invoking the extension helper.
+This step invokes the extension helper. It requires `FirebaseMessaging` to be linked into the `ImageNotification` target (see [Supported install path](#supported-install-path)).
 
 - From the navigator select your `ImageNotification` extension
 - Open the `NotificationService.swift` file
-- At the top of the file import `Firebase` right after the `NotificationService` as shown below
+- At the top of the file import `FirebaseMessaging` right after the `UserNotifications` import as shown below
 
 ```diff
 import UserNotifications
-+ import Firebase
++ import FirebaseMessaging
 
 class NotificationService: UNNotificationServiceExtension {
 ```
+
+As with Objective-C, the exact import can depend on how `FirebaseMessaging` is linked into the extension target.
 
 - then replace everything from line 19 to 23 with the extension helper
 
@@ -101,4 +98,4 @@ class NotificationService: UNNotificationServiceExtension {
 
 ## All done
 
-Run the app and check it builds successfully – **make sure you have the correct target selected**. Now you can use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (`300KB` max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read this page to send [messages from a server](/messaging/server-integration).
+Run the app and check it builds successfully (**make sure you have the correct target selected**). Use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (`300KB` max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read [messages from a server](/messaging/server-integration) for Admin SDK payload shapes (including `mutable-content` / `imageUrl`).

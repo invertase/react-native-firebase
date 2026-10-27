@@ -1,6 +1,6 @@
 ---
 title: Migrating to v22
-description: Migrate to React Native Firebase v22.
+description: 'Migrate to v22: switch from the namespaced API to modular functions, silence deprecation warnings with RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS, enforce the change with RNFB_MODULAR_DEPRECATION_STRICT_MODE, and a Firestore modular query rewrite example.'
 previous: /
 next: /migrating-to-v23
 ---
@@ -48,6 +48,7 @@ There are concrete examples below to show the process
 You ought to move away from the following way of making Firestore queries. The React Native Firebase namespaced API is being completely removed in React Native Firebase v22:
 
 ```js
+// codeblock-ignore: migration guide historical / partial snippet
 import firestore from '@react-native-firebase/firestore';
 
 const db = firestore();
