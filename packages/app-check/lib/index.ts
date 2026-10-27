@@ -172,7 +172,7 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
         provider.providerOptions.android.provider,
         provider.providerOptions.android.debugToken,
       );
-    } else if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+    } else if (Platform.OS === 'ios') {
       if (!isString(provider.providerOptions?.apple?.provider)) {
         throw new Error(
           'Invalid configuration: no apple provider configured while on apple platform.',
