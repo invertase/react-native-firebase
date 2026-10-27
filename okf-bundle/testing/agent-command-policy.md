@@ -137,6 +137,7 @@ rg 'RN_E2E_SLOT_BASE_NAME' tests/node_modules/detox/src/devices/allocation/drive
 
 4. If fmt is still **11.0.2** (or anything **< 12.1.0**): **STOP**. Re-run root `yarn` / fix patch application for **macOS** (including Nx `tests-macos:prepare` cache policy — [MonoTool-AD-12](../monorepo-tooling/architecture-decisions.md#monotool-ad-12--never-nx-cache-prepare-when-the-script-is-patch-package--accepted)). On mobile 0.86+, fmt should already be ≥12.1.0 without a patch; if not, investigate the resolved `react-native` version. Do **not** invent Podfile `post_install` fmt hacks, `FMT_USE_CONSTEVAL` / `base.h` patches, c++17-for-fmt-only, or web-search workarounds.
 5. **Before `yarn tests:ios:build` on a clean checkout:** run root `yarn` (which includes `yarn ruby:install`), then run **`yarn tests:ios:pod:install`** and wait for exit 0. Re-run the Pod install after `tests/ios/Podfile` / `Podfile.lock`, package podspec, or native dependency-resolution changes, and whenever `tests/ios/Pods` is absent. Root `yarn` does **not** create the CocoaPods xcconfig or file-list support files; the shared build invokes Detox/Xcode and does **not** provision them. CI installs the root bundle before yarn, then uses this same Pods-before-build order in `.github/workflows/tests_e2e_ios.yml`.
+   - **Expected lockfile drift:** `yarn tests:ios:pod:install` commonly rewrites the `hermes-engine` `SPEC CHECKSUMS` entry in `tests/ios/Podfile.lock` (the prebuilt Hermes podspec checksum varies by host/cache). Keep the regenerated lockfile while building and testing — reverting it mid-run fails the CocoaPods sandbox/manifest sync check. After the run, restore `tests/ios/Podfile.lock` and never stage it with unrelated changes.
 
 **Symptoms when violated:** Apple Clang 21 consteval errors compiling unpatched fmt **11.0.2**; missing `tests/ios/Pods` xcconfig or file-list support files; an occupied slotted iOS base causing stock Detox to create a suffixed simulator instead of failing (tests Detox patch-package skipped); agents inventing Podfile/fmt workarounds instead of re-running root `yarn` / fixing prepare cache policy.
 
@@ -202,10 +203,13 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - Jet is started **internally** by `yarn tests:<platform>:test-cover`. Stale `:8090` → [pre-flight recovery](running-e2e.md#pre-flight-recovery), then re-run the same `:test-cover` command.
 - Metro `EADDRINUSE` on `:8081` from `yarn tests:packager:jet-reset-cache` or `yarn tests:macos:packager:jet-reset-cache` → [packager reset-cache](running-e2e.md#packager-reset-cache-eaddrinuse) (free `:8081`, then the same yarn target). Not the `:8090` pre-flight kill. Do **not** use the mobile packager for macOS Jet (or vice versa).
 
+<a id="android-java-format"></a>
+
 ### Android Java format
 
 - There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
 - **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on **Java** under `packages/*/android/src` and fails if the tree would change. It does **not** format Kotlin.
+- **Needs JDK 21+:** the bundled `google-java-format` 1.35.0 jar runs on whatever `java` is first on `PATH` (not Gradle's JDK). On JDK < 21 it fails many files, untouched ones included, with `NoClassDefFoundError: com/sun/tools/javac/tree/JCTree$JCAnyPattern`. This is a host JDK problem, not a formatting failure. Put a JDK 21 first on `PATH` for the same command, e.g. `PATH="$(/usr/libexec/java_home -v 21)/bin:$PATH" yarn lint:android` (macOS).
 
 <a id="android-kotlin-format"></a>
 
@@ -310,6 +314,10 @@ Agent shell is zsh: capture exit codes with ${pipestatus[1]} or bare $? — ${PI
 On failure: fix product code (or re-run yarn for patch miss), re-run the same canonical command.
 Gate close / push: return [validation evidence package](validation-checklist.md#validation-evidence-package) and [coverage evidence package](coverage-design.md#coverage-evidence-package) when lib/native/Ruby helpers touched — required before commit or publication ([change authoring § validation evidence](change-authoring-workflow.md#validation-evidence-blocking)).
 ```
+
+<a id="physical-device-runs"></a>
+
+**Physical-device runs:** builds and runs on physical iOS or Android devices are not on the allowlist; run them only with explicit user authorization.
 
 ## Related docs
 

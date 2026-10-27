@@ -8,6 +8,7 @@ Build-tooling decisions and design for the React Native Firebase monorepo: task 
 
 - [Architecture decisions (ADR)](architecture-decisions.md) — **canonical owner** of durable tooling decisions (the "what + why"); other docs reference it
 - [Prepare, cache, and watch design](prepare-and-cache.md) — durable design: Nx local cache, deterministic prepare graph, declaration maps, dependency-cruiser, dev watch + TDD hook chain, benchmark methodology
+- [Maintainer publish](maintainer-publish.md) — **canonical owner** of the Publish workflow procedure: main-only API docs deploy, branch dist-tags, same-publish recovery
 - [Rollout work queue](work-queue.md) — ephemeral phase tracker, per-item steps, gates, and acceptance criteria
 
 ## Scope

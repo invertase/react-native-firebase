@@ -2,6 +2,7 @@
  * Host-only stub for macOS XCTest. Not shipped in the production pod.
  */
 #import <Firebase/Firebase.h>
+#import <stdatomic.h>
 
 @implementation FIRStackFrame {
   NSString *_symbol;
@@ -63,11 +64,19 @@ static NSString *sUserIDValue;
 static NSUInteger sDeleteUnsentReportsCallCount;
 static NSUInteger sSendUnsentReportsCallCount;
 static FIRExceptionModel *sLastRecordedExceptionModel;
+static NSMutableArray<FIRExceptionModel *> *sSavedExceptionModels;
+static void (^sOnExceptionModelSaved)(FIRExceptionModel *);
+static BOOL sContextInitPending;
+static NSMutableArray<dispatch_block_t> *sPendingSaves;
+// Bumped by resetTestState so saves enqueued by an earlier test are dropped.
+static atomic_uint_fast64_t sSaveGeneration;
 
 + (void)initialize {
   if (self == [FIRCrashlytics class]) {
     sLoggedMessages = [NSMutableArray new];
     sCustomValues = [NSMutableDictionary new];
+    sSavedExceptionModels = [NSMutableArray new];
+    sPendingSaves = [NSMutableArray new];
   }
 }
 
@@ -150,6 +159,36 @@ static FIRExceptionModel *sLastRecordedExceptionModel;
   sLastRecordedExceptionModel = lastRecordedExceptionModel;
 }
 
++ (NSArray<FIRExceptionModel *> *)savedExceptionModels {
+  return [sSavedExceptionModels copy];
+}
+
++ (void (^)(FIRExceptionModel *))onExceptionModelSaved {
+  return sOnExceptionModelSaved;
+}
+
++ (void)setOnExceptionModelSaved:(void (^)(FIRExceptionModel *))onExceptionModelSaved {
+  sOnExceptionModelSaved = [onExceptionModelSaved copy];
+}
+
++ (void)holdContextInit {
+  @synchronized(sPendingSaves) {
+    sContextInitPending = YES;
+  }
+}
+
++ (void)fulfillContextInit {
+  NSArray<dispatch_block_t> *saves;
+  @synchronized(sPendingSaves) {
+    sContextInitPending = NO;
+    saves = [sPendingSaves copy];
+    [sPendingSaves removeAllObjects];
+  }
+  for (dispatch_block_t save in saves) {
+    dispatch_async(dispatch_get_main_queue(), save);
+  }
+}
+
 + (void)resetTestState {
   sDidCrashDuringPreviousExecutionValue = NO;
   sCheckForUnsentReportsValue = NO;
@@ -159,6 +198,13 @@ static FIRExceptionModel *sLastRecordedExceptionModel;
   sDeleteUnsentReportsCallCount = 0;
   sSendUnsentReportsCallCount = 0;
   sLastRecordedExceptionModel = nil;
+  [sSavedExceptionModels removeAllObjects];
+  sOnExceptionModelSaved = nil;
+  @synchronized(sPendingSaves) {
+    sContextInitPending = NO;
+    [sPendingSaves removeAllObjects];
+  }
+  atomic_fetch_add(&sSaveGeneration, 1);
 }
 
 - (void)checkForUnsentReportsWithCompletion:(void (^)(BOOL unsentReports))completion {
@@ -202,6 +248,26 @@ static FIRExceptionModel *sLastRecordedExceptionModel;
 
 - (void)recordExceptionModel:(FIRExceptionModel *)exceptionModel {
   sLastRecordedExceptionModel = exceptionModel;
+  // Mirrors FirebaseCrashlytics: once context init is fulfilled, the save block is dispatched to
+  // the main queue and writes synchronously when it runs. While init is pending, FBLPromise holds
+  // the block as an observer and dispatches it to the main queue only when the promise fulfills.
+  uint_fast64_t generation = atomic_load(&sSaveGeneration);
+  dispatch_block_t save = ^{
+    if (generation != atomic_load(&sSaveGeneration)) {
+      return;
+    }
+    [sSavedExceptionModels addObject:exceptionModel];
+    if (sOnExceptionModelSaved != nil) {
+      sOnExceptionModelSaved(exceptionModel);
+    }
+  };
+  @synchronized(sPendingSaves) {
+    if (sContextInitPending) {
+      [sPendingSaves addObject:save];
+      return;
+    }
+  }
+  dispatch_async(dispatch_get_main_queue(), save);
 }
 
 @end

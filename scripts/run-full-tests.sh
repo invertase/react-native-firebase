@@ -353,33 +353,36 @@ run_verify_phase() {
   PHASE=3
   status_line verify RUNNING
 
-  local -a names runners
+  # Wave 1: native builds ∥ non-unit verify. Platform unit tests compile the same
+  # Kotlin/Gradle trees as :build — never run them in parallel with that platform's build
+  # (incremental-cache race: "Could not close incremental caches").
+  local -a wave1_names wave1_runners
 
   if [[ -n "$SLOT" ]]; then
-    names=(
+    wave1_names=(
       tests:android:build
       tests:ios:build
       tests:macos:build
     )
-    runners=(
+    wave1_runners=(
       "eval \"\$(bash ${EXPORT_SLOT_ENV} android ${SLOT})\" && yarn tests:android:build"
       "eval \"\$(bash ${EXPORT_SLOT_ENV} ios ${SLOT})\" && yarn tests:ios:build"
       "eval \"\$(bash ${EXPORT_SLOT_ENV} macos ${SLOT})\" && yarn tests:macos:build"
     )
   else
-    names=(
+    wave1_names=(
       tests:android:build
       tests:ios:build
       tests:macos:build
     )
-    runners=(
+    wave1_runners=(
       'yarn tests:android:build'
       'yarn tests:ios:build'
       'yarn tests:macos:build'
     )
   fi
 
-  names+=(
+  wave1_names+=(
     compare:types
     tsc:compile
     tsc:compile:consumer
@@ -392,10 +395,8 @@ run_verify_phase() {
     lint:markdown
     lint:spellcheck
     tests:jest
-    tests:android:unit
-    tests:ios:unit
   )
-  runners+=(
+  wave1_runners+=(
     'yarn compare:types'
     'yarn tsc:compile'
     'yarn tsc:compile:consumer'
@@ -408,16 +409,20 @@ run_verify_phase() {
     'yarn lint:markdown'
     'yarn lint:spellcheck'
     'yarn tests:jest'
-    'yarn tests:android:unit'
-    'yarn tests:ios:unit'
   )
 
-  local args=()
-  for i in "${!names[@]}"; do
-    args+=("${names[$i]}" "${runners[$i]}")
+  local -a wave1_args=()
+  local i
+  for i in "${!wave1_names[@]}"; do
+    wave1_args+=("${wave1_names[$i]}" "${wave1_runners[$i]}")
   done
+  run_parallel_steps "${wave1_args[@]}"
 
-  run_parallel_steps "${args[@]}"
+  # Wave 2: after all builds succeed — android:unit ∥ ios:unit
+  run_parallel_steps \
+    tests:android:unit 'yarn tests:android:unit' \
+    tests:ios:unit 'yarn tests:ios:unit'
+
   status_line verify OK "$(elapsed_s)s"
 }
 

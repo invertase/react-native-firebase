@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
+
+### Features
+
+- **app, sdk:** bump Firebase iOS SDK to 13.1.0 ([4a1ceaf](https://github.com/invertase/react-native-firebase/commit/4a1ceafa6f914b712aeef5350142abd95597dde6))
+
+### Bug Fixes
+
+- **app, sdk:** bump Firebase iOS SDK to 13.1.1 ([4505c11](https://github.com/invertase/react-native-firebase/commit/4505c1172d731e3a73f8d47cb977c8bc2e6b0f60))
+- **test:** cold-boot Android emulator on ANR and missing package/activity services ([b02ef7f](https://github.com/invertase/react-native-firebase/commit/b02ef7f9d85fc2adcd6b9a19150aebb24040df8d))
+
 ## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
 
 ### ⚠ BREAKING CHANGES

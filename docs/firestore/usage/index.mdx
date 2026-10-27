@@ -470,7 +470,7 @@ getDocs(query(collection(db, 'Users'), where('age', '>=', 18))).then(querySnapsh
 });
 ```
 
-Use the `in` operator to match documents whose field equals any value in a list. `in`, `not-in`, and `array-contains-any` require a non-empty array with at most 30 elements (React Native Firebase checks this before sending the query). For example, to filter users whose `language` field is English (`en`) or French (`fr`):
+Use the `in` operator to match documents whose field equals any value in a list. `in`, `not-in`, and `array-contains-any` require a non-empty array. `in` and `array-contains-any` allow at most 30 elements and `not-in` allows at most 10 (React Native Firebase checks this before sending the query). For example, to filter users whose `language` field is English (`en`) or French (`fr`):
 
 ```js
 import { collection, getDocs, getFirestore, query, where } from '@react-native-firebase/firestore';

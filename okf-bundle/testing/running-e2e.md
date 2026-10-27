@@ -30,6 +30,8 @@ yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote
 
 **Keep host toolchains current.** Android Studio / emulator and Xcode / CocoaPods are expected to track upstream, not be pinned indefinitely. A stale Android Emulator (e.g. 36.2.12.0) can lack CLI flags newer Detox patches rely on (`-crash-report-mode`, requires **≥ 37**, see [detox-patches.md](../ci-workflows/detox-patches.md)) and fail at spawn rather than at test time. When a patch or e2e step breaks only on your host, update the toolchain first — don't reach for a runtime capability probe as the default fix.
 
+**JDK 21+ on `PATH`** for `yarn tests:emulator:start`: `firebase-tools` refuses older Java (`firebase-tools no longer supports Java version before 21`). Same host fix as [`yarn lint:android` § needs JDK 21+](agent-command-policy.md#android-java-format).
+
 <a id="apple-host-toolchain-local"></a>
 
 ### Apple host toolchain (local)
@@ -40,10 +42,16 @@ Align the Mac with [iOS CI workflows § Apple CI toolchain](../ci-workflows/ios.
 |-------------|----------------|
 | **Xcode** | **27** stable (beta fails CI gate; match `xcodebuild -version` major to CI) |
 | **iOS Simulator runtime** | **`iOS 27.0`** — export `RNFB_IOS_SIM_RUNTIME` if your install uses a different label; `yarn tests:e2e:setup-ios-sims` creates devices on that runtime |
+| **Simulator device type** | **`iPhone 17`** (serial device and slot base). If the runtime does not support it (`simctl create` fails `Incompatible device`), export `RNFB_IOS_BASE_SIMULATOR` to a device type that runtime lists as supported, for setup and the Detox run alike |
+| **`xcbeautify`** | Required on `PATH`: Detox iOS `build` pipes `xcodebuild` through it (`xcbeautify: command not found` otherwise). CI version/install: [iOS CI § pinned Homebrew utilities](../ci-workflows/ios.md#pinned-homebrew-utilities) |
 | **Simulator UI** | **Device Hub** from the selected Xcode bundle (`…/Applications/DeviceHub.app`). Do not use `open -a Simulator` / `open -a Device Hub` for CI-parity boot paths — see [iOS CI § simulator reliability](../ci-workflows/ios.md#simulator-reliability) |
 | **Mobile e2e fixtures** | **RN 0.88.0-rc.3**, **Expo 58** (`test-expo/`), same RN line in `tests/` / `test-rn-bare/` — test-fixture pins only; do not document higher consumer Xcode/RN floors than product metadata |
 
 **iOS 26.5** simulators or hosts are **runtime-differential context only** (e.g. Metro hostname quirks in [iOS CI § issue 5](../ci-workflows/ios.md#5-metro-unresponsive-at-launch--waitforactive-hang-active-app)). They do **not** replace **iOS 27** for UIScene launch-smoke gates or Xcode 27 closure — [local Tart lab § not proof](local-ios-e2e-reproduction.md#ios-26-5-not-proof).
+
+<a id="ios-physical-device-signing"></a>
+
+**Physical iOS device builds need the Invertase Apple team.** `tests/ios/testing.xcodeproj` uses automatic signing with `DEVELOPMENT_TEAM = YYX2P3XVJ7` and paid-team entitlements (push, Sign in with Apple, associated domains, keychain group), so a device build on a host without that team fails with `No Account for Team "YYX2P3XVJ7"` / `No profiles for 'io.invertase.testing' were found`. Simulators are unaffected. Options: add an Apple ID that belongs to team `YYX2P3XVJ7` in Xcode → Settings → Accounts, or apply a local-only, never-committed bundle-id/team override (needs a matching `GoogleService-Info.plist` and stripped entitlements). Physical-device runs: [agent command policy § physical-device runs](agent-command-policy.md#physical-device-runs).
 
 **Tart VM lab** (`scripts/tart/`) is [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended); use this runbook, not `run-ephemeral.sh`, for contributor e2e.
 
@@ -1061,6 +1069,12 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 - **macOS** — `log show --predicate 'process == "io.invertase.testing"' --last 10m --style compact`; filter `com.facebook.react.log:javascript` for bundle errors. **Blank window / Jet never connects:** often `Native module NativeRNFBTurboApp is not registered` — [NewArch-AD-2](../new-architecture/architecture-decisions.md#newarch-ad-2--naming-nativernfbturbo--accepted) (web/macOS registry must include turbo keys). Other bundle errors → [other.md](../ci-workflows/other.md)
 - **iOS** — `xcrun simctl spawn booted log stream --level debug --style compact --predicate 'process == "testing"'`; silent hangs: `sample <pid>` on `testing`. Metro redbox **`Requiring unknown module "undefined"`** → [TurboModule stale toolchain](#turbomodule-stale-toolchain-blocking).
 - **Android** — `adb logcat` (filter your tags)
+
+**Crashlytics on-disk report inspection (iOS / Android):**
+
+- **iOS** — pending reports live under the app container's `Library/Caches/com.crashlytics.data/<bundle>/v5/reports/active/<execId>/` (`custom_exception_{a,b}.clsrecord`, `user_incremental_kv.clsrecord`). String fields such as the exception `reason` are **hex-encoded**, so a plain-text grep for the error message gives false negatives — hex-decode, or also match the hex form (e.g. `printf '%s' "$MSG" | xxd -p | tr -d '\n'`). The SDK processes and removes `active/` reports on the next app launch, so inspect before relaunching.
+- **Android** — pending events are **plain JSON** at `files/.crashlytics.v3/<process>/open-sessions/<sessionId>/event<10 digits>`, with custom keys in that session's `keys` file. The next launch — including a background restart by datatransport `JobInfoSchedulerService` — can finalize sessions into `reports/`, so inspect before any relaunch and diff the whole `.crashlytics.v3/` tree rather than one path.
+- **Android `run-as` access** — `adb shell run-as com.invertase.testing` needs a debuggable APK. Making the `tests/android` release build debuggable (to keep the embedded JS bundle without Metro) flips `BuildConfig.DEBUG`, which enables React Native developer support and makes the app expect Metro; also override `getUseDeveloperSupport()` → `false` in `tests/android` `MainApplication`. Both changes are local-only and never committed. Physical-device runs: [agent command policy § physical-device runs](agent-command-policy.md#physical-device-runs).
 
 **Benign noise:** iOS Detox `EXEC_FAIL "xcrun simctl terminate … io.invertase.testing" … found nothing to terminate` — app wasn't running; ignore.
 

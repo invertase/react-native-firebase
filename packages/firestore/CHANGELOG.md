@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
+
+### Bug Fixes
+
+- **firestore:** align query filter limits with Firestore (30 in/or/and, 10 not-in) ([8823f96](https://github.com/invertase/react-native-firebase/commit/8823f968b88098128c9feed6e483a012083b7160))
+
 ## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
 
 ### ⚠ BREAKING CHANGES

@@ -27,7 +27,7 @@ import { AggregateQuery } from './FirestoreAggregate';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import { FieldPath, fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
-import QueryModifiers from './FirestoreQueryModifiers';
+import QueryModifiers, { getInOperatorValueLimit } from './FirestoreQueryModifiers';
 import QuerySnapshot, { type QuerySnapshotNativeData } from './FirestoreQuerySnapshot';
 import {
   parseSnapshotArgs,
@@ -595,9 +595,10 @@ export class Query<
           );
         }
 
-        if ((val as DocumentFieldValueInternal[]).length > 30) {
+        const maxValues = getInOperatorValueLimit(op!);
+        if ((val as DocumentFieldValueInternal[]).length > maxValues) {
           throw new Error(
-            `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${op}' filters support a maximum of 30 elements in the value array.`,
+            `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${op}' filters support a maximum of ${maxValues} elements in the value array.`,
           );
         }
       }

@@ -73,7 +73,7 @@ jobs:
         run: |
           git config --global user.name 'Invertase Publisher'
           git config --global user.email 'oss@invertase.io'
-      - name: Publish Packages
+      - name: Bump package versions
         run: |
           npx envinfo
           echo "Verifying working directory is clean..."
@@ -85,8 +85,43 @@ jobs:
           else
             echo "No changes detected, no versions bumped."
           fi
+        env:
+          # org admin Github Token required for the changelog/tag commit+push
+          # to work via an exception to branch protection rules.
+          # Lerna createRelease: github reads process.env.GH_TOKEN specifically.
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Publish Packages
+        run: |
           echo "Syncing unpublished versions with package registry..."
-          yarn lerna publish from-package --yes --loglevel trace
+          set +e
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            yarn lerna publish from-package --yes --loglevel trace
+          else
+            yarn lerna publish from-package --yes --loglevel trace --dist-tag "${{ github.ref_name }}"
+          fi
+          publish_exit=$?
+          set -e
+          if [ "$publish_exit" -ne 0 ]; then
+            {
+              echo "## Partial publish recovery is achieved by rerunning the exact same publish"
+              echo ""
+              echo "\`lerna publish from-package\` exited with status \`${publish_exit}\`."
+              echo ""
+              echo "A partial publish leaves some packages on the registry and others unpublished."
+              echo "Do not change the dist-tag, package set, or publish command."
+              echo "Recovery is: rerun this same Publish workflow on the same ref."
+              echo "\`from-package\` skips versions already present and publishes the rest."
+              echo ""
+              echo "### Checklist"
+              echo ""
+              echo "- Confirm this failure was during publish (not dirty tree / \`lerna version\`)."
+              echo "- Rerun **Publish** via \`workflow_dispatch\` on the same branch/ref."
+              echo "- Keep the same dist-tag behavior (omitted/\`latest\` on \`main\`; \`github.ref_name\` off \`main\`)."
+              echo "- After success, verify remaining packages appear on the registry under that tag."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit "$publish_exit"
+          fi
         env:
           # Packages are configured on npmjs.com as OIDC Trusted Publisher for this workflow.
           # org admin Github Token required for the changelog/tag commit+push
@@ -98,6 +133,7 @@ jobs:
   deploy-api-reference:
     name: 'Deploy API Reference'
     needs: publish_npm
+    if: success() && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy-api-reference.yml
     permissions:
       contents: read

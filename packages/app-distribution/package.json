@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app-distribution",
-  "version": "27.0.0",
+  "version": "27.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Distribution",
   "main": "./dist/module/index.js",
@@ -44,11 +44,11 @@
     "app-distribution"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "27.0.0",
+    "@react-native-firebase/app": "27.1.0",
     "expo": ">=47.0.0"
   },
   "devDependencies": {
-    "@react-native-firebase/app": "27.0.0",
+    "@react-native-firebase/app": "27.1.0",
     "expo": "^55.0.18",
     "react-native-builder-bob": "^0.41.0"
   },

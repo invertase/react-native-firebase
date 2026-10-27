@@ -180,7 +180,7 @@ end
 # Firebase iOS SDK as a Swift Package dependency.
 #
 # Firebase Apple SDK 13+ is distributed exclusively through SPM and binary
-# zips — CocoaPods trunk stopped at 12.19.0. `$RNFirebaseDisableSPM = true`
+# zips — CocoaPods trunk stopped at 12.19.3. `$RNFirebaseDisableSPM = true`
 # and Expo `disableSPM: true` therefore fail `pod install` / prebuild loudly
 # instead of declaring missing CocoaPods Firebase 13 pods.
 #
