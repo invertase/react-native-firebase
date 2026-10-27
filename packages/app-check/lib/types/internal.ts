@@ -47,9 +47,9 @@ export type AppCheckInternal = AppCheck & {
    *                            Android uses PlayIntegrityProviderFactory for release builds.
    *                            iOS uses DeviceCheckProviderFactory by default unless altered in AppDelegate.m manually
    * @param isTokenAutoRefreshEnabled - If true, enables SDK to automatically
-   * refresh AppCheck token as needed. If undefined, the value will default
-   * to the value of `app.automaticDataCollectionEnabled`. That property
-   * defaults to false and can be set in the app config.
+   * refresh AppCheck token as needed. If not a boolean, it falls back to firebase.json
+   * `app_check_token_auto_refresh`, then firebase.json `app_data_collection_default_enabled`,
+   * then `true`.
    */
   activate(
     siteKeyOrProvider: string | AppCheckProvider,
@@ -57,10 +57,10 @@ export type AppCheckInternal = AppCheck & {
   ): Promise<void>;
 
   /**
-   * Alter the token auto refresh setting. By default it will take the value of automaticDataCollectionEnabled from Info.plist / AndroidManifest.xml
+   * Alter the token auto refresh setting.
    * @param isTokenAutoRefreshEnabled - If true, the SDK automatically
-   * refreshes App Check tokens as needed. This overrides any value set
-   * during `activate()` or taken by default from automaticDataCollectionEnabled in plist / android manifest
+   * refreshes App Check tokens as needed. This overrides the value resolved
+   * during `initializeAppCheck()` / `activate()`.
    */
   setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled: boolean): void;
 

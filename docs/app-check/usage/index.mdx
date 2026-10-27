@@ -300,11 +300,11 @@ const { token } = await appCheckInstance.getToken(true);
 
 ## Automatic Data Collection
 
-App Check has an "tokenAutoRefreshEnabled" setting. This may cause App Check to attempt a remote App Check token fetch prior to user consent. In certain scenarios, like those that exist in GDPR-compliant apps running for the first time, this may be unwanted.
+App Check has a "tokenAutoRefreshEnabled" setting. This may cause App Check to attempt a remote App Check token fetch prior to user consent. In certain scenarios, like those that exist in GDPR-compliant apps running for the first time, this may be unwanted.
 
-You may configure this setting in `firebase.json` such that your desired configuration is in place even before you the react-native javascript bundle begins executing and allows for runtime configuration.
+You may configure this setting with `app_check_token_auto_refresh` in `firebase.json`. On Android, the native module also applies this value as the startup default when it is created, before `initializeAppCheck` runs (in debug builds, this startup default is `false` unless `app_check_token_auto_refresh` is set to `true` in `firebase.json`); on iOS, it only takes effect through the `initializeAppCheck` fallback below.
 
-If unset, the "tokenAutoRefreshEnabled" setting will defer to the app's "automatic data collection" setting, which may be set in `firebase.json`, or if you wish directly in the Info.plist or AndroidManifest.xml according to the Firebase native SDK documentation. Unless otherwise configured, it will default to true implying there will be automatic data collection and app check token refresh attempts.
+On Android and iOS, if `isTokenAutoRefreshEnabled` is omitted from `initializeAppCheck`, it falls back to `app_check_token_auto_refresh` in `firebase.json`, then `app_data_collection_default_enabled` in `firebase.json`, then `true`. Values set only in Info.plist or AndroidManifest.xml are not read by this fallback. On other platforms (macOS, web), this fallback is not applied.
 
 ## Using App Check tokens for non-firebase services
 
