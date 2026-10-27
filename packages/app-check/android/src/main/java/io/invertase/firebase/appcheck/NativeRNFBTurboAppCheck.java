@@ -83,6 +83,15 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
     return enabled;
   }
 
+  static String activateProviderName(boolean isDebuggable) {
+    return isDebuggable ? "debug" : "playIntegrity";
+  }
+
+  // build.gradle stringifies an unset FIREBASE_APP_CHECK_DEBUG_TOKEN env var as "null".
+  static String buildConfigDebugToken(String buildConfigValue) {
+    return "null".equals(buildConfigValue) ? null : buildConfigValue;
+  }
+
   public NativeRNFBTurboAppCheck(ReactApplicationContext reactContext) {
     super(reactContext);
     this.executorService = new TaskExecutorService("UniversalAppCheckModule");
@@ -146,21 +155,21 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
           FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName));
       firebaseAppCheck.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
 
-      if (isAppDebuggable()) {
+      boolean isDebuggable = isAppDebuggable();
+      String debugToken = null;
+      if (isDebuggable) {
         Log.d(LOGTAG, "app is debuggable, configuring AppCheck for testing mode");
-        if (BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN != "null") {
+        debugToken = buildConfigDebugToken(BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN);
+        if (debugToken != null) {
           Log.d(LOGTAG, "debug app check token found in BuildConfig. Installing known token.");
-          providerFactory.configure(appName, "debug", BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN);
         } else {
           Log.d(
               LOGTAG,
               "no debug app check token found in BuildConfig. Check Log for dynamic test token to"
                   + " configure in console.");
-          providerFactory.configure(appName, "debug", null);
         }
-      } else {
-        providerFactory.configure(appName, "safetyNet", null);
       }
+      providerFactory.configure(appName, activateProviderName(isDebuggable), debugToken);
 
       FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName))
           .installAppCheckProviderFactory(providerFactory);
