@@ -297,9 +297,12 @@ function getModularAppCheck(app?: FirebaseApp): AppCheck {
 /**
  * Initializes App Check for the given Firebase app.
  *
- * @remarks Returns synchronously for firebase-js-sdk parity; native provider setup continues in
- * the background. On native platforms use {@link ReactNativeFirebaseAppCheckProvider} to configure
- * Device Check, App Attest, Play Integrity, or debug providers. firebase-js-sdk
+ * @remarks Returns synchronously for firebase-js-sdk parity; provider setup continues in the
+ * background (native SDK, or firebase-js-sdk web interop on macOS and web), and a failure during
+ * that setup is reported with `console.warn` instead of an unhandled promise rejection. Invalid
+ * options still throw synchronously. On native platforms use
+ * {@link ReactNativeFirebaseAppCheckProvider} to configure Device Check, App Attest, Play
+ * Integrity, or debug providers. firebase-js-sdk
  * `ReCaptchaEnterpriseProvider` / `ReCaptchaV3Provider` are **web only** and have no RN equivalent.
  */
 export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions): AppCheck {
@@ -308,7 +311,13 @@ export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions)
   }
   validateProviderName(options);
   const appCheck = getModularAppCheck(app);
-  void (appCheck as AppCheckInternal).initializeAppCheck(options);
+  (appCheck as AppCheckInternal).initializeAppCheck(options).catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    // eslint-disable-next-line no-console
+    console.warn(
+      `initializeAppCheck() could not configure the App Check provider for app '${appCheck.app.name}': ${message}`,
+    );
+  });
   return appCheck;
 }
 
