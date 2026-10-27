@@ -222,6 +222,8 @@ rnfbProvider.configure({
 
 ### Install the Custom Provider
 
+`initializeAppCheck` returns the App Check instance synchronously and provider setup continues in the background: invalid options still throw synchronously, and a failure during provider setup is reported with `console.warn` instead of an unhandled promise rejection.
+
 Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API, while saving the returned instance for usage:
 
 ```javascript
