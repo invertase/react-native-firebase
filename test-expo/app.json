@@ -20,7 +20,14 @@
       "expo-router",
       "expo-dev-client",
       "@react-native-firebase/app",
-      "@react-native-firebase/messaging",
+      [
+        "@react-native-firebase/messaging",
+        {
+          "ios": {
+            "notificationServiceExtension": true
+          }
+        }
+      ],
       "@react-native-firebase/analytics",
       "@react-native-firebase/app-check",
       "@react-native-firebase/auth",

@@ -12,6 +12,37 @@ This is a quick guide to display an image in an incoming notification. Android h
 **🚨 Before you start**
 Be sure you already have Cloud Messaging installed and set up. In case you don't [get started here](/messaging/usage).
 
+## Expo
+
+Expo projects can let the `@react-native-firebase/messaging` config plugin add the extension instead of following the steps below:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/messaging",
+        {
+          "ios": {
+            "notificationServiceExtension": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+On `npx expo prebuild`, the plugin adds a `NotificationServiceExtension` target embedded in the app, with its source and `Info.plist` in `ios/NotificationServiceExtension/`. The extension links `FirebaseMessaging` through Swift Package Manager at the exact Firebase Apple SDK version of `@react-native-firebase/app`, the same package reference `pod install` links `FirebaseCore` into the app with (see [iOS SPM Support](/ios-spm)). Its bundle identifier is `<ios.bundleIdentifier>.NotificationServiceExtension`, and the plugin declares it to EAS Build (`extra.eas.build.experimental.ios.appExtensions`) so that EAS provisions and signs it.
+
+To name the target differently, pass `{ "targetName": "ImageNotification" }` instead of `true`. The name is also the last component of the bundle identifier, so it may only contain letters, digits and hyphens.
+
+iOS hands an app's notifications to a single notification service extension. If another config plugin already adds one (OneSignal's, for example), don't enable this option as well: only one of the two would handle your notifications. Use that extension, or this one, alone.
+
+After turning the option off, run `npx expo prebuild --clean`: like other config plugins' changes, prebuild without `--clean` only adds to the native project, and leaves the target in it.
+
+## React Native CLI
+
 **🏁 Ready to start**
 The following steps will guide you through how to add a new target to your application to support payloads with an image. Open Xcode and let's get started.
 
