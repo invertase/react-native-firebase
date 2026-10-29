@@ -826,7 +826,7 @@ yarn test:full --verbose                    # stream output (default: compact st
 
 <a id="mellifera-spill-overlapping-full"></a>
 
-**Mellifera spill (donated desk slots):** overlapping `yarn test:full --slot N` runs use one worktree per grant. `N` is that grant's [slot index](#e2e-slot-index). Bastion session shape stays in Mellifera — [Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). RNFB maps the grant and runs the suite — [remote spill](#remote-spill). Apply with `yarn tests:mellifera:apply` (`placement: "slot"` and the slot index). Do **not** pass `--clear-whole-host` (kills sibling slots). Overlapping Apple `pod:install` keeps the host-global CocoaPods / trunk CDN risk under [slot lifecycle](#slot-lifecycle). Overlapping verify: [Overlapping verify / Jest](#overlapping-verify-jest).
+**Mellifera spill (donated desk slots):** overlapping `yarn test:full --slot N` runs use one worktree per grant when `--session` is omitted. [Distributed e2e](#distributed-grid) reserves its grants from this one worktree and selects each with `--session`. It does not require another git worktree per grant. `N` is that grant's [slot index](#e2e-slot-index). Bastion session shape stays in Mellifera — [Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). RNFB maps the grant and runs the suite — [remote spill](#remote-spill). Apply with `yarn tests:mellifera:apply` (`placement: "slot"` and the slot index). Do **not** pass `--clear-whole-host` (kills sibling slots). Overlapping Apple `pod:install` keeps the host-global CocoaPods / trunk CDN risk under [slot lifecycle](#slot-lifecycle). Overlapping verify: [Overlapping verify / Jest](#overlapping-verify-jest).
 
 Slotted mode: no e2e retries (fail-fast). Serial mode: up to 3 `:test-cover` attempts per platform. Slotted e2e uses distinct Metro listeners (`tests/` for android+ios, `tests-macos/` for macos) and **three Firebase emulator suites** (one `yarn tests:emulator:start` per platform subshell after `export-slot-env <platform> N`) — no serial Metro switch.
 
@@ -1117,11 +1117,13 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 
 ## Daily path for Mellifera
 
-Mellifera reserves capacity and, on spill, the remote connection. RNFB maps the grant and runs the suite. Tart may host the remote worker. Commands: [Mellifera command policy](agent-command-policy.md#mellifera-command-policy). A present Mellifera config file is not proof the core or federation is ready. Bastion and cluster setup stay in Mellifera [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). Do not restate that procedure.
+Mellifera reserves capacity and, on spill, the remote connection. RNFB maps the grant and runs the suite. A desk spill requests kind `slot` on a donated desk slot. Tart may host a provisioned guest for a self-hosted kind; that guest is not the desk spill. Commands: [Mellifera command policy](agent-command-policy.md#mellifera-command-policy). A present Mellifera config file is not proof the core or federation is ready. Bastion and cluster setup stay in Mellifera [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). Do not restate that procedure.
 
-1. [Local desk](#local-desk) — register, and donate only when this host should serve spill.
+1. [Local desk](#local-desk) — register, and donate only when this host should serve spill. When the local core offers no desk slots, skip register and donate. Do not recreate desk supply, and do not return to a local fit.
 2. [Worktree session](#worktree-session) — reserve, apply, run with `grant.slot`, release on the issuing core.
 3. [Remote spill](#remote-spill) — when the grant checkout mode is remote. A local apply is not that run.
+
+[Distributed grid](#distributed-grid) is three tiers reserved from this worktree. [Simple mode](#mellifera-simple-mode) is a separate kind-`slot` desk proof, not one of those tiers.
 
 <a id="local-desk"></a>
 
@@ -1129,13 +1131,17 @@ Mellifera reserves capacity and, on spill, the remote connection. RNFB maps the 
 
 Start the local core from the Mellifera checkout or its host service. `yarn tests:mellifera:status` and `yarn tests:mellifera:doctor` report each layer; doctor names the next action. Register a caller-chosen subset of the [slot index](#e2e-slot-index) band with `yarn tests:mellifera:register`. Donate a caller-chosen subset of those registered slots with `yarn tests:mellifera:donate`. Local scheduling prefers a free slot that was not donated; a donated slot stays locally usable until a spill takes it. Pass `--retract` through `yarn tests:mellifera:donate` to stop new spill placement. Retract does not preempt a grant already in flight. `yarn tests:mellifera:unregister` drops the desk. Core start does not donate. Desk flags and standing-offer rules: [mellifera-cli § Desk](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#desk).
 
+When the local core offers no desk slots, skip register and donate. Registering or donating recreates desk supply. A free local slot is then preferred, reserve fits on this core, and the reserve does not spill.
+
 <a id="worktree-session"></a>
 
 ### Plane B — worktree session
 
-`yarn tests:mellifera:reserve` is the layered reserve: one call, local supply first, then an existing donated offer. Flags pass through, including `--local-wait-ms`, `--remote-wait-ms`, `--allow-autoscale`, `--no-autoscale`, and `--timeout-ms`. Journey, phases, and failure codes: [mellifera-cli § Layered reserve](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#layered-reserve). When no local slot and no donated offer is available, reserve can fail with `autoscale-not-configured` and no grant — [mellifera-cli § Autoscale stub](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#autoscale-stub). `bare --wait is not a supported command.`
+`yarn tests:mellifera:reserve` is the layered reserve: one call, local supply first, then an existing donated offer. Flags pass through, including `--kinds`, `--url`, `--federation`, `--local-wait-ms`, `--remote-wait-ms`, `--allow-autoscale`, `--no-autoscale`, and `--timeout-ms`. The forwarder leaves argv unchanged and does not insert a kind. A desk spill passes `--kinds slot`. Journey, phases, and failure codes: [mellifera-cli § Layered reserve](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#layered-reserve). Kind `slot` does not enter the autoscale stub. A federation miss for that desk spill is `no-donated-capacity` at phase `spill-existing`, and that miss fails the proof. Kind `macos-self-hosted` is not the desk-spill request. It is the kind for the iOS and macOS e2e grants in the [distributed grid](#distributed-grid). With autoscale allowed, that kind can fail `autoscale-not-configured` instead of waiting on a donated desk — [mellifera-cli § Autoscale stub](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#autoscale-stub). `bare --wait is not a supported command.`
 
-The packed CLI writes the current-worktree pointer under `~/.mellifera/sessions/` (mode 0600) unless `--no-state`. The core lease is authoritative. Two worktrees get two records. `yarn tests:mellifera:session:show` reports `live`, `expired`, or `missing`. `yarn tests:mellifera:session:clear` removes the pointer and does not release. Field list: [mellifera-cli § Worktree session](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#worktree-session). RNFB does not write that record.
+Callers pass `--url` and `--federation`. `--federation` selects `~/.mellifera/<id>/local/`. Do not hard-code the listen port. `MELLIFERA_CLI` points at `scripts/mellifera/cli.js`. The yarn scripts default it there when it is unset.
+
+The packed CLI writes the current-worktree pointer under `~/.mellifera/sessions/` (mode 0600) unless `--no-state`. The core lease is authoritative. Two worktrees get two records. One worktree holds one pointer, and the next `reserve` replaces it. `--session` still selects an earlier grant. `yarn tests:mellifera:session:show` reports `live`, `expired`, or `missing`. `yarn tests:mellifera:session:clear` removes the pointer and does not release. Field list: [mellifera-cli § Worktree session](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#worktree-session). RNFB does not write that record. The session record does not store `connectUrl`. Read `execution.connectUrl` from the reserve JSON on stdout. A `connectUrl` on a session record is not the URL for [simple mode](#mellifera-simple-mode).
 
 `yarn tests:mellifera:reserve-apply` reserves, then maps `placement: "slot"` and `grant.slot` onto runner env. `yarn tests:mellifera:apply` only maps. Generated `tests/mellifera-platform/` input and `tests/mellifera.env.json` are not the session record. `RNFB_MELLIFERA` and the session record do not change [check or release](#host-clear-probes).
 
@@ -1157,12 +1163,12 @@ The packed CLI writes the current-worktree pointer under `~/.mellifera/sessions/
 
 ### Plane C — remote spill
 
-Same reserve. A remote grant has `checkoutMode: remote` and a `connectUrl`. Do not read that URL, open a shell, or copy the Mellifera config file. The remote image supplies node, corepack/yarn, and rsync. A donated worker may be recycled between runs; do not rely on a previous remote tree. Bastion prerequisites: [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb).
+Same reserve. A remote grant has `execution.checkoutMode` `remote` and `execution.connectUrl` on the reserve JSON. Reserve prints the full grant JSON. Read `execution.connectUrl` from that JSON. [Simple mode](#mellifera-simple-mode) sshes from this worktree to that URL and prints the synced `packages/app/package.json` `version`. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. Do not copy the Mellifera config file. When the federation has no offer of the requested kind, the proof fails. Do not name a donor. The remote image supplies node, corepack/yarn, and rsync. A donated worker may be recycled between runs; do not rely on a previous remote tree. Bastion prerequisites: [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb).
 
 `yarn tests:mellifera:exec` is the transport ([mellifera-cli § Exec](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#exec)). It streams stdout and stderr and returns the remote exit status. It does not sync, install, apply, or release.
 
 1. Keep release on the issuing core (`yarn tests:mellifera:release`) on success, command failure, and a dropped remote shell.
-2. `yarn tests:mellifera:remote-sync` copies this checkout to the grant's initial directory. `--rsh` is the resolved CLI plus `exec --rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`.
+2. `yarn tests:mellifera:remote-sync` copies this checkout to the grant's initial directory. Callers pass `--session`, `--url`, and `--federation` before `--rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`. With no `--session`, sync and exec follow the single worktree pointer.
 3. `yarn tests:mellifera:exec -- yarn install --immutable`
 4. On that remote checkout, run the suite with the grant's slot: `yarn tests:mellifera:exec -- yarn test:full --slot N`. Omit `-w` so the command stays in the synced directory. Device inventory, when missing, is the same [setup commands](#e2e-slot-index) through `exec`. The [Law](#slot-lifecycle) is unchanged.
 5. The suite's streamed output and exit status are the result. Log files follow [full suite](#run-full-tests) on the remote host.
@@ -1170,6 +1176,41 @@ Same reserve. A remote grant has `checkoutMode: remote` and a `connectUrl`. Do n
 A local-only apply is not this run. A remote command other than the two exceptions below needs a preceding `yarn tests:mellifera:remote-sync`. Exceptions: an `exec` that is the whole task (a probe; it does not run the suite), and `exec --rsh` while it carries `rsync --server`.
 
 Overlapping grants: [Mellifera spill](#mellifera-spill-overlapping-full).
+
+<a id="distributed-grid"></a>
+
+### Distributed grid
+
+Three tiers. [Simple mode](#mellifera-simple-mode) is separate from these tiers. The reducer for every tier runs in this worktree after the remote pieces and records each piece's exit code. A live run of distributed full or distributed full + link is not required.
+
+**Distributed e2e** is three simultaneous grants from this one worktree:
+
+- Android e2e on kind `linux-nested-virt-self-hosted`
+- iOS e2e, including `yarn tests:ios:ruby`, on kind `macos-self-hosted`
+- macOS e2e on kind `macos-self-hosted`, its own grant
+
+Each piece's sync and exec pass that reserve's `sessionId` as `--session`. On sync the flag is before `--rsh`. The next `reserve` replaces the single worktree pointer. `--session` still selects the earlier grants. This section does not require another git worktree per grant.
+
+**Distributed full** is distributed e2e plus one kind `linux-self-hosted` grant that runs `yarn tests:jest`, `yarn lint`, and `yarn codegen:verify`. `yarn lint` is that linux grant. Ruby lint stays inside the iOS e2e grant via `yarn tests:ios:ruby`.
+
+**Distributed full + link** is distributed full plus `yarn test-expo:ios:link` and `yarn test-rn-bare:ios:build` on kind `macos-self-hosted`.
+
+TypeScript, attw, consumer-types, and typedoc stay outside all three tiers.
+
+<a id="mellifera-simple-mode"></a>
+
+### Simple mode
+
+A kind-`slot` remote desk grant: `execution.checkoutMode` is `remote`, `placement` is `slot`, and `execution.connectUrl` is on the reserve JSON. `phase: local` fails. This proof chooses no Detox suite. It is not a distributed-grid tier. The `yarn lint` exec here is the sync proof on the desk grant. The grid's `yarn lint` stays the `linux-self-hosted` grant in [Distributed grid](#distributed-grid).
+
+Reserve prints the full grant JSON. `rememberGrant` does not store `connectUrl`. A session-record `connectUrl` is not the URL for this proof. `exec` on a phase-local grant returns `remote-exec-unavailable`. When the federation has no offer of kind `slot`, the proof fails. Do not name a donor.
+
+1. `yarn tests:mellifera:reserve` with `--kinds slot`, plus `--url` and `--federation` as in [Plane B](#worktree-session). Save the reserve JSON from stdout. Read `execution.connectUrl` from that JSON. Confirm `execution.checkoutMode` is `remote`, `placement` is `slot`, and `phase` is not `local`.
+2. `yarn tests:mellifera:remote-sync` syncs this checkout onto that slot. Pass that reserve's `sessionId` as `--session` before `--rsh`, with the same `--url` and `--federation`.
+3. `yarn tests:mellifera:exec` with that `--session`, `--url`, and `--federation`, then `-- yarn lint`, exits 0. That exit is the remote command's exit.
+4. The `version` field in the synced `packages/app/package.json` on the slot equals the same field in this worktree.
+5. One log file from the slot is present in this worktree. It arrived as saved `exec` stdout or by rsync over `exec --rsh`. Its contents match the remote file.
+6. From this worktree, `ssh` to the reserve JSON `execution.connectUrl` and print that same `version`. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. The local ssh exit equals the remote command's exit. The printed version equals step 4.
 
 ## Before merge (PR handoff)
 

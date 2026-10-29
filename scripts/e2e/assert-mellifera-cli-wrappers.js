@@ -26,11 +26,7 @@ const CLI_WORDS = [
   ['tests:mellifera:register', ['register'], ['--slots', '1']],
   ['tests:mellifera:unregister', ['unregister'], ['--worker-id', 'desk-a']],
   ['tests:mellifera:donate', ['donate'], ['--retract', '--slots', '1']],
-  [
-    'tests:mellifera:reserve',
-    ['reserve'],
-    ['--kinds=desk-slot', '--no-state', '--local-wait-ms', '0'],
-  ],
+  ['tests:mellifera:reserve', ['reserve'], ['--kinds=slot', '--no-state', '--local-wait-ms', '0']],
   ['tests:mellifera:session:show', ['session', 'show'], ['--session-id', 'abc']],
   ['tests:mellifera:session:clear', ['session', 'clear'], ['--release']],
   ['tests:mellifera:exec', ['exec'], ['--', 'echo', 'marker']],
@@ -90,10 +86,14 @@ function resolveBuiltCli() {
     return explicit;
   }
   const found = which('mellifera-cli');
-  if (!found) {
-    fail('built mellifera-cli is not on PATH; set PATH or MELLIFERA_BUILT_CLI');
+  if (found) {
+    return found;
   }
-  return found;
+  const vendored = path.join(REPO_ROOT, 'scripts', 'mellifera', 'cli.js');
+  if (fs.existsSync(vendored)) {
+    return vendored;
+  }
+  fail('built mellifera-cli is not on PATH; set PATH or MELLIFERA_BUILT_CLI');
 }
 
 function listenClosedPort() {
@@ -265,7 +265,7 @@ function assertReserveApply(env, stubLog) {
   ];
   const saved = outputs.map(file => [file, snapshotFile(file)]);
   clearLog(stubLog);
-  const user = ['--kinds=desk-slot', '--no-state', '--local-wait-ms', '0'];
+  const user = ['--kinds=slot', '--no-state', '--local-wait-ms', '0'];
   try {
     const result = runYarn('tests:mellifera:reserve-apply', user, env);
     if (result.status !== 0) {
@@ -375,7 +375,7 @@ async function assertClosedPort(baseEnv, builtCli) {
   });
   const reserve = runYarn(
     'tests:mellifera:reserve',
-    ['--no-config', '--url', `http://127.0.0.1:${port}`, '--kinds', 'desk-slot', '--no-state'],
+    ['--no-config', '--url', `http://127.0.0.1:${port}`, '--kinds', 'slot', '--no-state'],
     env,
   );
   const reserveText = `${reserve.stdout}\n${reserve.stderr}`;
