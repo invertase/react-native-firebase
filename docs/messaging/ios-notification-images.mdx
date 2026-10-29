@@ -37,6 +37,8 @@ On `npx expo prebuild`, the plugin adds a `NotificationServiceExtension` target 
 
 To name the target differently, pass `{ "targetName": "ImageNotification" }` instead of `true`. The name is also the last component of the bundle identifier, so it may only contain letters, digits and hyphens.
 
+After turning the option off, run `npx expo prebuild --clean`: like other config plugins' changes, prebuild without `--clean` only adds to the native project, and leaves the target in it.
+
 ## React Native CLI
 
 **🏁 Ready to start**

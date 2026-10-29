@@ -388,7 +388,7 @@ export const withNotificationServiceExtensionIos: ConfigPlugin<PluginConfigType 
   return withXcodeProject(config, config => {
     config.modResults = addNotificationServiceExtension(config.modResults, {
       ...extension,
-      developmentTeam: (config.ios as { appleTeamId?: string } | undefined)?.appleTeamId,
+      developmentTeam: config.ios?.appleTeamId,
     });
     return config;
   });
