@@ -128,6 +128,37 @@ describe('Config Plugin iOS Tests - notificationServiceExtension', () => {
       ).toBe(true);
     });
 
+    it('embeds the extension in PlugIns when the app target already copies other files', () => {
+      // `addTarget` puts the product in the project's first "Copy Files" phase, whatever its destination.
+      const project = readProject();
+      const [appUuid] = findTarget(project, 'HelloWorld')!;
+      project.addBuildPhase([], 'PBXCopyFilesBuildPhase', 'Copy Files', appUuid, 'frameworks');
+      addNotificationServiceExtension(project, EXTENSION);
+
+      const [, extension] = findTarget(project, DEFAULT_TARGET_NAME)!;
+      const [, app] = findTarget(project, 'HelloWorld')!;
+      const buildFiles = project.pbxBuildFileSection();
+      const copyPhases = project.hash.project.objects.PBXCopyFilesBuildPhase;
+      const embeddingPhases = entries(project, 'PBXCopyFilesBuildPhase').filter(([, phase]) =>
+        phase.files.some(
+          ({ value }: { value: string }) =>
+            buildFiles[value].fileRef === extension.productReference,
+        ),
+      );
+      expect(embeddingPhases).toHaveLength(1);
+      const [[embedUuid, embed]] = embeddingPhases;
+      expect(embed.dstSubfolderSpec).toBe(13);
+      expect(embed.files).toHaveLength(1);
+      expect(app.buildPhases.some(({ value }: { value: string }) => value === embedUuid)).toBe(
+        true,
+      );
+      expect(
+        app.buildPhases.filter(
+          ({ value }: { value: string }) => copyPhases[value]?.dstSubfolderSpec === 13,
+        ),
+      ).toHaveLength(1);
+    });
+
     it('compiles NotificationService.swift in the extension', () => {
       const project = addNotificationServiceExtension(readProject(), EXTENSION);
 
@@ -249,6 +280,7 @@ describe('Config Plugin iOS Tests - notificationServiceExtension', () => {
       expect(phaseOf(project, extension, 'PBXFrameworksBuildPhase').files).toHaveLength(1);
       const [, app] = findTarget(project, 'HelloWorld')!;
       expect(app.dependencies).toHaveLength(1);
+      expect(phaseOf(project, app, 'PBXCopyFilesBuildPhase').files).toHaveLength(1);
     });
 
     it('writes a project that parses back with the extension', () => {

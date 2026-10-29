@@ -239,6 +239,49 @@ function linkFirebaseMessaging(project: XcodeProject, targetUuid: string, target
   });
 }
 
+/** `dstSubfolderSpec` of a Copy Files phase whose destination is PlugIns, where app extensions are embedded. */
+const PLUGINS_FOLDER = 13;
+
+/**
+ * Embeds the extension's product in the app target's PlugIns phase, and in no other Copy Files phase: `addTarget`
+ * puts it in the first phase named "Copy Files" of the project, whatever its target and destination.
+ */
+function embedInApp(project: XcodeProject, app: { uuid: string; target: any }, extension: any) {
+  const copyPhases = project.hash.project.objects.PBXCopyFilesBuildPhase ?? {};
+  const buildFiles = project.pbxBuildFileSection();
+  const isProduct = ({ value }: { value: string }) =>
+    buildFiles[value]?.fileRef === extension.productReference;
+
+  const embedUuid =
+    app.target.buildPhases
+      .map(({ value }: { value: string }) => value)
+      .find((uuid: string) => Number(copyPhases[uuid]?.dstSubfolderSpec) === PLUGINS_FOLDER) ??
+    project.addBuildPhase(
+      [],
+      'PBXCopyFilesBuildPhase',
+      'Embed Foundation Extensions',
+      app.uuid,
+      'app_extension',
+    ).uuid;
+
+  // Moves the product's build files out of the other phases, keeping one in the PlugIns phase.
+  const moved: { value: string; comment: string }[] = [];
+  for (const uuid of Object.keys(copyPhases).filter(key => isUuid(key) && key !== embedUuid)) {
+    const phase = copyPhases[uuid];
+    moved.push(...phase.files.filter(isProduct));
+    phase.files = phase.files.filter((file: { value: string }) => !isProduct(file));
+  }
+  // Read again: `addBuildPhase` creates the section when the project has none.
+  const embed = project.hash.project.objects.PBXCopyFilesBuildPhase[embedUuid];
+  if (!embed.files.some(isProduct) && moved.length) {
+    embed.files.push(moved.shift()!);
+  }
+  for (const { value } of moved) {
+    delete buildFiles[value];
+    delete buildFiles[`${value}_comment`];
+  }
+}
+
 /**
  * Adds the Notification Service Extension target to the Xcode project, embedded in the app target, or updates
  * the one a previous prebuild added. Expects the files written by {@link writeNotificationServiceExtensionFiles}.
@@ -289,6 +332,10 @@ export function addNotificationServiceExtension(
     app
       ? buildConfigurations(project, app.target).find(config => config.name === name)?.buildSettings
       : undefined;
+
+  if (app) {
+    embedInApp(project, app, extension.target);
+  }
 
   for (const config of buildConfigurations(project, extension.target)) {
     const settings = config.buildSettings;
