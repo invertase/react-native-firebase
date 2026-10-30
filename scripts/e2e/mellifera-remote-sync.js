@@ -6,7 +6,8 @@
  * The remote directory is `mellifera-work/<name>`, relative to the remote
  * start directory. `<name>` is `--dest DIR` when given, else the `--session`
  * id, else the `sessionId` that `<cli> session show` reports for this
- * worktree. `--dest` must be relative, must not contain `.` or `..` segments,
+ * worktree. That last source must report `status` `live`; any other status
+ * exits 1 before any exec. `--dest` must be relative, must not contain `.` or `..` segments,
  * and each segment uses only letters, digits, `.`, `_`, and `-`.
  *
  * The directory is created first with `<cli> exec ... -- mkdir -p -- DIR`,
@@ -177,6 +178,9 @@ function sessionFromRecord() {
   const id = report && typeof report.sessionId === 'string' ? report.sessionId : '';
   if (!id) {
     fail('no worktree session id from session show; pass --session ID or --dest DIR');
+  }
+  if (report.status !== 'live') {
+    fail(`session ${id} is ${report.status || 'not live'}; reserve again`);
   }
   return id;
 }

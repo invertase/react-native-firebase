@@ -329,7 +329,7 @@ After apply, run the canonical commands in [running e2e](running-e2e.md) (`yarn 
 
 A remote command needs a preceding `yarn tests:mellifera:remote-sync` of the current source. A local-only apply is not remote execution. Two exceptions: an `exec` that is the whole task, and `exec --rsh` while it carries `rsync --server` (that invocation is the sync transport). Release stays on the issuing core. Multi-slot sessions never use `--clear-whole-host`.
 
-`yarn tests:mellifera:remote-sync` rsyncs this checkout into `mellifera-work/<name>` under the remote grant's initial directory, never into that directory itself. `<name>` is `--dest DIR` (relative, no `.` or `..` segments), else the `--session` id, else the worktree pointer's session id. It prints that directory on stdout; exec on the synced tree passes it as `-w DIR` before `--`. `--rsh` is the resolved CLI plus `exec --rsh`. `--filter FILE` selects the merge filter; when omitted, the filter is `scripts/e2e/mellifera-remote-sync.rsync-filter`.
+`yarn tests:mellifera:remote-sync` rsyncs this checkout into `mellifera-work/<name>` under the remote grant's initial directory, never into that directory itself. `<name>` is `--dest DIR` (relative, no `.` or `..` segments), else the `--session` id, else the worktree pointer's session id, which must be `live` in `session show` (otherwise it exits 1 with `session <id> is <status>; reserve again`). It prints that directory on stdout; exec on the synced tree passes it as `-w DIR` before `--`. `--rsh` is the resolved CLI plus `exec --rsh`. `--filter FILE` selects the merge filter; when omitted, the filter is `scripts/e2e/mellifera-remote-sync.rsync-filter`.
 
 | Intent | Command | Never use instead |
 | --- | --- | --- |

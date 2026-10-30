@@ -405,6 +405,9 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
         `${label} did not fail in remote-sync (exit ${result.status})\nstderr: ${result.stderr}`,
       );
     }
+    if (options.stderr && !`${result.stderr}`.includes(options.stderr)) {
+      fail(`${label} stderr lacks ${JSON.stringify(options.stderr)}\nstderr: ${result.stderr}`);
+    }
     if (result.stdout.trim() !== '') {
       fail(`${label} printed to stdout: ${result.stdout}`);
     }
@@ -475,6 +478,15 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
   expectFail('dest unsafe characters', ['--dest', 'a b']);
   expectFail('session unsafe name', ['--session', 'a/b']);
   expectFail('session show without id', [], { env: { ...env, STUB_SESSION_ID: '' } });
+  check('live session record', [], DEFAULT_FILTER, [], 'mellifera-work/s-pointer', {
+    env: { ...pointerEnv, STUB_SESSION_STATUS: 'live' },
+    sessionShow: true,
+  });
+  expectFail('expired session record', [], {
+    env: { ...pointerEnv, STUB_SESSION_STATUS: 'expired' },
+    status: 1,
+    stderr: 'session s-pointer is expired; reserve again',
+  });
   expectFail('remote mkdir fails', ['--session', session], {
     env: { ...env, STUB_MKDIR_EXIT: '7' },
     status: 7,
@@ -598,8 +610,9 @@ if (argv[0] === 'reserve') {
 }
 if (argv[0] === 'session' && argv[1] === 'show' && process.env.STUB_SESSION_ID !== undefined) {
   const id = process.env.STUB_SESSION_ID;
-  process.stdout.write(JSON.stringify(id ? { status: 'live', sessionId: id } : { status: 'missing' }) + '\\n');
-  process.exit(id ? 0 : 1);
+  const status = id ? process.env.STUB_SESSION_STATUS || 'live' : 'missing';
+  process.stdout.write(JSON.stringify(id ? { status, sessionId: id } : { status }) + '\\n');
+  process.exit(status === 'live' ? 0 : 1);
 }
 if (argv[0] === 'exec' && argv.includes('mkdir') && process.env.STUB_MKDIR_EXIT) {
   process.exit(Number(process.env.STUB_MKDIR_EXIT));
