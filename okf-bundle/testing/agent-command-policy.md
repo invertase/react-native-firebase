@@ -329,7 +329,7 @@ After apply, run the canonical commands in [running e2e](running-e2e.md) (`yarn 
 
 A remote command needs a preceding `yarn tests:mellifera:remote-sync` of the current source. A local-only apply is not remote execution. Two exceptions: an `exec` that is the whole task, and `exec --rsh` while it carries `rsync --server` (that invocation is the sync transport). Release stays on the issuing core. Multi-slot sessions never use `--clear-whole-host`.
 
-`yarn tests:mellifera:remote-sync` rsyncs this checkout to the remote grant's initial directory. `--rsh` is the resolved CLI plus `exec --rsh`. `--filter FILE` selects the merge filter; when omitted, the filter is `scripts/e2e/mellifera-remote-sync.rsync-filter`.
+`yarn tests:mellifera:remote-sync` rsyncs this checkout into `mellifera-work/<name>` under the remote grant's initial directory, never into that directory itself. `<name>` is `--dest DIR` (relative, no `.` or `..` segments), else the `--session` id, else the worktree pointer's session id. It prints that directory on stdout; exec on the synced tree passes it as `-w DIR` before `--`. `--rsh` is the resolved CLI plus `exec --rsh`. `--filter FILE` selects the merge filter; when omitted, the filter is `scripts/e2e/mellifera-remote-sync.rsync-filter`.
 
 | Intent | Command | Never use instead |
 | --- | --- | --- |
@@ -344,7 +344,7 @@ A remote command needs a preceding `yarn tests:mellifera:remote-sync` of the cur
 | Map a slot grant onto runner env | `yarn tests:mellifera:apply` | bare `mellifera-cli`; treating apply as remote execution |
 | Reserve, then map the grant | `yarn tests:mellifera:reserve-apply` | splitting or rewriting flags; adding a deadline; `bare --wait` (not a supported command) |
 | Sync the current source to the remote grant | `yarn tests:mellifera:remote-sync` | reading a grant URL; sftp or scp; a shim in front of `exec --rsh`; a local destination |
-| Run a command on the remote grant | `yarn tests:mellifera:exec -- <command>` | a remote command with no preceding remote-sync; an agent-opened remote shell |
+| Run a command on the remote grant | `yarn tests:mellifera:exec -- <command>`; on the synced tree `yarn tests:mellifera:exec -w DIR -- <command>` | a remote command with no preceding remote-sync; an agent-opened remote shell |
 | Release on the issuing core | `yarn tests:mellifera:release` | releasing through a different core |
 | Wrapper pass-through check | `yarn tests:mellifera:assert-cli-wrappers` | a hand-rolled HTTP probe of the local core |
 | Apply mapping check | `yarn tests:mellifera:assert-apply-reservation` | a fixed slot list treated as the product band |

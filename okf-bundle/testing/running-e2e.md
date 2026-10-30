@@ -1168,9 +1168,9 @@ Same reserve. A remote grant has `execution.checkoutMode` `remote` and `executio
 `yarn tests:mellifera:exec` is the transport ([mellifera-cli § Exec](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#exec)). It streams stdout and stderr and returns the remote exit status. It does not sync, install, apply, or release.
 
 1. Keep release on the issuing core (`yarn tests:mellifera:release`) on success, command failure, and a dropped remote shell.
-2. `yarn tests:mellifera:remote-sync` copies this checkout to the grant's initial directory. Callers pass `--session`, `--url`, and `--federation` before `--rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`. With no `--session`, sync and exec follow the single worktree pointer.
-3. `yarn tests:mellifera:exec -- yarn install --immutable`
-4. On that remote checkout, run the suite with the grant's slot: `yarn tests:mellifera:exec -- yarn test:full --slot N`. Omit `-w` so the command stays in the synced directory. Device inventory, when missing, is the same [setup commands](#e2e-slot-index) through `exec`. The [Law](#slot-lifecycle) is unchanged.
+2. `yarn tests:mellifera:remote-sync` copies this checkout into `mellifera-work/<name>` under the grant's initial directory, never into the initial directory itself (on a desk slot that is the desk login's home). `<name>` is `--dest DIR` when passed (relative; `.`, `..`, and absolute paths are refused), else the `--session` id, else the worktree pointer's session id. It creates that directory with `exec mkdir -p` first, then prints it as the only stdout line. Callers pass `--session`, `--url`, and `--federation` before `--rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`. With no `--session`, sync and exec follow the single worktree pointer.
+3. `yarn tests:mellifera:exec -w DIR -- yarn install --immutable`, where `DIR` is the directory sync printed. Put `-w DIR` before `--`; after `--` it is part of the remote command.
+4. On that remote checkout, run the suite with the grant's slot: `yarn tests:mellifera:exec -w DIR -- yarn test:full --slot N`. Every exec on the synced tree passes `-w DIR`. Device inventory, when missing, is the same [setup commands](#e2e-slot-index) through `exec -w DIR`. The [Law](#slot-lifecycle) is unchanged.
 5. The suite's streamed output and exit status are the result. Log files follow [full suite](#run-full-tests) on the remote host.
 
 A local-only apply is not this run. A remote command other than the two exceptions below needs a preceding `yarn tests:mellifera:remote-sync`. Exceptions: an `exec` that is the whole task (a probe; it does not run the suite), and `exec --rsh` while it carries `rsync --server`.
@@ -1189,7 +1189,7 @@ Three tiers. [Simple mode](#mellifera-simple-mode) is separate from these tiers.
 - iOS e2e, including `yarn tests:ios:ruby`, on kind `macos-self-hosted`
 - macOS e2e on kind `macos-self-hosted`, its own grant
 
-Each piece's sync and exec pass that reserve's `sessionId` as `--session`. On sync the flag is before `--rsh`. The next `reserve` replaces the single worktree pointer. `--session` still selects the earlier grants. This section does not require another git worktree per grant.
+Each piece's sync and exec pass that reserve's `sessionId` as `--session`. On sync the flag is before `--rsh`. Each piece's exec also passes `-w` with the directory that piece's sync printed. The next `reserve` replaces the single worktree pointer. `--session` still selects the earlier grants. This section does not require another git worktree per grant.
 
 **Distributed full** is distributed e2e plus one kind `linux-self-hosted` grant that runs `yarn tests:jest`, `yarn lint`, and `yarn codegen:verify`. `yarn lint` is that linux grant. Ruby lint stays inside the iOS e2e grant via `yarn tests:ios:ruby`.
 
@@ -1206,11 +1206,11 @@ A kind-`slot` remote desk grant: `execution.checkoutMode` is `remote`, `placemen
 Reserve prints the full grant JSON. `rememberGrant` does not store `connectUrl`. A session-record `connectUrl` is not the URL for this proof. `exec` on a phase-local grant returns `remote-exec-unavailable`. When the federation has no offer of kind `slot`, the proof fails. Do not name a donor.
 
 1. `yarn tests:mellifera:reserve` with `--kinds slot`, plus `--url` and `--federation` as in [Plane B](#worktree-session). Save the reserve JSON from stdout. Read `execution.connectUrl` from that JSON. Confirm `execution.checkoutMode` is `remote`, `placement` is `slot`, and `phase` is not `local`.
-2. `yarn tests:mellifera:remote-sync` syncs this checkout onto that slot. Pass that reserve's `sessionId` as `--session` before `--rsh`, with the same `--url` and `--federation`.
-3. `yarn tests:mellifera:exec` with that `--session`, `--url`, and `--federation`, then `-- yarn lint`, exits 0. That exit is the remote command's exit.
-4. The `version` field in the synced `packages/app/package.json` on the slot equals the same field in this worktree.
+2. `yarn tests:mellifera:remote-sync` syncs this checkout onto that slot, into `mellifera-work/<sessionId>` under the desk login's home. Pass that reserve's `sessionId` as `--session` before `--rsh`, with the same `--url` and `--federation`. Save the directory it prints (`DIR`).
+3. `yarn tests:mellifera:exec` with that `--session`, `--url`, and `--federation`, then `-w DIR -- yarn lint`, exits 0. That exit is the remote command's exit.
+4. The `version` field in the synced `DIR/packages/app/package.json` on the slot equals the same field in this worktree.
 5. One log file from the slot is present in this worktree. It arrived as saved `exec` stdout or by rsync over `exec --rsh`. Its contents match the remote file.
-6. From this worktree, `ssh` to the reserve JSON `execution.connectUrl` and print that same `version`. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. The local ssh exit equals the remote command's exit. The printed version equals step 4.
+6. From this worktree, `ssh` to the reserve JSON `execution.connectUrl` and print that same `version` from `DIR/packages/app/package.json`. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. The local ssh exit equals the remote command's exit. The printed version equals step 4.
 
 ## Before merge (PR handoff)
 

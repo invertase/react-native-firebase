@@ -6,7 +6,10 @@
  * to the mapper.
  * remote-sync uses rsync --rsh "<cli> exec --rsh" when no session, url, or
  * federation flag is passed. Those caller flags are placed before --rsh in
- * caller order. The destination is a remote placeholder.
+ * caller order. The destination is mellifera-work/<name> on a remote
+ * placeholder, created first by exec mkdir, never the remote start directory.
+ * A smoke run syncs into a fake remote start directory that already holds
+ * unrelated files, then runs exec -w on the printed directory.
  * Run: yarn tests:mellifera:assert-cli-wrappers
  */
 'use strict';
@@ -311,10 +314,12 @@ function rsyncArgValue(argv, flag) {
 }
 
 function assertRemoteSync(env, stubLog, rsyncLog) {
-  function check(label, yarnArgs, filterPath, forwarded = []) {
+  const pointerEnv = { ...env, STUB_SESSION_ID: 's-pointer' };
+
+  function check(label, yarnArgs, filterPath, forwarded, remoteDir, options = {}) {
     clearLog(stubLog);
     clearLog(rsyncLog);
-    const result = runYarn('tests:mellifera:remote-sync', yarnArgs, env);
+    const result = runYarn('tests:mellifera:remote-sync', yarnArgs, options.env || env);
     const rsyncCalls = readJsonLines(rsyncLog);
     const stubCalls = readJsonLines(stubLog);
     if (rsyncCalls.length !== 1) {
@@ -322,10 +327,16 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
         `${label} rsync calls ${rsyncCalls.length} (exit ${result.status})\nstderr: ${result.stderr}`,
       );
     }
+    if (result.status === 0 || result.stdout.trim() !== '') {
+      fail(`${label} printed a directory without a completed sync: ${JSON.stringify(result)}`);
+    }
     const argv = rsyncCalls[0];
     const destination = argv[argv.length - 1];
-    if (destination !== 'placeholder:.') {
-      fail(`${label} destination is not the remote placeholder: ${destination}`);
+    if (destination !== `placeholder:${remoteDir}`) {
+      fail(`${label} destination is not ${remoteDir} on the remote placeholder: ${destination}`);
+    }
+    if (destination === 'placeholder:.' || !remoteDir.startsWith('mellifera-work/')) {
+      fail(`${label} destination is the remote start directory: ${destination}`);
     }
     if (!destination.includes(':') || destination.includes('@')) {
       fail(`${label} destination is local or has a user: ${destination}`);
@@ -352,38 +363,70 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     if (filterPath !== DEFAULT_FILTER && filterArg.includes(DEFAULT_FILTER)) {
       fail(`${label} used the default filter and the caller filter`);
     }
-    if (stubCalls.length !== 1) {
+    const expectedCalls = options.sessionShow ? 3 : 2;
+    if (stubCalls.length !== expectedCalls) {
       fail(`${label} stub calls: ${JSON.stringify(stubCalls)}\nrsync stderr: ${result.stderr}`);
     }
-    const stubArgv = stubCalls[0];
+    if (options.sessionShow) {
+      assertDeepEqual(`${label} session show`, stubCalls[0], ['session', 'show']);
+    }
+    const [mkdirArgv, stubArgv] = stubCalls.slice(expectedCalls - 2);
+    assertDeepEqual(`${label} remote mkdir`, mkdirArgv, [
+      'exec',
+      ...forwarded,
+      '--',
+      'mkdir',
+      '-p',
+      '--',
+      remoteDir,
+    ]);
     const stubHead = ['exec', ...forwarded, '--rsh', 'placeholder', 'rsync', '--server'];
     assertDeepEqual(`${label} stub prefix`, stubArgv.slice(0, stubHead.length), stubHead);
     if (stubArgv.includes('--')) {
       fail(`${label} stub argv inserted -- before the remote command: ${JSON.stringify(stubArgv)}`);
     }
+    if (stubArgv[stubArgv.length - 1] !== remoteDir) {
+      fail(`${label} rsync server path is not ${remoteDir}: ${JSON.stringify(stubArgv)}`);
+    }
   }
 
-  function expectFail(label, yarnArgs) {
+  function expectFail(label, yarnArgs, options = {}) {
     clearLog(stubLog);
     clearLog(rsyncLog);
-    const result = runYarn('tests:mellifera:remote-sync', yarnArgs, env);
+    const result = runYarn('tests:mellifera:remote-sync', yarnArgs, options.env || env);
     if (result.status === 0) {
       fail(`${label} exited 0\nstdout: ${result.stdout}\nstderr: ${result.stderr}`);
+    }
+    if (options.status !== undefined && result.status !== options.status) {
+      fail(`${label} exited ${result.status}, expected ${options.status}`);
     }
     if (!`${result.stderr}`.includes('mellifera-remote-sync:')) {
       fail(
         `${label} did not fail in remote-sync (exit ${result.status})\nstderr: ${result.stderr}`,
       );
     }
+    if (result.stdout.trim() !== '') {
+      fail(`${label} printed to stdout: ${result.stdout}`);
+    }
     if (readJsonLines(rsyncLog).length !== 0) {
       fail(`${label} spawned rsync`);
     }
+    const execCalls = readJsonLines(stubLog).filter(call => call[0] === 'exec');
+    if (execCalls.length !== (options.execCalls || 0)) {
+      fail(`${label} exec calls: ${JSON.stringify(execCalls)}`);
+    }
   }
 
-  check('default filter', [], DEFAULT_FILTER);
+  check('default filter', [], DEFAULT_FILTER, [], 'mellifera-work/s-pointer', {
+    env: pointerEnv,
+    sessionShow: true,
+  });
   const custom = path.join(path.dirname(rsyncLog), 'caller.rsync-filter');
   fs.writeFileSync(custom, '# caller filter\n- *.tmp\n');
-  check('caller filter', ['--filter', custom], custom);
+  check('caller filter', ['--filter', custom], custom, [], 'mellifera-work/s-pointer', {
+    env: pointerEnv,
+    sessionShow: true,
+  });
   const session = 'sess-wrap';
   const url = 'http://127.0.0.1:9';
   const federation = 'fed-wrap';
@@ -393,6 +436,7 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     ['--url', url, '--filter', custom, '--federation', federation, '--session', session],
     custom,
     forwarded,
+    `mellifera-work/${session}`,
   );
   const equalsForwarded = [`--session=${session}`, `--url=${url}`, `--federation=${federation}`];
   check(
@@ -400,7 +444,18 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     ['--filter', custom, ...equalsForwarded],
     custom,
     equalsForwarded,
+    `mellifera-work/${session}`,
   );
+  check(
+    'caller dest',
+    ['--dest', 'rnfb/run-1', '--session', session],
+    DEFAULT_FILTER,
+    ['--session', session],
+    'mellifera-work/rnfb/run-1',
+  );
+  check('caller dest equals', ['--dest=run-2/'], DEFAULT_FILTER, [], 'mellifera-work/run-2', {
+    env: pointerEnv,
+  });
   expectFail('unknown arg', ['--kinds', 'slot']);
   expectFail('session missing', ['--session']);
   expectFail('url missing', ['--url']);
@@ -408,6 +463,71 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
   expectFail('session empty equals', ['--session=']);
   expectFail('url empty equals', ['--url=']);
   expectFail('federation empty equals', ['--federation=']);
+  expectFail('dest missing', ['--dest']);
+  expectFail('dest empty equals', ['--dest=']);
+  expectFail('dest twice', ['--dest', 'a', '--dest', 'b']);
+  expectFail('dest absolute', ['--dest', '/tmp/rnfb']);
+  expectFail('dest home', ['--dest', '~/rnfb']);
+  expectFail('dest parent', ['--dest', '../rnfb']);
+  expectFail('dest escaping', ['--dest', 'a/../../rnfb']);
+  expectFail('dest trailing parent', ['--dest=a/..']);
+  expectFail('dest start directory', ['--dest', '.']);
+  expectFail('dest unsafe characters', ['--dest', 'a b']);
+  expectFail('session unsafe name', ['--session', 'a/b']);
+  expectFail('session show without id', [], { env: { ...env, STUB_SESSION_ID: '' } });
+  expectFail('remote mkdir fails', ['--session', session], {
+    env: { ...env, STUB_MKDIR_EXIT: '7' },
+    status: 7,
+    execCalls: 1,
+  });
+}
+
+function assertRemoteSyncSmoke(env, stubLog, home) {
+  const remote = fs.mkdtempSync(path.join(home, 'remote-start-'));
+  fs.mkdirSync(path.join(remote, 'packages'));
+  const donorFile = path.join(remote, 'packages', 'unrelated.txt');
+  fs.writeFileSync(donorFile, 'unrelated remote file\n');
+  const filter = path.join(home, 'smoke.rsync-filter');
+  fs.writeFileSync(filter, '+ packages/\n+ packages/app/\n+ packages/app/package.json\n- *\n');
+  const smokeEnv = { ...env, FAKE_REMOTE_ROOT: remote };
+  const session = 'sess-smoke';
+  const remoteDir = `mellifera-work/${session}`;
+  const localPackage = fs.readFileSync(path.join(REPO_ROOT, 'packages/app/package.json'), 'utf8');
+
+  for (const pass of ['first', 'repeat']) {
+    clearLog(stubLog);
+    const sync = runYarn(
+      'tests:mellifera:remote-sync',
+      ['--session', session, '--filter', filter],
+      smokeEnv,
+    );
+    if (sync.status !== 0) {
+      fail(`smoke ${pass} sync exited ${sync.status}\nstderr: ${sync.stderr}`);
+    }
+    assertDeepEqual(`smoke ${pass} stdout`, sync.stdout.split('\n'), [remoteDir, '']);
+  }
+  assertDeepEqual('smoke remote start entries', fs.readdirSync(remote).sort(), [
+    'mellifera-work',
+    'packages',
+  ]);
+  const unrelated = fs.readdirSync(path.join(remote, 'packages'));
+  assertDeepEqual('smoke unrelated packages entries', unrelated, ['unrelated.txt']);
+  if (fs.readFileSync(donorFile, 'utf8') !== 'unrelated remote file\n') {
+    fail('smoke sync changed an unrelated file in the remote start directory');
+  }
+  const synced = path.join(remote, remoteDir, 'packages/app/package.json');
+  if (!fs.existsSync(synced) || fs.readFileSync(synced, 'utf8') !== localPackage) {
+    fail(`smoke sync did not place packages/app/package.json under ${remoteDir}`);
+  }
+
+  clearLog(stubLog);
+  const execArgs = ['--session', session, '-w', remoteDir, '--', 'cat'];
+  execArgs.push('packages/app/package.json');
+  const exec = runYarn('tests:mellifera:exec', execArgs, smokeEnv);
+  if (exec.status !== 0 || exec.stdout !== localPackage) {
+    fail(`smoke exec -w did not run in ${remoteDir} (exit ${exec.status})\n${exec.stderr}`);
+  }
+  assertDeepEqual('smoke exec argv', readJsonLines(stubLog), [['exec', ...execArgs]]);
 }
 
 async function assertClosedPort(baseEnv, builtCli) {
@@ -450,10 +570,39 @@ function writeStub(dir) {
     `#!/usr/bin/env node
 'use strict';
 const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
 const argv = process.argv.slice(2);
 fs.appendFileSync(process.env.STUB_LOG, JSON.stringify(argv) + '\\n');
 if (argv[0] === 'reserve') {
   process.stdout.write('{"placement":"slot","slot":1,"sessionId":"s-wrap","token":"t-wrap","env":{}}\\n');
+}
+if (argv[0] === 'session' && argv[1] === 'show' && process.env.STUB_SESSION_ID !== undefined) {
+  const id = process.env.STUB_SESSION_ID;
+  process.stdout.write(JSON.stringify(id ? { status: 'live', sessionId: id } : { status: 'missing' }) + '\\n');
+  process.exit(id ? 0 : 1);
+}
+if (argv[0] === 'exec' && argv.includes('mkdir') && process.env.STUB_MKDIR_EXIT) {
+  process.exit(Number(process.env.STUB_MKDIR_EXIT));
+}
+const remote = process.env.FAKE_REMOTE_ROOT;
+if (argv[0] === 'exec' && remote) {
+  // Fake remote: run the command with the fake start directory as cwd.
+  const rshAt = argv.indexOf('--rsh');
+  let cwd = remote;
+  let command;
+  if (rshAt >= 0) {
+    command = argv.slice(rshAt + 2);
+    if (command[0] === 'rsync') command[0] = process.env.REAL_RSYNC;
+  } else {
+    const sep = argv.indexOf('--');
+    const flags = argv.slice(1, sep);
+    const w = flags.indexOf('-w');
+    if (w >= 0) cwd = path.resolve(remote, flags[w + 1]);
+    command = argv.slice(sep + 1);
+  }
+  const ran = spawnSync(command[0], command.slice(1), { cwd, stdio: 'inherit' });
+  process.exit(ran.status == null ? 1 : ran.status);
 }
 process.exit(0);
 `,
@@ -530,6 +679,7 @@ async function main() {
   assertApplyDoesNotCallCli(env, stubLog, home);
   assertReserveApply(env, stubLog);
   assertRemoteSync(env, stubLog, rsyncLog);
+  assertRemoteSyncSmoke(env, stubLog, home);
   await assertClosedPort(process.env, builtCli);
 
   if (fs.readFileSync(canary, 'utf8') !== canaryBody) {
@@ -540,7 +690,9 @@ async function main() {
     fail('CLI stub observed config canary material');
   }
 
-  console.log('OK mellifera CLI wrappers, reserve-apply, remote-sync, and closed-port reserve');
+  console.log(
+    'OK mellifera CLI wrappers, reserve-apply, remote-sync, remote-sync smoke, and closed-port reserve',
+  );
 }
 
 main().catch(err => {
