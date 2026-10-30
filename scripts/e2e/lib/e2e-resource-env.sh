@@ -235,6 +235,25 @@ e2e_is_unscoped_global() {
   [[ "$(e2e_active_platforms)" == "global" ]]
 }
 
+# --slot=N on check/release: apply slot N's env so ports, adb serial, AVD,
+# simulator and macOS names are slot N's (not serial defaults). Keeps the
+# caller's RNFB_E2E_PLATFORM narrowing; E2E_PLATFORM_OVERRIDE is untouched.
+# Returns 2 when a different slot's env is already loaded.
+e2e_reapply_selected_slot() {
+  local slot=$1
+  local keep_platform="${RNFB_E2E_PLATFORM:-}"
+  local loaded="${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}"
+  if [[ -n "$loaded" && "$loaded" != "$slot" ]]; then
+    echo "[e2e-resource-env] --slot=${slot} does not match the loaded slot ${loaded} env" >&2
+    return 2
+  fi
+  e2e_slot_env_apply "${E2E_PLATFORM_OVERRIDE:-${keep_platform:-android}}" "$slot" || return 1
+  if [[ -n "$keep_platform" ]]; then
+    export RNFB_E2E_PLATFORM="$keep_platform"
+  fi
+  return 0
+}
+
 e2e_effective_slot() {
   echo "${E2E_SLOT_OVERRIDE:-${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}}"
 }
@@ -583,6 +602,27 @@ e2e_adb_stray_emulator_serials() {
       echo "$serial"
     fi
   done < <(e2e_adb_emulator_serials)
+}
+
+# AVD name a running emulator serial reports (empty when it does not answer).
+e2e_adb_emulator_avd_name() {
+  adb -s "$1" emu avd name 2>/dev/null | head -n 1 | tr -d '\r'
+}
+
+# Strays this check/release owns. Slot-scoped (slot env or --slot=N, no
+# --all-slots): only strays whose AVD is this slot's, so a desk slot never
+# kills a sibling slot's or the donor's guest. Otherwise every stray.
+e2e_adb_stray_emulator_serials_in_scope() {
+  local serial own_avd=""
+  if [[ -n "$(e2e_effective_slot)" && "${E2E_ALL_SLOTS:-0}" != "1" ]]; then
+    own_avd="$(e2e_resolve_android_avd)"
+  fi
+  while IFS= read -r serial; do
+    [[ -z "$serial" ]] && continue
+    if [[ -z "$own_avd" || "$(e2e_adb_emulator_avd_name "$serial")" == "$own_avd" ]]; then
+      echo "$serial"
+    fi
+  done < <(e2e_adb_stray_emulator_serials)
 }
 
 # Process names in scope for host-clear / release.

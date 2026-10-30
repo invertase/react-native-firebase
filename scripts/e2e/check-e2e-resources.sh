@@ -69,6 +69,9 @@ if [[ -n "${E2E_SLOT_OVERRIDE:-}" || "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
 fi
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && e2e_validate_platform_name "$E2E_PLATFORM_OVERRIDE"
 [[ -n "${RNFB_E2E_PLATFORM:-}" ]] && e2e_validate_platform_name "$RNFB_E2E_PLATFORM"
+if [[ "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 && "$E2E_ALL_SLOTS" != "1" ]]; then
+  e2e_reapply_selected_slot "$E2E_SLOT_OVERRIDE" || exit $?
+fi
 
 e2e_collect_targets
 e2e_lsof_cache_load
@@ -166,7 +169,7 @@ if platform_active android; then
     while IFS= read -r stray; do
       [[ -z "$stray" ]] && continue
       report BUSY "android stray emulator serial ${stray} (not allocated 5554 / 5556+2n — Detox FreePortFinder leftover)"
-    done < <(e2e_adb_stray_emulator_serials)
+    done < <(e2e_adb_stray_emulator_serials_in_scope)
   fi
 fi
 

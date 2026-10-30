@@ -11,6 +11,14 @@
 #   bash scripts/e2e/release-e2e-resources.sh --platform=android  # mid-wave: one platform only
 #   bash scripts/e2e/release-e2e-resources.sh --slot=1
 #   bash scripts/e2e/release-e2e-resources.sh --all-slots --devices
+#   bash scripts/e2e/release-e2e-resources.sh --placement=slot --slot=2 --devices  # desk slot grant
+#   bash scripts/e2e/release-e2e-resources.sh --placement=host --devices           # whole-guest grant
+#
+# --slot=N re-applies slot N's env (ports, TestingAVD-N / emulator-<5556+2N>,
+# RN E2E iOS slot-N, io.invertase.testing.sN) and fails when a different slot's
+# env is loaded. --placement is the grant shape from the reserve JSON:
+# `slot` requires --slot=N and refuses --all-slots; `host` drops slot env and
+# wipes the whole machine (--all-slots). Never guess the shape.
 #
 # After export-slot-env (full carry-in), default release clears all three platform port
 # blocks for that slot (ports+apps only — not AVD/sims). End-of-slot / final free so
@@ -31,6 +39,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/e2e-resource-env.sh"
 
 ONLY=""
+PLACEMENT=""
 DEVICES=0
 MAX_FORCE_ROUNDS=2
 E2E_ALL_SLOTS="${E2E_ALL_SLOTS:-0}"
@@ -64,8 +73,12 @@ while [[ $# -gt 0 ]]; do
       E2E_SLOT_SELECTOR_PRESENT=1
       shift
       ;;
+    --placement=*)
+      PLACEMENT="${1#--placement=}"
+      shift
+      ;;
     -h|--help)
-      sed -n '2,24p' "$0"
+      sed -n '2,32p' "$0"
       exit 0
       ;;
     *)
@@ -82,6 +95,37 @@ if [[ -n "${E2E_SLOT_OVERRIDE:-}" || "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
 fi
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && e2e_validate_platform_name "$E2E_PLATFORM_OVERRIDE"
 [[ -n "${RNFB_E2E_PLATFORM:-}" ]] && e2e_validate_platform_name "$RNFB_E2E_PLATFORM"
+
+case "$PLACEMENT" in
+  "") ;;
+  slot)
+    if [[ "$E2E_SLOT_SELECTOR_PRESENT" -ne 1 ]]; then
+      echo "[release-e2e-resources] --placement=slot requires --slot=N from the grant; refusing an unscoped release on a desk slot" >&2
+      exit 2
+    fi
+    if [[ "$E2E_ALL_SLOTS" == "1" ]]; then
+      echo "[release-e2e-resources] --placement=slot refuses --all-slots (would stop sibling slots)" >&2
+      exit 2
+    fi
+    ;;
+  host)
+    if [[ "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
+      echo "[release-e2e-resources] --placement=host takes no --slot (the whole machine is the grant)" >&2
+      exit 2
+    fi
+    eval "$(e2e_slot_env_clear_print)"
+    E2E_ALL_SLOTS=1
+    export E2E_ALL_SLOTS
+    ;;
+  *)
+    echo "[release-e2e-resources] --placement must be slot|host (got ${PLACEMENT})" >&2
+    exit 2
+    ;;
+esac
+
+if [[ "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 && "$E2E_ALL_SLOTS" != "1" ]]; then
+  e2e_reapply_selected_slot "$E2E_SLOT_OVERRIDE" || exit $?
+fi
 
 E2E_KNOWN_CATEGORIES=(metro jet jet-control emulators android-apps macos-app ios-sims android-emulator)
 
@@ -274,7 +318,7 @@ clear_android_stray_emulators() {
     [[ -z "$serial" ]] && continue
     echo "[release] adb emu kill stray serial=${serial}"
     adb -s "$serial" emu kill 2>/dev/null || true
-  done < <(e2e_adb_stray_emulator_serials)
+  done < <(e2e_adb_stray_emulator_serials_in_scope)
 }
 
 clear_android_emulator() {

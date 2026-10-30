@@ -3,14 +3,17 @@
 # Runbook: okf-bundle/testing/running-e2e-distributed.md § distributed e2e run.
 #
 # Usage (through exec on the synced tree):
-#   yarn tests:mellifera:exec --session ID -w DIR -- bash scripts/e2e/mellifera-distributed-piece.sh <android|ios|macos> [SLOT]
-#   bash scripts/e2e/mellifera-distributed-piece.sh <android|ios|macos> [SLOT] --dry-run
+#   yarn tests:mellifera:exec --session ID -w DIR -- bash scripts/e2e/mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT]
+#   bash scripts/e2e/mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] --dry-run
 #
-# SLOT is the grant's slot when placement is "slot"; omit it when placement is
-# "host" (the whole guest, serial defaults). Every step is a canonical
-# `yarn tests:*` command in one shell, so the emulator suite and Metro outlive
-# the steps that start them. The first failing step's status is the exit
-# status. Scoped `yarn tests:e2e:release --devices` always runs last.
+# --placement is the grant's `placement` from the reserve JSON and is required.
+# `slot` (a desk slot) requires SLOT, the grant's slot; every release re-applies
+# that slot's env and stops only its resources. `host` (the whole guest) takes
+# no SLOT and uses serial defaults; its releases wipe the whole machine.
+# Every step is a canonical `yarn tests:*` command in one shell, so the
+# emulator suite and Metro outlive the steps that start them. The first
+# failing step's status is the exit status. `yarn tests:e2e:release --devices`
+# with the placement always runs last.
 # --dry-run prints the steps, one per line, and runs nothing.
 #
 # The android piece first creates the serial base AVD (TestingAVD) when it is
@@ -22,15 +25,17 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos|ensure-avd> [SLOT] [--dry-run]"
+USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd"
 BASE_AVD="TestingAVD"
 
 PLATFORM=""
+PLACEMENT=""
 SLOT=""
 DRY_RUN=0
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
+    --placement=slot | --placement=host) PLACEMENT="${arg#--placement=}" ;;
     android | ios | macos | ensure-avd)
       [[ -z "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
       PLATFORM="$arg"
@@ -46,6 +51,29 @@ for arg in "$@"; do
   esac
 done
 [[ -n "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
+if [[ "$PLATFORM" != ensure-avd ]]; then
+  case "$PLACEMENT" in
+    slot)
+      [[ -n "$SLOT" ]] || {
+        echo "mellifera-distributed-piece: --placement=slot requires the grant's SLOT; refusing an unscoped release on a desk slot" >&2
+        exit 2
+      }
+      RELEASE=(yarn tests:e2e:release --devices --placement=slot "--slot=${SLOT}")
+      ;;
+    host)
+      [[ -z "$SLOT" ]] || {
+        echo "mellifera-distributed-piece: --placement=host takes no SLOT (the whole guest is the grant)" >&2
+        exit 2
+      }
+      RELEASE=(yarn tests:e2e:release --devices --placement=host)
+      ;;
+    *)
+      echo "mellifera-distributed-piece: --placement=slot|host from the reserve JSON is required" >&2
+      echo "$USAGE" >&2
+      exit 2
+      ;;
+  esac
+fi
 
 cd "$REPO_ROOT" || exit 1
 
@@ -192,7 +220,7 @@ piece_android() {
   step check_kvm || return $?
   headless_emulator
   step ensure_testing_avd || return $?
-  step yarn tests:e2e:release --devices || return $?
+  step "${RELEASE[@]}" || return $?
   [[ -z "$SLOT" ]] || step yarn tests:e2e:setup-android-avds "$((SLOT + 1))" || return $?
   step yarn tests:android:unit || return $?
   step yarn tests:android:build || return $?
@@ -243,7 +271,7 @@ fi
 load_env || exit $?
 ec=0
 "piece_${PLATFORM}" || ec=$?
-step yarn tests:e2e:release --devices
+step "${RELEASE[@]}"
 release_ec=$?
 if [[ "$ec" -eq 0 ]]; then
   ec="$release_ec"

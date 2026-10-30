@@ -252,7 +252,7 @@ function main() {
     ]);
     assert.ok(!rel.stdout.includes(TOKEN) && !rel.stderr.includes(TOKEN), 'token printed');
 
-    const ios = piece(['ios', '3', '--dry-run']);
+    const ios = piece(['ios', '--placement=slot', '3', '--dry-run']);
     assert.strictEqual(ios.status, 0, ios.stderr);
     const iosSteps = ios.stdout.trim().split('\n');
     assert.strictEqual(iosSteps[0], 'eval export-slot-env ios 3');
@@ -267,8 +267,11 @@ function main() {
       iosSteps.indexOf('env SKIP_BUNDLING=1 RCT_NO_LAUNCH_PACKAGER=1 yarn tests:ios:build') <
         iosSteps.indexOf('yarn tests:e2e:check --platform=ios'),
     );
-    assert.strictEqual(iosSteps[iosSteps.length - 1], 'yarn tests:e2e:release --devices');
-    const android = piece(['android', '--dry-run']).stdout.trim().split('\n');
+    assert.strictEqual(
+      iosSteps[iosSteps.length - 1],
+      'yarn tests:e2e:release --devices --placement=slot --slot=3',
+    );
+    const android = piece(['android', '--placement=host', '--dry-run']).stdout.trim().split('\n');
     assert.strictEqual(android[0], 'eval clear-slot-env');
     assert.ok(
       !android.some(s => s.includes('setup-android-avds')),
@@ -288,10 +291,36 @@ function main() {
     );
     assert.ok(android.indexOf('check_kvm') < android.indexOf('ensure_testing_avd'));
     assert.ok(
-      android.indexOf('yarn tests:e2e:release --devices') <
+      android.indexOf('yarn tests:e2e:release --devices --placement=host') <
         android.indexOf('yarn tests:android:build'),
     );
-    const kept = piece(['android', '--dry-run'], { RNFB_ANDROID_EMULATOR_BOOT_ARGS: '-gpu host' });
+    assert.strictEqual(
+      android[android.length - 1],
+      'yarn tests:e2e:release --devices --placement=host',
+    );
+    const slotAndroid = piece(['android', '--placement=slot', '2', '--dry-run']);
+    assert.strictEqual(slotAndroid.status, 0, slotAndroid.stderr);
+    const slotReleases = slotAndroid.stdout
+      .trim()
+      .split('\n')
+      .filter(s => s.includes('tests:e2e:release'));
+    assert.deepStrictEqual(slotReleases, [
+      'yarn tests:e2e:release --devices --placement=slot --slot=2',
+      'yarn tests:e2e:release --devices --placement=slot --slot=2',
+    ]);
+    for (const [args, why] of [
+      [['android', '--dry-run'], 'missing --placement'],
+      [['android', '--placement=slot', '--dry-run'], 'desk slot without SLOT'],
+      [['android', '--placement=host', '1', '--dry-run'], 'host with SLOT'],
+      [['android', '--placement=guest', '--dry-run'], 'unknown placement'],
+    ]) {
+      const refused = piece(args);
+      assert.strictEqual(refused.status, 2, `${why} must exit 2`);
+      assert.strictEqual(refused.stdout, '', `${why} must print no steps`);
+    }
+    const kept = piece(['android', '--placement=host', '--dry-run'], {
+      RNFB_ANDROID_EMULATOR_BOOT_ARGS: '-gpu host',
+    });
     assert.ok(
       kept.stdout.includes('keep RNFB_ANDROID_EMULATOR_BOOT_ARGS'),
       'caller boot args must win',
@@ -312,7 +341,7 @@ function main() {
     assert.ok(
       iosSteps.indexOf('yarn ruby:install') < iosSteps.indexOf('yarn tests:ios:pod:install'),
     );
-    const macos = piece(['macos', '0', '--dry-run']).stdout.trim().split('\n');
+    const macos = piece(['macos', '--placement=slot', '0', '--dry-run']).stdout.trim().split('\n');
     assert.ok(
       macos.includes('yarn tests:macos:packager:jet') &&
         macos.includes('yarn tests:macos:test-cover'),
