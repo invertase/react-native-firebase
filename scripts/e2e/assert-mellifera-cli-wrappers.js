@@ -530,6 +530,25 @@ function assertRemoteSyncSmoke(env, stubLog, home) {
   assertDeepEqual('smoke exec argv', readJsonLines(stubLog), [['exec', ...execArgs]]);
 }
 
+function assertDefaultFilterSkipsGit(realRsync, home) {
+  const src = fs.mkdtempSync(path.join(home, 'filter-src-'));
+  const dst = fs.mkdtempSync(path.join(home, 'filter-dst-'));
+  fs.writeFileSync(path.join(src, '.git'), 'gitdir: /local/only/.git/worktrees/x\n');
+  fs.writeFileSync(path.join(src, 'keep.txt'), 'kept\n');
+  fs.mkdirSync(path.join(src, 'nested', '.git'), { recursive: true });
+  fs.writeFileSync(path.join(src, 'nested', '.git', 'HEAD'), 'ref: refs/heads/main\n');
+  const ran = spawnSync(
+    realRsync,
+    ['-a', '--filter', `merge ${DEFAULT_FILTER}`, `${src}/`, `${dst}/`],
+    { encoding: 'utf8' },
+  );
+  if (ran.status !== 0) {
+    fail(`default filter rsync exited ${ran.status}\n${ran.stderr}`);
+  }
+  assertDeepEqual('default filter top entries', fs.readdirSync(dst).sort(), ['keep.txt', 'nested']);
+  assertDeepEqual('default filter nested entries', fs.readdirSync(path.join(dst, 'nested')), []);
+}
+
 async function assertClosedPort(baseEnv, builtCli) {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-mlf-closed-'));
   const port = await listenClosedPort();
@@ -680,6 +699,7 @@ async function main() {
   assertReserveApply(env, stubLog);
   assertRemoteSync(env, stubLog, rsyncLog);
   assertRemoteSyncSmoke(env, stubLog, home);
+  assertDefaultFilterSkipsGit(realRsync, home);
   await assertClosedPort(process.env, builtCli);
 
   if (fs.readFileSync(canary, 'utf8') !== canaryBody) {

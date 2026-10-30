@@ -2,9 +2,10 @@
 # Pass --filter FILE to replace this list for one run.
 # Dependencies and build output are omitted. The remote install recreates them.
 # Version-control metadata is omitted; the remote tree is a source copy.
+# `.git` has no trailing slash so a worktree's `.git` file is omitted too.
 
 - node_modules/
-- .git/
+- .git
 - .nx/
 - .yarn/cache/
 - .yarn/unplugged/
