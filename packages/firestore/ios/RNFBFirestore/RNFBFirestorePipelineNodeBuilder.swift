@@ -427,9 +427,10 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   func coerceRawParams(_ value: Any?, fieldName: String) throws -> [Any] {
-    guard let value else {
+    guard let rawValue = value else {
       return []
     }
+    let value = try RNFBFirestorePipelineParser.reviveSerializedTimestamps(rawValue, fieldName: fieldName)
 
     if let values = value as? [Any] {
       return try values.enumerated().map { index, nested in
@@ -451,7 +452,9 @@ final class RNFBFirestorePipelineNodeBuilder {
 
     var output: [String: __ExprBridge] = [:]
     for (key, value) in options {
-      output[key] = try coerceExpression(value, fieldName: "\(fieldName).\(key)")
+      let optionFieldName = "\(fieldName).\(key)"
+      let revived = try RNFBFirestorePipelineParser.reviveSerializedTimestamps(value, fieldName: optionFieldName)
+      output[key] = try coerceExpression(revived, fieldName: optionFieldName)
     }
     return output
   }

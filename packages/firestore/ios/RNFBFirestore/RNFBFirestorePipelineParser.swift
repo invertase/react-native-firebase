@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import FirebaseFirestore
 import Foundation
 
 struct RNFBFirestoreParsedPipelineRequest {
@@ -1198,6 +1199,91 @@ enum RNFBFirestorePipelineParser {
       map["segments"] != nil || map["_segments"] != nil
   }
 
+  private static let minTimestampSeconds: Int64 = -62_135_596_800
+  private static let maxTimestampSeconds: Int64 = 253_402_300_799
+  private static let maxTimestampNanoseconds: Int64 = 999_999_999
+
+  // JS sends Timestamp and Date constants as { __kind: "timestamp", seconds, nanoseconds }.
+  // Range is checked here because Timestamp(seconds:nanoseconds:) raises an uncatchable exception.
+  static func serializedTimestamp(_ map: [String: Any], fieldName: String) throws -> Timestamp? {
+    guard map["__kind"] as? String == "timestamp" else {
+      return nil
+    }
+    guard let seconds = wholeNumber(map["seconds"], min: minTimestampSeconds, max: maxTimestampSeconds),
+          let nanoseconds = wholeNumber(map["nanoseconds"], min: 0, max: maxTimestampNanoseconds) else {
+      throw PipelineValidationError(
+        "pipelineExecute() expected \(fieldName) to be a timestamp with integer seconds between " +
+          "\(minTimestampSeconds) and \(maxTimestampSeconds) and integer nanoseconds between 0 and " +
+          "\(maxTimestampNanoseconds).")
+    }
+    return Timestamp(seconds: seconds, nanoseconds: Int32(nanoseconds))
+  }
+
+  private static func wholeNumber(_ value: Any?, min: Int64, max: Int64) -> Int64? {
+    guard let number = value as? NSNumber, CFGetTypeID(number) != CFBooleanGetTypeID() else {
+      return nil
+    }
+    let doubleValue = number.doubleValue
+    guard doubleValue.isFinite, doubleValue.rounded() == doubleValue,
+          doubleValue >= Double(min), doubleValue <= Double(max) else {
+      return nil
+    }
+    return Int64(doubleValue)
+  }
+
+  private final class RevivedValueBox {
+    var value: Any = NSNull()
+  }
+
+  private enum ReviveTimestampFrame {
+    case enter(Any, String, RevivedValueBox)
+    case listExit(RevivedValueBox, [RevivedValueBox])
+    case mapExit(RevivedValueBox, [(String, RevivedValueBox)])
+  }
+
+  // Values that skip the expression parser (rawStage params/options) still carry tagged timestamps.
+  static func reviveSerializedTimestamps(_ value: Any, fieldName: String) throws -> Any {
+    let rootBox = RevivedValueBox()
+    var stack: [ReviveTimestampFrame] = [.enter(value, fieldName, rootBox)]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .enter(value, currentFieldName, box):
+        if let map = value as? [String: Any] {
+          if let timestamp = try serializedTimestamp(map, fieldName: currentFieldName) {
+            box.value = timestamp
+            continue
+          }
+          let entries = map.map { (key: $0.key, value: $0.value, box: RevivedValueBox()) }
+          stack.append(.mapExit(box, entries.map { ($0.key, $0.box) }))
+          for entry in entries {
+            stack.append(.enter(entry.value, "\(currentFieldName).\(entry.key)", entry.box))
+          }
+          continue
+        }
+        if let list = value as? [Any] {
+          let childBoxes = list.map { _ in RevivedValueBox() }
+          stack.append(.listExit(box, childBoxes))
+          for index in list.indices {
+            stack.append(.enter(list[index], "\(currentFieldName)[\(index)]", childBoxes[index]))
+          }
+          continue
+        }
+        box.value = value
+      case let .listExit(box, childBoxes):
+        box.value = childBoxes.map { $0.value }
+      case let .mapExit(box, entries):
+        var output: [String: Any] = [:]
+        for (key, childBox) in entries {
+          output[key] = childBox.value
+        }
+        box.value = output
+      }
+    }
+
+    return rootBox.value
+  }
+
   private static func isSerializedReferencePathConstantMap(_ map: [String: Any]) -> Bool {
     guard let path = map["path"] as? String, path.contains("/") else {
       return false
@@ -1413,6 +1499,11 @@ enum RNFBFirestorePipelineParser {
           // as outer expressions and loop forever.
           if let exprType = map["exprType"] as? String, exprType.lowercased() == "pipelinevalue" {
             box.value = .primitive(value)
+            continue
+          }
+
+          if let timestamp = try serializedTimestamp(map, fieldName: fieldName) {
+            box.value = .primitive(timestamp)
             continue
           }
 
