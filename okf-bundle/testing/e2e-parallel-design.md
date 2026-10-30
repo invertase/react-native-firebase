@@ -8,7 +8,7 @@ timestamp: 2026-08-20T00:00:00Z
 
 # E2e parallel execution and host coordination
 
-Architecture and lifecycle for running Android, iOS, and macOS e2e in parallel (within a worktree and across worktrees). **Commands** live in [running e2e](running-e2e.md) ([slot lifecycle](running-e2e.md#slot-lifecycle), [parallel topology](running-e2e.md#parallel-e2e-topology), [infrastructure change bar](running-e2e.md#e2e-infrastructure-change-bar)); this doc explains *why* resources collide, how parameterization isolates them, and how Mellifera / Tart relate. Ownership: [§ layers](#rnfb-mellifera-tart-layers). Remote suite steps: [remote spill](running-e2e.md#remote-spill).
+Architecture and lifecycle for running Android, iOS, and macOS e2e in parallel (within a worktree and across worktrees). **Commands** live in [running e2e](running-e2e.md) ([slot lifecycle](running-e2e.md#slot-lifecycle), [parallel topology](running-e2e.md#parallel-e2e-topology), [infrastructure change bar](running-e2e.md#e2e-infrastructure-change-bar)); this doc explains *why* resources collide, how parameterization isolates them, and how Mellifera / Tart relate. Ownership: [§ layers](#rnfb-mellifera-tart-layers). Remote suite steps: [remote spill](running-e2e-distributed.md#remote-spill).
 
 **Policy:** [OKF documentation and commit policy](../documentation-policy.md) — public vs ephemeral vs private; [Efficiency](../documentation-policy.md#efficiency). **Coverage:** [coverage design](coverage-design.md).
 
@@ -72,7 +72,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 | Slot env + serial `yarn tests:*` | **Shipped** — `export-slot-env` then the same commands as [running e2e § Rules](running-e2e.md#rules) | [slot lifecycle](running-e2e.md#slot-lifecycle) |
 | Concurrent macOS via `PRODUCT_NAME` | **Shipped** (e.g. `io.invertase.testing.s0`…`sN`) | [macOS process identity](running-e2e.md#macos-process-identity-concurrency) |
 | Host check/release (`yarn tests:e2e:check` / `release`) | **Shipped** — serial default; slot via env; `--all-slots` explicit. `RNFB_MELLIFERA` and session records do not change these scripts. RNFB maps the grant; Mellifera does not call the yarn targets | [host-clear probes](running-e2e.md#host-clear-probes) |
-| Lease and federation (Mellifera) | **Shipped** out of tree — leases, federates, and connects. RNFB maps and runs | [§ layers](#rnfb-mellifera-tart-layers); [remote spill](running-e2e.md#remote-spill) |
+| Lease and federation (Mellifera) | **Shipped** out of tree — leases, federates, and connects. RNFB maps and runs | [§ layers](#rnfb-mellifera-tart-layers); [remote spill](running-e2e-distributed.md#remote-spill) |
 
 <a id="rnfb-mellifera-tart-layers"></a>
 
@@ -80,7 +80,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 
 | Layer | Owns | Must not |
 |-------|------|----------|
-| **RNFB e2e** | Maps a slot grant onto runner env and runs the [Law](running-e2e.md#slot-lifecycle) and the [remote spill](running-e2e.md#remote-spill) runbook. Ports, devices, `export-slot-env`, packager, emulator, check/release, `:build` / `:test-cover`. Parallel = all platforms at once, and multiple same-platform runs via **slots** + extra worktrees. | Treat `tests/mellifera.env.json` as the session record; read a grant URL; change native build settings; invent a second runbook |
+| **RNFB e2e** | Maps a slot grant onto runner env and runs the [Law](running-e2e.md#slot-lifecycle) and the [remote spill](running-e2e-distributed.md#remote-spill) runbook. Ports, devices, `export-slot-env`, packager, emulator, check/release, `:build` / `:test-cover`. Parallel = all platforms at once, and multiple same-platform runs via **slots** + extra worktrees. | Treat `tests/mellifera.env.json` as the session record; read a grant URL; change native build settings; invent a second runbook |
 | **Mellifera** | Leases, federates, and connects (`connectUrl`). Standing donation and the worktree session record. Pasteable integrator prompt: [mellifera AGENTS.md § Integrate Mellifera](https://github.com/invertase/mellifera/blob/main/AGENTS.md#integrate-mellifera-pasteable-prompt) — pointer only; do not paste. | Run the RNFB suite; learn yarn, Detox, or Metro; `--mellifera` inside check/release |
 | **Tart** | Optionally hosts a donated worker. Lab path [temporarily suspended](local-ios-e2e-reproduction.md#status-suspended) during Xcode 27 / iOS 27 ratchet. | Define RNFB e2e commands or justify Debug Detox flags |
 
@@ -100,7 +100,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 3. **Firebase emulators:** parallel platform runs **must not share one emulator process** — Firestore `wipe()` and auth/storage state are global per emulator instance ([`packages/firestore/e2e/helpers.js`](../../packages/firestore/e2e/helpers.js)). Full aux-port isolation (websocket / eventarc / tasks) required — see [running e2e](running-e2e.md#configurable-e2e-environment).
 4. **Backward compatibility:** unset slotted env preserves serial defaults (ports `:8081` / `:8090` / …, process `io.invertase.testing`).
 5. **Local slotted e2e is the serial runbook plus slot env.** Same commands as [running e2e § Rules](running-e2e.md#rules). The **only** required difference is selecting the slot’s ports + device identities (`yarn tests:e2e:export-slot-env` / `RNFB_*`). No second workflow (no rsync, no cloning trees, no host flock, no Metro-after-build). A 3×3 wave is **9 overlapping cells** (android + ios + macos `:test-cover`, qemu included). Do not serialize Android. Tolerate CI-like latency with higher Detox/launch timeouts rather than shrinking concurrency ([running e2e § slot lifecycle](running-e2e.md#slot-lifecycle)).
-6. **Each concurrent instance is a normal git checkout / git worktree.** Populate it with `git worktree add` (or clone) + `yarn` in **that** tree. Do **not** rsync between local same-Mac slot trees. A Mellifera remote worker uses [remote spill](running-e2e.md#remote-spill).
+6. **Each concurrent instance is a normal git checkout / git worktree.** Populate it with `git worktree add` (or clone) + `yarn` in **that** tree. Do **not** rsync between local same-Mac slot trees. A Mellifera remote worker uses [remote spill](running-e2e-distributed.md#remote-spill).
 7. **Watchman:** packager start **conditionally** `watch-del`s **this Metro project root** (skips when a sibling Metro/react-native process already owns that cwd — so android∥ios dual `tests/` packagers on distinct ports stay alive; `RNFB_METRO_FORCE_WATCHMAN_RESET=1` forces del) and always `watch-project`s an **allowlist** of trees Metro would reload. Never `watch-del` the repo root. Not a blocklist over a whole-monorepo watch. Tolerance lives in packager `/status` wait, not a parallel-only recipe.
 8. **Apple `:build` stays representative.** iOS → `tests/ios/build`; macOS → `tests-macos/macos/build`. Do not set `SWIFT_ENABLE_EXPLICIT_MODULES=NO` (or similar) for e2e. If PCM races return, isolate the **actual** shared module-cache directory with [negative + positive tests](running-e2e.md#e2e-infrastructure-change-bar).
 
@@ -282,7 +282,7 @@ If layer 1 were inlined (~150–250 lines Node or shell+JSON):
 
 **Local 3×3 / same-Mac slot trees:** independent git checkouts (`git worktree add` or clone) + `yarn` in each tree. Do **not** rsync or Mutagen sources between local slot worktrees.
 
-**Mellifera remote path:** sync and the suite are [remote spill](running-e2e.md#remote-spill). The options below are an earlier placement study (a remote Metro still needs local disk). They are not the consumer runbook.
+**Mellifera remote path:** sync and the suite are [remote spill](running-e2e-distributed.md#remote-spill). The options below are an earlier placement study (a remote Metro still needs local disk). They are not the consumer runbook.
 
 ### RNFB-specific constraints
 
@@ -298,15 +298,15 @@ If layer 1 were inlined (~150–250 lines Node or shell+JSON):
 | Strategy | Mechanism | Live laptop files? | RNFB verdict |
 |----------|-----------|-------------------|--------------|
 | **Collapsed worker** | Worker agent on laptop; `checkout_path=$PWD` | Yes — same inode | **Default**; zero sync |
-| **Mutagen one-way-replica** | [`mutagen sync create`](https://mutagen.io/documentation/synchronization/creating-sessions) laptop → worker; [`mutagen sync flush`](https://mutagen.io/documentation/synchronization/forcing-synchronization) at reserve | Snapshot at flush; edits after flush not visible until next flush | Earlier study, not the consumer path. Use [remote spill](running-e2e.md#remote-spill) |
-| **rsync / tar snapshot** | `rsync -a --delete` with `--include harness.overrides.js` at reserve | Same as Mutagen flush | Earlier study, not the consumer path. Use [remote spill](running-e2e.md#remote-spill) |
+| **Mutagen one-way-replica** | [`mutagen sync create`](https://mutagen.io/documentation/synchronization/creating-sessions) laptop → worker; [`mutagen sync flush`](https://mutagen.io/documentation/synchronization/forcing-synchronization) at reserve | Snapshot at flush; edits after flush not visible until next flush | Earlier study, not the consumer path. Use [remote spill](running-e2e-distributed.md#remote-spill) |
+| **rsync / tar snapshot** | `rsync -a --delete` with `--include harness.overrides.js` at reserve | Same as Mutagen flush | Earlier study, not the consumer path. Use [remote spill](running-e2e-distributed.md#remote-spill) |
 | **SSHFS / NFS / SMB mount** | Worker mounts `laptop:/path/worktree` | Theoretically live | **Discouraged** — Metro, Gradle, Xcode stat storms over VPN ([known pain](https://serverfault.com/questions/470059/how-to-make-sshfs-vpn-git-a-tolerable-working-environment)); IDE-grade lag |
 | **SSHFS selective** | Mount only `packages/` + `tests/` excluding `node_modules` | Partial live | Still risky; Metro resolves into `node_modules` |
 | **Virtiofs (Tart)** | VM mounts host worktree | Live on **same** Mac host | **Already used** for iOS Tart; not cross-machine |
 | **Git ref only** | Worker `git fetch && checkout` | No uncommitted / gitignored | OK for CI; **insufficient for local agent iteration** |
 | **Reverse: laptop mounts worker** | SSHFS other direction | N/A | Wrong shape — canonical edits stay on laptop |
 
-**Tailscale’s role (earlier study):** MagicDNS + wireguard mesh so a coordinator, laptop client, and worker address each other without exposing ports publicly. That mesh is not the Mellifera consumer path. NFS-over-Tailscale shares the SSHFS latency problems for build/test IO. The consumer sync is [remote spill](running-e2e.md#remote-spill).
+**Tailscale’s role (earlier study):** MagicDNS + wireguard mesh so a coordinator, laptop client, and worker address each other without exposing ports publicly. That mesh is not the Mellifera consumer path. NFS-over-Tailscale shares the SSHFS latency problems for build/test IO. The consumer sync is [remote spill](running-e2e-distributed.md#remote-spill).
 
 ### Checkout modes (coordinator `reserve` response)
 
@@ -320,15 +320,15 @@ If layer 1 were inlined (~150–250 lines Node or shell+JSON):
 | `checkout_mode` | When | `checkout_path` |
 |-----------------|------|-----------------|
 | `local` | Worker is laptop (collapsed) | Client worktree abs path |
-| `sync_snapshot` | Earlier remote-worker sketch | Not the consumer path — [remote spill](running-e2e.md#remote-spill) |
+| `sync_snapshot` | Earlier remote-worker sketch | Not the consumer path — [remote spill](running-e2e-distributed.md#remote-spill) |
 | `git_ref` | CI / clean tree | Worker clone at SHA |
 | `live_mount` | **Experimental only** | SSHFS mount point — not recommended for full e2e |
 
-**Consumer sync:** [remote spill](running-e2e.md#remote-spill) (`yarn tests:mellifera:remote-sync`, then `yarn tests:mellifera:exec`). Do not use the Mutagen or hand-rolled rsync sketches above, and do not copy artifacts with scp. Exec streams stdout and stderr and returns the remote exit status.
+**Consumer sync:** [remote spill](running-e2e-distributed.md#remote-spill) (`yarn tests:mellifera:remote-sync`, then `yarn tests:mellifera:exec`). Do not use the Mutagen or hand-rolled rsync sketches above, and do not copy artifacts with scp. Exec streams stdout and stderr and returns the remote exit status.
 
 ### “Run on laptop files” honest summary
 
-True single-copy execution over the network **only works collapsed** (worker on laptop). A remote worker still needs a local copy of the tree; live SSHFS is a poor fit for Metro and Gradle. The Mellifera steps for that copy are [remote spill](running-e2e.md#remote-spill).
+True single-copy execution over the network **only works collapsed** (worker on laptop). A remote worker still needs a local copy of the tree; live SSHFS is a poor fit for Metro and Gradle. The Mellifera steps for that copy are [remote spill](running-e2e-distributed.md#remote-spill).
 
 ## Phased roadmap
 
@@ -403,14 +403,14 @@ Deliverables:
 | **Slot port maps** | Coordinator assigns slot `n` port blocks + macOS `PRODUCT_NAME` (see [§ Platform bundle](#platform-bundle-per-host-slot)) |
 | **macOS-pool wait** | dflockd semaphore on `macos-pool` (`Limit=K`) — worktrees queue when all `.sN` identities are leased |
 | **Stale cleanup** | Worker heartbeat; coordinator releases dflockd tokens if worker dies |
-| **Remote checkout** | [Remote spill](running-e2e.md#remote-spill). Not a copy between local same-Mac slot trees ([§ Worktree placement](#worktree-placement-and-network-filesystems)) |
+| **Remote checkout** | [Remote spill](running-e2e-distributed.md#remote-spill). Not a copy between local same-Mac slot trees ([§ Worktree placement](#worktree-placement-and-network-filesystems)) |
 | **Second worker on same host** | Optional — usually one worker process registers full machine capacity |
 
 **Done when:** two local worktrees run Android **and** macOS e2e concurrently without collision; `GET /v1/capacity` shows queue depth.
 
 ### Phase 3 — Multi-host workers + autoscale pool
 
-Mellifera's consumer path is [remote spill](running-e2e.md#remote-spill): Mellifera leases, federates, and connects; RNFB maps and runs; Tart optionally hosts. The sketch below is an earlier coordinator outline, not that path.
+Mellifera's consumer path is [remote spill](running-e2e-distributed.md#remote-spill): Mellifera leases, federates, and connects; RNFB maps and runs; Tart optionally hosts. The sketch below is an earlier coordinator outline, not that path.
 
 **Scope:** Workers on multiple Macs / Tart VMs / cloud instances register with central coordinator (any host running coordinator + dflockd, or dflockd sharded per worker).
 
@@ -448,7 +448,7 @@ Mellifera's consumer path is [remote spill](running-e2e.md#remote-spill): Mellif
 
 ## Orchestration flow (earlier outline)
 
-The consumer path is [remote spill](running-e2e.md#remote-spill). This sequence is the earlier coordinator outline, not that path.
+The consumer path is [remote spill](running-e2e-distributed.md#remote-spill). This sequence is the earlier coordinator outline, not that path.
 
 ```mermaid
 sequenceDiagram
@@ -490,8 +490,8 @@ See [§ Lease store](#lease-store-reuse-vs-build-scope) for the earlier build-vs
 | **dflockd** | 1 | Earlier survey. Mellifera leases and federates ([§ layers](#rnfb-mellifera-tart-layers)) |
 | **resleased** | 1 | Earlier survey — simpler HTTP; poll on 503 |
 | **flock / file JSON** | 1 | Fallback if zero deps wins |
-| **Mutagen** | Sync | Not the consumer path — [remote spill](running-e2e.md#remote-spill) |
-| **rsync** | Sync | Consumer sync is `yarn tests:mellifera:remote-sync` inside [remote spill](running-e2e.md#remote-spill), not a hand-rolled snapshot |
+| **Mutagen** | Sync | Not the consumer path — [remote spill](running-e2e-distributed.md#remote-spill) |
+| **rsync** | Sync | Consumer sync is `yarn tests:mellifera:remote-sync` inside [remote spill](running-e2e-distributed.md#remote-spill), not a hand-rolled snapshot |
 | **SSHFS/NFS** | Sync | **Avoid** for full e2e IO |
 | **SAIR** | — | Physical Android pools only |
 | **BuildFarm / EngFlow** | — | Remote build cache, not dev-host e2e |
@@ -545,7 +545,7 @@ Work-queue rows for implementation are ephemeral — not duplicated here per [do
 3. **Shared build artifacts:** single `tests/ios/build` / `tests-macos/macos/build` per worktree (serial build within tree) — confirmed OK; same-platform parallel ⇒ multiple worktrees.
 4. **Coordinator language:** Node (matches repo / mellifera) vs Go (matches dflockd) for the thin HTTP layer?
 5. **Tart:** a Mellifera-published slot **may** run inside a Tart VM; Tart is not the RNFB e2e product ([layers](#rnfb-mellifera-tart-layers)).
-6. **Remote sync:** [remote spill](running-e2e.md#remote-spill). Not a copy between local same-Mac slot trees.
+6. **Remote sync:** [remote spill](running-e2e-distributed.md#remote-spill). Not a copy between local same-Mac slot trees.
 7. **Lease backend:** Mellifera leases, federates, and connects. RNFB maps and runs. Tart optionally hosts. [§ layers](#rnfb-mellifera-tart-layers).
 8. **Shared `io.invertase.firebase` prefs suite:** acceptable residual for concurrent macOS, or suite-name slotting later?
 
@@ -554,7 +554,7 @@ Work-queue rows for implementation are ephemeral — not duplicated here per [do
 * [Running e2e tests](running-e2e.md) — canonical commands, change bar, [slot lifecycle](running-e2e.md#slot-lifecycle), [slot index](running-e2e.md#e2e-slot-index)
 * [Coverage design](coverage-design.md) — per-platform artifact policy
 * [Firebase testing project](firebase-testing-project.md) — emulator vs cloud
-* Mellifera leases, federates, and connects; RNFB maps and runs — [§ RNFB e2e, Mellifera, and Tart](#rnfb-mellifera-tart-layers). Remote suite: [remote spill](running-e2e.md#remote-spill). Integrator prompt: [mellifera AGENTS.md § Integrate Mellifera](https://github.com/invertase/mellifera/blob/main/AGENTS.md#integrate-mellifera-pasteable-prompt) (pointer only; do not paste)
+* Mellifera leases, federates, and connects; RNFB maps and runs — [§ RNFB e2e, Mellifera, and Tart](#rnfb-mellifera-tart-layers). Remote suite: [remote spill](running-e2e-distributed.md#remote-spill). Integrator prompt: [mellifera AGENTS.md § Integrate Mellifera](https://github.com/invertase/mellifera/blob/main/AGENTS.md#integrate-mellifera-pasteable-prompt) (pointer only; do not paste)
 * [scripts/tart/README.md](../../scripts/tart/README.md) — separate VM system
 * [Change authoring workflow § host rule](change-authoring-workflow.md#host-rule) — serial default; slotted exception via running-e2e
 * [Agent command policy](agent-command-policy.md) — allowlisted `yarn tests:*`

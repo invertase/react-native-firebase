@@ -348,6 +348,13 @@ A remote command needs a preceding `yarn tests:mellifera:remote-sync` of the cur
 | Release on the issuing core | `yarn tests:mellifera:release` | releasing through a different core |
 | Wrapper pass-through check | `yarn tests:mellifera:assert-cli-wrappers` | a hand-rolled HTTP probe of the local core |
 | Apply mapping check | `yarn tests:mellifera:assert-apply-reservation` | a fixed slot list treated as the product band |
+| Run one distributed-e2e piece on its synced grant | `yarn tests:mellifera:exec --session ID -w DIR -- bash scripts/e2e/mellifera-distributed-piece.sh <android\|ios\|macos> [SLOT]` ([distributed e2e run](running-e2e-distributed.md#distributed-e2e-run)) | one `exec` per service step (Metro and the emulator suite do not outlive that shell); ad-hoc Detox or Jet on the grant |
+| Create the serial base AVD `TestingAVD` on a guest when missing (CI system image; idempotent) | `bash scripts/e2e/mellifera-distributed-piece.sh ensure-avd` (through `yarn tests:mellifera:exec -w DIR --` on a grant) | `avdmanager` / `sdkmanager` invoked by hand; Android Studio AVD Manager on a guest |
+| Print a piece's step list without running it | `bash scripts/e2e/mellifera-distributed-piece.sh <android\|ios\|macos> [SLOT] --dry-run` | reading the script to guess the order; running the piece to see its steps |
+| Read a non-secret grant field (`sessionId`, `slot`, `placement`) | `yarn tests:mellifera:reduce field --reserve FILE --field NAME` | hand-parsing the reserve JSON; printing the token |
+| Record a piece, then write the reducer report in this worktree | `yarn tests:mellifera:reduce record ...`; `yarn tests:mellifera:reduce report --run-dir DIR` | a report written on a guest; an exit code or coverage path typed by hand into the report |
+| Release an earlier grant of a distributed run | `yarn tests:mellifera:reduce release --reserve FILE [--url URL --federation ID]` | `yarn tests:mellifera:release` with no session (releases only the latest pointer); a token pasted on the command line |
+| Reducer and piece-runner check | `yarn tests:mellifera:assert-distributed-reduce` | a live grant used as the reducer test |
 
 ## Related docs
 

@@ -564,6 +564,7 @@ tests/harness.overrides.js
 tests/e2e-slots.env.json
 tests/mellifera.env.json
 tests/mellifera-platform/
+tests/mellifera-distributed/
 tests/.mellifera-session.env
 .github/workflows/scripts/.e2e-emulator-*.json
 

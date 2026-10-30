@@ -112,6 +112,8 @@
     "tests:mellifera:remote-sync": "MELLIFERA_CLI=\"${MELLIFERA_CLI:-./scripts/mellifera/cli.js}\" node ./scripts/e2e/mellifera-remote-sync.js",
     "tests:mellifera:assert-cli-wrappers": "node ./scripts/e2e/assert-mellifera-cli-wrappers.js",
     "tests:mellifera:assert-apply-reservation": "node ./scripts/e2e/assert-mellifera-apply-reservation.js",
+    "tests:mellifera:reduce": "node ./scripts/e2e/mellifera-distributed-reduce.js",
+    "tests:mellifera:assert-distributed-reduce": "node ./scripts/e2e/assert-mellifera-distributed-reduce.js",
     "tests:coverage:capture-baseline": "node tests/scripts/capture-native-coverage-baseline.js",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\" \"test-expo/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md[x]\"",

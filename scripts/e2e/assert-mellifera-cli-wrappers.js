@@ -45,6 +45,8 @@ const ALLOWED = new Set([
   'tests:mellifera:remote-sync',
   'tests:mellifera:assert-cli-wrappers',
   'tests:mellifera:assert-apply-reservation',
+  'tests:mellifera:reduce',
+  'tests:mellifera:assert-distributed-reduce',
 ]);
 
 function fail(message) {
@@ -179,6 +181,10 @@ function assertScriptSet() {
   const sync = PKG.scripts['tests:mellifera:remote-sync'];
   if (!sync.includes('mellifera-remote-sync.js') || /shim|rsh\.js/.test(sync)) {
     fail(`remote-sync script entry is not the rsync wrapper: ${sync}`);
+  }
+  const reduce = PKG.scripts['tests:mellifera:reduce'];
+  if (!reduce.includes('mellifera-distributed-reduce.js') || reduce.includes('mellifera-cli')) {
+    fail(`reduce must run the reducer only: ${reduce}`);
   }
 }
 
@@ -671,6 +677,8 @@ async function main() {
     'scripts/e2e/mellifera-cli-forward.js',
     'scripts/e2e/mellifera-reserve-apply.js',
     'scripts/e2e/mellifera-remote-sync.js',
+    'scripts/e2e/mellifera-distributed-reduce.js',
+    'scripts/e2e/mellifera-distributed-piece.sh',
   ]) {
     assertNoHttpOrConfig(rel);
   }
