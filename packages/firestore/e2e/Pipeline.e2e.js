@@ -207,6 +207,133 @@ describe('FirestorePipeline', function () {
       first.get('nested.embedding').toArray().should.eql([9, 8, 7]);
     });
 
+    it('reads back Timestamp and Date constants as timestamps', async function () {
+      const { execute, constant } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const ts = new Timestamp(1700000000, 123456000);
+      const date = new Date(1700000001789);
+
+      await setDoc(doc(db, docPath), { marker: true });
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            constant(ts).as('t'),
+            constant(date).as('d'),
+            constant({ at: ts, history: [date] }).as('nested'),
+          ),
+      );
+
+      snapshot.results.should.have.length(1);
+      const data = snapshot.results[0].data();
+
+      data.t.constructor.name.should.equal('Timestamp');
+      data.t.seconds.should.equal(ts.seconds);
+      data.t.nanoseconds.should.equal(ts.nanoseconds);
+      data.d.constructor.name.should.equal('Timestamp');
+      data.d.toMillis().should.equal(date.getTime());
+      data.nested.at.constructor.name.should.equal('Timestamp');
+      data.nested.at.seconds.should.equal(ts.seconds);
+      data.nested.at.nanoseconds.should.equal(ts.nanoseconds);
+      data.nested.history[0].constructor.name.should.equal('Timestamp');
+      data.nested.history[0].toMillis().should.equal(date.getTime());
+    });
+
+    it('compares stored timestamps against Timestamp and Date constants', async function () {
+      const { execute, constant, field } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const createdAt = new Timestamp(1700000000, 123000000);
+      const sameTs = new Timestamp(1700000000, 123000000);
+      const earlierTs = new Timestamp(1699999999, 0);
+      const sameDate = new Date(1700000000123);
+      const laterDate = new Date(1700000000124);
+
+      await setDoc(doc(db, docPath), { createdAt });
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            field('createdAt').equal(constant(sameTs)).as('eq'),
+            field('createdAt').greaterThan(constant(earlierTs)).as('gt'),
+            field('createdAt').equal(constant(sameDate)).as('eqDate'),
+            field('createdAt').lessThan(constant(laterDate)).as('ltDate'),
+          ),
+      );
+
+      snapshot.results.should.have.length(1);
+      snapshot.results[0].data().should.eql({ eq: true, gt: true, eqDate: true, ltDate: true });
+    });
+
+    it('reads back Timestamp and Date values passed as rawStage params', async function () {
+      const { execute } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const ts = new Timestamp(1700000000, 123456000);
+      const date = new Date(1700000001789);
+
+      await setDoc(doc(db, docPath), { marker: true });
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .documents([docPath])
+          .rawStage('select', [{ t: ts, d: date, n: 7 }]),
+      );
+
+      snapshot.results.should.have.length(1);
+      const data = snapshot.results[0].data();
+
+      data.t.constructor.name.should.equal('Timestamp');
+      data.t.seconds.should.equal(ts.seconds);
+      data.t.nanoseconds.should.equal(ts.nanoseconds);
+      data.d.constructor.name.should.equal('Timestamp');
+      data.d.toMillis().should.equal(date.getTime());
+      data.n.should.equal(7);
+    });
+
+    it('rejects constant maps shaped like a malformed timestamp at execute', async function () {
+      const { execute, constant } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+      await setDoc(doc(db, docPath), { marker: true });
+
+      await expectAsyncError(
+        () =>
+          execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(constant({ __kind: 'timestamp', seconds: 'x', nanoseconds: 0 }).as('bad')),
+          ),
+        'options.selections[0].expr.value to be a timestamp',
+      );
+      await expectAsyncError(
+        () =>
+          execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(constant({ __kind: 'timestamp', seconds: 'x', nanoseconds: 0 }).as('bad')),
+          ),
+        'to be a timestamp with integer seconds between -62135596800 and 253402300799 and integer nanoseconds between 0 and 999999999.',
+      );
+    });
+
     it('throws helpful validation errors for invalid source arguments', function () {
       const { getFirestore } = firestoreModular;
       const db = getFirestore(DATABASE_ID);

@@ -16,6 +16,7 @@
  */
 
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
+import { Timestamp } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import type { Firestore } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import type { FirestorePipelineSerializedInternal } from '../../types/internal';
 import type {
@@ -73,6 +74,49 @@ const WEB_PIPELINE_HELPER_ALIASES: Record<string, string> = {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+const MIN_TIMESTAMP_SECONDS = -62135596800;
+const MAX_TIMESTAMP_SECONDS = 253402300799;
+
+function isWholeNumberInRange(value: unknown, min: number, max: number): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max;
+}
+
+// Tagged maps are validated with their field path by assertSerializedTimestamps before revival.
+function reviveSerializedTimestamp(value: Record<string, unknown>): Timestamp | null {
+  if (value.__kind !== 'timestamp') {
+    return null;
+  }
+  return new Timestamp(value.seconds as number, value.nanoseconds as number);
+}
+
+function assertSerializedTimestamps(value: unknown, fieldName: string): void {
+  const stack: Array<[unknown, string]> = [[value, fieldName]];
+  while (stack.length > 0) {
+    const [current, path] = stack.pop()!;
+    if (Array.isArray(current)) {
+      current.forEach((entry, index) => stack.push([entry, `${path}[${index}]`]));
+      continue;
+    }
+    if (!isRecord(current)) {
+      continue;
+    }
+    if (current.__kind === 'timestamp') {
+      if (
+        !isWholeNumberInRange(current.seconds, MIN_TIMESTAMP_SECONDS, MAX_TIMESTAMP_SECONDS) ||
+        !isWholeNumberInRange(current.nanoseconds, 0, 999999999)
+      ) {
+        throw new Error(
+          `pipelineExecute() expected ${path} to be a timestamp with integer seconds between ${MIN_TIMESTAMP_SECONDS} and ${MAX_TIMESTAMP_SECONDS} and integer nanoseconds between 0 and 999999999.`,
+        );
+      }
+      continue;
+    }
+    for (const [key, entry] of Object.entries(current)) {
+      stack.push([entry, `${path}.${key}`]);
+    }
+  }
 }
 
 function getPipelineHelper(name: string): PipelineHelperFn {
@@ -521,6 +565,12 @@ function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
       continue;
     }
 
+    const timestamp = reviveSerializedTimestamp(currentValue);
+    if (timestamp) {
+      frame.resolve(timestamp);
+      continue;
+    }
+
     if (frame.mode === 'numericOperand' || frame.mode === 'comparisonOperand') {
       if (isExpressionNode(currentValue)) {
         rebuildExpressionNode(stack, currentValue, frame.mode, frame.resolve);
@@ -604,6 +654,7 @@ function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
   return finalValue;
 }
 
-export function revivePipelineValue(value: unknown): unknown {
+export function revivePipelineValue(value: unknown, fieldName = 'stage.options'): unknown {
+  assertSerializedTimestamps(value, fieldName);
   return reviveValueWithMode(value, 'pipeline');
 }

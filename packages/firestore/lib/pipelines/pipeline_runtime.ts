@@ -261,9 +261,58 @@ class RuntimePipelineResult<T = DocumentData> implements PipelineResult<T> {
   }
 }
 
-function serializeValue(value: unknown, visiting: WeakSet<object>): unknown {
+// Structural check as well as instanceof: a second copy of this package (e.g. pipelines entry
+// resolved from source while the main entry resolves from dist) has its own Timestamp class.
+function isTimestampLike(value: unknown): value is FirestoreTimestamp {
   if (value instanceof FirestoreTimestamp) {
-    return { seconds: value.seconds, nanoseconds: value.nanoseconds };
+    return true;
+  }
+  if (!isObject(value)) {
+    return false;
+  }
+  const candidate = value as Record<string, unknown>;
+  return (
+    isNumber(candidate.seconds) &&
+    isNumber(candidate.nanoseconds) &&
+    typeof candidate.toMillis === 'function' &&
+    typeof candidate.toDate === 'function'
+  );
+}
+
+const MIN_TIMESTAMP_SECONDS = -62135596800;
+const MAX_TIMESTAMP_SECONDS = 253402300799;
+
+// Truncates to microseconds like firebase-js-sdk constant(), so every platform sends the same value.
+// Range is checked here so native never builds an out-of-range Timestamp (iOS cannot recover).
+function serializeTimestamp(value: FirestoreTimestamp): Record<string, unknown> {
+  const { seconds, nanoseconds } = value;
+  if (
+    !Number.isInteger(seconds) ||
+    seconds < MIN_TIMESTAMP_SECONDS ||
+    seconds > MAX_TIMESTAMP_SECONDS ||
+    !(nanoseconds >= 0 && nanoseconds < 1e9)
+  ) {
+    throw new Error(
+      `firebase.firestore().pipeline() expected a Timestamp with integer seconds between ${MIN_TIMESTAMP_SECONDS} and ${MAX_TIMESTAMP_SECONDS} and nanoseconds between 0 and 999999999.`,
+    );
+  }
+  return {
+    __kind: 'timestamp',
+    seconds,
+    nanoseconds: 1000 * Math.floor(nanoseconds / 1000),
+  };
+}
+
+function serializeValue(value: unknown, visiting: WeakSet<object>): unknown {
+  if (isTimestampLike(value)) {
+    return serializeTimestamp(value);
+  }
+
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) {
+      throw new Error('firebase.firestore().pipeline() expected a valid Date.');
+    }
+    return serializeTimestamp(FirestoreTimestamp.fromDate(value));
   }
 
   if (value instanceof FieldPath) {
