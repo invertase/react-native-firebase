@@ -4,8 +4,10 @@
  * apply forwards to the reservation mapper and does not invoke the CLI.
  * reserve-apply runs reserve with argv unchanged, then passes the grant JSON
  * to the mapper.
- * remote-sync uses rsync --rsh "<cli> exec --rsh" and a remote placeholder
- * destination. Run: yarn tests:mellifera:assert-cli-wrappers
+ * remote-sync uses rsync --rsh "<cli> exec --rsh" when no session, url, or
+ * federation flag is passed. Those caller flags are placed before --rsh in
+ * caller order. The destination is a remote placeholder.
+ * Run: yarn tests:mellifera:assert-cli-wrappers
  */
 'use strict';
 
@@ -309,7 +311,7 @@ function rsyncArgValue(argv, flag) {
 }
 
 function assertRemoteSync(env, stubLog, rsyncLog) {
-  function check(label, yarnArgs, filterPath) {
+  function check(label, yarnArgs, filterPath, forwarded = []) {
     clearLog(stubLog);
     clearLog(rsyncLog);
     const result = runYarn('tests:mellifera:remote-sync', yarnArgs, env);
@@ -329,8 +331,16 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
       fail(`${label} destination is local or has a user: ${destination}`);
     }
     const rsh = rsyncArgValue(argv, '--rsh');
-    if (rsh !== `${env.MELLIFERA_CLI} exec --rsh`) {
+    const expectedRsh = [env.MELLIFERA_CLI, 'exec', ...forwarded, '--rsh'].join(' ');
+    if (rsh !== expectedRsh) {
       fail(`${label} --rsh is ${JSON.stringify(rsh)}`);
+    }
+    const rshAt = rsh.lastIndexOf(' --rsh');
+    const beforeRsh = rshAt < 0 ? '' : rsh.slice(0, rshAt);
+    for (const token of forwarded) {
+      if (!beforeRsh.includes(token)) {
+        fail(`${label} forwarded flag is not before --rsh: ${token} in ${JSON.stringify(rsh)}`);
+      }
     }
     if (rsh.includes('-- ') || rsh.includes('scripts/e2e')) {
       fail(`${label} --rsh inserted a separator or a shim: ${rsh}`);
@@ -346,16 +356,27 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
       fail(`${label} stub calls: ${JSON.stringify(stubCalls)}\nrsync stderr: ${result.stderr}`);
     }
     const stubArgv = stubCalls[0];
-    const prefix = stubArgv.slice(0, 5);
-    assertDeepEqual(`${label} stub prefix`, prefix, [
-      'exec',
-      '--rsh',
-      'placeholder',
-      'rsync',
-      '--server',
-    ]);
+    const stubHead = ['exec', ...forwarded, '--rsh', 'placeholder', 'rsync', '--server'];
+    assertDeepEqual(`${label} stub prefix`, stubArgv.slice(0, stubHead.length), stubHead);
     if (stubArgv.includes('--')) {
       fail(`${label} stub argv inserted -- before the remote command: ${JSON.stringify(stubArgv)}`);
+    }
+  }
+
+  function expectFail(label, yarnArgs) {
+    clearLog(stubLog);
+    clearLog(rsyncLog);
+    const result = runYarn('tests:mellifera:remote-sync', yarnArgs, env);
+    if (result.status === 0) {
+      fail(`${label} exited 0\nstdout: ${result.stdout}\nstderr: ${result.stderr}`);
+    }
+    if (!`${result.stderr}`.includes('mellifera-remote-sync:')) {
+      fail(
+        `${label} did not fail in remote-sync (exit ${result.status})\nstderr: ${result.stderr}`,
+      );
+    }
+    if (readJsonLines(rsyncLog).length !== 0) {
+      fail(`${label} spawned rsync`);
     }
   }
 
@@ -363,6 +384,30 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
   const custom = path.join(path.dirname(rsyncLog), 'caller.rsync-filter');
   fs.writeFileSync(custom, '# caller filter\n- *.tmp\n');
   check('caller filter', ['--filter', custom], custom);
+  const session = 'sess-wrap';
+  const url = 'http://127.0.0.1:9';
+  const federation = 'fed-wrap';
+  const forwarded = ['--url', url, '--federation', federation, '--session', session];
+  check(
+    'caller session url federation',
+    ['--url', url, '--filter', custom, '--federation', federation, '--session', session],
+    custom,
+    forwarded,
+  );
+  const equalsForwarded = [`--session=${session}`, `--url=${url}`, `--federation=${federation}`];
+  check(
+    'equals session url federation',
+    ['--filter', custom, ...equalsForwarded],
+    custom,
+    equalsForwarded,
+  );
+  expectFail('unknown arg', ['--kinds', 'slot']);
+  expectFail('session missing', ['--session']);
+  expectFail('url missing', ['--url']);
+  expectFail('federation missing', ['--federation']);
+  expectFail('session empty equals', ['--session=']);
+  expectFail('url empty equals', ['--url=']);
+  expectFail('federation empty equals', ['--federation=']);
 }
 
 async function assertClosedPort(baseEnv, builtCli) {
