@@ -291,6 +291,11 @@ function main() {
     );
     assert.ok(android.indexOf('check_kvm') < android.indexOf('ensure_testing_avd'));
     assert.ok(
+      android.includes('check_java') &&
+        android.indexOf('check_java') < android.indexOf('yarn tests:android:unit'),
+      'android checks for a JDK before Gradle',
+    );
+    assert.ok(
       android.indexOf('yarn tests:e2e:release --devices --placement=host') <
         android.indexOf('yarn tests:android:build'),
     );
@@ -341,10 +346,20 @@ function main() {
     assert.ok(
       iosSteps.indexOf('yarn ruby:install') < iosSteps.indexOf('yarn tests:ios:pod:install'),
     );
+    assert.ok(
+      iosSteps.includes('check_java') &&
+        iosSteps.indexOf('check_java') < iosSteps.indexOf('yarn ruby:install'),
+      'ios checks for a JDK before any build step',
+    );
     const macos = piece(['macos', '--placement=slot', '0', '--dry-run']).stdout.trim().split('\n');
     assert.ok(
       macos.includes('yarn tests:macos:packager:jet') &&
         macos.includes('yarn tests:macos:test-cover'),
+    );
+    assert.ok(
+      macos.includes('check_java') &&
+        macos.indexOf('check_java') < macos.indexOf('yarn tests:macos:pod:install'),
+      'macos checks for a JDK before any build step',
     );
     assert.strictEqual(piece(['tvos', '--dry-run']).status, 2);
     assert.ok(

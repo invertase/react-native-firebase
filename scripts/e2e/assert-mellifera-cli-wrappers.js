@@ -555,6 +555,11 @@ function assertDefaultFilterSkipsGit(realRsync, home) {
   fs.writeFileSync(path.join(src, 'keep.txt'), 'kept\n');
   fs.mkdirSync(path.join(src, 'nested', '.git'), { recursive: true });
   fs.writeFileSync(path.join(src, 'nested', '.git', 'HEAD'), 'ref: refs/heads/main\n');
+  fs.mkdirSync(path.join(src, 'vendor', 'bundle', 'ruby'), { recursive: true });
+  fs.writeFileSync(path.join(src, 'vendor', 'bundle', 'ruby', 'parser.bundle'), 'local build\n');
+  fs.writeFileSync(path.join(src, 'vendor', 'keep.rb'), 'kept\n');
+  fs.mkdirSync(path.join(src, 'nested', 'vendor', 'bundle'), { recursive: true });
+  fs.writeFileSync(path.join(src, 'nested', 'vendor', 'bundle', 'gem.rb'), 'local build\n');
   const ran = spawnSync(
     realRsync,
     ['-a', '--filter', `merge ${DEFAULT_FILTER}`, `${src}/`, `${dst}/`],
@@ -563,8 +568,22 @@ function assertDefaultFilterSkipsGit(realRsync, home) {
   if (ran.status !== 0) {
     fail(`default filter rsync exited ${ran.status}\n${ran.stderr}`);
   }
-  assertDeepEqual('default filter top entries', fs.readdirSync(dst).sort(), ['keep.txt', 'nested']);
-  assertDeepEqual('default filter nested entries', fs.readdirSync(path.join(dst, 'nested')), []);
+  assertDeepEqual('default filter top entries', fs.readdirSync(dst).sort(), [
+    'keep.txt',
+    'nested',
+    'vendor',
+  ]);
+  assertDeepEqual('default filter nested entries', fs.readdirSync(path.join(dst, 'nested')), [
+    'vendor',
+  ]);
+  assertDeepEqual(
+    'default filter nested vendor entries',
+    fs.readdirSync(path.join(dst, 'nested', 'vendor')),
+    [],
+  );
+  assertDeepEqual('default filter vendor entries', fs.readdirSync(path.join(dst, 'vendor')), [
+    'keep.rb',
+  ]);
 }
 
 async function assertClosedPort(baseEnv, builtCli) {

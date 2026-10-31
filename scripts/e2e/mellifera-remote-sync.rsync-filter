@@ -10,6 +10,7 @@
 - .yarn/cache/
 - .yarn/unplugged/
 - Pods/
+- vendor/bundle/
 - build/
 - dist/
 - .cxx/

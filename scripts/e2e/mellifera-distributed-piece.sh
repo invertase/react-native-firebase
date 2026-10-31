@@ -207,6 +207,27 @@ check_kvm() {
   fi
 }
 
+# Gradle needs javac and the Firebase emulators refuse Java older than 21.
+# CI uses Temurin 21 (actions/setup-java) on every platform. Gradle compiles with $JAVA_HOME when set; the emulators run `java` from PATH.
+check_java() {
+  local want="${RNFB_JAVA_VERSION:-21}" javac="${JAVA_HOME:+$JAVA_HOME/bin/}javac" major
+  if ! "$javac" -version >/dev/null 2>&1; then
+    echo "mellifera-distributed-piece: no Java compiler (${javac} -version failed); install a JDK ${want} (CI uses Temurin ${want})" >&2
+    return 1
+  fi
+  # Skip JVM "Picked up JAVA_TOOL_OPTIONS" lines; 1.8 reports as 8.
+  major="$("$javac" -version 2>&1 | awk '$1=="javac"{n=split($2,v,/[^0-9]+/); print (v[1]=="1" && n>1) ? v[2] : v[1]; exit}')"
+  if [[ ! "$major" =~ ^[0-9]+$ || "$major" -lt "$want" ]]; then
+    echo "mellifera-distributed-piece: ${javac} ${major:-unknown} found; JDK ${want} or newer is required (CI uses Temurin ${want})" >&2
+    return 1
+  fi
+  major="$(java -version 2>&1 | awk -F'"' '/version "/{n=split($2,v,/[^0-9]+/); print (v[1]=="1" && n>1) ? v[2] : v[1]; exit}')"
+  if [[ ! "$major" =~ ^[0-9]+$ || "$major" -lt "$want" ]]; then
+    echo "mellifera-distributed-piece: java on PATH is ${major:-missing}; Java ${want} or newer is required for the Firebase emulators" >&2
+    return 1
+  fi
+}
+
 headless_emulator() {
   if [[ -n "${RNFB_ANDROID_EMULATOR_BOOT_ARGS:-}" ]]; then
     [[ "$DRY_RUN" -eq 1 ]] && echo "keep RNFB_ANDROID_EMULATOR_BOOT_ARGS"
@@ -218,6 +239,7 @@ headless_emulator() {
 
 piece_android() {
   step check_kvm || return $?
+  step check_java || return $?
   headless_emulator
   step ensure_testing_avd || return $?
   step "${RELEASE[@]}" || return $?
@@ -242,6 +264,7 @@ after_e2e() {
 
 piece_ios() {
   step check_apple_toolchain ios || return $?
+  step check_java || return $?
   step ensure_brew_utilities applesimutils xcbeautify || return $?
   step yarn ruby:install || return $?
   step yarn tests:ios:ruby || return $?
@@ -255,6 +278,7 @@ piece_ios() {
 
 piece_macos() {
   step check_apple_toolchain macos || return $?
+  step check_java || return $?
   step ensure_brew_utilities xcbeautify || return $?
   step yarn ruby:install || return $?
   step yarn tests:macos:pod:install || return $?
