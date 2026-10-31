@@ -90,9 +90,9 @@ var require_build_info_generated = __commonJS({
     exports2.stamped = void 0;
     exports2.stamped = {
       version: '0.1.0',
-      commit: '759e2e5672a7faed417aeb877c6db91d34c9fa42',
+      commit: '12650bbe5ce25179e5de69c1b4c63b2187bc2f0a',
       dirty: false,
-      builtAt: '2026-10-30T20:04:20.302Z',
+      builtAt: '2026-10-31T00:50:26.036Z',
       source: 'git',
     };
   },
@@ -32520,9 +32520,9 @@ var require_build_info_generated2 = __commonJS({
     exports2.stamped = void 0;
     exports2.stamped = {
       version: '0.1.0',
-      commit: '759e2e5672a7faed417aeb877c6db91d34c9fa42',
+      commit: '12650bbe5ce25179e5de69c1b4c63b2187bc2f0a',
       dirty: false,
-      builtAt: '2026-10-30T20:04:21.006Z',
+      builtAt: '2026-10-31T00:50:26.759Z',
       source: 'git',
     };
   },
@@ -35649,6 +35649,15 @@ async function main() {
         throw new CliError(
           'admission-deadline',
           'admission deadline passed before a grant was available',
+        );
+      }
+      if (code === 'remote-wait-timeout') {
+        if (asJson) {
+          console.log(JSON.stringify(errBody, null, 2));
+        }
+        throw new CliError(
+          'remote-wait-timeout',
+          `the global core did not answer the spill within the remote wait (--remote-wait-ms ${remoteWaitMs} plus the spill transport timeout, phase ${errBody?.phase || 'spill-existing'}); the federation websocket was still connected as far as the local core knew. Raise --remote-wait-ms: a provisioned guest takes about a minute to boot.`,
         );
       }
       throw err;
