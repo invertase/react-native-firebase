@@ -19,7 +19,9 @@
 # The android piece first creates the serial base AVD (TestingAVD) when it is
 # missing, matching CI: system image android-36 google_apis, no device profile.
 # The ABI follows the host (x86_64, or arm64-v8a on arm64). Override with
-# RNFB_ANDROID_AVD_API / RNFB_ANDROID_AVD_TARGET / RNFB_ANDROID_AVD_ABI.
+# RNFB_ANDROID_AVD_API / RNFB_ANDROID_AVD_TARGET / RNFB_ANDROID_AVD_ABI. A new AVD,
+# or an existing one under --placement=host, gets its userdata image created by one
+# short headless launch before the build.
 # `ensure-avd` runs only that step.
 set -uo pipefail
 
@@ -129,13 +131,62 @@ ensure_testing_avd() {
   fi
   if "$emu" -list-avds 2>/dev/null | grep -qx "$BASE_AVD"; then
     echo "mellifera-distributed-piece: ${BASE_AVD} already exists" >&2
-    return 0
+    # A desk's TestingAVD belongs to its developer; only a whole guest is prepared.
+    [[ "$PLACEMENT" == host ]] || return 0
+  else
+    echo "mellifera-distributed-piece: creating ${BASE_AVD} from ${pkg}" >&2
+    yes 2>/dev/null | "${tools}/sdkmanager" --licenses >/dev/null
+    "${tools}/sdkmanager" --install "$pkg" "emulator" "platform-tools" || return $?
+    echo no | "${tools}/avdmanager" create avd --force -n "$BASE_AVD" --abi "${target}/${abi}" --package "$pkg" || return $?
+    "$emu" -list-avds | grep -qx "$BASE_AVD" || return 1
   fi
-  echo "mellifera-distributed-piece: creating ${BASE_AVD} from ${pkg}" >&2
-  yes 2>/dev/null | "${tools}/sdkmanager" --licenses >/dev/null
-  "${tools}/sdkmanager" --install "$pkg" "emulator" "platform-tools" || return $?
-  echo no | "${tools}/avdmanager" create avd --force -n "$BASE_AVD" --abi "${target}/${abi}" --package "$pkg" || return $?
-  "$emu" -list-avds | grep -qx "$BASE_AVD"
+  prewarm_avd_userdata "$emu"
+}
+
+# On first boot the emulator raises an API 24+ data partition to at least 6 GiB and
+# refuses to start unless 1.2x that is free, though the image is sparse. CI's AVD
+# home is a separate 74 GB volume; a guest holds the build and the AVD on one root
+# disk, so create the image now, before the build fills it. The check only runs
+# while userdata-qemu.img is missing, and Detox never passes -wipe-data. A partial
+# image from a failed attempt is removed so the next attempt starts clean.
+prewarm_avd_userdata() {
+  local emu="$1" dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}/${BASE_AVD}.avd"
+  local timeout_s="${RNFB_ANDROID_AVD_PREWARM_TIMEOUT_S:-180}" pid waited=0 why=""
+  local img="${dir}/userdata-qemu.img" port=5584
+  # Only this launch: qemu gets the same argv, and no other TestingAVD uses this port.
+  local pat="-avd ${BASE_AVD} .*-port ${port}( |$)"
+  # The qcow2 overlay appears once qemu has opened the finished raw image.
+  [[ -f "$img" && -f "${img}.qcow2" ]] && return 0
+  rm -f "$img" "${img}.qcow2"
+  echo "mellifera-distributed-piece: creating ${BASE_AVD} userdata before the build" >&2
+  # shellcheck disable=SC2086 # CI_EMULATOR_OPTIONS is a word list
+  "$emu" -avd "$BASE_AVD" $CI_EMULATOR_OPTIONS -crash-report-mode never -port "$port" >"${dir}/prewarm.log" 2>&1 &
+  pid=$!
+  while [[ ! -f "${img}.qcow2" ]] && (( waited < timeout_s )); do
+    kill -0 "$pid" 2>/dev/null || { why="the emulator exited before creating it"; break; }
+    sleep 1
+    waited=$(( waited + 1 ))
+  done
+  [[ -f "${img}.qcow2" ]] || why="${why:-not created within ${timeout_s}s}"
+  # Stop it so it does not hold RAM through the build or show up in adb.
+  pkill -TERM -P "$pid" 2>/dev/null
+  kill -TERM "$pid" 2>/dev/null
+  waited=0
+  while { kill -0 "$pid" 2>/dev/null || pgrep -f -- "$pat" >/dev/null; } && (( waited < 30 )); do
+    sleep 1
+    waited=$(( waited + 1 ))
+  done
+  pkill -KILL -P "$pid" 2>/dev/null
+  kill -KILL "$pid" 2>/dev/null
+  pkill -KILL -f -- "$pat" 2>/dev/null
+  wait "$pid" 2>/dev/null
+  if [[ -n "$why" || ! -f "$img" ]]; then
+    rm -f "$img" "${img}.qcow2"
+    echo "mellifera-distributed-piece: ${BASE_AVD} userdata ${why:-missing}; last emulator output:" >&2
+    tail -5 "${dir}/prewarm.log" >&2
+    return 1
+  fi
+  echo "mellifera-distributed-piece: ${BASE_AVD} userdata ready" >&2
 }
 
 # CI installs these from the vendored tap (install-homebrew-rnfb.sh).

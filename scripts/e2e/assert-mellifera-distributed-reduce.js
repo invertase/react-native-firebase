@@ -36,7 +36,12 @@ function piece(args, env) {
   });
 }
 
-/** Fake SDK: emulator lists AVDs from a state file; managers log argv. */
+/**
+ * Fake SDK: emulator lists AVDs from a state file; managers log argv. `emulator -avd`
+ * logs argv, records its pid, creates the userdata files (unless STUB_EMULATOR_STALL),
+ * and keeps running with its argv like a booting emulator (ignoring SIGTERM when
+ * STUB_EMULATOR_IGNORE_TERM is set).
+ */
 function stubSdk(dir) {
   fs.mkdirSync(dir, { recursive: true });
   const avds = path.join(dir, 'avds');
@@ -48,7 +53,23 @@ function stubSdk(dir) {
     fs.writeFileSync(file, `#!/usr/bin/env bash\n${body}\n`);
     fs.chmodSync(file, 0o755);
   };
-  tool('emulator/emulator', `[[ "$1" == -list-avds ]] && cat ${JSON.stringify(avds)}`);
+  tool(
+    'emulator/emulator',
+    [
+      `[[ "$1" == -list-avds ]] && { cat ${JSON.stringify(avds)}; exit 0; }`,
+      '[[ "$1" == -avd ]] || exit 0',
+      `echo "emulator $*" >> ${JSON.stringify(log)}`,
+      'avd="$ANDROID_AVD_HOME/$2.avd"',
+      'echo $$ > "$avd/prewarm.pid"',
+      '[[ -n "${STUB_EMULATOR_IGNORE_TERM:-}" ]] && trap "" TERM',
+      'if [[ -z "${STUB_EMULATOR_STALL:-}" ]]; then',
+      '  sleep 0.2; : > "$avd/userdata-qemu.img"; : > "$avd/userdata-qemu.img.qcow2"',
+      'else',
+      '  : > "$avd/userdata-qemu.img"',
+      'fi',
+      'for _ in $(seq 3000); do sleep 0.1; done',
+    ].join('\n'),
+  );
   tool('cmdline-tools/latest/bin/sdkmanager', `echo "sdkmanager $*" >> ${JSON.stringify(log)}`);
   tool(
     'cmdline-tools/latest/bin/avdmanager',
@@ -56,6 +77,7 @@ function stubSdk(dir) {
       `cat >/dev/null; echo "avdmanager $*" >> ${JSON.stringify(log)}`,
       'while [[ $# -gt 0 ]]; do [[ "$1" == -n ]] && name="$2"; shift; done',
       `echo "$name" >> ${JSON.stringify(avds)}`,
+      'mkdir -p "$ANDROID_AVD_HOME/$name.avd"',
     ].join('\n'),
   );
   return { log };
@@ -375,10 +397,27 @@ function main() {
 
     const sdk = path.join(tmp, 'sdk');
     const { log } = stubSdk(sdk);
-    const avdEnv = { ANDROID_HOME: sdk, RNFB_ANDROID_AVD_ABI: 'x86_64' };
+    const avdHome = path.join(tmp, 'avd-home');
+    const avdDir = path.join(avdHome, 'TestingAVD.avd');
+    const userdata = path.join(avdDir, 'userdata-qemu.img');
+    const avdEnv = { ANDROID_HOME: sdk, ANDROID_AVD_HOME: avdHome, RNFB_ANDROID_AVD_ABI: 'x86_64' };
+    const prewarmLaunch =
+      'emulator -avd TestingAVD -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -crash-report-mode never -port 5584';
+    const assertPrewarmStopped = label => {
+      const pid = Number(fs.readFileSync(path.join(avdDir, 'prewarm.pid'), 'utf8'));
+      assert.throws(
+        () => process.kill(pid, 0),
+        { code: 'ESRCH' },
+        `${label}: prewarm emulator stopped`,
+      );
+    };
     const created = piece(['ensure-avd'], avdEnv);
     assert.strictEqual(created.status, 0, created.stderr);
+    assert.ok(fs.existsSync(userdata), 'a new TestingAVD gets its userdata before the build');
+    assert.ok(fs.existsSync(`${userdata}.qcow2`));
+    assertPrewarmStopped('create');
     const calls = fs.readFileSync(log, 'utf8').trim().split('\n');
+    assert.ok(calls.includes(prewarmLaunch), calls.join('\n'));
     assert.ok(
       calls.includes(
         'sdkmanager --install system-images;android-36;google_apis;x86_64 emulator platform-tools',
@@ -392,13 +431,50 @@ function main() {
       calls.join('\n'),
     );
     fs.writeFileSync(log, '');
-    const again = piece(['ensure-avd'], avdEnv);
+    const again = piece(['ensure-avd', '--placement=host'], avdEnv);
     assert.strictEqual(again.status, 0, again.stderr);
     assert.strictEqual(
       fs.readFileSync(log, 'utf8'),
       '',
-      'existing TestingAVD must not be recreated',
+      'existing TestingAVD with userdata is neither recreated nor launched',
     );
+    fs.rmSync(userdata);
+    fs.rmSync(`${userdata}.qcow2`);
+    const desk = piece(['ensure-avd'], avdEnv);
+    assert.strictEqual(desk.status, 0, desk.stderr);
+    assert.strictEqual(
+      fs.readFileSync(log, 'utf8'),
+      '',
+      "a desk's existing TestingAVD is not launched",
+    );
+    const hostRun = piece(['ensure-avd', '--placement=host'], avdEnv);
+    assert.strictEqual(hostRun.status, 0, hostRun.stderr);
+    assert.ok(
+      fs.existsSync(userdata),
+      'a whole guest creates missing userdata on an existing TestingAVD',
+    );
+    assertPrewarmStopped('existing');
+    fs.rmSync(`${userdata}.qcow2`);
+    fs.writeFileSync(log, '');
+    const partial = piece(['ensure-avd', '--placement=host'], avdEnv);
+    assert.strictEqual(partial.status, 0, partial.stderr);
+    assert.ok(
+      fs.readFileSync(log, 'utf8').includes(prewarmLaunch),
+      'a raw image without its overlay is partial and is created again',
+    );
+    assertPrewarmStopped('partial');
+    fs.rmSync(userdata);
+    fs.rmSync(`${userdata}.qcow2`);
+    const stalled = piece(['ensure-avd', '--placement=host'], {
+      ...avdEnv,
+      STUB_EMULATOR_STALL: '1',
+      STUB_EMULATOR_IGNORE_TERM: '1',
+      RNFB_ANDROID_AVD_PREWARM_TIMEOUT_S: '2',
+    });
+    assert.strictEqual(stalled.status, 1, 'userdata that never appears must fail');
+    assert.match(stalled.stderr, /userdata not created within 2s/);
+    assertPrewarmStopped('stalled, ignoring SIGTERM');
+    assert.ok(!fs.existsSync(userdata), 'a failed attempt leaves no partial userdata');
     const noSdk = piece(['ensure-avd'], { ANDROID_HOME: path.join(tmp, 'none') });
     assert.strictEqual(noSdk.status, 1, 'missing SDK tools must fail');
   } finally {
