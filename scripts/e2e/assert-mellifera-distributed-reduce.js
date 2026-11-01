@@ -296,6 +296,11 @@ function main() {
       'android checks for a JDK before Gradle',
     );
     assert.ok(
+      android.includes('check_memory') &&
+        android.indexOf('check_memory') < android.indexOf('yarn tests:android:unit'),
+      'android checks guest memory against the Gradle heap before Gradle',
+    );
+    assert.ok(
       android.indexOf('yarn tests:e2e:release --devices --placement=host') <
         android.indexOf('yarn tests:android:build'),
     );

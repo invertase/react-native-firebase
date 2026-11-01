@@ -228,6 +228,35 @@ check_java() {
   fi
 }
 
+# The Gradle daemon heap alone is org.gradle.jvmargs -Xmx; Kotlin, D8, lint,
+# CMake and then the emulator need room beside it.
+check_memory() {
+  local props="tests/android/gradle.properties" xmx heap_mb total_mb
+  local headroom_mb="${RNFB_ANDROID_MEMORY_HEADROOM_MB:-4096}"
+  if [[ ! "$headroom_mb" =~ ^[0-9]+$ ]]; then
+    echo "mellifera-distributed-piece: RNFB_ANDROID_MEMORY_HEADROOM_MB must be a whole number of MB, got ${headroom_mb}" >&2
+    return 1
+  fi
+  xmx="$(sed -n 's/^org\.gradle\.jvmargs=.*-Xmx\([0-9][0-9]*[mMgG]\).*/\1/p' "$props" | head -1)"
+  case "$xmx" in
+    *[gG]) heap_mb=$(( 10#${xmx%?} * 1024 )) ;;
+    *[mM]) heap_mb=$(( 10#${xmx%?} )) ;;
+    *)
+      echo "mellifera-distributed-piece: no -Xmx in org.gradle.jvmargs (${props})" >&2
+      return 1
+      ;;
+  esac
+  case "$(uname -s)" in
+    Linux) total_mb=$(( $(awk '/^MemTotal:/{print $2}' /proc/meminfo) / 1024 )) ;;
+    Darwin) total_mb=$(( $(sysctl -n hw.memsize) / 1048576 )) ;;
+    *) return 0 ;;
+  esac
+  if (( total_mb < heap_mb + headroom_mb )); then
+    echo "mellifera-distributed-piece: ${total_mb} MB RAM; the Android build needs ${heap_mb} MB Gradle heap (${props}) plus ${headroom_mb} MB (RNFB_ANDROID_MEMORY_HEADROOM_MB)" >&2
+    return 1
+  fi
+}
+
 headless_emulator() {
   if [[ -n "${RNFB_ANDROID_EMULATOR_BOOT_ARGS:-}" ]]; then
     [[ "$DRY_RUN" -eq 1 ]] && echo "keep RNFB_ANDROID_EMULATOR_BOOT_ARGS"
@@ -240,6 +269,7 @@ headless_emulator() {
 piece_android() {
   step check_kvm || return $?
   step check_java || return $?
+  step check_memory || return $?
   headless_emulator
   step ensure_testing_avd || return $?
   step "${RELEASE[@]}" || return $?
