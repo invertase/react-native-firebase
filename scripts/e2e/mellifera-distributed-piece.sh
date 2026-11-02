@@ -341,12 +341,53 @@ stop_gradle_daemons() {
   (cd tests/android && ./gradlew --stop)
 }
 
+# run_bounded SECONDS CMD...: CMD's status, or 124 when it outlives SECONDS
+# (macOS has no timeout(1)).
+run_bounded() {
+  local limit="$1" pid waited=0
+  shift
+  "$@" &
+  pid=$!
+  while kill -0 "$pid" 2>/dev/null && (( waited < limit )); do
+    sleep 1
+    waited=$((waited + 1))
+  done
+  if kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" 2>/dev/null
+    sleep 1
+    kill -0 "$pid" 2>/dev/null && kill -KILL "$pid" 2>/dev/null
+    wait "$pid" 2>/dev/null
+    return 124
+  fi
+  wait "$pid"
+}
+
 save_android_logcat() {
   local out="${RNFB_ANDROID_LOGCAT_FILE:-${TMPDIR:-/tmp}/rnfb-e2e-logcat-android${SLOT:+-slot$SLOT}.txt}"
   local adb="${ANDROID_HOME:+$ANDROID_HOME/platform-tools/}adb"
   # Under host the serial pin lives only inside test-cover's own env.
-  local serial="${ANDROID_SERIAL:-emulator-5554}"
-  if ! "$adb" -s "$serial" logcat -d -b main,system,crash >"$out" 2>&1; then
+  local serial="${ANDROID_SERIAL:-emulator-5554}" state ec
+  local timeout_s="${RNFB_ANDROID_LOGCAT_TIMEOUT_S:-60}"
+  if [[ ! "$timeout_s" =~ ^[1-9][0-9]*$ ]]; then
+    echo "mellifera-distributed-piece: RNFB_ANDROID_LOGCAT_TIMEOUT_S must be a positive whole number of seconds, got ${timeout_s}; using 60" >&2
+    timeout_s=60
+  fi
+  # logcat waits for a device that never came up; get-state does not, but
+  # either can block on a wedged adb server.
+  # A file, not a pipe: an adb server started here would hold a pipe open.
+  run_bounded "$timeout_s" "$adb" -s "$serial" get-state >"$out" 2>/dev/null
+  state="$(tail -n 1 "$out")"
+  if [[ "$state" != device ]]; then
+    echo "mellifera-distributed-piece: no logcat: adb get-state on ${serial} reported ${state:-nothing (no such device, or adb did not answer)}" >&2
+    return 0
+  fi
+  ec=0
+  run_bounded "$timeout_s" "$adb" -s "$serial" logcat -d -b main,system,crash >"$out" 2>&1 || ec=$?
+  if [[ "$ec" -eq 124 ]]; then
+    echo "mellifera-distributed-piece: adb logcat on ${serial} did not finish within ${timeout_s}s; partial log in ${out}" >&2
+    return 0
+  fi
+  if [[ "$ec" -ne 0 ]]; then
     echo "mellifera-distributed-piece: adb logcat on ${serial} failed:" >&2
     head -n 5 "$out" >&2
     return 0
