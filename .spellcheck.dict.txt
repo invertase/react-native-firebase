@@ -19,6 +19,7 @@ APIs.
 APNs
 AppAttest
 AppCheck
+AppDelegate
 AppDelegate.m
 aps-environment
 args
