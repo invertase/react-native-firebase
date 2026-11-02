@@ -332,6 +332,15 @@ function main() {
     );
     const slotAndroid = piece(['android', '--placement=slot', '2', '--dry-run']);
     assert.strictEqual(slotAndroid.status, 0, slotAndroid.stderr);
+    assert.ok(
+      android.indexOf('yarn tests:android:build') < android.indexOf('stop_gradle_daemons') &&
+        android.indexOf('stop_gradle_daemons') < android.indexOf('yarn tests:packager:jet'),
+      'a whole guest stops the build daemons before Metro and the emulator',
+    );
+    assert.ok(
+      !slotAndroid.stdout.includes('stop_gradle_daemons'),
+      'a desk slot must not stop daemons other slots may share',
+    );
     const slotReleases = slotAndroid.stdout
       .trim()
       .split('\n')

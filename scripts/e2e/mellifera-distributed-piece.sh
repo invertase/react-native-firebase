@@ -21,8 +21,9 @@
 # The ABI follows the host (x86_64, or arm64-v8a on arm64). Override with
 # RNFB_ANDROID_AVD_API / RNFB_ANDROID_AVD_TARGET / RNFB_ANDROID_AVD_ABI. A new AVD,
 # or an existing one under --placement=host, gets its userdata image created by one
-# short headless launch before the build.
-# `ensure-avd` runs only that step.
+# short headless launch before the build. Under --placement=host the build's
+# Gradle daemons are stopped before the emulator boots; a failed suite saves
+# the emulator's logcat. `ensure-avd` runs only the AVD step.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -327,17 +328,46 @@ piece_android() {
   [[ -z "$SLOT" ]] || step yarn tests:e2e:setup-android-avds "$((SLOT + 1))" || return $?
   step yarn tests:android:unit || return $?
   step yarn tests:android:build || return $?
+  [[ "$PLACEMENT" != host ]] || step stop_gradle_daemons || return $?
   services tests:packager:jet || return $?
-  after_e2e tests:android:post-e2e-coverage yarn tests:android:test-cover
+  ON_E2E_FAILURE=save_android_logcat after_e2e tests:android:post-e2e-coverage yarn tests:android:test-cover
+}
+
+# The build's idle daemons keep their heap (and on a small guest, the swap)
+# while the emulator boots beside them. `--stop` stops every daemon of this
+# Gradle version for the user, so a desk slot, which may share the user with
+# other slots' builds, keeps them.
+stop_gradle_daemons() {
+  (cd tests/android && ./gradlew --stop)
+}
+
+save_android_logcat() {
+  local out="${RNFB_ANDROID_LOGCAT_FILE:-${TMPDIR:-/tmp}/rnfb-e2e-logcat-android${SLOT:+-slot$SLOT}.txt}"
+  local adb="${ANDROID_HOME:+$ANDROID_HOME/platform-tools/}adb"
+  # Under host the serial pin lives only inside test-cover's own env.
+  local serial="${ANDROID_SERIAL:-emulator-5554}"
+  if ! "$adb" -s "$serial" logcat -d -b main,system,crash >"$out" 2>&1; then
+    echo "mellifera-distributed-piece: adb logcat on ${serial} failed:" >&2
+    head -n 5 "$out" >&2
+    return 0
+  fi
+  echo "mellifera-distributed-piece: logcat saved to ${out}; system_server, package manager, low-memory, crash and ANR lines:" >&2
+  grep -E 'system_server|PackageManager|lowmemorykiller|lmkd|FATAL|ANR in' "$out" | tail -n 200 >&2
+  return 0
 }
 
 # CI shape: coverage runs after the suite even when it failed; the suite exit
 # wins, and a coverage failure fails only an otherwise green run.
+# ON_E2E_FAILURE names a step that runs right after a failed suite, while its
+# devices are still up.
 after_e2e() {
   local coverage="$1"
   shift
   local test_ec=0 cov_ec=0
-  step "$@" || test_ec=$?
+  step "$@" || {
+    test_ec=$?
+    [[ -z "${ON_E2E_FAILURE:-}" ]] || step "$ON_E2E_FAILURE"
+  }
   step yarn "$coverage" || cov_ec=$?
   [[ "$test_ec" -ne 0 ]] && return "$test_ec"
   return "$cov_ec"
