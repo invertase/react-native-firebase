@@ -269,6 +269,34 @@ describe('functions() modular', function () {
         const response = await functionRunner();
         response.data.should.equal('Hello from Firebase!');
       });
+
+      it('errors with unavailable when the host cannot be reached', async function () {
+        if (Platform.other) {
+          return this.skip();
+        }
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+
+        // Nothing listens on port 1, so the connection is refused.
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          `http://${getE2eEmulatorHost()}:1/react-native-firebase-testing/us-central1/helloWorldV2`,
+          e2eCallableTimeoutOptions(),
+        );
+
+        try {
+          await functionRunner();
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          e.code.should.equal('unavailable');
+          if (Platform.ios) {
+            e.details.domain.should.equal('NSURLErrorDomain');
+            e.details.nativeCode.should.equal(-1004);
+          }
+        }
+
+        return Promise.resolve();
+      });
     });
 
     describe('httpsCallable(fnName)(args)', function () {

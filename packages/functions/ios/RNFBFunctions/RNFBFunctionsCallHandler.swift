@@ -162,6 +162,8 @@ import FirebaseCore
       if let errorDetails = error.userInfo["details"] {
         details = errorDetails
       }
+    } else if let nativeDetails = RNFBFunctionsNativeErrorMapping.details(for: error) {
+      details = nativeDetails
     }
     
     return [
@@ -181,6 +183,10 @@ import FirebaseCore
       code = mapFunctionsErrorCode(error.code)
     }
     
+    if let nativeCode = RNFBFunctionsNativeErrorMapping.code(for: error) {
+      code = nativeCode
+    }
+
     if error.domain == "FirebaseFunctions.FunctionsSerializer.Error" {
       NSLog("RNFBFUNCTIONS error description: %@", error.description)
       let errorDescription = error.description

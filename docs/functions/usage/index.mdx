@@ -108,6 +108,18 @@ function App() {
 }
 ```
 
+## Error codes
+
+A failed call rejects with an `HttpsError` whose `code` is one of the Cloud Functions error codes. On iOS and Android, two
+native failures that happen before the call reaches your function are mapped as well:
+
+- A network failure reaching the Functions endpoint, or fetching the signed-in user's Auth token, rejects with `unavailable`.
+- A signed-in user that is invalid, expired, disabled or deleted rejects with `unauthenticated`.
+
+To help diagnose these failures, `details` includes the native error `domain` and `nativeCode`: on iOS for network and
+Auth token errors (`nativeCode` is the `NSError` code, a number), and on Android for Auth token errors (`nativeCode` is
+the Auth error code string, or `null` for a network error).
+
 ## Region-specific Functions
 
 If you need to deploy Functions in a region other than the default one, modified statements need to be used.
