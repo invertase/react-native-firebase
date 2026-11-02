@@ -641,4 +641,42 @@ exit 1
     expect(combined).toMatch(/BUSY\s+android stray emulator serial emulator-16222/);
     expect(combined).not.toMatch(/stray emulator serial emulator-5554/);
   });
+
+  it('check is BUSY when the Jet port accepts connections that lsof cannot attribute (another user)', async function () {
+    const fs = require('fs');
+    const os = require('os');
+    const net = require('net');
+    const checkPath = path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-fake-lsof-'));
+    fs.writeFileSync(path.join(dir, 'lsof'), '#!/bin/bash\nexit 0\n');
+    fs.chmodSync(path.join(dir, 'lsof'), 0o755);
+    const server = net.createServer().listen(0, '127.0.0.1');
+    await new Promise(resolve => server.once('listening', resolve));
+    const port = server.address().port;
+    const run = () => {
+      const env = cleanEnv();
+      env.PATH = `${dir}:${env.PATH || '/usr/bin:/bin'}`;
+      env.JET_REMOTE_PORT = String(port);
+      try {
+        return execFileSync('bash', [checkPath, '--platform=android'], {
+          encoding: 'utf8',
+          cwd: repoRoot,
+          env,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        });
+      } catch (e) {
+        return `${e.stdout || ''}${e.stderr || ''}`;
+      }
+    };
+    try {
+      expect(run()).toMatch(
+        new RegExp(
+          `BUSY\\s+port :${port} \\(jet:\\w+\\) accepts connections but has no listener lsof can attribute`,
+        ),
+      );
+    } finally {
+      await new Promise(resolve => server.close(resolve));
+    }
+    expect(run()).toMatch(new RegExp(`CLEAR\\s+port :${port} \\(jet:\\w+\\)`));
+  });
 });

@@ -44,6 +44,7 @@ const {
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
 const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
+const { failIfForeignListener } = require('./foreignListener');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -663,6 +664,7 @@ async function killTcpPortListener(port, label) {
 }
 
 async function ensureTcpPortClosed(port, label, timeoutMs = KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS) {
+  await failIfForeignListener(port, label);
   await killTcpPortListener(port, label);
   await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
 }

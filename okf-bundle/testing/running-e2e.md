@@ -302,6 +302,8 @@ No in-flight test run on the target platform:
 
 Also wait for any visible unfinished `yarn tests:*:test-cover`.
 
+A Jet port that accepts loopback connections but has no listener `lsof` can attribute to this user (likely another user's server, such as a root service in a cloud guest image) is BUSY in `yarn tests:e2e:check`; release cannot stop it, so free the port. `tests/e2e/firebase.test.js` likewise fails its pre-spawn Android Jet host-clear and its retry drain after about 2 s of such accepts, instead of waiting 30 s for the port to close. Neither treats a missing or unresponsive `lsof` as a foreign listener.
+
 <a id="android-app-reset-blocking"></a>
 
 **Android app reset (blocking)** — run **before every** Android `:test-cover`, not only after a failed run:

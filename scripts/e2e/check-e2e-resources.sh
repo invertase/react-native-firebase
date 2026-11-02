@@ -141,6 +141,9 @@ for port in "${E2E_PORTS[@]}"; do
         report BUSY "port :${port} (${label}) pids=${pids}"
         ;;
     esac
+  elif [[ "$label" == jet:* ]] && command -v lsof >/dev/null 2>&1 && e2e_port_accepts "$port"; then
+    # lsof lists only this user's sockets; Jet cannot stop another user's server.
+    report BUSY "port :${port} (${label}) accepts connections but has no listener lsof can attribute to this user (likely another user's process; release cannot stop it, free the port)"
   else
     report CLEAR "port :${port} (${label})"
   fi

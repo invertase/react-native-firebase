@@ -490,6 +490,24 @@ e2e_port_listening() {
   lsof -nP -iTCP:"${port}" -sTCP:LISTEN >/dev/null 2>&1
 }
 
+# A loopback connect sees listeners lsof cannot (other users' sockets). A wedged
+# listener with a full backlog drops the SYN, so the connect is cut off at ~1 s.
+e2e_port_accepts() {
+  local pid i=0
+  (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null &
+  pid=$!
+  while kill -0 "$pid" 2>/dev/null && ((i < 100)); do
+    sleep 0.01
+    i=$((i + 1))
+  done
+  if kill -0 "$pid" 2>/dev/null; then
+    kill -KILL "$pid" 2>/dev/null
+    wait "$pid" 2>/dev/null
+    return 1
+  fi
+  wait "$pid"
+}
+
 e2e_listener_pids() {
   local port=$1 line
   if [[ "${E2E_LSOF_CACHE_LOADED:-0}" -eq 1 ]]; then
