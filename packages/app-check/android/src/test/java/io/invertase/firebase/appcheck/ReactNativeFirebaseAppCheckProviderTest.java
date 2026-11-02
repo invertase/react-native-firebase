@@ -272,6 +272,15 @@ public class ReactNativeFirebaseAppCheckProviderTest {
   }
 
   @Test
+  public void setupErrorMessage_usesExceptionMessageOrInternalErrorFallback() {
+    assertEquals(
+        "bad provider", NativeRNFBTurboAppCheck.setupErrorMessage(new Exception("bad provider")));
+    assertEquals("internal-error", NativeRNFBTurboAppCheck.setupErrorMessage(new Exception()));
+    assertEquals("internal-error", NativeRNFBTurboAppCheck.setupErrorMessage(new Exception("")));
+    assertEquals("internal-error", NativeRNFBTurboAppCheck.setupErrorMessage(null));
+  }
+
+  @Test
   public void tokenErrorCode_providerNotReadyWrappedByTasksAwait_isProviderNotReady() {
     Exception notReady = new ReactNativeFirebaseAppCheckProvider().getToken().getException();
     Exception wrapped = new ExecutionException(notReady);

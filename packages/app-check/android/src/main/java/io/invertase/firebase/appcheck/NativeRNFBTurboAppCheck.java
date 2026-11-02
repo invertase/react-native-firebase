@@ -112,6 +112,11 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
     return error != null ? error.getMessage() : null;
   }
 
+  static String setupErrorMessage(Throwable error) {
+    String message = error != null ? error.getMessage() : null;
+    return message == null || message.isEmpty() ? "internal-error" : message;
+  }
+
   static boolean rejectIfProviderNotReady(
       ReactNativeFirebaseAppCheckProviderFactory factory, String appName, Promise promise) {
     if (factory.isProviderReady(appName)) {
@@ -176,7 +181,7 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
           .installAppCheckProviderFactory(providerFactory);
       promise.resolve(null);
     } catch (Exception e) {
-      rejectPromiseWithCodeAndMessage(promise, "unknown", "internal-error", e.getMessage());
+      rejectPromiseWithCodeAndMessage(promise, "unknown", setupErrorMessage(e), e.getMessage());
     }
   }
 
@@ -208,7 +213,7 @@ public class NativeRNFBTurboAppCheck extends NativeRNFBTurboAppCheckSpec {
           .installAppCheckProviderFactory(providerFactory);
       promise.resolve(null);
     } catch (Exception e) {
-      rejectPromiseWithCodeAndMessage(promise, "unknown", "internal-error", e.getMessage());
+      rejectPromiseWithCodeAndMessage(promise, "unknown", setupErrorMessage(e), e.getMessage());
     }
   }
 
