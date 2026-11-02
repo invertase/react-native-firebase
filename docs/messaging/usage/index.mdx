@@ -437,6 +437,56 @@ On iOS devices, the user is able to toggle Background App Refresh in device's Se
 
 If the iOS Background App Refresh mode is off, your handler configured in `setBackgroundMessageHandler` will not be triggered.
 
+#### iOS AppDelegate forwarding (proxy disabled)
+
+If you set `FirebaseAppDelegateProxyEnabled` to `false` in your `Info.plist`, React Native Firebase no longer receives remote notification callbacks automatically. Forward these three methods from your `AppDelegate` to `RNFBMessagingAppDelegate.sharedInstance`. Forwarding `didRegisterForRemoteNotificationsWithDeviceToken` also passes the APNs token to Firebase Messaging.
+
+```objectivec
+// AppDelegate.mm
+#import <RNFBMessaging/RNFBMessaging+AppDelegate.h>
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [[RNFBMessagingAppDelegate sharedInstance] application:application
+        didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [[RNFBMessagingAppDelegate sharedInstance] application:application
+        didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+- (void)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)userInfo
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [[RNFBMessagingAppDelegate sharedInstance] application:application
+                            didReceiveRemoteNotification:userInfo
+                                  fetchCompletionHandler:completionHandler];
+}
+```
+
+In Swift, add `#import <RNFBMessaging/RNFBMessaging+AppDelegate.h>` to your bridging header, then:
+
+```swift
+// AppDelegate.swift
+func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  RNFBMessagingAppDelegate.sharedInstance().application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+}
+
+func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+  RNFBMessagingAppDelegate.sharedInstance().application(application, didFailToRegisterForRemoteNotificationsWithError: error)
+}
+
+func application(
+  _ application: UIApplication,
+  didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+  fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+) {
+  RNFBMessagingAppDelegate.sharedInstance().application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+}
+```
+
 ### Topics
 
 Topics are a mechanism which allow a device to subscribe and unsubscribe from named PubSub channels, all managed via FCM.

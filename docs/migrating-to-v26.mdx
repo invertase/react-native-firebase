@@ -409,6 +409,10 @@ await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), tr
 
 See [Cloud Messaging usage](/messaging/usage) for additional examples.
 
+## iOS AppDelegate header
+
+`<RNFBMessaging/RNFBMessaging+AppDelegate.h>` is a public header again, so apps that set `FirebaseAppDelegateProxyEnabled` to `false` can import it without frameworks. It now exposes only `sharedInstance` and the three remote notification forwarding methods; all other members are internal. See [iOS AppDelegate forwarding](/messaging/usage#ios-appdelegate-forwarding-proxy-disabled).
+
 ## iOS APNs registration (ARM64 Simulator + new Promise rejections)
 
 On **ARM64 iOS Simulator** (Apple Silicon), React Native Firebase **no longer calls** UIKit
