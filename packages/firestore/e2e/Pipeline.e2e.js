@@ -320,17 +320,7 @@ describe('FirestorePipeline', function () {
               .documents([docPath])
               .select(constant({ __kind: 'timestamp', seconds: 'x', nanoseconds: 0 }).as('bad')),
           ),
-        'options.selections[0].expr.value to be a timestamp',
-      );
-      await expectAsyncError(
-        () =>
-          execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(constant({ __kind: 'timestamp', seconds: 'x', nanoseconds: 0 }).as('bad')),
-          ),
-        'to be a timestamp with integer seconds between -62135596800 and 253402300799 and integer nanoseconds between 0 and 999999999.',
+        'options.selections[0].expr.value to be a timestamp with integer seconds between -62135596800 and 253402300799 and integer nanoseconds between 0 and 999999999.',
       );
     });
 

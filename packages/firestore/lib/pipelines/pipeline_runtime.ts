@@ -41,7 +41,11 @@ import type {
   DocumentData,
 } from '../types/firestore';
 import FirestorePath from '../FirestorePath';
-import { Timestamp as FirestoreTimestamp } from '../FirestoreTimestamp';
+import {
+  MAX_TIMESTAMP_SECONDS,
+  MIN_TIMESTAMP_SECONDS,
+  Timestamp as FirestoreTimestamp,
+} from '../FirestoreTimestamp';
 import DocumentReferenceClass from '../FirestoreDocumentReference';
 import { FieldPath, fromDotSeparatedString } from '../FieldPath';
 import { extractFieldPathData } from '../utils';
@@ -278,9 +282,6 @@ function isTimestampLike(value: unknown): value is FirestoreTimestamp {
     typeof candidate.toDate === 'function'
   );
 }
-
-const MIN_TIMESTAMP_SECONDS = -62135596800;
-const MAX_TIMESTAMP_SECONDS = 253402300799;
 
 // Truncates to microseconds like firebase-js-sdk constant(), so every platform sends the same value.
 // Range is checked here so native never builds an out-of-range Timestamp (iOS cannot recover).

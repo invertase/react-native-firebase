@@ -18,6 +18,7 @@
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import { Timestamp } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import type { Firestore } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import { MAX_TIMESTAMP_SECONDS, MIN_TIMESTAMP_SECONDS } from '../../FirestoreTimestamp';
 import type { FirestorePipelineSerializedInternal } from '../../types/internal';
 import type {
   AggregateFunction,
@@ -75,9 +76,6 @@ const WEB_PIPELINE_HELPER_ALIASES: Record<string, string> = {
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
-
-const MIN_TIMESTAMP_SECONDS = -62135596800;
-const MAX_TIMESTAMP_SECONDS = 253402300799;
 
 function isWholeNumberInRange(value: unknown, min: number, max: number): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max;
@@ -654,7 +652,7 @@ function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
   return finalValue;
 }
 
-export function revivePipelineValue(value: unknown, fieldName = 'stage.options'): unknown {
-  assertSerializedTimestamps(value, fieldName);
+export function revivePipelineValue(value: unknown): unknown {
+  assertSerializedTimestamps(value, 'stage.options');
   return reviveValueWithMode(value, 'pipeline');
 }
