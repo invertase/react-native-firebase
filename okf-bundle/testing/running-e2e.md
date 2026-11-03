@@ -327,7 +327,7 @@ MACOS_APP="${RNFB_MACOS_PRODUCT_NAME:-io.invertase.testing}"
 # Unscoped release also clears io.invertase.testing.s0..sN leftovers from parallel runs.
 ```
 
-(`firebase.test.js` runs this automatically via `ensureAndroidJetHostClear` before spawning Android Jet; use the probe manually when prepping from the runbook.)
+(`firebase.test.js` runs a scoped version of this automatically via `ensureAndroidJetHostClear` before spawning Android Jet; use the probe manually when prepping from the runbook.) That automatic stop targets only processes listening on this run's Jet and control ports, plus their macOS run wrapper chain (`yarn` / `bash` / `npx`). When unslotted, it also targets this user's `tests:macos:test-cover` / `jet --target=macos` wrappers whose working directory is inside this checkout and whose environment has no slot variable. Other [slots](#e2e-slot-index) and worktrees are never touched; `killall io.invertase.testing` (or `RNFB_MACOS_PRODUCT_NAME`) stays serial-only.
 
 <a id="host-clear-probes"></a>
 

@@ -45,6 +45,7 @@ const {
 } = require('./detoxLatencyPolicy');
 const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
 const { failIfForeignListener } = require('./foreignListener');
+const { macosRunPidsOnPorts, macosSerialRunPidsInRepo } = require('./macosJetPortOwner');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -717,29 +718,45 @@ function usesSlottedJetPorts() {
   );
 }
 
-function clearStaleMacOsTestingForSharedJetPort(label) {
-  if (usesSlottedJetPorts()) {
+function stopMacOsRunOnJetPorts(label) {
+  const ports = [jetRemotePort(), jetControlPort()];
+  const pids = new Set(macosRunPidsOnPorts(ports));
+  if (!usesSlottedJetPorts()) {
+    // A serial run in this checkout that has not bound the shared port yet.
+    for (const pid of macosSerialRunPidsInRepo(path.resolve(__dirname, '../..'))) {
+      pids.add(pid);
+    }
+  }
+  if (pids.size === 0) {
+    console.log(`[rnfb-e2e] ${label}: no macOS run on :${ports.join('/:')}`);
     return;
   }
+  console.warn(`[rnfb-e2e] ${label}: stopping macOS run on :${ports.join('/:')} pid=${[...pids]}`);
+  for (const pid of pids) {
+    try {
+      process.kill(pid, 'SIGTERM');
+    } catch (_) {
+      // already gone
+    }
+  }
+}
+
+function clearStaleMacOsTestingForSharedJetPort(label) {
   if (process.platform !== 'darwin') {
     return;
   }
 
+  stopMacOsRunOnJetPorts(label);
+
+  if (usesSlottedJetPorts()) {
+    return;
+  }
   const macName = process.env.RNFB_MACOS_PRODUCT_NAME || 'io.invertase.testing';
   console.log(`[rnfb-e2e] ${label}: killing stale macOS ${macName} for shared :${jetRemotePort()}`);
   try {
     execSync(`killall ${JSON.stringify(macName)}`, { stdio: 'inherit', timeout: 5000 });
   } catch (_) {
     // not running — expected
-  }
-
-  try {
-    execSync("pkill -f 'tests:macos:test-cover|jet --target=macos' 2>/dev/null || true", {
-      stdio: 'inherit',
-      timeout: 5000,
-    });
-  } catch (_) {
-    // no stray macOS jet — expected
   }
 }
 
