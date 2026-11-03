@@ -273,6 +273,7 @@ SPII
 SPM
 SPM-compatible
 SPM-only
+SwiftPM
 src
 SSV
 stacktrace
