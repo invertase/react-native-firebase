@@ -152,9 +152,10 @@ import FirebaseCore
   }
   
   /// Static method to format error for JavaScript (shared utility)
-  /// - Parameter error: The error to format
+  /// - Parameter receivedError: The error to format
   /// - Returns: Dictionary containing error code, message, and details
-  @objc public static func formatError(_ error: NSError) -> [AnyHashable: Any] {
+  @objc public static func formatError(_ receivedError: NSError) -> [AnyHashable: Any] {
+    let error = RNFBFunctionsNativeErrorMapping.reportedError(for: receivedError)
     var details: Any = NSNull()
     let message = error.localizedDescription
     

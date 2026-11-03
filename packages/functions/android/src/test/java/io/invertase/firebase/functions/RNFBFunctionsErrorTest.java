@@ -20,12 +20,7 @@ package io.invertase.firebase.functions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.mockStatic;
 
-import android.text.TextUtils;
-import android.util.SparseArray;
 import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.functions.FirebaseFunctionsException;
@@ -34,52 +29,23 @@ import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /**
  * JVM coverage for {@link RNFBFunctionsError}. Auth failures are wrapped the way the SDK delivers
  * them: {@code Tasks.await}'s {@code ExecutionException} around {@code Tasks.whenAll}'s {@code
  * ExecutionException} for calls, and a {@code FirebaseFunctionsException} INTERNAL around the same
- * {@code whenAll} failure for streams.
+ * {@code whenAll} failure for streams. Robolectric supplies the Android classes the Firebase
+ * exceptions use ({@code TextUtils}, and {@code SparseArray} in {@code
+ * FirebaseFunctionsException.Code}).
  */
+@RunWith(RobolectricTestRunner.class)
 public class RNFBFunctionsErrorTest {
 
   private static final String DOMAIN = RNFBFunctionsError.DOMAIN_KEY;
   private static final String NATIVE_CODE = RNFBFunctionsError.NATIVE_CODE_KEY;
-
-  // FirebaseException's constructors check their message with android.text.TextUtils.
-  private MockedStatic<TextUtils> textUtils;
-
-  // FirebaseFunctionsException.Code indexes its values in an android.util.SparseArray when the
-  // enum is initialized; initialize it once against a mock.
-  @BeforeClass
-  public static void initializeFunctionsCodes() {
-    try (MockedConstruction<SparseArray> ignored = mockConstruction(SparseArray.class)) {
-      FirebaseFunctionsException.Code.values();
-    }
-  }
-
-  @Before
-  public void mockTextUtils() {
-    textUtils = mockStatic(TextUtils.class);
-    textUtils
-        .when(() -> TextUtils.isEmpty(any()))
-        .thenAnswer(
-            invocation -> {
-              CharSequence value = invocation.getArgument(0);
-              return value == null || value.length() == 0;
-            });
-  }
-
-  @After
-  public void closeTextUtils() {
-    textUtils.close();
-  }
 
   private static Exception asCallFailure(Exception tokenFailure) {
     return new ExecutionException(

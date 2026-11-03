@@ -59,4 +59,41 @@ final class RNFBFunctionsNativeErrorMappingTests: XCTestCase {
   func testDetails_otherDomain_isNil() {
     XCTAssertNil(RNFBFunctionsNativeErrorMapping.details(for: NSError(domain: "com.example", code: 1)))
   }
+
+  /// `stream()` wraps an Auth ID token failure as `invalidArgument` (3) and a transport failure
+  /// as `unavailable` (14), each under `NSUnderlyingErrorKey`.
+  func testReportedError_unwrapsStreamPreResponseFailures() {
+    let auth = NSError(domain: Self.authDomain, code: 17021)
+    let transport = NSError(domain: NSURLErrorDomain, code: NSURLErrorCannotConnectToHost)
+
+    for (wrapperCode, underlying) in [(3, auth), (14, transport)] {
+      let wrapped = Self.functionsError(code: wrapperCode, underlying: underlying)
+      XCTAssertIdentical(
+        RNFBFunctionsNativeErrorMapping.reportedError(for: wrapped), underlying, "\(wrapperCode)")
+    }
+  }
+
+  func testReportedError_keepsOtherErrors() {
+    let auth = NSError(domain: Self.authDomain, code: 17021)
+    let cases: [NSError] = [
+      // Mid-stream failures are wrapped as dataLoss (15) and keep their own code.
+      Self.functionsError(code: 15, underlying: auth),
+      Self.functionsError(code: 3, underlying: NSError(domain: "com.example", code: 1)),
+      Self.functionsError(code: 3, underlying: nil),
+      NSError(domain: "com.example", code: 3, userInfo: [NSUnderlyingErrorKey: auth]),
+      auth,
+    ]
+
+    for error in cases {
+      XCTAssertIdentical(
+        RNFBFunctionsNativeErrorMapping.reportedError(for: error), error, "\(error)")
+    }
+  }
+
+  private static func functionsError(code: Int, underlying: NSError?) -> NSError {
+    NSError(
+      domain: "com.firebase.functions",
+      code: code,
+      userInfo: underlying.map { [NSUnderlyingErrorKey: $0] } ?? [:])
+  }
 }

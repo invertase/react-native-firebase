@@ -28,6 +28,27 @@ enum RNFBFunctionsNativeErrorMapping {
   /// `InvalidUserToken` (17017) and `UserTokenExpired` (17021). Every other Auth code (keychain,
   /// rate limit, internal, app configuration) leaves the credential valid.
   private static let deadCredentialAuthErrorCodes: Set<Int> = [17005, 17011, 17017, 17021]
+  /// `FunctionsErrorDomain` and the `FunctionsErrorCode` values that `stream()` uses to wrap
+  /// failures before a response: `invalidArgument` (3) around the Auth ID token fetch and
+  /// `unavailable` (14) around the transport. Spelled out so this file needs only Foundation.
+  private static let functionsErrorDomain = "com.firebase.functions"
+  private static let functionsPreResponseWrapperCodes: Set<Int> = [3, 14]
+
+  /// Returns the error to report for `error`: the wrapped transport or Auth error when
+  /// FirebaseFunctions wrapped it before a response, otherwise `error` itself.
+  ///
+  /// Callable calls receive transport and Auth errors unwrapped; `stream()` wraps them under
+  /// `NSUnderlyingErrorKey`. Reporting the wrapped error gives both the same `code` and `details`.
+  static func reportedError(for error: NSError) -> NSError {
+    guard error.domain == functionsErrorDomain,
+          functionsPreResponseWrapperCodes.contains(error.code),
+          let underlying = error.userInfo[NSUnderlyingErrorKey] as? NSError,
+          details(for: underlying) != nil
+    else {
+      return error
+    }
+    return underlying
+  }
 
   /// Returns the callable error code for `error`, or `nil` when it has no mapping here.
   ///
