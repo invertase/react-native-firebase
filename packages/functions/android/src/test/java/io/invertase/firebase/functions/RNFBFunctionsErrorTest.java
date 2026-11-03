@@ -39,7 +39,8 @@ import org.robolectric.RobolectricTestRunner;
  * ExecutionException} for calls, and a {@code FirebaseFunctionsException} INTERNAL around the same
  * {@code whenAll} failure for streams. Robolectric supplies the Android classes the Firebase
  * exceptions use ({@code TextUtils}, and {@code SparseArray} in {@code
- * FirebaseFunctionsException.Code}).
+ * FirebaseFunctionsException.Code}); mocking them instead would leave {@code Code} initialized
+ * against a mock for the rest of the JVM. AndroidTest-AD-1.
  */
 @RunWith(RobolectricTestRunner.class)
 public class RNFBFunctionsErrorTest {

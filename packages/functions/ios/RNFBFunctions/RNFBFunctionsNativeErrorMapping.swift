@@ -34,16 +34,17 @@ enum RNFBFunctionsNativeErrorMapping {
   private static let functionsErrorDomain = "com.firebase.functions"
   private static let functionsPreResponseWrapperCodes: Set<Int> = [3, 14]
 
-  /// Returns the error to report for `error`: the wrapped transport or Auth error when
-  /// FirebaseFunctions wrapped it before a response, otherwise `error` itself.
+  /// Returns the error to report for `error`: the wrapped error when FirebaseFunctions wrapped a
+  /// transport or Auth error that `code(for:)` maps before a response, otherwise `error` itself.
   ///
   /// Callable calls receive transport and Auth errors unwrapped; `stream()` wraps them under
   /// `NSUnderlyingErrorKey`. Reporting the wrapped error gives both the same `code` and `details`.
+  /// An unmapped Auth error keeps the wrapper, so it is reported unchanged.
   static func reportedError(for error: NSError) -> NSError {
     guard error.domain == functionsErrorDomain,
           functionsPreResponseWrapperCodes.contains(error.code),
           let underlying = error.userInfo[NSUnderlyingErrorKey] as? NSError,
-          details(for: underlying) != nil
+          code(for: underlying) != nil
     else {
       return error
     }

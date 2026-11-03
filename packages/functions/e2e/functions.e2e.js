@@ -114,6 +114,19 @@ function assertHttpsErrorMessage(actual, base) {
   }
 }
 
+// Nothing listens on port 1, so the connection is refused.
+function unreachableCallableUrl() {
+  return `http://${getE2eEmulatorHost()}:1/react-native-firebase-testing/us-central1/helloWorldV2`;
+}
+
+function assertUnreachableHostError(e) {
+  e.code.should.equal('unavailable');
+  if (Platform.ios) {
+    e.details.domain.should.equal('NSURLErrorDomain');
+    e.details.nativeCode.should.equal(-1004);
+  }
+}
+
 describe('functions() modular', function () {
   describe('modular', function () {
     describe('getFunctions', function () {
@@ -277,10 +290,9 @@ describe('functions() modular', function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
 
-        // Nothing listens on port 1, so the connection is refused.
         const functionRunner = httpsCallableFromUrl(
           getFunctions(getApp()),
-          `http://${getE2eEmulatorHost()}:1/react-native-firebase-testing/us-central1/helloWorldV2`,
+          unreachableCallableUrl(),
           e2eCallableTimeoutOptions(),
         );
 
@@ -288,11 +300,7 @@ describe('functions() modular', function () {
           await functionRunner();
           return Promise.reject(new Error('Function did not reject with error.'));
         } catch (e) {
-          e.code.should.equal('unavailable');
-          if (Platform.ios) {
-            e.details.domain.should.equal('NSURLErrorDomain');
-            e.details.nativeCode.should.equal(-1004);
-          }
+          assertUnreachableHostError(e);
         }
 
         return Promise.resolve();
@@ -1207,6 +1215,30 @@ describe('functions() modular', function () {
 
         const result = await data;
         result.should.be.an.Object();
+      });
+
+      it('errors with unavailable when the host cannot be reached', async function () {
+        if (Platform.other) {
+          return this.skip();
+        }
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          unreachableCallableUrl(),
+          e2eCallableTimeoutOptions(),
+        );
+
+        try {
+          const { stream } = await functionRunner.stream();
+          for await (const _ of stream) {
+          }
+          return Promise.reject(new Error('Stream did not reject with error.'));
+        } catch (e) {
+          assertUnreachableHostError(e);
+        }
+
+        return Promise.resolve();
       });
 
       it('should return both stream and data promise for URL', async function () {

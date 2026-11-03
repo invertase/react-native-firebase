@@ -78,6 +78,8 @@ final class RNFBFunctionsNativeErrorMappingTests: XCTestCase {
     let cases: [NSError] = [
       // Mid-stream failures are wrapped as dataLoss (15) and keep their own code.
       Self.functionsError(code: 15, underlying: auth),
+      // An unmapped Auth error (17010, tooManyRequests) keeps the wrapper's invalidArgument.
+      Self.functionsError(code: 3, underlying: NSError(domain: Self.authDomain, code: 17010)),
       Self.functionsError(code: 3, underlying: NSError(domain: "com.example", code: 1)),
       Self.functionsError(code: 3, underlying: nil),
       NSError(domain: "com.example", code: 3, userInfo: [NSUnderlyingErrorKey: auth]),
