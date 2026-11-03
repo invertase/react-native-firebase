@@ -3,8 +3,9 @@
  * Unit assert: mellifera-distributed-reduce records pieces, writes one report,
  * and exits non-zero for a non-zero piece, a missing or empty coverage
  * artifact, a missing piece, a shared session, or non-overlapping lifetimes.
- * Also checks the release token stays off stdout and the piece runner's
- * dry-run step order. Run: yarn tests:mellifera:assert-distributed-reduce
+ * Also checks the release token stays off stdout, the piece runner's
+ * dry-run step order, and its free-disk check against a stubbed df.
+ * Run: yarn tests:mellifera:assert-distributed-reduce
  */
 'use strict';
 
@@ -81,6 +82,40 @@ function stubSdk(dir) {
     ].join('\n'),
   );
   return { log };
+}
+
+/**
+ * Fake host for the preflights: Darwin with 64 GiB RAM, JDK 21, Xcode, xcbeautify, a `yarn`
+ * that only logs argv, and a `df -Pk` reporting STUB_DF_MB free on `/`, or
+ * STUB_DF_AVD_MB on `/avd` for paths under STUB_DF_AVD_PREFIX.
+ */
+function stubHost(dir) {
+  fs.mkdirSync(dir, { recursive: true });
+  const log = path.join(dir, 'yarn.log');
+  const tool = (name, body) => {
+    const file = path.join(dir, name);
+    fs.writeFileSync(file, `#!/usr/bin/env bash\n${body}\n`);
+    fs.chmodSync(file, 0o755);
+  };
+  tool('uname', '[[ "$1" == -m ]] && echo arm64 || echo Darwin');
+  tool('sysctl', 'echo 68719476736');
+  tool('javac', 'echo "javac 21.0.4"');
+  tool('java', 'echo \'openjdk version "21.0.4" 2024-07-16\' >&2');
+  tool('xcodebuild', 'echo "Xcode 27.0"');
+  tool('xcbeautify', 'cat');
+  tool('yarn', `echo "yarn $*" >> ${JSON.stringify(log)}`);
+  tool(
+    'df',
+    [
+      'dir="${*: -1}" mb="$STUB_DF_MB" fs=/dev/disk1 mnt=/',
+      'if [[ -n "${STUB_DF_AVD_PREFIX:-}" && "$dir" == "$STUB_DF_AVD_PREFIX"* ]]; then',
+      '  mb="$STUB_DF_AVD_MB" fs=/dev/disk2 mnt=/avd',
+      'fi',
+      'echo "Filesystem 1024-blocks Used Available Capacity Mounted on"',
+      'echo "$fs 999999999 0 $(( mb * 1024 + 512 )) 0% $mnt"',
+    ].join('\n'),
+  );
+  return { log, path: `${dir}${path.delimiter}${process.env.PATH}` };
 }
 
 function writeReserve(dir, name, grant) {
@@ -323,6 +358,11 @@ function main() {
       'android checks guest memory against the Gradle heap before Gradle',
     );
     assert.ok(
+      android.indexOf('check_memory') < android.indexOf('check_disk android') &&
+        android.indexOf('check_disk android') < android.indexOf('ensure_testing_avd'),
+      'android checks free disk after memory and before the AVD and the build',
+    );
+    assert.ok(
       android.indexOf('yarn tests:e2e:release --devices --placement=host') <
         android.indexOf('yarn tests:android:build'),
     );
@@ -387,6 +427,12 @@ function main() {
         iosSteps.indexOf('check_java') < iosSteps.indexOf('yarn ruby:install'),
       'ios checks for a JDK before any build step',
     );
+    assert.ok(
+      iosSteps.indexOf('check_java') < iosSteps.indexOf('check_disk ios') &&
+        iosSteps.indexOf('check_disk ios') <
+          iosSteps.indexOf('ensure_brew_utilities applesimutils xcbeautify'),
+      'ios checks free disk before any install step',
+    );
     const macos = piece(['macos', '--placement=slot', '0', '--dry-run']).stdout.trim().split('\n');
     assert.ok(
       macos.includes('yarn tests:macos:packager:jet') &&
@@ -396,6 +442,11 @@ function main() {
       macos.includes('check_java') &&
         macos.indexOf('check_java') < macos.indexOf('yarn tests:macos:pod:install'),
       'macos checks for a JDK before any build step',
+    );
+    assert.ok(
+      macos.indexOf('check_java') < macos.indexOf('check_disk macos') &&
+        macos.indexOf('check_disk macos') < macos.indexOf('ensure_brew_utilities xcbeautify'),
+      'macos checks free disk before any install step',
     );
     assert.strictEqual(piece(['tvos', '--dry-run']).status, 2);
     assert.ok(
@@ -486,12 +537,106 @@ function main() {
     assert.ok(!fs.existsSync(userdata), 'a failed attempt leaves no partial userdata');
     const noSdk = piece(['ensure-avd'], { ANDROID_HOME: path.join(tmp, 'none') });
     assert.strictEqual(noSdk.status, 1, 'missing SDK tools must fail');
+
+    const host = stubHost(path.join(tmp, 'host-bin'));
+    const diskAvdHome = path.join(tmp, 'disk-avd');
+    const diskAvd = path.join(diskAvdHome, 'TestingAVD.avd');
+    fs.mkdirSync(diskAvdHome);
+    const diskRun = (platform, env) => {
+      fs.writeFileSync(host.log, '');
+      const r = piece([platform, '--placement=host'], {
+        PATH: host.path,
+        ANDROID_HOME: path.join(tmp, 'no-sdk'),
+        ANDROID_AVD_HOME: diskAvdHome,
+        RNFB_E2E_MIN_FREE_DISK_MB: '',
+        ...env,
+      });
+      const yarnCalls = fs.readFileSync(host.log, 'utf8').trim().split('\n');
+      return { ...r, yarnCalls };
+    };
+    const diskFailed = (r, label) => {
+      assert.strictEqual(r.status, 1, `${label}: exit ${r.status}: ${r.stderr}`);
+      assert.deepStrictEqual(
+        r.yarnCalls,
+        ['yarn tests:e2e:release --devices --placement=host'],
+        `${label}: nothing but the release runs after a failed disk check`,
+      );
+    };
+    const passedDisk = (r, label) => {
+      assert.ok(!r.stderr.includes('MB free'), `${label}: ${r.stderr}`);
+      assert.match(r.stderr, /Android SDK not found/, `${label}: the piece went on to the AVD`);
+    };
+
+    const sameFsShort = diskRun('android', { STUB_DF_MB: String(30720 + 7372) });
+    diskFailed(sameFsShort, 'android, one filesystem, 1 MB short');
+    assert.ok(
+      sameFsShort.stderr.includes(
+        'mellifera-distributed-piece: 38092 MB free on / (checkout); the android piece needs 38093 MB: 30720 MB for install, build and devices (RNFB_E2E_MIN_FREE_DISK_MB) plus 7373 MB for the TestingAVD userdata image (1.2 x 6 GiB while it is missing)',
+      ),
+      sameFsShort.stderr,
+    );
+    passedDisk(
+      diskRun('android', { STUB_DF_MB: String(30720 + 7373) }),
+      'android, one filesystem, exactly enough',
+    );
+
+    fs.mkdirSync(diskAvd);
+    fs.writeFileSync(path.join(diskAvd, 'userdata-qemu.img'), '');
+    fs.writeFileSync(path.join(diskAvd, 'userdata-qemu.img.qcow2'), '');
+    passedDisk(
+      diskRun('android', { STUB_DF_MB: '30720' }),
+      'android with userdata needs only the build space',
+    );
+    const userdataReady = diskRun('android', { STUB_DF_MB: '30719' });
+    diskFailed(userdataReady, 'android with userdata, 1 MB short');
+    assert.match(userdataReady.stderr, /needs 30720 MB: 30720 MB for install, build and devices/);
+    assert.ok(!userdataReady.stderr.includes('userdata image'), userdataReady.stderr);
+    fs.rmSync(diskAvd, { recursive: true });
+
+    const avdFs = { STUB_DF_MB: '30720', STUB_DF_AVD_PREFIX: diskAvdHome };
+    passedDisk(
+      diskRun('android', { ...avdFs, STUB_DF_AVD_MB: '7373' }),
+      'android, separate AVD filesystem, enough on each',
+    );
+    const avdShort = diskRun('android', { ...avdFs, STUB_DF_AVD_MB: '7372' });
+    diskFailed(avdShort, 'android, separate AVD filesystem, AVD home short');
+    assert.ok(
+      avdShort.stderr.includes(
+        'mellifera-distributed-piece: 7372 MB free on /avd (AVD home); the TestingAVD userdata image needs 7373 MB there (1.2 x 6 GiB while it is missing)',
+      ),
+      avdShort.stderr,
+    );
+    assert.ok(!avdShort.stderr.includes('(checkout)'), 'the checkout filesystem had enough');
+
+    const macosShort = diskRun('macos', { STUB_DF_MB: '15359' });
+    diskFailed(macosShort, 'macos, 1 MB short');
+    assert.ok(
+      macosShort.stderr.includes(
+        'mellifera-distributed-piece: 15359 MB free on / (checkout); the macos piece needs 15360 MB: 15360 MB for install, build and devices (RNFB_E2E_MIN_FREE_DISK_MB)\n',
+      ),
+      macosShort.stderr,
+    );
+    const macosOverride = diskRun('macos', {
+      STUB_DF_MB: '15359',
+      RNFB_E2E_MIN_FREE_DISK_MB: '2048',
+    });
+    assert.ok(!macosOverride.stderr.includes('MB free'), macosOverride.stderr);
+    assert.ok(
+      macosOverride.yarnCalls.includes('yarn ruby:install'),
+      'macos goes on to install when the override is met',
+    );
+    const badOverride = diskRun('macos', { STUB_DF_MB: '99999', RNFB_E2E_MIN_FREE_DISK_MB: '20G' });
+    diskFailed(badOverride, 'non-numeric override');
+    assert.match(
+      badOverride.stderr,
+      /RNFB_E2E_MIN_FREE_DISK_MB must be a whole number of MB, got 20G/,
+    );
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
     fs.rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, and TestingAVD create-if-missing',
+    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, TestingAVD create-if-missing, and free-disk check',
   );
 }
 

@@ -150,8 +150,13 @@ ensure_testing_avd() {
 # disk, so create the image now, before the build fills it. The check only runs
 # while userdata-qemu.img is missing, and Detox never passes -wipe-data. A partial
 # image from a failed attempt is removed so the next attempt starts clean.
+base_avd_dir() {
+  echo "${ANDROID_AVD_HOME:-$HOME/.android/avd}/${BASE_AVD}.avd"
+}
+
 prewarm_avd_userdata() {
-  local emu="$1" dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}/${BASE_AVD}.avd"
+  local emu="$1" dir
+  dir="$(base_avd_dir)"
   local timeout_s="${RNFB_ANDROID_AVD_PREWARM_TIMEOUT_S:-180}" pid waited=0 why=""
   local img="${dir}/userdata-qemu.img" port=5584
   # Only this launch: qemu gets the same argv, and no other TestingAVD uses this port.
@@ -309,6 +314,60 @@ check_memory() {
   fi
 }
 
+# df_free DIR: "<free MB> <filesystem> <mount point>" for the filesystem holding
+# DIR, or its nearest existing parent.
+df_free() {
+  local dir="$1"
+  while [[ ! -d "$dir" ]]; do dir="$(dirname "$dir")"; done
+  df -Pk "$dir" | awk 'NR==2{kb=$4; fs=$1; $1=$2=$3=$4=$5=""; sub(/^ +/, ""); print int(kb/1024), fs, $0}'
+}
+
+# An Android guest grows about 27 GiB from checkout to emulator boot. A desk
+# test:full of all three platforms peaks near 40 GiB, so the two Apple builds
+# take about 13 GiB together. While TestingAVD has no userdata image, the
+# emulator also wants 1.2 x its 6 GiB data partition free in the AVD home.
+check_disk() {
+  local platform="$1" base_mb avd_mb=0 need_mb have_mb fs mnt avd_dir a_have a_fs a_mnt why ec=0
+  case "$platform" in
+    android) base_mb=30720 ;;
+    *) base_mb=15360 ;;
+  esac
+  base_mb="${RNFB_E2E_MIN_FREE_DISK_MB:-$base_mb}"
+  if [[ ! "$base_mb" =~ ^[0-9]+$ ]]; then
+    echo "mellifera-distributed-piece: RNFB_E2E_MIN_FREE_DISK_MB must be a whole number of MB, got ${base_mb}" >&2
+    return 1
+  fi
+  read -r have_mb fs mnt < <(df_free "$REPO_ROOT")
+  if [[ ! "$have_mb" =~ ^[0-9]+$ ]]; then
+    echo "mellifera-distributed-piece: could not read free disk space for ${REPO_ROOT} (df -Pk)" >&2
+    return 1
+  fi
+  need_mb="$base_mb"
+  why="${base_mb} MB for install, build and devices (RNFB_E2E_MIN_FREE_DISK_MB)"
+  if [[ "$platform" == android ]]; then
+    avd_dir="$(base_avd_dir)"
+    if [[ ! -f "${avd_dir}/userdata-qemu.img" || ! -f "${avd_dir}/userdata-qemu.img.qcow2" ]]; then
+      avd_mb=7373
+      read -r a_have a_fs a_mnt < <(df_free "$avd_dir")
+      if [[ "$a_fs $a_mnt" == "$fs $mnt" ]]; then
+        need_mb=$((need_mb + avd_mb))
+        why="${why} plus ${avd_mb} MB for the ${BASE_AVD} userdata image (1.2 x 6 GiB while it is missing)"
+      elif [[ ! "$a_have" =~ ^[0-9]+$ ]]; then
+        echo "mellifera-distributed-piece: could not read free disk space for ${avd_dir} (df -Pk)" >&2
+        ec=1
+      elif (( a_have < avd_mb )); then
+        echo "mellifera-distributed-piece: ${a_have} MB free on ${a_mnt} (AVD home); the ${BASE_AVD} userdata image needs ${avd_mb} MB there (1.2 x 6 GiB while it is missing)" >&2
+        ec=1
+      fi
+    fi
+  fi
+  if (( have_mb < need_mb )); then
+    echo "mellifera-distributed-piece: ${have_mb} MB free on ${mnt} (checkout); the ${platform} piece needs ${need_mb} MB: ${why}" >&2
+    ec=1
+  fi
+  return "$ec"
+}
+
 headless_emulator() {
   if [[ -n "${RNFB_ANDROID_EMULATOR_BOOT_ARGS:-}" ]]; then
     [[ "$DRY_RUN" -eq 1 ]] && echo "keep RNFB_ANDROID_EMULATOR_BOOT_ARGS"
@@ -322,6 +381,7 @@ piece_android() {
   step check_kvm || return $?
   step check_java || return $?
   step check_memory || return $?
+  step check_disk android || return $?
   headless_emulator
   step ensure_testing_avd || return $?
   step "${RELEASE[@]}" || return $?
@@ -417,6 +477,7 @@ after_e2e() {
 piece_ios() {
   step check_apple_toolchain ios || return $?
   step check_java || return $?
+  step check_disk ios || return $?
   step ensure_brew_utilities applesimutils xcbeautify || return $?
   step yarn ruby:install || return $?
   step yarn tests:ios:ruby || return $?
@@ -431,6 +492,7 @@ piece_ios() {
 piece_macos() {
   step check_apple_toolchain macos || return $?
   step check_java || return $?
+  step check_disk macos || return $?
   step ensure_brew_utilities xcbeautify || return $?
   step yarn ruby:install || return $?
   step yarn tests:macos:pod:install || return $?
