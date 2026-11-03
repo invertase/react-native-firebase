@@ -24,22 +24,30 @@
 # short headless launch before the build. Under --placement=host the build's
 # Gradle daemons are stopped before the emulator boots; a failed suite saves
 # the emulator's logcat. `ensure-avd` runs only the AVD step.
+# `leftovers` (spill teardown, on a synced tree with its sibling DIR.scratch)
+# lists this user's processes whose working directory is in the tree or the
+# scratch dir, never its own ancestors, and exits 1 when there are any; `--stop`
+# sends them TERM, then KILL after RNFB_SPILL_STOP_WAIT_S (default 10) seconds
+# to those still listed in the tree or the scratch dir.
+# It exits 2 when it cannot list processes; the dirs must not be removed then.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd"
+USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd | leftovers [--stop]"
 BASE_AVD="TestingAVD"
 
 PLATFORM=""
 PLACEMENT=""
 SLOT=""
 DRY_RUN=0
+STOP=0
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
+    --stop) STOP=1 ;;
     --placement=slot | --placement=host) PLACEMENT="${arg#--placement=}" ;;
-    android | ios | macos | ensure-avd)
+    android | ios | macos | ensure-avd | leftovers)
       [[ -z "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
       PLATFORM="$arg"
       ;;
@@ -54,7 +62,11 @@ for arg in "$@"; do
   esac
 done
 [[ -n "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
-if [[ "$PLATFORM" != ensure-avd ]]; then
+if [[ "$STOP" -eq 1 && "$PLATFORM" != leftovers ]]; then
+  echo "$USAGE" >&2
+  exit 2
+fi
+if [[ "$PLATFORM" != ensure-avd && "$PLATFORM" != leftovers ]]; then
   case "$PLACEMENT" in
     slot)
       [[ -n "$SLOT" ]] || {
@@ -500,6 +512,159 @@ piece_macos() {
   services tests:macos:packager:jet || return $?
   step yarn tests:macos:test-cover
 }
+
+# PID<TAB>CWD for this user's processes, from /proc on Linux and lsof
+# elsewhere (RNFB_SPILL_LSOF overrides the lsof path). Each CWD is resolved to
+# its physical path when it can be entered. Returns 2 when the listing fails
+# or does not include this shell, so a caller never mistakes "could not look"
+# for "nothing there".
+process_cwds() {
+  local dir cwd pid lsof raw seen=0
+  if [[ -d /proc/self ]]; then
+    for dir in /proc/[0-9]*; do
+      [[ -O "$dir" ]] || continue
+      cwd="$(readlink "$dir/cwd" 2>/dev/null)" || continue
+      raw+="${dir#/proc/}"$'\t'"${cwd}"$'\n'
+    done
+  else
+    lsof="${RNFB_SPILL_LSOF:-$(command -v lsof || echo /usr/sbin/lsof)}"
+    if [[ ! -x "$lsof" ]]; then
+      echo "mellifera-distributed-piece: lsof not found (${lsof}); cannot list working directories" >&2
+      return 2
+    fi
+    raw="$("$lsof" -n -P -w -a -u "$(id -u)" -d cwd -Fpn 2>/dev/null)" || {
+      echo "mellifera-distributed-piece: ${lsof} failed; cannot list working directories" >&2
+      return 2
+    }
+    raw="$(awk '/^p/ { pid = substr($0, 2) } /^n/ { printf "%s\t%s\n", pid, substr($0, 2) }' <<<"$raw")"
+  fi
+  while IFS=$'\t' read -r pid cwd; do
+    [[ -n "$pid" ]] || continue
+    [[ "$pid" == "$$" ]] && seen=1
+    if [[ "$cwd" == /* ]] && builtin cd -P -- "$cwd" 2>/dev/null; then
+      cwd="$PWD"
+    fi
+    printf '%s\t%s\n' "$pid" "$cwd"
+  done <<<"$raw"
+  if [[ "$seen" -ne 1 ]]; then
+    echo "mellifera-distributed-piece: the working-directory listing does not include this shell (pid $$); cannot check" >&2
+    return 2
+  fi
+}
+
+# PID<TAB>CWD<TAB>COMMAND for this user's processes whose working directory is
+# ROOT, ROOT.scratch, or under either, for ROOT as LOGICAL and as PHYSICAL.
+# Only the working directory counts: a process that merely names the path in
+# its argv is not ours. This shell, its ancestors (the exec shell whose cwd is
+# the tree) and its descendants are never listed. Returns 2 when a listing fails.
+spill_processes() {
+  local cwds procs
+  cwds="$(process_cwds)" || return 2
+  procs="$(ps -ww -U "$(id -u)" -o pid= -o ppid= -o command=)" || {
+    echo "mellifera-distributed-piece: ps failed; cannot list processes" >&2
+    return 2
+  }
+  CWDS="$cwds" PROCS="$procs" awk -v self="$$" -v r1="$1" -v r2="$2" '
+    function under(p, d) { return d != "" && (p == d || index(p, d "/") == 1) }
+    function ours(c) {
+      return under(c, r1) || under(c, r2) || under(c, r1 ".scratch") || under(c, r2 ".scratch")
+    }
+    BEGIN {
+      n = split(ENVIRON["CWDS"], lines, "\n")
+      for (i = 1; i <= n; i++) {
+        t = index(lines[i], "\t")
+        if (t) cwd[substr(lines[i], 1, t - 1)] = substr(lines[i], t + 1)
+      }
+      m = split(ENVIRON["PROCS"], rows, "\n")
+      for (i = 1; i <= m; i++) {
+        row = rows[i]
+        sub(/^[ \t]+/, "", row)
+        if (row == "") continue
+        split(row, f, /[ \t]+/)
+        parent[f[1]] = f[2]
+        cmd = row
+        sub(/^[0-9]+[ \t]+[0-9]+[ \t]*/, "", cmd)
+        command[f[1]] = cmd
+        order[++k] = f[1]
+      }
+      for (p = self; p != "" && p + 0 > 1 && !(p in skip); p = parent[p]) skip[p] = 1
+      for (i = 1; i <= k; i++) {
+        pid = order[i]
+        if (pid in skip) continue
+        p = parent[pid]
+        for (hops = 0; p != "" && p + 0 > 1 && p != self && hops < 256; hops++) p = parent[p]
+        if (p == self) continue
+        if ((pid in cwd) && ours(cwd[pid])) printf "%s\t%s\t%s\n", pid, cwd[pid], command[pid]
+      }
+    }
+  '
+}
+
+run_leftovers() {
+  local root physical found pids pid alive current stubborn waited=0
+  local limit="${RNFB_SPILL_STOP_WAIT_S:-10}"
+  physical="$(pwd -P)"
+  if [[ ! -d "${physical}.scratch" ]]; then
+    echo "mellifera-distributed-piece: leftovers runs on a synced spill tree; ${physical}.scratch is missing" >&2
+    return 2
+  fi
+  if [[ ! "$limit" =~ ^[0-9]+$ ]]; then
+    echo "mellifera-distributed-piece: RNFB_SPILL_STOP_WAIT_S must be a whole number of seconds, got ${limit}; using 10" >&2
+    limit=10
+  fi
+  root="$physical"
+  found="$(spill_processes "$REPO_ROOT" "$physical")" || {
+    echo "mellifera-distributed-piece: leftovers could not check for processes; do not remove ${physical} or ${physical}.scratch" >&2
+    return 2
+  }
+  if [[ -z "$found" ]]; then
+    echo "mellifera-distributed-piece: no processes left in ${root} or ${root}.scratch" >&2
+    return 0
+  fi
+  echo "mellifera-distributed-piece: processes left in ${root} or ${root}.scratch (pid, cwd, command):" >&2
+  printf '%s\n' "$found"
+  [[ "$STOP" -eq 1 ]] || return 1
+  read -r -a pids <<<"$(cut -f1 <<<"$found" | tr '\n' ' ')"
+  kill -TERM "${pids[@]}" 2>/dev/null
+  while :; do
+    alive=()
+    for pid in "${pids[@]}"; do
+      kill -0 "$pid" 2>/dev/null && alive+=("$pid")
+    done
+    [[ "${#alive[@]}" -gt 0 && "$waited" -lt "$limit" ]] || break
+    sleep 1
+    waited=$((waited + 1))
+  done
+  if [[ "${#alive[@]}" -gt 0 ]]; then
+    found="$(spill_processes "$REPO_ROOT" "$physical")" || {
+      echo "mellifera-distributed-piece: leftovers could not recheck before KILL; do not remove ${physical} or ${physical}.scratch" >&2
+      return 2
+    }
+    current=" $(cut -f1 <<<"$found" | tr '\n' ' ') "
+    stubborn=()
+    for pid in "${alive[@]}"; do
+      [[ "$current" == *" $pid "* ]] && stubborn+=("$pid")
+    done
+    [[ "${#stubborn[@]}" -eq 0 ]] || kill -KILL "${stubborn[@]}" 2>/dev/null
+  fi
+  sleep 1
+  found="$(spill_processes "$REPO_ROOT" "$physical")" || {
+    echo "mellifera-distributed-piece: leftovers could not recheck after --stop; do not remove ${physical} or ${physical}.scratch" >&2
+    return 2
+  }
+  if [[ -n "$found" ]]; then
+    echo "mellifera-distributed-piece: processes still left after --stop:" >&2
+    printf '%s\n' "$found"
+    return 1
+  fi
+  echo "mellifera-distributed-piece: stopped ${#pids[@]} process(es) left in ${root} or ${root}.scratch" >&2
+  return 0
+}
+
+if [[ "$PLATFORM" == leftovers ]]; then
+  run_leftovers
+  exit $?
+fi
 
 if [[ "$PLATFORM" == ensure-avd ]]; then
   step ensure_testing_avd

@@ -369,14 +369,15 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     if (filterPath !== DEFAULT_FILTER && filterArg.includes(DEFAULT_FILTER)) {
       fail(`${label} used the default filter and the caller filter`);
     }
-    const expectedCalls = options.sessionShow ? 3 : 2;
+    const expectedCalls = options.sessionShow ? 4 : 3;
     if (stubCalls.length !== expectedCalls) {
       fail(`${label} stub calls: ${JSON.stringify(stubCalls)}\nrsync stderr: ${result.stderr}`);
     }
     if (options.sessionShow) {
       assertDeepEqual(`${label} session show`, stubCalls[0], ['session', 'show']);
     }
-    const [mkdirArgv, stubArgv] = stubCalls.slice(expectedCalls - 2);
+    const scratchDir = `${remoteDir}.scratch`;
+    const [mkdirArgv, pwdArgv, stubArgv] = stubCalls.slice(expectedCalls - 3);
     assertDeepEqual(`${label} remote mkdir`, mkdirArgv, [
       'exec',
       ...forwarded,
@@ -385,7 +386,24 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
       '-p',
       '--',
       remoteDir,
+      scratchDir,
     ]);
+    assertDeepEqual(`${label} remote scratch path`, pwdArgv, [
+      'exec',
+      ...forwarded,
+      '-w',
+      scratchDir,
+      '--',
+      'pwd',
+      '-P',
+    ]);
+    if (!`${result.stderr}`.includes(`mellifera-remote-sync: scratch /stub-home/${scratchDir}\n`)) {
+      fail(`${label} did not report the scratch directory\nstderr: ${result.stderr}`);
+    }
+    if (options.scratchFile) {
+      const recorded = fs.readFileSync(options.scratchFile, 'utf8');
+      assertDeepEqual(`${label} scratch file`, recorded, `/stub-home/${scratchDir}\n`);
+    }
     const stubHead = ['exec', ...forwarded, '--rsh', 'placeholder', 'rsync', '--server'];
     assertDeepEqual(`${label} stub prefix`, stubArgv.slice(0, stubHead.length), stubHead);
     if (stubArgv.includes('--')) {
@@ -465,6 +483,24 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
   check('caller dest equals', ['--dest=run-2/'], DEFAULT_FILTER, [], 'mellifera-work/run-2', {
     env: pointerEnv,
   });
+  const scratchFile = path.join(path.dirname(rsyncLog), 'run.scratch');
+  check(
+    'scratch file',
+    ['--scratch-file', scratchFile, '--session', session],
+    DEFAULT_FILTER,
+    ['--session', session],
+    `mellifera-work/${session}`,
+    { scratchFile },
+  );
+  fs.rmSync(scratchFile, { force: true });
+  check(
+    'scratch file equals',
+    [`--scratch-file=${scratchFile}`, '--dest', 'rnfb/run-3'],
+    DEFAULT_FILTER,
+    [],
+    'mellifera-work/rnfb/run-3',
+    { scratchFile },
+  );
   expectFail('unknown arg', ['--kinds', 'slot']);
   expectFail('session missing', ['--session']);
   expectFail('url missing', ['--url']);
@@ -498,6 +534,44 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     status: 7,
     execCalls: 1,
   });
+  expectFail('scratch file missing', ['--scratch-file']);
+  expectFail('scratch file empty equals', ['--scratch-file=']);
+  expectFail('scratch file twice', ['--scratch-file', 'a', '--scratch-file', 'b']);
+  expectFail(
+    'scratch file directory missing',
+    ['--session', session, '--scratch-file', path.join(path.dirname(rsyncLog), 'no-dir', 'f')],
+    { status: 1, stderr: '--scratch-file directory does not exist' },
+  );
+  const readOnly = path.join(path.dirname(rsyncLog), 'read-only.scratch');
+  fs.writeFileSync(readOnly, '');
+  fs.chmodSync(readOnly, 0o444);
+  expectFail('scratch file not writable', ['--session', session, '--scratch-file', readOnly], {
+    status: 1,
+    execCalls: 2,
+    stderr: `cannot write --scratch-file ${readOnly}`,
+  });
+  fs.chmodSync(readOnly, 0o644);
+  expectFail('remote scratch path fails', ['--session', session], {
+    env: { ...env, STUB_PWD_EXIT: '5' },
+    status: 5,
+    execCalls: 2,
+  });
+  expectFail('remote scratch path relative', ['--session', session], {
+    env: { ...env, STUB_PWD_OUT: `mellifera-work/${session}.scratch` },
+    status: 1,
+    execCalls: 2,
+    stderr: 'remote scratch path is not one absolute path',
+  });
+  expectFail('remote scratch path wrong leaf', ['--session', session], {
+    env: { ...env, STUB_PWD_OUT: '/stub-home' },
+    status: 1,
+    execCalls: 2,
+  });
+  expectFail('remote scratch path extra lines', ['--session', session], {
+    env: { ...env, STUB_PWD_OUT: `motd\n/stub-home/mellifera-work/${session}.scratch` },
+    status: 1,
+    execCalls: 2,
+  });
 }
 
 function assertRemoteSyncSmoke(env, stubLog, home) {
@@ -512,22 +586,43 @@ function assertRemoteSyncSmoke(env, stubLog, home) {
   const remoteDir = `mellifera-work/${session}`;
   const localPackage = fs.readFileSync(path.join(REPO_ROOT, 'packages/app/package.json'), 'utf8');
 
+  const scratchFile = path.join(home, 'smoke.scratch');
+  const scratchAbs = path.join(fs.realpathSync(remote), `${remoteDir}.scratch`);
   for (const pass of ['first', 'repeat']) {
     clearLog(stubLog);
     const sync = runYarn(
       'tests:mellifera:remote-sync',
-      ['--session', session, '--filter', filter],
+      ['--session', session, '--filter', filter, '--scratch-file', scratchFile],
       smokeEnv,
     );
     if (sync.status !== 0) {
       fail(`smoke ${pass} sync exited ${sync.status}\nstderr: ${sync.stderr}`);
     }
     assertDeepEqual(`smoke ${pass} stdout`, sync.stdout.split('\n'), [remoteDir, '']);
+    assertDeepEqual(
+      `smoke ${pass} scratch file`,
+      fs.readFileSync(scratchFile, 'utf8'),
+      `${scratchAbs}\n`,
+    );
+    if (pass === 'first') {
+      fs.writeFileSync(path.join(scratchAbs, 'rnfb-metro-8081.log'), 'run log\n');
+    }
   }
   assertDeepEqual('smoke remote start entries', fs.readdirSync(remote).sort(), [
     'mellifera-work',
     'packages',
   ]);
+  assertDeepEqual(
+    'smoke work parent entries',
+    fs.readdirSync(path.join(remote, 'mellifera-work')).sort(),
+    [session, `${session}.scratch`],
+  );
+  if (!fs.existsSync(path.join(scratchAbs, 'rnfb-metro-8081.log'))) {
+    fail('smoke repeat sync removed a file from the scratch directory');
+  }
+  if (fs.existsSync(path.join(remote, remoteDir, `${session}.scratch`))) {
+    fail('smoke scratch directory is inside the synced tree');
+  }
   const unrelated = fs.readdirSync(path.join(remote, 'packages'));
   assertDeepEqual('smoke unrelated packages entries', unrelated, ['unrelated.txt']);
   if (fs.readFileSync(donorFile, 'utf8') !== 'unrelated remote file\n') {
@@ -643,6 +738,13 @@ if (argv[0] === 'exec' && argv.includes('mkdir') && process.env.STUB_MKDIR_EXIT)
   process.exit(Number(process.env.STUB_MKDIR_EXIT));
 }
 const remote = process.env.FAKE_REMOTE_ROOT;
+if (argv[0] === 'exec' && argv.includes('pwd') && !remote) {
+  if (process.env.STUB_PWD_EXIT) process.exit(Number(process.env.STUB_PWD_EXIT));
+  const w = argv.indexOf('-w');
+  const out = process.env.STUB_PWD_OUT !== undefined ? process.env.STUB_PWD_OUT : '/stub-home/' + argv[w + 1];
+  process.stdout.write(out + '\\n');
+  process.exit(0);
+}
 if (argv[0] === 'exec' && remote) {
   // Fake remote: run the command with the fake start directory as cwd.
   const rshAt = argv.indexOf('--rsh');

@@ -631,13 +631,199 @@ function main() {
       badOverride.stderr,
       /RNFB_E2E_MIN_FREE_DISK_MB must be a whole number of MB, got 20G/,
     );
+
+    assertLeftovers(tmp);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
     fs.rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, TestingAVD create-if-missing, and free-disk check',
+    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, TestingAVD create-if-missing, free-disk check, and spill leftovers',
   );
+}
+
+/**
+ * `leftovers` on a copy of the piece script in a fake synced tree, run through
+ * a symlink so its logical and physical roots differ: it finds processes whose
+ * cwd is in the tree or the scratch dir, not ones that only name those paths
+ * in argv, not a sibling session's, and never its own ancestor shell, even
+ * with `--stop`. `--stop` KILLs only PIDs still listed after the TERM wait. It
+ * exits 2, not 0, when it cannot list working directories.
+ */
+function assertLeftovers(tmp) {
+  const work = path.join(tmp, 'mellifera-work');
+  const tree = path.join(work, 's1');
+  const scratch = `${tree}.scratch`;
+  const sibling = path.join(work, 's10');
+  const link = path.join(tmp, 'link-s1');
+  fs.mkdirSync(path.join(tree, 'scripts', 'e2e'), { recursive: true });
+  fs.mkdirSync(sibling, { recursive: true });
+  fs.symlinkSync(tree, link);
+  fs.copyFileSync(PIECE, path.join(tree, 'scripts', 'e2e', 'mellifera-distributed-piece.sh'));
+  const copy = path.join(link, 'scripts', 'e2e', 'mellifera-distributed-piece.sh');
+  const leftovers = (args, env) =>
+    spawnSync('bash', [copy, 'leftovers', ...args], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      env: { ...process.env, ...env },
+    });
+  // leftovers as the child of a shell whose cwd is the tree, like exec -w DIR;
+  // the shell prints its pid, then the leftovers output, then rc=STATUS.
+  const underTreeShell = (args, env) =>
+    spawnSync(
+      'sh',
+      [
+        '-c',
+        'echo "shell=$$"; d=$1 s=$2; shift 2; cd "$d" && bash "$s" leftovers "$@"; ec=$?; echo "rc=$ec"; exit $ec',
+        'sh',
+        tree,
+        copy,
+        ...args,
+      ],
+      { encoding: 'utf8', env: { ...process.env, ...env } },
+    );
+  const idle = 'setTimeout(() => {}, 300000)';
+  // Orphaned through sh so init reaps it; a stopped child of this process would
+  // stay a zombie that still answers kill -0.
+  const start = (args, cwd, script = idle) => {
+    const r = spawnSync(
+      'sh',
+      [
+        '-c',
+        'cd "$1" && shift && { "$@" </dev/null >/dev/null 2>&1 & echo $!; }',
+        'sh',
+        cwd,
+        process.execPath,
+        '-e',
+        script,
+        ...args,
+      ],
+      { encoding: 'utf8' },
+    );
+    assert.strictEqual(r.status, 0, `start idle process: ${r.stderr}`);
+    return Number(r.stdout.trim());
+  };
+  const alive = pid => {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  const listedLines = out => out.split('\n').filter(line => line.includes('\t'));
+  const listed = out =>
+    listedLines(out)
+      .map(line => Number(line.split('\t')[0]))
+      .sort((a, b) => a - b);
+  const shellPid = out => Number((/^shell=(\d+)$/m.exec(out) || [])[1]);
+  // A process in the tree whose TERM handler runs ON_TERM; returns once the
+  // handler is installed.
+  const startOnTerm = (name, onTerm) => {
+    const ready = path.join(tmp, `${name}.ready`);
+    const script = `process.on('SIGTERM', () => { ${onTerm} }); require('fs').writeFileSync(${JSON.stringify(ready)}, ''); ${idle}`;
+    const pid = start([], tree, script);
+    for (let i = 0; i < 100 && !fs.existsSync(ready); i++) {
+      spawnSync('sleep', ['0.05']);
+    }
+    assert.ok(fs.existsSync(ready), `${name} did not start`);
+    return pid;
+  };
+  const pids = [];
+  try {
+    const noScratch = leftovers([]);
+    assert.strictEqual(noScratch.status, 2, `no scratch dir: ${noScratch.stderr}`);
+    assert.match(noScratch.stderr, /s1\.scratch is missing/);
+    fs.mkdirSync(path.join(scratch, 'metro'), { recursive: true });
+
+    const quiet = underTreeShell([]);
+    assert.strictEqual(quiet.status, 0, `ancestor shell in DIR: ${quiet.stdout}${quiet.stderr}`);
+    assert.deepStrictEqual(listedLines(quiet.stdout), [], 'the ancestor shell is not listed');
+
+    const inTree = start([], tree);
+    const inScratch = start([], path.join(scratch, 'metro'));
+    const namesPaths = start([path.join(tree, 'log'), path.join(scratch, 'x.log'), tree], tmp);
+    const other = start([], sibling);
+    pids.push(inTree, inScratch, namesPaths, other);
+    const ours = [inTree, inScratch].sort((a, b) => a - b);
+
+    const found = leftovers([]);
+    assert.strictEqual(found.status, 1, `leftovers found: ${found.stderr}`);
+    assert.deepStrictEqual(listed(found.stdout), ours, found.stdout);
+
+    const stopped = underTreeShell(['--stop'], { RNFB_SPILL_STOP_WAIT_S: '5' });
+    assert.strictEqual(stopped.status, 0, `--stop: ${stopped.stdout}${stopped.stderr}`);
+    assert.match(stopped.stdout, /^rc=0$/m, 'the ancestor shell survived --stop');
+    assert.ok(!listed(stopped.stdout).includes(shellPid(stopped.stdout)), stopped.stdout);
+    assert.match(stopped.stderr, /stopped 2 process\(es\)/);
+    assert.ok(!alive(inTree) && !alive(inScratch), 'leftovers --stop stops our processes');
+    assert.ok(alive(namesPaths), 'a process that only names the paths in argv is left alone');
+    assert.ok(alive(other), 'leftovers --stop leaves a sibling session alone');
+
+    const clear = leftovers([]);
+    assert.strictEqual(clear.status, 0, `after --stop: ${clear.stdout}${clear.stderr}`);
+    assert.strictEqual(clear.stdout, '');
+
+    const mover = startOnTerm('mover', `process.chdir(${JSON.stringify(tmp)})`);
+    pids.push(mover);
+    const moved = underTreeShell(['--stop'], { RNFB_SPILL_STOP_WAIT_S: '1' });
+    assert.strictEqual(
+      moved.status,
+      0,
+      `--stop, cwd left the tree: ${moved.stdout}${moved.stderr}`,
+    );
+    assert.deepStrictEqual(listed(moved.stdout), [mover], moved.stdout);
+    assert.ok(alive(mover), 'KILL skips a PID no longer listed in the tree after TERM');
+
+    if (!fs.existsSync('/proc/self')) {
+      const realLsof = spawnSync('sh', ['-c', 'command -v lsof || echo /usr/sbin/lsof'], {
+        encoding: 'utf8',
+      }).stdout.trim();
+      const count = path.join(tmp, 'lsof-calls');
+      const lsofOnce = path.join(tmp, 'lsof-once');
+      fs.writeFileSync(
+        lsofOnce,
+        `#!/usr/bin/env bash\nn=$(cat ${JSON.stringify(count)} 2>/dev/null || echo 0)\necho $((n + 1)) > ${JSON.stringify(count)}\n[[ "$n" -eq 0 ]] || exit 1\nexec ${JSON.stringify(realLsof)} "$@"\n`,
+      );
+      fs.chmodSync(lsofOnce, 0o755);
+      const stubborn = startOnTerm('stubborn', '');
+      pids.push(stubborn);
+      const recheck = underTreeShell(['--stop'], {
+        RNFB_SPILL_STOP_WAIT_S: '1',
+        RNFB_SPILL_LSOF: lsofOnce,
+      });
+      assert.strictEqual(recheck.status, 2, `recheck fails: ${recheck.stdout}${recheck.stderr}`);
+      assert.match(recheck.stderr, /could not recheck before KILL; do not remove/);
+      assert.ok(alive(stubborn), 'no KILL when the recheck before KILL fails');
+      process.kill(stubborn, 'SIGKILL');
+
+      const fakeLsof = (name, body) => {
+        const file = path.join(tmp, name);
+        fs.writeFileSync(file, `#!/usr/bin/env bash\n${body}\n`);
+        fs.chmodSync(file, 0o755);
+        return file;
+      };
+      for (const [label, lsof] of [
+        ['missing lsof', path.join(tmp, 'no-such-lsof')],
+        ['failing lsof', fakeLsof('lsof-fails', 'exit 1')],
+        ['lsof without this shell', fakeLsof('lsof-empty', 'exit 0')],
+      ]) {
+        const r = leftovers([], { RNFB_SPILL_LSOF: lsof });
+        assert.strictEqual(r.status, 2, `${label}: exit ${r.status}: ${r.stderr}`);
+        assert.match(r.stderr, /could not check for processes; do not remove/, label);
+        assert.strictEqual(r.stdout, '', label);
+      }
+    }
+
+    const misplaced = piece(['android', '--placement=host', '--stop']);
+    assert.strictEqual(misplaced.status, 2, '--stop is only for leftovers');
+  } finally {
+    for (const pid of pids) {
+      if (alive(pid)) {
+        process.kill(pid, 'SIGKILL');
+      }
+    }
+  }
 }
 
 main();

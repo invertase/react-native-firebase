@@ -10,8 +10,13 @@
  * exits 1 before any exec. `--dest` must be relative, must not contain `.` or `..` segments,
  * and each segment uses only letters, digits, `.`, `_`, and `-`.
  *
- * The directory is created first with `<cli> exec ... -- mkdir -p -- DIR`,
- * because the remote rsync may be openrsync or older than `--mkpath`. Then
+ * The run's scratch directory is the sibling `DIR.scratch`, outside the
+ * synced tree so a later sync's deletes and the tree's file watchers never
+ * reach it. Both are created first with
+ * `<cli> exec ... -- mkdir -p -- DIR DIR.scratch`, because the remote rsync
+ * may be openrsync or older than `--mkpath`. Then `<cli> exec ... -w
+ * DIR.scratch -- pwd -P` resolves the scratch directory's absolute path, which
+ * goes to stderr and, with `--scratch-file FILE`, into FILE (one line). Then
  * `--rsh` is the resolved CLI plus `exec`, then any caller `--session`,
  * `--url`, and `--federation` in the order given, then `--rsh`. Both the
  * space-separated form and the equals form are forwarded. With none of those
@@ -24,7 +29,7 @@
  * run `yarn tests:mellifera:exec [--session ID] -w DIR -- <command>`.
  * Child stdout goes to stderr.
  *
- * usage: mellifera-remote-sync.js [--filter FILE] [--dest DIR] [--session ID] [--url URL] [--federation ID]
+ * usage: mellifera-remote-sync.js [--filter FILE] [--dest DIR] [--scratch-file FILE] [--session ID] [--url URL] [--federation ID]
  */
 'use strict';
 
@@ -37,9 +42,10 @@ const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
 const DEFAULT_FILTER = path.join(SCRIPT_DIR, 'mellifera-remote-sync.rsync-filter');
 const PLACEHOLDER_HOST = 'placeholder';
 const WORK_PARENT = 'mellifera-work';
+const SCRATCH_SUFFIX = '.scratch';
 const SAFE_SEGMENT = /^[A-Za-z0-9._-]+$/;
 const USAGE =
-  'usage: mellifera-remote-sync.js [--filter FILE] [--dest DIR] [--session ID] [--url URL] [--federation ID]';
+  'usage: mellifera-remote-sync.js [--filter FILE] [--dest DIR] [--scratch-file FILE] [--session ID] [--url URL] [--federation ID]';
 const FORWARDED_FLAGS = ['--session', '--url', '--federation'];
 
 function resolveCli() {
@@ -76,6 +82,7 @@ function parseArgs(argv) {
   let sawFilter = false;
   let dest;
   let session;
+  let scratchFile;
   const forwarded = [];
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
@@ -106,6 +113,20 @@ function parseArgs(argv) {
       }
       continue;
     }
+    if (arg === '--scratch-file' || arg.startsWith('--scratch-file=')) {
+      const value = arg === '--scratch-file' ? args[i + 1] : arg.slice('--scratch-file='.length);
+      if (value === undefined || value === '' || value.startsWith('-')) {
+        fail('--scratch-file requires a value');
+      }
+      if (scratchFile !== undefined) {
+        fail(USAGE);
+      }
+      scratchFile = path.resolve(value);
+      if (arg === '--scratch-file') {
+        i += 1;
+      }
+      continue;
+    }
     const equals = equalsFlag(arg);
     if (equals) {
       if (!equals.value.trim()) {
@@ -131,7 +152,7 @@ function parseArgs(argv) {
     }
     fail(USAGE);
   }
-  return { filter, forwarded, dest, session };
+  return { filter, forwarded, dest, session, scratchFile };
 }
 
 function checkDest(dest) {
@@ -209,34 +230,77 @@ function run(label, command, args, onSuccess) {
   });
 }
 
+/** Absolute remote path of `scratchDir` (relative to the grant's start directory). */
+function resolveScratch(cli, forwarded, scratchDir, onSuccess) {
+  const child = spawn(cli, ['exec', ...forwarded, '-w', scratchDir, '--', 'pwd', '-P'], {
+    cwd: REPO_ROOT,
+    stdio: ['ignore', 'pipe', 'inherit'],
+  });
+  let out = '';
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', chunk => {
+    out += chunk;
+  });
+  child.on('error', err => {
+    fail(err.message);
+  });
+  child.on('close', (code, signal) => {
+    if (signal || code !== 0) {
+      process.stderr.write(`mellifera-remote-sync: remote scratch path exited ${signal || code}\n`);
+      process.exit(signal || code == null ? 1 : code);
+    }
+    const lines = out.split('\n').filter(Boolean);
+    const leaf = path.posix.basename(scratchDir);
+    if (lines.length !== 1 || !lines[0].startsWith('/') || path.posix.basename(lines[0]) !== leaf) {
+      fail(
+        `remote scratch path is not one absolute path ending in ${leaf}: ${JSON.stringify(out)}`,
+      );
+    }
+    onSuccess(lines[0]);
+  });
+}
+
+function sync(rsh, filter, remoteDir) {
+  run(
+    'rsync',
+    'rsync',
+    ['-a', '--rsh', rsh, '--filter', `merge ${filter}`, '.', `${PLACEHOLDER_HOST}:${remoteDir}`],
+    () => {
+      process.stdout.write(`${remoteDir}\n`);
+      process.exit(0);
+    },
+  );
+}
+
 function main() {
   const parsed = parseArgs(process.argv.slice(2));
   if (!fs.existsSync(parsed.filter)) {
     fail(`filter file not found: ${parsed.filter}`);
   }
+  if (parsed.scratchFile !== undefined) {
+    const parent = path.dirname(parsed.scratchFile);
+    if (!fs.existsSync(parent) || !fs.statSync(parent).isDirectory()) {
+      fail(`--scratch-file directory does not exist: ${parent}`);
+    }
+  }
   const remoteDir = remoteDirFor(parsed);
+  const scratchDir = `${remoteDir}${SCRATCH_SUFFIX}`;
   const cli = resolveCli();
   const rsh = [cli, 'exec', ...parsed.forwarded, '--rsh'].map(quoteRshToken).join(' ');
-  const mkdirArgs = ['exec', ...parsed.forwarded, '--', 'mkdir', '-p', '--', remoteDir];
-  run('remote mkdir', cli, mkdirArgs, () => {
-    run(
-      'rsync',
-      'rsync',
-      [
-        '-a',
-        '--rsh',
-        rsh,
-        '--filter',
-        `merge ${parsed.filter}`,
-        '.',
-        `${PLACEHOLDER_HOST}:${remoteDir}`,
-      ],
-      () => {
-        process.stdout.write(`${remoteDir}\n`);
-        process.exit(0);
-      },
-    );
-  });
+  const mkdirArgs = ['exec', ...parsed.forwarded, '--', 'mkdir', '-p', '--', remoteDir, scratchDir];
+  run('remote mkdir', cli, mkdirArgs, () =>
+    resolveScratch(cli, parsed.forwarded, scratchDir, scratchPath => {
+      process.stderr.write(`mellifera-remote-sync: scratch ${scratchPath}\n`);
+      if (parsed.scratchFile !== undefined) {
+        try {
+          fs.writeFileSync(parsed.scratchFile, `${scratchPath}\n`);
+        } catch (err) {
+          fail(`cannot write --scratch-file ${parsed.scratchFile}: ${err.message}`);
+        }
+      }
+      sync(rsh, parsed.filter, remoteDir);
+    }),
+  );
 }
 
 main();
