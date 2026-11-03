@@ -230,9 +230,10 @@ time with duplicate symbols (and `pod install` rejects the combination).
 - **`spm_dependency` is unavailable:** Upgrade to React Native 0.75 or newer.
 - **SPM and CocoaPods both produce the same Firebase framework:** Remove manually
   declared Firebase pods/packages so RNFB owns Firebase dependency resolution.
-- **Release archive fails with an `xcframework-ios.signature` "couldn't be
-  copied ... because an item with the same name already exists" error:** a
-  long-standing Xcode Archive bug with SPM binary xcframeworks, not an RNFB
-  regression. RNFB works around it automatically; if the warning says it could
-  not do so, add a Run Script build phase to your app target that removes the
-  colliding `.signature` file named in the error.
+- **Archive fails with `"…xcframework-ios.signature"` (or
+  `-ios-simulator.signature`) "couldn't be copied … because an item with the
+  same name already exists":** An Xcode Archive bug with SPM binary
+  xcframeworks. RNFB adds a build phase that removes these files; after
+  upgrading, re-run `pod install`. If RNFB warns it couldn't add the phase, add
+  a Run Script phase to your app target that runs `rm -f` on both files for the
+  name in the error, under `"${CONFIGURATION_BUILD_DIR}"`.
