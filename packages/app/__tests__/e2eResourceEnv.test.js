@@ -1,11 +1,17 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
+const { createHermeticHost } = require('./e2eHermeticHost');
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const lib = path.join(repoRoot, 'scripts/e2e/lib/e2e-resource-env.sh');
+const host = createHermeticHost('rnfb-resource-env-');
+
+afterAll(function () {
+  host.cleanup();
+});
 
 function cleanEnv() {
-  const env = { ...process.env };
+  const env = host.env();
   for (const key of Object.keys(env)) {
     if (
       key.startsWith('RNFB_') ||
@@ -39,6 +45,72 @@ ${body}`,
     { encoding: 'utf8', cwd: repoRoot, env: cleanEnv(), ...extra },
   );
 }
+
+describe('temp root (${TMPDIR:-/tmp} without a trailing slash)', function () {
+  const cases = [
+    ['/', '/tmp'],
+    ['', '/tmp'],
+    [undefined, '/tmp'],
+    ['/scratch/run/', '/scratch/run'],
+    ['/scratch/run', '/scratch/run'],
+  ];
+
+  function envWithTmpdir(tmpdir) {
+    const env = cleanEnv();
+    if (tmpdir === undefined) {
+      delete env.TMPDIR;
+    } else {
+      env.TMPDIR = tmpdir;
+    }
+    return env;
+  }
+
+  it.each(cases)('e2e_tmp_root maps TMPDIR=%j to %s', function (tmpdir, expected) {
+    expect(bashSnippet('e2e_tmp_root', { env: envWithTmpdir(tmpdir) }).trim()).toBe(expected);
+  });
+
+  const inlineScripts = [
+    '.github/workflows/scripts/test-expo-ios-launch-smoke.sh',
+    '.github/workflows/scripts/test-expo-ios-link.sh',
+    '.github/workflows/scripts/test-rn-bare-ios-build.sh',
+    '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh',
+    'scripts/repro-android-build-flake.sh',
+    'scripts/tart/prewarm-caches.sh',
+    'scripts/tart/provision-toolchain.sh',
+  ];
+
+  it.each(inlineScripts)('%s resolves its temp root the same way', function (script) {
+    const fs = require('fs');
+    const src = fs.readFileSync(path.join(repoRoot, script), 'utf8');
+    const lines = src.split('\n').filter(l => l.startsWith('TMP_ROOT='));
+    expect(lines).toHaveLength(3);
+    for (const [tmpdir, expected] of cases) {
+      const out = execFileSync('bash', ['-c', `${lines.join('\n')}\nprintf '%s' "$TMP_ROOT"`], {
+        encoding: 'utf8',
+        env: envWithTmpdir(tmpdir),
+      });
+      expect(out).toBe(expected);
+    }
+  });
+
+  it('scripts that source the e2e lib use e2e_tmp_root', function () {
+    const fs = require('fs');
+    for (const script of [
+      'scripts/run-full-tests.sh',
+      'scripts/e2e/release-e2e-resources.sh',
+      'scripts/e2e/start-packager.sh',
+      '.github/workflows/scripts/start-firebase-emulator.sh',
+    ]) {
+      const code = fs
+        .readFileSync(path.join(repoRoot, script), 'utf8')
+        .split('\n')
+        .filter(l => !l.trimStart().startsWith('#'))
+        .join('\n');
+      expect(code).toContain('$(e2e_tmp_root)');
+      expect(code).not.toMatch(/TMPDIR:-\/tmp/);
+    }
+  });
+});
 
 describe('e2e_validate_platform_name', function () {
   it('accepts android, ios, and macos', function () {
@@ -636,6 +708,8 @@ exit 1
     } catch (e) {
       status = e.status;
       combined = `${e.stdout || ''}${e.stderr || ''}`;
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
     }
     expect(status).not.toBe(0);
     expect(combined).toMatch(/BUSY\s+android stray emulator serial emulator-16222/);
@@ -677,6 +751,10 @@ exit 1
     } finally {
       await new Promise(resolve => server.close(resolve));
     }
-    expect(run()).toMatch(new RegExp(`CLEAR\\s+port :${port} \\(jet:\\w+\\)`));
+    try {
+      expect(run()).toMatch(new RegExp(`CLEAR\\s+port :${port} \\(jet:\\w+\\)`));
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

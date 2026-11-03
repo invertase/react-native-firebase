@@ -355,15 +355,19 @@ clear_android_stray_emulators
 clear_android_emulator
 sleep 2
 
+# Per run, so concurrent releases on other slots or platforms never share it.
+CHECK_OUT="$(mktemp "$(e2e_tmp_root)/rnfb-check-e2e-resources.XXXXXX")"
+trap 'rm -f "$CHECK_OUT"' EXIT
+
 round=0
 while [[ $round -lt $MAX_FORCE_ROUNDS ]]; do
-  if run_check >/tmp/rnfb-check-e2e-resources.out 2>&1; then
+  if run_check >"$CHECK_OUT" 2>&1; then
     echo "[release-e2e-resources] CLEAR after soft/force round ${round}"
-    cat /tmp/rnfb-check-e2e-resources.out
+    cat "$CHECK_OUT"
     exit 0
   fi
   echo "[release-e2e-resources] still BUSY — forceful round $((round + 1))"
-  cat /tmp/rnfb-check-e2e-resources.out >&2 || true
+  cat "$CHECK_OUT" >&2 || true
   e2e_lsof_cache_load
   clear_ports_matching hard
   clear_macos_app_hard

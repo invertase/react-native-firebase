@@ -200,7 +200,7 @@ popd >/dev/null
 cleanup_lock
 trap - EXIT INT TERM
 
-EMU_LOG="${RNFB_EMULATOR_LOG:-/tmp/rnfb-emulator-${TAG}-s${SLOT}.log}"
+EMU_LOG="${RNFB_EMULATOR_LOG:-$(e2e_tmp_root)/rnfb-emulator-${TAG}-s${SLOT}.log}"
 READY_TIMEOUT="${RNFB_EMULATOR_READY_TIMEOUT:-300}"
 EMU_PID=""
 

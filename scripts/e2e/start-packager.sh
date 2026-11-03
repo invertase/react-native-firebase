@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Canonical Metro start for yarn tests:packager:* / tests:macos:packager:*.
 # Honor RCT_METRO_PORT (fallback RNFB_METRO_PORT / 8081). Always kill that port's
-# listeners (SIGTERM then SIGKILL), set TMPDIR=$HOME/.metro/rnfb-${port}.
+# listeners (SIGTERM then SIGKILL), set TMPDIR=${RNFB_METRO_CACHE_ROOT:-$HOME/.metro}/rnfb-${port}.
+# The Metro log defaults to the caller's ${TMPDIR:-/tmp}/rnfb-metro-${port}.log
+# (RNFB_METRO_LOG overrides), read before TMPDIR is repointed at the cache.
 # Watchman: watch-del this Metro project root unless a sibling Metro already owns
 # it (skip so android∥ios dual tests/ packagers survive); force with
 # RNFB_METRO_FORCE_WATCHMAN_RESET=1. Always watch-project the allowlist. Never
@@ -54,11 +56,15 @@ if [[ "$APP_DIR" == "tests-macos" && "$PORT" != "8081" && -z "${RNFB_MACOS_JET_P
   echo "error: macOS Metro on :${PORT} requires RNFB_MACOS_JET_PORT on the packager process (eval \"\$(yarn tests:e2e:export-slot-env macos <slot>)\" before yarn tests:macos:packager:jet*)" >&2
   exit 2
 fi
-CACHE_DIR="${HOME}/.metro/rnfb-${PORT}"
+CALLER_TMP_ROOT="$(e2e_tmp_root)"
+METRO_LOG="${RNFB_METRO_LOG:-${CALLER_TMP_ROOT}/rnfb-metro-${PORT}.log}"
+METRO_CACHE_ROOT="${RNFB_METRO_CACHE_ROOT:-${HOME}/.metro}"
+METRO_CACHE_ROOT="${METRO_CACHE_ROOT%/}"
+METRO_CACHE_ROOT="${METRO_CACHE_ROOT:-${HOME}/.metro}"
+CACHE_DIR="${METRO_CACHE_ROOT}/rnfb-${PORT}"
 mkdir -p "$CACHE_DIR"
 export TMPDIR="$CACHE_DIR"
 STATUS_WAIT_SEC="${RNFB_METRO_STATUS_WAIT_SEC:-180}"
-METRO_LOG="${RNFB_METRO_LOG:-/tmp/rnfb-metro-${PORT}.log}"
 
 kill_port_listeners() {
   local port=$1

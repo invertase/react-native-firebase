@@ -178,6 +178,7 @@ exec /bin/bash "$@"
       }
     }
     env.PATH = `${dir}:${env.PATH}`;
+    env.TMPDIR = dir;
     env.RNFB_XCRUN_LOG = log;
 
     try {
@@ -246,6 +247,7 @@ exec /bin/bash "$@"
     }
     env.E2E_SLOTTED_MAX = '99';
     env.PATH = `${dir}:${env.PATH}`;
+    env.TMPDIR = dir;
     env.RNFB_ACTION_LOG = log;
 
     try {

@@ -7,8 +7,8 @@
 #   ATTEMPTS=5 ./scripts/repro-android-build-flake.sh
 #
 # Logs:
-#   /tmp/rnfb-android-flake-repro.log      full output
-#   /tmp/rnfb-android-flake-repro.summary  pass/fail per attempt
+#   ${TMPDIR:-/tmp}/rnfb-android-flake-repro.log      full output
+#   ${TMPDIR:-/tmp}/rnfb-android-flake-repro.summary  pass/fail per attempt
 
 set -u
 
@@ -16,8 +16,11 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
 ATTEMPTS="${1:-${ATTEMPTS:-5}}"
-LOG="${LOG:-/tmp/rnfb-android-flake-repro.log}"
-SUMMARY="${SUMMARY:-/tmp/rnfb-android-flake-repro.summary}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+LOG="${LOG:-${TMP_ROOT}/rnfb-android-flake-repro.log}"
+SUMMARY="${SUMMARY:-${TMP_ROOT}/rnfb-android-flake-repro.summary}"
 
 : >"$LOG"
 : >"$SUMMARY"

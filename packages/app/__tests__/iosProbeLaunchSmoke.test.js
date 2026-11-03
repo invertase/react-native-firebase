@@ -528,6 +528,7 @@ ${body}
             env: {
               ...process.env,
               PATH: `${binDir}:${process.env.PATH}`,
+              TMPDIR: tmpDir,
               RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE: '1',
               ...env,
             },

@@ -95,12 +95,26 @@ exit 0`,
   return dir;
 }
 
-function runRelease(args, extraEnv = {}, script = release) {
+function runRelease(args, extraEnv = {}, script = release, { observeCheckTmp = false } = {}) {
   const dir = stubHost();
   const log = path.join(dir, 'actions.log');
+  const tmp = path.join(dir, 'tmp');
+  fs.mkdirSync(tmp);
+  if (observeCheckTmp) {
+    // release runs the recheck as `bash check-e2e-resources.sh`: list TMPDIR while it runs.
+    writeStub(
+      dir,
+      'bash',
+      `if [[ "$1" == */check-e2e-resources.sh ]]; then
+  printf 'check-tmp %s\\n' "$(ls "$TMPDIR" | tr '\\n' ' ')" >> "$RNFB_ACTION_LOG"
+fi
+exec /bin/bash "$@"`,
+    );
+  }
   try {
     const env = {
       ...cleanEnv(),
+      TMPDIR: `${tmp}/`,
       ...extraEnv,
       PATH: `${dir}:${process.env.PATH || '/usr/bin:/bin'}`,
       RNFB_ACTION_LOG: log,
@@ -118,6 +132,7 @@ function runRelease(args, extraEnv = {}, script = release) {
       status: res.status,
       out,
       actions,
+      tmpLeft: fs.readdirSync(tmp),
       emuKill: pick(/^adb -s (\S+) emu kill$/),
       forceStop: pick(/^adb -s (\S+) shell am force-stop/),
       pkillAvd: pick(/^pkill -f qemu-system\.\*@(\S+?)\(/),
@@ -180,6 +195,27 @@ describe('release-e2e-resources grant-shape scoping', function () {
     expect(r.emuKill).toEqual([]);
     expect(r.pkillAvd).toEqual([]);
     expect(r.simShutdown).toEqual(['RN E2E iOS slot-2']);
+  });
+
+  it('prints the recheck output and leaves no check-output file in TMPDIR', function () {
+    const r = runRelease(['--placement=slot', '--slot=2', '--devices']);
+    expect(r.out).toContain('[release-e2e-resources] still BUSY');
+    expect(r.out).toMatch(/BUSY\s+port :14007/);
+    expect(r.tmpLeft).toEqual([]);
+  });
+
+  it('creates the check output under the caller TMPDIR during the recheck and removes it', function () {
+    const r = runRelease(['--placement=slot', '--slot=2', '--devices'], {}, release, {
+      observeCheckTmp: true,
+    });
+    const seen = r.actions.filter(l => l.startsWith('check-tmp '));
+    // Two forceful rounds plus the final recheck.
+    expect(seen).toHaveLength(3);
+    for (const line of seen) {
+      expect(line).toMatch(/^check-tmp rnfb-check-e2e-resources\.\w{6} $/);
+    }
+    expect(new Set(seen).size).toBe(1);
+    expect(r.tmpLeft).toEqual([]);
   });
 
   it('check --slot=2 with no slot env reports only the TestingAVD-2 stray', function () {

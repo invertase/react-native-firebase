@@ -630,7 +630,7 @@ main() {
   parse_args "$@"
 
   cd "$REPO_ROOT"
-  LOG_DIR="$(mktemp -d /tmp/rnfb-full-XXXXXX)"
+  LOG_DIR="$(mktemp -d "$(e2e_tmp_root)/rnfb-full-XXXXXX")"
   META_FILE="${LOG_DIR}/00-meta.txt"
   trap on_exit EXIT
 
