@@ -414,6 +414,20 @@ During `pod install`, using that variable links the `FirebaseAnalyticsCore` Swif
 or Firebase Analytics without needing the App Tracking Transparency handling (assuming no other parts
 of your app handle data in a way that requires ATT)
 
+If your app uses [React Native SwiftPM mode](/ios-spm#react-native-swiftpm-mode), there is no Podfile.
+Set `analytics_without_ad_id_support` under the `react-native` object of `firebase.json` instead:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "analytics_without_ad_id_support": true
+  }
+}
+```
+
+With that key, the app links the `FirebaseAnalyticsCore` SwiftPM product instead of `FirebaseAnalytics`, so it has no IDFA symbols.
+
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
 
 # Google Analytics on-device conversion measurement
