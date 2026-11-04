@@ -1,4 +1,4 @@
-import type { RnfbPackage } from './packages';
+import type { ExternalProduct, RnfbPackage } from './packages';
 
 const APP_MODULE = 'RNFBApp';
 const APP_OBJC = `${APP_MODULE}ObjC`;
@@ -17,6 +17,7 @@ interface TargetBase {
   sources: string[];
   dependencies: string[];
   firebaseProducts: string[];
+  externalProducts: ExternalProduct[];
 }
 
 export interface SwiftTarget extends TargetBase {
@@ -38,7 +39,7 @@ export type Target = SwiftTarget | ObjcTarget;
 export const exportedImportSource = (module: string) => `Generated/${module}Import.swift`;
 
 export function targetsFor(pkg: RnfbPackage): Target[] {
-  const { module, sourceFolder, firebaseProducts } = pkg;
+  const { module, sourceFolder, firebaseProducts, externalProducts } = pkg;
   const root = (iosPath: string) => `root/${iosPath}`;
   const isApp = module === APP_MODULE;
   const coreClasses = CORE_CLASSES[module] ?? [];
@@ -56,6 +57,7 @@ export function targetsFor(pkg: RnfbPackage): Target[] {
       headerSearchPaths: [root(sourceFolder), 'headers', `headers/${APP_MODULE}`],
       dependencies: [APP_OBJC],
       firebaseProducts,
+      externalProducts,
       frameworks: [],
       moduleHeaders: coreClasses.map(name => root(`${sourceFolder}/${name}.h`)),
     });
@@ -70,6 +72,7 @@ export function targetsFor(pkg: RnfbPackage): Target[] {
       dependencies: compact([core, isApp ? undefined : APP_MODULE]),
       // Swift sources import at most the package's primary (first) Firebase product.
       firebaseProducts: firebaseProducts.slice(0, 1),
+      externalProducts,
       exportedImport: core,
     });
   }
@@ -88,6 +91,7 @@ export function targetsFor(pkg: RnfbPackage): Target[] {
     ],
     dependencies: compact([swift, core, ...(isApp ? [] : [APP_MODULE, APP_OBJC])]),
     firebaseProducts,
+    externalProducts,
     frameworks: pkg.frameworks,
     moduleHeaders: [],
   });

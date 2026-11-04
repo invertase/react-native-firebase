@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ReactNativeFirebase SwiftPM autolinking plugin analytics link options writes the same Package.swift as before when both keys are false 1`] = `
+"// swift-tools-version: 6.0
+// Written by @react-native-firebase/app on every React Native SwiftPM sync. Do not edit.
+// Layout: <hash>
+import PackageDescription
+
+let react: [Target.Dependency] = [
+    .product(name: "ReactHeaders", package: "ReactNative"),
+    .product(name: "ReactNativeHeaders", package: "ReactNative"),
+    .product(name: "ReactNativeDependenciesHeaders", package: "ReactNative"),
+    .product(name: "ReactAppHeaders", package: "React-GeneratedCode"),
+]
+
+func firebase(_ products: String...) -> [Target.Dependency] {
+    products.map { .product(name: $0, package: "firebase-ios-sdk") }
+}
+
+func cSettings(_ headerSearchPaths: [String]) -> [CSetting] {
+    headerSearchPaths.map { .headerSearchPath($0) } + [
+        .define("DEBUG", .when(configuration: .debug)),
+        .define("NDEBUG", .when(configuration: .release)),
+    ]
+}
+
+func cxxSettings(_ headerSearchPaths: [String]) -> [CXXSetting] {
+    headerSearchPaths.map { .headerSearchPath($0) } + [
+        .define("DEBUG", .when(configuration: .debug)),
+        .define("NDEBUG", .when(configuration: .release)),
+    ]
+}
+
+func objcTarget(
+    _ name: String,
+    sources: [String],
+    headerSearchPaths: [String],
+    dependencies: [Target.Dependency],
+    frameworks: [String] = []
+) -> Target {
+    .target(
+        name: name,
+        dependencies: dependencies + react,
+        path: "Targets/\\(name)",
+        sources: sources,
+        publicHeadersPath: "Public",
+        cSettings: cSettings(headerSearchPaths),
+        cxxSettings: cxxSettings(headerSearchPaths),
+        linkerSettings: (["UIKit", "Foundation", "CoreGraphics"] + frameworks).map { .linkedFramework($0) }
+    )
+}
+
+func swiftTarget(_ name: String, sources: [String], dependencies: [Target.Dependency]) -> Target {
+    .target(name: name, dependencies: dependencies, path: "Targets/\\(name)", sources: sources)
+}
+
+let package = Package(
+    name: "ReactNativeFirebase",
+    platforms: [.iOS("16.4"), .macOS("12.3"), .tvOS("17.1")],
+    products: [
+        .library(name: "ReactNativeFirebase", targets: ["RNFBApp", "RNFBAppObjC", "RNFBAnalytics", "RNFBAnalyticsObjC"]),
+    ],
+    dependencies: [
+        .package(name: "ReactNative", path: "<tmp>/workspace/my-app/ios/build/xcframeworks"),
+        .package(name: "React-GeneratedCode", path: "<tmp>/workspace/my-app/ios/build/generated/ios"),
+        .package(url: "https://example.com/mirror/firebase-ios-sdk.git", exact: "99.1.2"),
+    ],
+    targets: [
+        swiftTarget(
+            "RNFBApp",
+            sources: [
+                "root/RNFBApp/RNFBAppModuleFirebase.swift",
+                "root/RNFBApp/RNFBHandleMapStorage.swift",
+            ],
+            dependencies: firebase("FirebaseCore")
+        ),
+        objcTarget(
+            "RNFBAppObjC",
+            sources: [
+                "root/RNFBApp/RNFBAppModule.mm",
+                "root/RNFBApp/RNFBSharedUtils.m",
+                "root/generated/RNFBAppTurboModules/RNFBAppTurboModules-generated.mm",
+            ],
+            headerSearchPaths: ["root/RNFBApp", "root/generated", "root/generated/RNFBAppTurboModules", "headers", "headers/RNFBApp"],
+            dependencies: ["RNFBApp"] + firebase("FirebaseCore", "FirebaseInstallations"),
+            frameworks: ["Photos"]
+        ),
+        swiftTarget(
+            "RNFBAnalytics",
+            sources: [
+                "root/RNFBAnalytics/RNFBAnalyticsLogTransaction.swift",
+            ],
+            dependencies: ["RNFBApp"] + firebase("FirebaseAnalytics")
+        ),
+        objcTarget(
+            "RNFBAnalyticsObjC",
+            sources: [
+                "root/RNFBAnalytics/RNFBAnalyticsHelper.m",
+                "root/RNFBAnalytics/RNFBAnalyticsModule.mm",
+                "root/generated/RNFBAnalyticsTurboModules/RNFBAnalyticsTurboModules-generated.mm",
+            ],
+            headerSearchPaths: ["root/RNFBAnalytics", "root/generated", "root/generated/RNFBAnalyticsTurboModules", "headers", "headers/RNFBApp"],
+            dependencies: ["RNFBAnalytics", "RNFBApp", "RNFBAppObjC"] + firebase("FirebaseAnalytics")
+        ),
+    ],
+    swiftLanguageModes: [.v5],
+    cxxLanguageStandard: .cxx20
+)
+"
+`;

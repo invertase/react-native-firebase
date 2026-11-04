@@ -214,11 +214,15 @@ reads `firebase.json` from your project root instead:
 - To use Analytics without Ad Id support, set
   `analytics_without_ad_id_support` under the `react-native` object. See
   [Disable Ad Id usage on iOS](/analytics/usage#disable-ad-id-usage-on-ios).
-
-The Podfile variables `$RNFirebaseAnalyticsEnableAdSupport` and
-`$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion` have no
-`firebase.json` equivalent yet. React Native SwiftPM mode does not support the
-`AdSupport` framework link or the `GoogleAdsOnDeviceConversion` package yet.
+- To link the `AdSupport` framework, set `analytics_enable_ad_support` under
+  the `react-native` object. This replaces the Podfile variable
+  `$RNFirebaseAnalyticsEnableAdSupport`. See
+  [Device Identification](/analytics/usage#device-identification).
+- To use on-device conversion measurement, set
+  `analytics_google_app_measurement_on_device_conversion` under the
+  `react-native` object. This replaces the Podfile variable
+  `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`. See
+  [Google Analytics on-device conversion measurement](/analytics/usage#google-analytics-on-device-conversion-measurement).
 
 ## Troubleshooting
 
