@@ -47,6 +47,11 @@ function renderBody({ targets, react, reactCodegenPath, sdk }: ManifestInput): s
       ? [`.package(name: ${swift(REACT_CODEGEN_PACKAGE)}, path: ${swift(reactCodegenPath)})`]
       : []),
     `.package(url: ${swift(sdk.firebaseSpmUrl)}, exact: ${swift(sdk.firebase)})`,
+    ...new Set(
+      targets
+        .flatMap(t => t.externalProducts)
+        .map(product => `.package(url: ${swift(product.url)}, from: ${swift(product.from)})`),
+    ),
   ];
 
   return `import PackageDescription
@@ -149,10 +154,18 @@ ${sources.map(source => `                ${swift(source)},`).join('\n')}
             ]`;
 }
 
-function dependencies({ dependencies: targets, firebaseProducts }: Target): string {
+function dependencies({
+  dependencies: targets,
+  firebaseProducts,
+  externalProducts,
+}: Target): string {
+  const external = externalProducts.map(
+    product => `.product(name: ${swift(product.name)}, package: ${swift(product.package)})`,
+  );
   const parts = [
     ...(targets.length > 0 || firebaseProducts.length === 0 ? [list(targets)] : []),
     ...(firebaseProducts.length > 0 ? [`firebase(${firebaseProducts.map(swift).join(', ')})`] : []),
+    ...(external.length > 0 ? [`[${external.join(', ')}]`] : []),
   ];
   return parts.join(' + ');
 }

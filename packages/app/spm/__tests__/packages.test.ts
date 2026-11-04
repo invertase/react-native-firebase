@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { describe, expect, it } from '@jest/globals';
 
-import { discoverPackages } from '../src/packages';
+import { discoverPackages, ON_DEVICE_CONVERSION } from '../src/packages';
 import { targetsFor } from '../src/targets';
 
 const PACKAGES = path.resolve(__dirname, '..', '..', '..');
@@ -116,5 +116,26 @@ describe('package discovery on the packages in this repository', () => {
       firebaseProducts: pkg!.firebaseProducts,
       targets: targetsFor(pkg!).map(t => t.name),
     }).toEqual(expected);
+  });
+});
+
+describe('GoogleAdsOnDeviceConversion package', () => {
+  it('matches the spm_dependency of the analytics podspec', () => {
+    const podspec = fs.readFileSync(
+      path.join(PACKAGES, 'analytics', 'RNFBAnalytics.podspec'),
+      'utf8',
+    );
+    const call =
+      /spm_dependency\(\s*s\s*,\s*url:\s*'([^']+)',\s*requirement:\s*\{\s*kind:\s*'upToNextMajorVersion',\s*minimumVersion:\s*'([^']+)'\s*\},\s*products:\s*\['([^']+)'\]/.exec(
+        podspec,
+      );
+
+    expect(call).not.toBeNull();
+    const [, url, minimumVersion, product] = call!;
+    expect({ url, from: minimumVersion, name: product }).toEqual({
+      url: ON_DEVICE_CONVERSION.url,
+      from: ON_DEVICE_CONVERSION.from,
+      name: ON_DEVICE_CONVERSION.name,
+    });
   });
 });

@@ -210,6 +210,116 @@ describe('ReactNativeFirebase SwiftPM autolinking plugin', () => {
     });
   });
 
+  describe('analytics link options', () => {
+    const AD_SUPPORT = 'analytics_enable_ad_support';
+    const ON_DEVICE_CONVERSION = 'analytics_google_app_measurement_on_device_conversion';
+    const ADS_PACKAGE =
+      '.package(url: "https://github.com/googleads/google-ads-on-device-conversion-ios-sdk.git", from: "3.6.1")';
+    const ADS_PRODUCT =
+      '.product(name: "GoogleAdsOnDeviceConversion", package: "google-ads-on-device-conversion-ios-sdk")';
+    const offValues: Array<[string, unknown]> = [
+      ['absent', undefined],
+      ['false', false],
+      ['the string "true"', 'true'],
+      ['1', 1],
+    ];
+    const withKey = (key: string, value: unknown) => ({
+      'react-native': value === undefined ? {} : { [key]: value },
+    });
+
+    // The fixture's paths live in a fresh temporary folder, and the layout hash covers them.
+    function normalized(f: Fixture, manifest: string): string {
+      const tmp = path.dirname(path.dirname(f.context.projectRoot));
+      return manifest
+        .split(tmp)
+        .join('<tmp>')
+        .replace(/^\/\/ Layout: \w+$/m, '// Layout: <hash>');
+    }
+
+    it('writes the same Package.swift as before when both keys are false', () => {
+      const f = setUp(['app', 'analytics'], {
+        firebaseJson: { 'react-native': { [AD_SUPPORT]: false, [ON_DEVICE_CONVERSION]: false } },
+      });
+
+      expect(normalized(f, generate(f).manifest)).toMatchSnapshot();
+    });
+
+    it(`links AdSupport into RNFBAnalyticsObjC when ${AD_SUPPORT} is true`, () => {
+      const { manifest } = generate(
+        setUp(['app', 'analytics'], { firebaseJson: withKey(AD_SUPPORT, true) }),
+      );
+
+      expect(target(manifest, 'RNFBAnalyticsObjC').body).toContain('frameworks: ["AdSupport"]');
+      expect(manifest.match(/AdSupport/g)).toHaveLength(1);
+    });
+
+    it('links AdSupport whether or not analytics_without_ad_id_support is true', () => {
+      const { manifest } = generate(
+        setUp(['app', 'analytics'], {
+          firebaseJson: {
+            'react-native': { [AD_SUPPORT]: true, analytics_without_ad_id_support: true },
+          },
+        }),
+      );
+
+      expect(target(manifest, 'RNFBAnalyticsObjC').body).toContain('frameworks: ["AdSupport"]');
+      expect(firebaseProducts(target(manifest, 'RNFBAnalyticsObjC'))).toEqual([
+        'FirebaseAnalyticsCore',
+      ]);
+    });
+
+    it.each(offValues)(`links no AdSupport when ${AD_SUPPORT} is %s`, (_, value) => {
+      const { manifest } = generate(
+        setUp(['app', 'analytics'], { firebaseJson: withKey(AD_SUPPORT, value) }),
+      );
+
+      expect(manifest).not.toContain('AdSupport');
+      expect(target(manifest, 'RNFBAnalyticsObjC').body).not.toContain('frameworks:');
+    });
+
+    it(`adds GoogleAdsOnDeviceConversion to the analytics targets when ${ON_DEVICE_CONVERSION} is true`, () => {
+      const { manifest } = generate(
+        setUp(['app', 'analytics'], { firebaseJson: withKey(ON_DEVICE_CONVERSION, true) }),
+      );
+
+      expect(manifest.split(ADS_PACKAGE)).toHaveLength(2);
+      expect(manifest.indexOf(ADS_PACKAGE)).toBeGreaterThan(
+        manifest.indexOf('.package(url: "https://example.com/mirror/firebase-ios-sdk.git"'),
+      );
+      for (const name of ['RNFBAnalytics', 'RNFBAnalyticsObjC']) {
+        expect(target(manifest, name).body).toContain(ADS_PRODUCT);
+      }
+      for (const name of ['RNFBApp', 'RNFBAppObjC']) {
+        expect(target(manifest, name).body).not.toContain('GoogleAdsOnDeviceConversion');
+      }
+      expect(targetDependencies(target(manifest, 'RNFBAnalytics'))).toEqual(['RNFBApp']);
+      expect(firebaseProducts(target(manifest, 'RNFBAnalyticsObjC'))).toEqual([
+        'FirebaseAnalytics',
+      ]);
+    });
+
+    it.each(offValues)(
+      `adds no GoogleAdsOnDeviceConversion when ${ON_DEVICE_CONVERSION} is %s`,
+      (_, value) => {
+        const { manifest } = generate(
+          setUp(['app', 'analytics'], { firebaseJson: withKey(ON_DEVICE_CONVERSION, value) }),
+        );
+
+        expect(manifest).not.toMatch(/GoogleAdsOnDeviceConversion|google-ads/);
+      },
+    );
+
+    it('changes nothing when analytics is not installed, even with both keys true', () => {
+      const f = setUp(['app', 'firestore']);
+      const { manifest: withoutFirebaseJson } = generate(f);
+      f.writeFirebaseJson({ 'react-native': { [AD_SUPPORT]: true, [ON_DEVICE_CONVERSION]: true } });
+      const { manifest } = generate(f);
+
+      expect(manifest).toBe(withoutFirebaseJson);
+      expect(manifest).not.toMatch(/AdSupport|GoogleAdsOnDeviceConversion|google-ads/);
+    });
+  });
+
   describe('firestore', () => {
     const CORE = ['RNFBFirestoreCommon', 'RNFBFirestoreQuery', 'RNFBFirestoreSerialize'];
 

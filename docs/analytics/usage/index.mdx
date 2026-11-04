@@ -455,6 +455,20 @@ If you use Expo, including EAS Build, add the Analytics config plugin to your `a
 
 This adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to the generated iOS `Podfile` during prebuild.
 
+If your app uses [React Native SwiftPM mode](/ios-spm#react-native-swiftpm-mode), there is no Podfile.
+Set `analytics_google_app_measurement_on_device_conversion` under the `react-native` object of `firebase.json` instead:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "analytics_google_app_measurement_on_device_conversion": true
+  }
+}
+```
+
+With that key, the app links the `GoogleAdsOnDeviceConversion` SwiftPM package.
+
 After the native dependency is linked, call the measurement helpers with an email, phone number, or SHA-256 hex hash. On Android and web these promises resolve without calling native (no-op). Hashed helpers expect a 64-character hex digest of the normalized credential.
 
 ```js
@@ -493,6 +507,20 @@ To do this, add this variable to your `Podfile` so `@react-native-firebase/analy
 ```ruby
 $RNFirebaseAnalyticsEnableAdSupport = true
 ```
+
+If your app uses [React Native SwiftPM mode](/ios-spm#react-native-swiftpm-mode), there is no Podfile.
+Set `analytics_enable_ad_support` under the `react-native` object of `firebase.json` instead:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "analytics_enable_ad_support": true
+  }
+}
+```
+
+With that key, the app links the `AdSupport` framework.
 
 Note: this setting will have no effect if you disabled Ad IDs as described above, since this setting is specifically linking in the `AdSupport` framework which requires the Ad IDs.
 

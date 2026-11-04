@@ -3,13 +3,24 @@ import path from 'path';
 
 import { writeLayout } from './layout';
 import { PACKAGE_NAME, renderManifest, type IosSdkVersions } from './manifest';
-import { APP_PACKAGE, discoverPackages, type RnfbPackage } from './packages';
+import {
+  APP_PACKAGE,
+  discoverPackages,
+  ON_DEVICE_CONVERSION,
+  type DiscoveryOptions,
+  type RnfbPackage,
+} from './packages';
 import { scriptPhasesFor } from './scriptPhases';
 import { targetsFor } from './targets';
 import type { PluginContext, PluginResult } from './types';
 
+type ReactNativeFlag =
+  | 'analytics_without_ad_id_support'
+  | 'analytics_enable_ad_support'
+  | 'analytics_google_app_measurement_on_device_conversion';
+
 interface FirebaseJson {
-  'react-native'?: { analytics_without_ad_id_support?: unknown };
+  'react-native'?: Partial<Record<ReactNativeFlag, unknown>>;
 }
 
 /**
@@ -25,9 +36,10 @@ function reactNativeFirebaseSpmPlugin(context: PluginContext): PluginResult {
   }
 
   const firebaseJsonPath = path.join(projectRoot, 'firebase.json');
-  const packages = discoverPackages(context.autolinking.dependencies ?? {}, {
-    analyticsProduct: readAnalyticsProduct(firebaseJsonPath),
-  });
+  const packages = discoverPackages(
+    context.autolinking.dependencies ?? {},
+    readDiscoveryOptions(firebaseJsonPath),
+  );
   const app = packages.find(pkg => pkg.name === APP_PACKAGE);
   if (!app) {
     throw new Error(`${APP_PACKAGE} is not autolinked, so its SwiftPM package cannot be built.`);
@@ -53,11 +65,18 @@ function reactNativeFirebaseSpmPlugin(context: PluginContext): PluginResult {
   };
 }
 
-function readAnalyticsProduct(firebaseJsonPath: string): string {
+function readDiscoveryOptions(firebaseJsonPath: string): DiscoveryOptions {
   const config = fs.existsSync(firebaseJsonPath) ? readFirebaseJson(firebaseJsonPath) : null;
-  return config?.['react-native']?.analytics_without_ad_id_support === true
-    ? 'FirebaseAnalyticsCore'
-    : 'FirebaseAnalytics';
+  const isSet = (flag: ReactNativeFlag) => config?.['react-native']?.[flag] === true;
+  return {
+    analyticsProduct: isSet('analytics_without_ad_id_support')
+      ? 'FirebaseAnalyticsCore'
+      : 'FirebaseAnalytics',
+    analyticsExternalProducts: isSet('analytics_google_app_measurement_on_device_conversion')
+      ? [ON_DEVICE_CONVERSION]
+      : [],
+    analyticsFrameworks: isSet('analytics_enable_ad_support') ? ['AdSupport'] : [],
+  };
 }
 
 function readFirebaseJson(firebaseJsonPath: string): FirebaseJson {

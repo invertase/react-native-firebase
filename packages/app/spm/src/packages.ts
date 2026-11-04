@@ -7,6 +7,23 @@ const SCOPE = '@react-native-firebase/';
 export const APP_PACKAGE = '@react-native-firebase/app';
 const ANALYTICS_PACKAGE = '@react-native-firebase/analytics';
 
+/** A SwiftPM product from a package other than firebase-ios-sdk. */
+export interface ExternalProduct {
+  name: string;
+  /** The package identity: the last component of `url`, without `.git`. */
+  package: string;
+  url: string;
+  /** Lowest allowed version; SwiftPM `from:` allows any version up to the next major one. */
+  from: string;
+}
+
+export const ON_DEVICE_CONVERSION: ExternalProduct = {
+  name: 'GoogleAdsOnDeviceConversion',
+  package: 'google-ads-on-device-conversion-ios-sdk',
+  url: 'https://github.com/googleads/google-ads-on-device-conversion-ios-sdk.git',
+  from: '3.6.1',
+};
+
 // Every other package keeps its sources in a folder named after its module (podspec name).
 const MODULE_NAMES: Record<string, string> = {
   RNFBConfig: 'RNFBRemoteConfig',
@@ -32,11 +49,15 @@ export interface RnfbPackage {
   /** File names in the source folder. */
   headers: string[];
   firebaseProducts: string[];
+  externalProducts: ExternalProduct[];
   frameworks: string[];
 }
 
 export interface DiscoveryOptions {
   analyticsProduct: string;
+  analyticsExternalProducts?: ExternalProduct[];
+  /** Linked in addition to the frameworks of the analytics podspec. */
+  analyticsFrameworks?: string[];
 }
 
 /** The autolinked RNFB packages with native iOS code, `@react-native-firebase/app` first. */
@@ -75,6 +96,7 @@ function readPackage(
   const podspec = stripRubyComments(fs.readFileSync(podspecPath, 'utf8'));
   const inSourceFolder = (extensions: string[]) =>
     filesIn(path.join(iosDir, sourceFolder), extensions).map(file => `${sourceFolder}/${file}`);
+  const isAnalytics = name === ANALYTICS_PACKAGE;
 
   return {
     name,
@@ -88,11 +110,14 @@ function readPackage(
       ...filesIn(path.join(iosDir, turboModules), ['.mm']).map(file => `${turboModules}/${file}`),
     ],
     headers: filesIn(path.join(iosDir, sourceFolder), ['.h']),
-    firebaseProducts:
-      name === ANALYTICS_PACKAGE
-        ? [options.analyticsProduct]
-        : podspecFirebaseProducts(name, podspec),
-    frameworks: quoted(IOS_FRAMEWORKS.exec(podspec)?.[1] ?? ''),
+    firebaseProducts: isAnalytics
+      ? [options.analyticsProduct]
+      : podspecFirebaseProducts(name, podspec),
+    externalProducts: isAnalytics ? (options.analyticsExternalProducts ?? []) : [],
+    frameworks: [
+      ...quoted(IOS_FRAMEWORKS.exec(podspec)?.[1] ?? ''),
+      ...(isAnalytics ? (options.analyticsFrameworks ?? []) : []),
+    ],
   };
 }
 
