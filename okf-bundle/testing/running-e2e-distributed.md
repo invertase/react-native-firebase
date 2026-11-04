@@ -163,7 +163,7 @@ done
 yarn tests:mellifera:reduce report --run-dir "$RUN"
 ```
 
-The CLI's `release` takes the session token only as `--token` or from the worktree pointer, so `reduce release` passes it on that child's argv; it is never printed, but it is visible to local process listings while release runs.
+`reduce release` runs the CLI's `release --session-id ID` with the session token in that child's `MELLIFERA_SESSION_TOKEN` env, not on argv, so local process listings do not show it. The CLI reads that env var only alongside `--session-id`. The token is never printed.
 
 **6. Tear down every piece, pass or fail:** [spill teardown](#spill-teardown) with `ID_P`, `DIR_P`, `SF="$RUN/P.scratch"`, and `spill_env "$RUN/P.scratch"`. Its release step is `yarn tests:mellifera:reduce release`, which reads the token from the reserve JSON and does not print it.
 

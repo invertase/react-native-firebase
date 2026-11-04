@@ -90,9 +90,9 @@ var require_build_info_generated = __commonJS({
     exports2.stamped = void 0;
     exports2.stamped = {
       version: '0.1.0',
-      commit: '12650bbe5ce25179e5de69c1b4c63b2187bc2f0a',
+      commit: '2481c6f866c1ef31633d8441420f95e81dbc3a9c',
       dirty: false,
-      builtAt: '2026-10-31T00:50:26.036Z',
+      builtAt: '2026-11-04T14:06:35.756Z',
       source: 'git',
     };
   },
@@ -3435,10 +3435,9 @@ var require_redact = __commonJS({
     }
     function redactSecrets(text, secrets) {
       let out = text;
-      for (const s of secrets) {
-        if (s && s.length >= 4) {
-          out = out.split(s).join(`<redacted ${fingerprint(s)}>`);
-        }
+      const ordered = secrets.filter(s => !!s && s.length >= 4).sort((a, b) => b.length - a.length);
+      for (const s of ordered) {
+        out = out.split(s).join(`<redacted ${fingerprint(s)}>`);
       }
       return out;
     }
@@ -32520,9 +32519,9 @@ var require_build_info_generated2 = __commonJS({
     exports2.stamped = void 0;
     exports2.stamped = {
       version: '0.1.0',
-      commit: '12650bbe5ce25179e5de69c1b4c63b2187bc2f0a',
+      commit: '2481c6f866c1ef31633d8441420f95e81dbc3a9c',
       dirty: false,
-      builtAt: '2026-10-31T00:50:26.759Z',
+      builtAt: '2026-11-04T14:06:36.564Z',
       source: 'git',
     };
   },
@@ -34318,6 +34317,8 @@ function usage() {
   mellifera-cli update check [--json]            # refresh notify-only GitHub main compare (desks)
   mellifera-cli catalog                          # Mlf-AD-9 environment kinds
   mellifera-cli resources                        # per-worker local slot availability
+  mellifera-cli releases [--global] [--grant ID] [--session-id ID] [--since ISO] [--limit N]
+                                                 # grant release history: reason, path, caller
   mellifera-cli availability --kinds a,b,c
   mellifera-cli capacity
   mellifera-cli reserve [--owner HOST:PATH] [--kinds a,b,c]
@@ -34339,9 +34340,9 @@ function usage() {
   mellifera-cli donate --reclaim [--now] [--slots N,M] [--class CLASS] [--worker-id ID]
   mellifera-cli session show [--session-id ID]
   mellifera-cli session clear [--release]
-  mellifera-cli acquire --session-id ID --token T --kinds a,b,c
-  mellifera-cli extend --session-id ID --token T [--ttl-ms N]
-  mellifera-cli release [--session-id ID --token TOKEN]
+  mellifera-cli acquire --session-id ID [--token T | --token-file PATH|-] --kinds a,b,c
+  mellifera-cli extend --session-id ID [--token T | --token-file PATH|-] [--ttl-ms N]
+  mellifera-cli release [--session-id ID [--token T | --token-file PATH|-]]
   mellifera-cli session --session-id ID
   mellifera-cli exec [-i] [-t] [-w DIR] [-e KEY=VALUE]... [--session SESSION_ID] [--] COMMAND [ARG...]
   mellifera-cli exec --rsh [--session SESSION_ID] [-l USER] HOST COMMAND [ARG...]
@@ -34374,10 +34375,17 @@ reserve writes ~/.mellifera/sessions/<worktree>.json (mode 0600) for the current
   and no overall deadline. A success reports phase local, spill-existing, or spill-autoscale.
   bare --wait is deprecated and local-only and is not a supported command. It never spills.
   The verbs wait, check-in, claim, and wait-status are not supported commands.
-  release with no --session-id and no --token uses that record
-  and, on success, removes it. session clear removes the record and does not release
+  release with no --session-id and no explicit token (--token or --token-file) uses that
+  record and, on success, removes it. session clear removes the record and does not release
   unless --release is set. session show dials the core and reports live, expired, or missing.
   Status output never includes the session token.
+Session token (acquire, extend, release): --token T, else --token-file PATH (- reads
+  stdin, which must not be a terminal; one token, surrounding whitespace trimmed), else
+  MELLIFERA_SESSION_TOKEN when --session-id is given, else the worktree record. --token
+  is visible to other local users in ps while the command runs; prefer --token-file or
+  the env var. The CLI never prints the session token. With no --session-id,
+  MELLIFERA_SESSION_TOKEN is ignored so a stale export never pairs with the record's
+  session id.
 
 exec runs COMMAND on the live grant over ssh (execution.connectUrl). It is the
   remote command transport. It does not sync a checkout, install dependencies,
@@ -34696,6 +34704,71 @@ function mintClientApiKey(args, noConfig) {
   );
 }
 var SESSION_TOKEN_COMMANDS = /* @__PURE__ */ new Set(['acquire', 'extend', 'release']);
+var SESSION_TOKEN_ENV = 'MELLIFERA_SESSION_TOKEN';
+var SESSION_SECRETS = [];
+function rememberSessionSecret(token) {
+  if (token) {
+    SESSION_SECRETS.push(token);
+  }
+  return token;
+}
+function readSessionTokenFile(file) {
+  const label = file === '-' ? 'stdin' : path_1.default.resolve(file);
+  if (file === '-' && process.stdin.isTTY) {
+    throw new CliError(
+      'session-token-stdin-tty',
+      '--token-file - reads stdin, which is a terminal. Pipe the token in, or pass --token-file PATH.',
+    );
+  }
+  let raw;
+  try {
+    raw = fs_1.default.readFileSync(file === '-' ? 0 : path_1.default.resolve(file), 'utf8');
+  } catch (err) {
+    const reason = err.code || err.message;
+    throw new CliError(
+      'session-token-file-unreadable',
+      `cannot read --token-file ${label} (${reason})`,
+    );
+  }
+  const token = raw.trim();
+  if (!token) {
+    throw new CliError('session-token-empty', `--token-file ${label} holds no session token`);
+  }
+  if (/\s/.test(token)) {
+    throw new CliError(
+      'session-token-invalid',
+      `--token-file ${label} must hold one token on one line`,
+    );
+  }
+  return token;
+}
+function explicitSessionToken(args) {
+  if (typeof args.token === 'string' && args.token) {
+    return rememberSessionSecret(args.token);
+  }
+  const file = args['token-file'];
+  if (file === true || file === '') {
+    throw new CliError('session-token-file-missing', '--token-file needs PATH, or - to read stdin');
+  }
+  if (typeof file === 'string') {
+    return rememberSessionSecret(readSessionTokenFile(file));
+  }
+  return '';
+}
+function sessionTokenFor(args, explicitSessionId) {
+  const explicit = explicitSessionToken(args);
+  if (explicit || !explicitSessionId) {
+    return explicit;
+  }
+  const token = rememberSessionSecret((process.env[SESSION_TOKEN_ENV] || '').trim());
+  if (/\s/.test(token)) {
+    throw new CliError(
+      'session-token-invalid',
+      `${SESSION_TOKEN_ENV} must hold one token on one line`,
+    );
+  }
+  return token;
+}
 var SLOT_BAND_MIN = 0;
 var SLOT_BAND_MAX = 7;
 function homeDir() {
@@ -35487,6 +35560,41 @@ async function main() {
     console.log(JSON.stringify(await request('GET', '/v1/resources/availability'), null, 2));
     return;
   }
+  if (cmd === 'releases') {
+    const query = new URLSearchParams();
+    for (const [flag, key] of [
+      ['grant', 'grant'],
+      ['session-id', 'session'],
+      ['since', 'since'],
+      ['limit', 'limit'],
+    ]) {
+      const v = args[flag];
+      if (typeof v === 'string' && v.trim()) {
+        query.set(key, v.trim());
+      }
+    }
+    const qs = query.toString();
+    const pathName = `/v1/status/releases${qs ? `?${qs}` : ''}`;
+    let result;
+    if (args.global) {
+      const globalUrl = SETTINGS.globalUrl.value;
+      const globalToken = SETTINGS.globalToken.value || SETTINGS.token.value;
+      if (!globalUrl) {
+        throw new CliError(
+          'global-url-missing',
+          'releases --global needs globalUrl (or MELLIFERA_GLOBAL_URL)',
+        );
+      }
+      if (!globalToken) {
+        throw new CliError('global-token-missing', 'releases --global needs globalToken or token');
+      }
+      result = await request('GET', pathName, void 0, globalToken, globalUrl);
+    } else {
+      result = await request('GET', pathName);
+    }
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
   if (cmd === 'availability') {
     const kinds = requireKinds(args);
     console.log(
@@ -35679,8 +35787,8 @@ async function main() {
     return;
   }
   if (cmd === 'acquire') {
-    const sessionId = args['session-id'];
-    const sessionToken = args.token;
+    const sessionId = typeof args['session-id'] === 'string' ? args['session-id'] : '';
+    const sessionToken = sessionTokenFor(args, sessionId);
     rejectDeprecatedKindFlags(args);
     const kinds = parseResourceList(args.kinds);
     if (!sessionId || !sessionToken || !kinds?.length) {
@@ -35706,10 +35814,10 @@ async function main() {
     const home = homeDir();
     const current = (0, session_store_1.readWorktreeSession)(home, process.cwd());
     let sessionId = typeof args['session-id'] === 'string' ? args['session-id'] : '';
-    let sessionToken = typeof args.token === 'string' ? args.token : '';
+    let sessionToken = sessionTokenFor(args, sessionId);
     if (!sessionId && current) {
       sessionId = current.record.sessionId;
-      sessionToken = sessionToken || current.record.token;
+      sessionToken = sessionToken || rememberSessionSecret(current.record.token);
     }
     const ttlMs = args['ttl-ms'] ? parseInt(String(args['ttl-ms']), 10) : void 0;
     if (!sessionId) {
@@ -35770,7 +35878,7 @@ async function main() {
   }
   if (cmd === 'release') {
     let sessionId = typeof args['session-id'] === 'string' ? args['session-id'] : '';
-    let sessionToken = typeof args.token === 'string' ? args.token : '';
+    let sessionToken = sessionTokenFor(args, sessionId);
     const implicit = !sessionId && !sessionToken;
     const home = homeDir();
     const current = (0, session_store_1.readWorktreeSession)(home, process.cwd());
@@ -35782,7 +35890,7 @@ async function main() {
         );
       }
       sessionId = current.record.sessionId;
-      sessionToken = current.record.token;
+      sessionToken = rememberSessionSecret(current.record.token);
     }
     const isGlobal =
       Boolean(args.global) ||
@@ -35894,7 +36002,7 @@ async function main() {
         await request(
           'POST',
           `/v1/sessions/${encodeURIComponent(current.record.sessionId)}/release`,
-          { token: current.record.token },
+          { token: rememberSessionSecret(current.record.token) },
           token,
         );
         released = true;
@@ -35947,21 +36055,26 @@ main().catch(err => {
     (0, logger_1.diag)(`[mellifera-cli] ${err.message}`);
     process.exit(1);
   }
+  const secrets = [SETTINGS.token.value, SETTINGS.globalToken.value, ...SESSION_SECRETS];
   if (err instanceof pool_cli_1.PoolCliError) {
     (0, logger_1.diag)(
-      `[mellifera-cli] ${err.code}: ${(0, mellifera_config_1.redactSecrets)(err.message, [SETTINGS.token.value, SETTINGS.globalToken.value])}`,
+      `[mellifera-cli] ${err.code}: ${(0, mellifera_config_1.redactSecrets)(err.message, secrets)}`,
     );
     process.exit(1);
   }
   if (err instanceof CliError) {
     (0, logger_1.diag)(
-      `[mellifera-cli] ${err.code}: ${(0, mellifera_config_1.redactSecrets)(err.message, [SETTINGS.token.value, SETTINGS.globalToken.value])}`,
+      `[mellifera-cli] ${err.code}: ${(0, mellifera_config_1.redactSecrets)(err.message, secrets)}`,
     );
     process.exit(1);
   }
-  (0, logger_1.diag)(`[mellifera-cli] ${err.message}`);
+  (0, logger_1.diag)(
+    `[mellifera-cli] ${(0, mellifera_config_1.redactSecrets)(String(err.message), secrets)}`,
+  );
   if (err.body) {
-    (0, logger_1.diag)(JSON.stringify(err.body, null, 2));
+    (0, logger_1.diag)(
+      (0, mellifera_config_1.redactSecrets)(JSON.stringify(err.body, null, 2), secrets),
+    );
   }
   process.exit(1);
 });

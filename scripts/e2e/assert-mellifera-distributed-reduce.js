@@ -3,8 +3,9 @@
  * Unit assert: mellifera-distributed-reduce records pieces, writes one report,
  * and exits non-zero for a non-zero piece, a missing or empty coverage
  * artifact, a missing piece, a shared session, or non-overlapping lifetimes.
- * Also checks the release token stays off stdout, the piece runner's
- * dry-run step order, and its free-disk check against a stubbed df.
+ * Also checks the release token reaches the CLI through MELLIFERA_SESSION_TOKEN
+ * (not argv), overrides an inherited token, and stays off stdout, plus the
+ * piece runner's dry-run step order and its free-disk check against a stubbed df.
  * Run: yarn tests:mellifera:assert-distributed-reduce
  */
 'use strict';
@@ -289,24 +290,29 @@ function main() {
     const fakeCli = path.join(tmp, 'fake-cli.js');
     fs.writeFileSync(
       fakeCli,
-      `#!/usr/bin/env node\nrequire('fs').writeFileSync(${JSON.stringify(argvLog)}, JSON.stringify(process.argv.slice(2)));\n`,
+      `#!/usr/bin/env node\nrequire('fs').writeFileSync(${JSON.stringify(argvLog)}, JSON.stringify({ argv: process.argv.slice(2), token: process.env.MELLIFERA_SESSION_TOKEN }));\n`,
     );
     fs.chmodSync(fakeCli, 0o755);
     const rel = reduce(['release', '--reserve', slotReserve, '--url', 'u', '--federation', 'f'], {
       MELLIFERA_CLI: fakeCli,
+      MELLIFERA_SESSION_TOKEN: 'inherited-token',
     });
     assert.strictEqual(rel.status, 0, rel.stderr);
-    assert.deepStrictEqual(JSON.parse(fs.readFileSync(argvLog, 'utf8')), [
+    const released = JSON.parse(fs.readFileSync(argvLog, 'utf8'));
+    assert.deepStrictEqual(released.argv, [
       'release',
       '--session-id',
       's-slot',
-      '--token',
-      TOKEN,
       '--url',
       'u',
       '--federation',
       'f',
     ]);
+    assert.ok(
+      !released.argv.some(a => a.includes(TOKEN)) && !released.argv.includes('--token'),
+      'token on release argv',
+    );
+    assert.strictEqual(released.token, TOKEN, 'release env lacks the grant token');
     assert.ok(!rel.stdout.includes(TOKEN) && !rel.stderr.includes(TOKEN), 'token printed');
 
     const ios = piece(['ios', '--placement=slot', '3', '--dry-run']);

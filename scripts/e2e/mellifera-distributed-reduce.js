@@ -272,15 +272,19 @@ function cmdRelease(flags) {
   if (typeof grant.token !== 'string' || !grant.token) {
     usage('reserve JSON has no token');
   }
-  // The CLI release reads the session token only from --token or the worktree
-  // pointer (no env var), so it is on this child argv but never printed.
-  const args = [FORWARDER, '1', 'release', '--session-id', grant.sessionId, '--token', grant.token];
+  // The CLI reads MELLIFERA_SESSION_TOKEN only alongside --session-id. Passing
+  // it in the child env keeps the token off argv, where ps would show it.
+  const args = [FORWARDER, '1', 'release', '--session-id', grant.sessionId];
   for (const name of ['url', 'federation']) {
     if (flags[name] !== undefined) {
       args.push(`--${name}`, flags[name]);
     }
   }
-  const env = { ...process.env, MELLIFERA_CLI: process.env.MELLIFERA_CLI || DEFAULT_CLI };
+  const env = {
+    ...process.env,
+    MELLIFERA_CLI: process.env.MELLIFERA_CLI || DEFAULT_CLI,
+    MELLIFERA_SESSION_TOKEN: grant.token,
+  };
   const result = spawnSync(process.execPath, args, { cwd: REPO_ROOT, env, stdio: 'inherit' });
   if (result.error) {
     usage(result.error.message);
