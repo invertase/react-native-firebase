@@ -1,17 +1,20 @@
 ---
 title: timestampExtract
-description: Pipeline expression helper that extracts a calendar part from a timestamp.
+description: 'Firestore pipelines timestampExtract() expression helper: pull a calendar part (year, month, day) out of a timestamp.'
 next: /firestore/pipelines/subcollection
 previous: /firestore/pipelines/timestamp-diff
 ---
 
-`timestampExtract()` reads a calendar component—such as `year`, `month`, or `day`—from a timestamp. An optional timezone shifts the calendar used for extraction.
+## Prerequisites
 
-Import from the pipelines entry point:
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/).
+- `@react-native-firebase/firestore` installed and rebuilt into the native app.
+- A Firestore **Enterprise** database. See [Pipelines overview](/firestore/pipelines).
+- Import expression helpers from `@react-native-firebase/firestore/pipelines`.
 
-```js
-import { timestampExtract, field } from '@react-native-firebase/firestore/pipelines';
-```
+`timestampExtract()` reads a calendar component (such as `year`, `month`, or `day`) from a timestamp. An optional third argument is a timezone, given as a string or as an expression that evaluates to one. Firestore uses it to pick the calendar for extraction, so the value you pass must be a timezone name the Firestore backend accepts.
+
+Valid `part` values are the `TimePart` literals: `'microsecond'`, `'millisecond'`, `'second'`, `'minute'`, `'hour'`, `'day'`, `'week'`, `'week(monday)'` through `'week(sunday)'`, `'isoweek'`, `'month'`, `'quarter'`, `'year'`, `'isoyear'`, `'dayofweek'`, and `'dayofyear'`.
 
 # Basic example
 
@@ -28,7 +31,7 @@ const snapshot = await execute(
     .select(
       timestampExtract(field('createdAt'), 'year').as('createdYear'),
       timestampExtract('createdAt', 'month').as('createdMonth'),
-      field('createdAt').timestampExtract('day').as('createdDay'),
+      timestampExtract(field('createdAt'), 'day').as('createdDay'),
     ),
 );
 
@@ -37,14 +40,38 @@ snapshot.results.forEach(row => {
 });
 ```
 
+# With a timezone
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import { execute, field, timestampExtract } from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore('your-enterprise-database-id');
+
+const snapshot = await execute(
+  db
+    .pipeline()
+    .collection('events')
+    .select(
+      timestampExtract(field('createdAt'), 'hour', 'America/Los_Angeles').as('localHour'),
+      timestampExtract('createdAt', 'dayofweek').as('weekday'),
+    ),
+);
+
+snapshot.results.forEach(row => {
+  console.log(row.data().localHour, row.data().weekday);
+});
+```
+
 # Related helpers
 
-| Helper              | Use when                                      |
-| ------------------- | --------------------------------------------- |
-| `timestampExtract`  | Read year, month, day, or other calendar part |
-| `timestampTruncate` | Bucket timestamps to a granularity            |
-| `timestampDiff`     | Measure elapsed time between timestamps       |
-| `TimePart`          | Type for part literals such as `'year'`       |
+{/* prettier-ignore */}
+| Helper | Use when |
+| --- | --- |
+| `timestampExtract` | Read year, month, day, or other calendar part |
+| `timestampTruncate` | Bucket timestamps to a granularity |
+| `timestampDiff` | Measure elapsed time between timestamps |
+| `TimePart` | Type for part literals such as `'year'` |
 
 # Upstream reference
 

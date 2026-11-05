@@ -35,7 +35,7 @@ This guide is written to be **complete enough for an automated first pass**. Fee
 | `onTokenRefresh(messaging, cb)` | `onRegistered(messaging, cb)`                         | FID rotations deliver through `onRegistered`                                  |
 | `deleteToken(messaging)`        | `unregister(messaging)` (+ optional `onUnregistered`) | `onUnregistered` only fires for calls after you subscribe                     |
 
-Token APIs remain usable while the Installation ID flag is **off**. After opt-in, token APIs reject; FID APIs reject while the flag is still off (see [Error codes](/messaging/migrating-to-installation-id#error-codes)).
+Token APIs remain usable while the Installation ID flag is **off**. After opt-in, `getToken` and `deleteToken` reject and `onTokenRefresh` throws; while the flag is still off, `register` and `unregister` reject and `onRegistered` and `onUnregistered` throw (see [Error codes](/messaging/migrating-to-installation-id#error-codes)).
 
 # Opt-in
 
@@ -124,8 +124,8 @@ Or set Android `firebase_messaging_installation_id_enabled`, iOS `FirebaseMessag
 ```bash
 # After native rebuild with the flag on:
 # - register() / onRegistered deliver a FID
-# - getToken / deleteToken / onTokenRefresh reject with messaging/token-api-disabled
-# With the flag off, FID APIs reject with messaging/installation-id-not-enabled
+# - getToken / deleteToken reject and onTokenRefresh throws with messaging/token-api-disabled
+# With the flag off, register / unregister reject and onRegistered / onUnregistered throw with messaging/installation-id-not-enabled
 ```
 
 Confirm your backend receives and uses the FID for device targeting after migration.

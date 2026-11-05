@@ -1,13 +1,20 @@
 ---
 title: Pipelines
-description: Firestore pipeline queries in React Native Firebase - overview, requirements, and getting started.
+description: 'Firestore pipeline queries overview: stages, sources, Firestore Enterprise/cloud-execution requirements, basic usage, and expression helpers like findNearest().'
 next: /firestore/pipelines/current-document
 previous: /firestore/pagination
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` installed and native config completed per [Getting Started](/) (Android `google-services.json`, iOS `GoogleService-Info.plist`, Expo config plugin, or React Native CLI setup). From v26, New Architecture is required for packages with a native bridge.
+- `@react-native-firebase/firestore` installed: `npm install --save @react-native-firebase/firestore` or `yarn add @react-native-firebase/firestore`, then rebuild native apps (`cd ios && pod install` on iOS).
+- A **Firestore Enterprise** database in your Firebase project. Pipeline `execute()` is rejected on Standard edition databases.
+- Network access to that Enterprise database. The local Firestore emulator is not a supported target for pipelines.
+
 Firestore **pipeline queries** let you run multi-stage read operations (filter, project, aggregate, vector search, and more) against Cloud Firestore using a fluent, composable API. React Native Firebase exposes the same modular pipeline surface as the [firebase-js-sdk](https://firebase.google.com/docs/reference/js/firestore_pipelines) so you can reuse patterns from web documentation and samples.
 
-Pipeline support in React Native Firebase is marked **@beta** in TypeScript. APIs may evolve as Firebase ships new pipeline features.
+Pipeline support in React Native Firebase is marked **@beta** in TypeScript, so signatures can change when Firebase changes the pipeline API.
 
 <YouTube id="sYY1NweSlEc" />
 
@@ -19,9 +26,9 @@ Google's upstream resources:
 
 - [Get started with pipeline queries](https://firebase.google.com/docs/firestore/pipelines/get-started-with-pipelines)
 - [firebase-js-sdk pipeline reference](https://firebase.google.com/docs/reference/js/firestore_pipelines)
-- [Introducing pipeline operations (Firebase blog, Jan 2026)](https://firebase.blog/posts/2026/01/firestore-enterprise-pipeline-operations/)
+- [Introducing pipeline operations (Firebase blog)](https://firebase.blog/posts/2026/01/firestore-enterprise-pipeline-operations/)
 
-For a full list of which firebase-js-sdk exports are available in React Native Firebase today, see [SDK compatibility](/firestore/pipelines/sdk-compatibility).
+For a full list of which firebase-js-sdk exports are available in React Native Firebase, see [SDK compatibility](/firestore/pipelines/sdk-compatibility).
 
 # Requirements
 
@@ -31,9 +38,7 @@ Pipeline `execute()` requires a **Firestore Enterprise** database. Standard edit
 
 ## Cloud execution (not the local emulator)
 
-The Firestore emulator used for most React Native Firebase e2e tests runs in **Standard** edition mode and does **not** faithfully execute pipeline queries. Plan to develop and test pipelines against a **live Enterprise database** in your Firebase project.
-
-The emulator may gain additional Enterprise pipeline support over time, but React Native Firebase pipeline integration tests today run against a dedicated cloud database (`pipelines-e2e` on the public testing project), not the local emulator.
+The local Firestore emulator runs in **Standard** edition mode and does **not** faithfully execute pipeline queries. Develop and test pipelines against a **live Enterprise database** in your Firebase project.
 
 # Installation
 
@@ -44,14 +49,21 @@ yarn add @react-native-firebase/app @react-native-firebase/firestore
 cd ios && pod install
 ```
 
-Expression helpers and types are imported from the pipelines entry point:
+Expression helpers and types are imported from the pipelines entry point. You can also call `getFirestore().pipeline()` on any Firestore instance to start building a pipeline from a source stage:
 
 ```js
 import { getFirestore } from '@react-native-firebase/firestore';
 import { field, constant, execute } from '@react-native-firebase/firestore/pipelines';
-```
 
-You can also call `getFirestore().pipeline()` on any Firestore instance to start building a pipeline from a source stage.
+const db = getFirestore();
+console.log(
+  'Pipelines imports ready:',
+  Boolean(field),
+  Boolean(constant),
+  Boolean(execute),
+  Boolean(db),
+);
+```
 
 # Basic example
 
@@ -68,7 +80,7 @@ const pipeline = db
   .collection('books')
   .where(field('score').greaterThanOrEqual(10))
   .select(field('title'), field('score'))
-  .sort({ ordering: [{ fieldPath: 'score', direction: 'desc' }] });
+  .sort(field('score').descending());
 
 const snapshot = await execute(pipeline);
 snapshot.results.forEach(row => {
@@ -76,36 +88,64 @@ snapshot.results.forEach(row => {
 });
 ```
 
-`execute()` returns a `PipelineSnapshot` with a `results` array of pipeline rows. Iterate `snapshot.results` or access individual entries by index.
+`execute()` returns a `PipelineSnapshot` with a `results` array of pipeline rows and an `executionTime` timestamp. Each row (`PipelineResult`) has `data()` for the projected fields, `get(fieldPath)` for a single field, and, for rows that map to a document, `ref`, `id`, `createTime`, and `updateTime`. Use `pipelineResultEqual(left, right)` to compare two rows.
+
+```js
+import { getFirestore } from '@react-native-firebase/firestore';
+import { execute, field, pipelineResultEqual } from '@react-native-firebase/firestore/pipelines';
+
+const db = getFirestore();
+const first = await execute(
+  db.pipeline().collection('books').sort(field('score').descending()).limit(1),
+);
+const second = await execute(
+  db.pipeline().collection('books').sort(field('score').descending()).limit(1),
+);
+
+const row = first.results[0];
+console.log('Executed at:', first.executionTime.toDate().toISOString());
+console.log('Title:', row?.get('title'), 'id:', row?.id, 'path:', row?.ref?.path);
+console.log(
+  'Same row:',
+  row && second.results[0] ? pipelineResultEqual(row, second.results[0]) : false,
+);
+```
+
+`execute` also accepts an options object, `execute({ pipeline, indexMode: 'recommended', rawOptions })`. `indexMode` and `rawOptions` are applied on Android; iOS rejects them because the native iOS pipeline SDK does not expose execute options.
 
 # Supported stages and sources
 
 React Native Firebase supports these **source** types:
 
-| Source            | Description                                                      |
-| ----------------- | ---------------------------------------------------------------- |
-| `collection`      | Documents in a collection path                                   |
-| `collectionGroup` | Documents across a collection id                                 |
-| `database`        | Database-scoped pipeline source                                  |
-| `documents`       | Explicit document paths                                          |
-| `query`           | Pipeline created from an existing Firestore query (`createFrom`) |
+{/* prettier-ignore */}
+| Source | Description |
+| --- | --- |
+| `collection` | Documents in a collection path |
+| `collectionGroup` | Documents across a collection id |
+| `database` | Database-scoped pipeline source |
+| `documents` | Explicit document paths |
+| `query` | Pipeline created from an existing Firestore query (`createFrom`) |
 
 These **stage** types are available on the pipeline builder:
 
-| Stage                        | Purpose                                          |
-| ---------------------------- | ------------------------------------------------ |
-| `where`                      | Filter rows                                      |
-| `select`                     | Project fields                                   |
-| `addFields` / `removeFields` | Add or drop computed fields                      |
-| `sort`                       | Order results                                    |
-| `limit` / `offset`           | Paginate                                         |
-| `aggregate`                  | Group and reduce                                 |
-| `distinct`                   | Deduplicate                                      |
-| `findNearest`                | Vector similarity search (requires vector index) |
-| `replaceWith`                | Replace row shape                                |
-| `sample`                     | Random sample                                    |
-| `union`                      | Combine pipelines                                |
-| `unnest`                     | Expand array fields into rows                    |
+{/* prettier-ignore */}
+| Stage | Purpose |
+| --- | --- |
+| `where` | Filter rows |
+| `select` | Project fields |
+| `addFields` / `removeFields` | Add or drop computed fields |
+| `sort` | Order results |
+| `limit` / `offset` | Paginate |
+| `aggregate` | Group and reduce |
+| `distinct` | Deduplicate |
+| `findNearest` | Vector similarity search (requires vector index) |
+| `search` | Full-text and geospatial search (requires search index; must be the first stage) |
+| `define` | Bind expressions to named variables for later stages |
+| `replaceWith` | Replace row shape |
+| `sample` | Random sample |
+| `union` | Combine pipelines |
+| `unnest` | Expand array fields into rows |
+| `rawStage` | Add a stage by name when no typed method exists |
 
 ## Vector search with `findNearest`
 
@@ -139,17 +179,16 @@ snapshot.results.forEach(row => {
 });
 ```
 
-Newer firebase-js-sdk stage helpers such as `subcollection` and `parent` are not yet exposed — see [SDK compatibility](/firestore/pipelines/sdk-compatibility).
-
 # Platform notes
 
-| Platform    | Runtime                       | Notes                                                                        |
-| ----------- | ----------------------------- | ---------------------------------------------------------------------------- |
-| **Android** | Native Firebase Android SDK   | Full native pipeline execution                                               |
-| **iOS**     | Native Firebase iOS SDK       | Some expression helpers are not yet supported on iOS; see compatibility page |
-| **macOS**   | firebase-js-sdk (web interop) | Same API shape as web; requires network access to Firestore                  |
+{/* prettier-ignore */}
+| Platform | Runtime | Notes |
+| --- | --- | --- |
+| **Android** | Native Firebase Android SDK | Full native pipeline execution |
+| **iOS** | Native Firebase iOS SDK | Full native pipeline execution |
+| **macOS** | firebase-js-sdk (web interop) | Same API shape as web; requires network access to Firestore |
 
-On **iOS**, pipelines that use unsupported expression functions fail before execution with a clear error listing the function names. The compatibility page lists the current set.
+Expression helpers (aggregates, strings, arrays, maps, timestamps, vectors) are supported on Android, iOS, and macOS. The `parent()` expression helper may be unavailable on web and on macOS when pipelines execute through the firebase-js-sdk interop path.
 
 On **macOS**, pipeline execution goes through the web Firebase SDK bundled for React Native macOS targets. Behavior should match web pipeline queries for the same database and rules.
 
@@ -157,17 +196,43 @@ On **macOS**, pipeline execution goes through the web Firebase SDK bundled for R
 
 Pipeline types and expression helpers are exported from `@react-native-firebase/firestore/pipelines`. The `firestore.pipeline()` method is augmented on `Firestore` when you import the firestore module.
 
-Run `yarn compare:types` in the React Native Firebase repository to see tracked differences between our public types and the firebase-js-sdk pipelines declarations.
+See [SDK compatibility](/firestore/pipelines/sdk-compatibility) for the known differences between these types and the firebase-js-sdk pipelines declarations.
 
 # Expression helpers
 
-| Helper                                                       | Description                                      |
-| ------------------------------------------------------------ | ------------------------------------------------ |
-| [`currentDocument()`](/firestore/pipelines/current-document) | Reference the document currently being processed |
-| [`ifNull()`](/firestore/pipelines/if-null)                   | Fallback when a field is null or absent          |
-| [`switchOn()`](/firestore/pipelines/switch-on)               | First matching condition / default result        |
+These helpers have their own pages:
 
-See [Pipeline SDK compatibility](/firestore/pipelines/sdk-compatibility) for the full firebase-js-sdk parity matrix.
+{/* prettier-ignore */}
+| Helper | Description |
+| --- | --- |
+| [`currentDocument()`](/firestore/pipelines/current-document) | Reference the document being processed |
+| [`ifNull()`](/firestore/pipelines/if-null) | Fallback when a field is null or absent |
+| [`switchOn()`](/firestore/pipelines/switch-on) | First matching condition / default result |
+| [`timestampDiff()`](/firestore/pipelines/timestamp-diff) | Difference between two timestamps in a unit |
+| [`timestampExtract()`](/firestore/pipelines/timestamp-extract) | Calendar part of a timestamp |
+| [`subcollection()`](/firestore/pipelines/subcollection) | Nested pipeline over a subcollection |
+
+`@react-native-firebase/firestore/pipelines` exports the rest of the firebase-js-sdk helper set as functions. Their signatures match the [firebase-js-sdk pipeline reference](https://firebase.google.com/docs/reference/js/firestore_pipelines):
+
+{/* prettier-ignore */}
+| Family | Helpers |
+| --- | --- |
+| Field and value references | `field`, `variable`, `constant`, `currentDocument`, `documentId`, `collectionId`, `parent`, `currentTimestamp`, `ascending`, `descending` |
+| Logic and comparison | `and`, `or`, `not`, `xor`, `nor`, `equal`, `notEqual`, `greaterThan`, `greaterThanOrEqual`, `lessThan`, `lessThanOrEqual`, `equalAny`, `notEqualAny`, `exists`, `isAbsent`, `isError`, `isType`, `type` |
+| Conditional | `conditional`, `ifNull`, `ifAbsent`, `ifError`, `switchOn`, `coalesce`, `logicalMaximum`, `logicalMinimum` |
+| Math | `abs`, `add`, `subtract`, `multiply`, `divide`, `mod`, `pow`, `sqrt`, `exp`, `ln`, `log`, `log10`, `ceil`, `floor`, `round`, `trunc`, `rand` |
+| Aggregates | `count`, `countAll`, `countDistinct`, `countIf`, `sum`, `average`, `minimum`, `maximum`, `first`, `last`, `arrayAgg`, `arrayAggDistinct` |
+| Strings | `concat`, `stringConcat`, `length`, `charLength`, `byteLength`, `toLower`, `toUpper`, `trim`, `ltrim`, `rtrim`, `substring`, `split`, `join`, `reverse`, `stringReverse`, `stringContains`, `stringIndexOf`, `stringRepeat`, `stringReplaceOne`, `stringReplaceAll`, `startsWith`, `endsWith`, `like`, `regexContains`, `regexFind`, `regexFindAll`, `regexMatch` |
+| Arrays | `array`, `arrayConcat`, `arrayContains`, `arrayContainsAll`, `arrayContainsAny`, `arrayFilter`, `arrayFirst`, `arrayFirstN`, `arrayGet`, `arrayIndexOf`, `arrayIndexOfAll`, `arrayLast`, `arrayLastIndexOf`, `arrayLastN`, `arrayLength`, `arrayMaximum`, `arrayMaximumN`, `arrayMinimum`, `arrayMinimumN`, `arraySlice`, `arraySum`, `arrayTransform`, `arrayTransformWithIndex` |
+| Maps | `map`, `mapEntries`, `mapGet`, `mapKeys`, `mapMerge`, `mapRemove`, `mapSet`, `mapValues` |
+| Timestamps | `timestampAdd`, `timestampSubtract`, `timestampDiff`, `timestampExtract`, `timestampTruncate`, `timestampToUnixMicros`, `timestampToUnixMillis`, `timestampToUnixSeconds`, `unixMicrosToTimestamp`, `unixMillisToTimestamp`, `unixSecondsToTimestamp` |
+| Vectors and distance | `cosineDistance`, `dotProduct`, `euclideanDistance`, `vectorLength`, `geoDistance` |
+| Search | `documentMatches`, `score` |
+| Execution | `execute`, `subcollection`, `pipelineResultEqual` |
+
+Several names (`and`, `or`, `count`, `sum`, `average`, `documentId`) are also exported by `@react-native-firebase/firestore` for classic queries with different behavior. Import the pipeline versions from `@react-native-firebase/firestore/pipelines`.
+
+Pipeline builders also expose `rawStage(...)` for stages that have no typed method, plus `toArrayExpression()` and `toScalarExpression()` to embed a pipeline in another pipeline (see [subcollection](/firestore/pipelines/subcollection)).
 
 # Next steps
 
