@@ -14,12 +14,12 @@ Read this file only for a remote grant (`execution.checkoutMode` `remote`), a di
 
 ## Plane C — remote spill
 
-Same reserve. A remote grant has `execution.checkoutMode` `remote` and `execution.connectUrl` on the reserve JSON. Reserve prints the full grant JSON. Read `execution.connectUrl` from that JSON. [Simple mode](#mellifera-simple-mode) sshes from this worktree to that URL and prints the synced `packages/app/package.json` `version`. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. Do not copy the Mellifera config file. When the federation has no offer of the requested kind, the proof fails. Do not name a donor. The remote image supplies node, corepack/yarn, and rsync. A donated worker may be recycled between runs; do not rely on a previous remote tree. Bastion prerequisites: [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb).
+Same reserve. A remote grant has `execution.checkoutMode` `remote` and `execution.connectUrl` on the reserve JSON. Reserve prints the full grant JSON. Read `execution.connectUrl` from that JSON. [Simple mode](#mellifera-simple-mode) sshes from this worktree to that URL and prints the synced `packages/app/package.json` `version`. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. Do not copy the Mellifera config file. When the federation has no offer of the requested kind, the proof fails. Do not name a donor. The remote image supplies the [guest requirements](#guest-requirements) of its kind. A donated worker may be recycled between runs; do not rely on a previous remote tree. Bastion prerequisites: [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb).
 
 `yarn tests:mellifera:exec` is the transport ([mellifera-cli § Exec](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#exec)). It streams stdout and stderr and returns the remote exit status. It does not sync, install, apply, or release.
 
 1. Run [spill teardown](#spill-teardown) on success, command failure, and a dropped remote shell. It ends with release on the issuing core (`yarn tests:mellifera:release`).
-2. `yarn tests:mellifera:remote-sync --scratch-file "$RUN/scratch"` copies this checkout into `mellifera-work/<name>` under the grant's initial directory, never into the initial directory itself (on a desk slot that is the desk login's home). `RUN` is a run dir as in [distributed e2e step 1](#distributed-e2e-run). `<name>` is `--dest DIR` when passed (relative; `.`, `..`, and absolute paths are refused), else the `--session` id, else the worktree pointer's session id, which must be `live` in `session show`. It creates that directory and its sibling scratch dir `DIR.scratch` with `exec mkdir -p` first, then prints `DIR` as the only stdout line. Callers pass `--session`, `--url`, and `--federation` before `--rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`, which omits `.git` (directory or worktree file), so the remote copy is not a git work tree. With no `--session`, sync and exec follow the single worktree pointer.
+2. `yarn tests:mellifera:remote-sync --scratch-file "$RUN/scratch"` copies this checkout into `mellifera-work/<name>` under the grant's initial directory, never into the initial directory itself (on a desk slot that is the desk login's home). `RUN` is a run dir as in [distributed e2e step 1](#distributed-e2e-run). `<name>` is `--dest DIR` when passed (relative; `.`, `..`, and absolute paths are refused), else the `--session` id, else the worktree pointer's session id, which must be `live` in `session show`. It first checks over `exec` that the remote has `rsync` on `PATH`; when it does not, it exits 1 naming the [guest requirements](#guest-requirements), with nothing created or synced. It then creates that directory and its sibling scratch dir `DIR.scratch` with `exec mkdir -p`, syncs, and prints `DIR` as the only stdout line. Callers pass `--session`, `--url`, and `--federation` before `--rsh`. That invocation carries `rsync --server` and is the sync transport. Callers do not pass a host. An omitted `--filter` uses `scripts/e2e/mellifera-remote-sync.rsync-filter`, which omits `.git` (directory or worktree file), so the remote copy is not a git work tree. With no `--session`, sync and exec follow the single worktree pointer.
 3. `spill_env "$RUN/scratch"` ([spill exec env](#spill-exec-env)), then `yarn tests:mellifera:exec "${E[@]}" -w DIR -- yarn install --immutable`, where `DIR` is the directory sync printed. Put `-e` and `-w DIR` before `--`; after `--` they are part of the remote command.
 4. On that remote checkout, run the suite with the grant's slot: `yarn tests:mellifera:exec "${E[@]}" -w DIR -- yarn test:full --slot N`. Every exec on the synced tree passes `"${E[@]}"` and `-w DIR`. Device inventory, when missing, is the same [setup commands](running-e2e.md#e2e-slot-index) through `exec "${E[@]}" -w DIR`. The [Law](running-e2e.md#slot-lifecycle) is unchanged.
 5. The suite's streamed output and exit status are the result. Log files follow [full suite](running-e2e.md#run-full-tests) on the remote host, which puts them in the scratch dir.
@@ -82,11 +82,25 @@ Three tiers. [Simple mode](#mellifera-simple-mode) is separate from these tiers.
 
 Each piece's sync and exec pass that reserve's `sessionId` as `--session`. On sync the flag is before `--rsh`. Each piece's exec also passes `-w` with the directory that piece's sync printed. The next `reserve` replaces the single worktree pointer. `--session` still selects the earlier grants. This section does not require another git worktree per grant.
 
-**Distributed full** is distributed e2e plus one kind `linux-self-hosted` grant that runs `yarn tests:jest`, `yarn lint`, and `yarn codegen:verify`. `yarn lint` is that linux grant. Ruby lint stays inside the iOS e2e grant via `yarn tests:ios:ruby`.
+**Distributed full** is distributed e2e plus one kind `linux-self-hosted` grant that runs `yarn tests:jest`, `yarn lint`, and `yarn codegen:verify` ([linux grant commands](#distributed-full-linux)). `yarn lint` is that linux grant. Ruby lint stays inside the iOS e2e grant via `yarn tests:ios:ruby`.
 
 **Distributed full + link** is distributed full plus `yarn test-expo:ios:link` and `yarn test-rn-bare:ios:build` on kind `macos-self-hosted`.
 
 TypeScript, attw, consumer-types, and typedoc stay outside all three tiers.
+
+<a id="guest-requirements"></a>
+
+### Guest requirements per kind
+
+What RNFB needs on a remote grant of each kind it reserves, before `yarn install`. RNFB never installs toolchains on a guest; the image supplies them. How each image is built is Mellifera's: [linux-colima guest image](https://github.com/invertase/mellifera/blob/main/packages/scaler/guest-images/linux-colima/README.md), [boat snapshots](https://github.com/invertase/mellifera/blob/main/packages/scaler/guest-images/boat/BAKE.md), [Fusion nested-virt template](https://github.com/invertase/mellifera/blob/main/packages/scaler/guest-images/fusion-nested/prepare-template.sh), [Tart golden image](https://github.com/invertase/mellifera/blob/main/okf-bundle/tart-host-runbook.md#spill-golden-image).
+
+| Kind                            | RNFB work                                             | Guest must provide                                                                                                                                                                                                                                       |
+| ------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `linux-self-hosted`             | `yarn tests:jest`, `yarn lint`, `yarn codegen:verify` | `rsync`; `git`; node 24 with corepack, so `yarn` resolves the `packageManager` version; Java 21 `java` on `PATH` (`yarn lint:android` runs google-java-format); build tools (python3, make, a C/C++ compiler) for any native addon `yarn install` builds |
+| `linux-nested-virt-self-hosted` | Android piece                                         | the `linux-self-hosted` list, with a JDK 21 (`javac` too); the Android SDK with emulator and cmdline-tools at `ANDROID_HOME`; read/write `/dev/kvm`; the RAM and free disk the [piece](#distributed-e2e-run) checks                                      |
+| `macos-self-hosted`             | iOS and macOS pieces, link tier                       | `rsync`; `git`; node 24 with corepack; JDK 21; Xcode with the piece's iOS simulator runtime and device type; Homebrew; Ruby with bundler                                                                                                                 |
+
+Only the rsync check runs before sync. The pieces check Java, disk, memory, KVM and Xcode before they install, and `git-baseline` checks `git`; anything else missing fails the first command that needs it.
 
 <a id="distributed-e2e-run"></a>
 
@@ -167,6 +181,19 @@ yarn tests:mellifera:reduce report --run-dir "$RUN"
 
 **6. Tear down every piece, pass or fail:** [spill teardown](#spill-teardown) with `ID_P`, `DIR_P`, `SF="$RUN/P.scratch"`, and `spill_env "$RUN/P.scratch"`. Its release step is `yarn tests:mellifera:reduce release`, which reads the token from the reserve JSON and does not print it.
 
+<a id="distributed-full-linux"></a>
+
+**Distributed full: the linux grant.** Reserve as in step 1 with `--kinds linux-self-hosted` into `$RUN/linux.reserve.json`, then run step 2's field, `remote-sync` and `spill_env` lines with `P=linux`; its install comes after the baseline below. The sync omits `.git`, and `git diff` outside a work tree is not a drift check (it exits 1 or 129), so `yarn codegen:verify` and the drift step of `yarn lint:android` need a baseline. `git-baseline` stages the synced tree into a fresh index on the guest, with no commit; `git diff` then compares regenerated files with the synced source. Run it right after sync and before `yarn install`, as CI checks drift against the checkout. It exits 2 without the sibling scratch dir or inside another repository's work tree, so it never touches a real checkout. Each exit code is that target's result; tear down as in step 6.
+
+```bash
+L=(--session "$ID_linux" "${M[@]}" "${E[@]}" -w "$DIR_linux")
+yarn tests:mellifera:exec "${L[@]}" -- bash scripts/e2e/mellifera-distributed-piece.sh git-baseline
+yarn tests:mellifera:exec "${L[@]}" -- yarn install --immutable
+yarn tests:mellifera:exec "${L[@]}" -- yarn tests:jest
+yarn tests:mellifera:exec "${L[@]}" -- yarn lint
+yarn tests:mellifera:exec "${L[@]}" -- yarn codegen:verify
+```
+
 <a id="desk-slot-release"></a>
 
 ### Desk slot release
@@ -186,5 +213,5 @@ Reserve prints the full grant JSON. `rememberGrant` does not store `connectUrl`.
 3. `spill_env "$RUN/scratch"` ([spill exec env](#spill-exec-env)), then `yarn tests:mellifera:exec` with that `--session`, `--url`, and `--federation`, then `"${E[@]}" -w DIR -- yarn lint`, exits 0. That exit is the remote command's exit.
 4. The `version` field in the synced `DIR/packages/app/package.json` on the slot equals the same field in this worktree.
 5. One log file from the slot is present in this worktree. It arrived as saved `exec` stdout or by rsync over `exec --rsh`. Its contents match the remote file.
-6. From this worktree, `ssh -o IdentitiesOnly=yes -i ~/.ssh/mellifera_client_ed25519` to the reserve JSON `execution.connectUrl` and print that same `version` from `DIR/packages/app/package.json`. Plain `ssh` is refused by publickey; pass the key the CLI uses. `exec` uses the same client key: it offers whichever of `mellifera_client_ed25519` (first), `id_ed25519`, `id_rsa`, `id_ecdsa` exist under `$HOME/.ssh`; no env or config setting overrides that list. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. The local ssh exit equals the remote command's exit. The printed version equals step 4.
+6. From this worktree, `ssh -o IdentitiesOnly=yes -i SSH_DIR/mellifera_client_ed25519` to the reserve JSON `execution.connectUrl` and print that same `version` from `DIR/packages/app/package.json`. Plain `ssh` is refused by publickey; pass the key the CLI uses. `exec` takes its identities (`mellifera_client_ed25519` first) and default `known_hosts` from the CLI's SSH dir `SSH_DIR`: `--ssh-dir DIR`, else a non-empty `MELLIFERA_SSH_DIR`, else config `sshDir`, else `$HOME/.ssh` ([mellifera-cli § Host config](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#host-config), CLI 0.2.0 or later). `mellifera-cli --help` prints the resolved directory and its source. Operator ssh may use `StrictHostKeyChecking=accept-new`. `mellifera-cli exec` stays `StrictHostKeyChecking=yes` and uses `hostKeyPin` or the bastion known-hosts file. The local ssh exit equals the remote command's exit. The printed version equals step 4.
 7. [Spill teardown](#spill-teardown) for the grant.
