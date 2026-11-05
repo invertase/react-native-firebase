@@ -26,3 +26,7 @@ target_link_libraries(
 )
 
 target_compile_reactnative_options(react_codegen_RNFBAppTurboModules PRIVATE)
+
+# React Native 0.89 deprecates the cached-method-ID overload used by this
+# checked-in codegen output; older React Native versions still need it.
+target_compile_options(react_codegen_RNFBAppTurboModules PRIVATE -Wno-error=deprecated-declarations)
