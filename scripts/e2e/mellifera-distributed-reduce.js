@@ -25,6 +25,16 @@
  *   release --reserve FILE [--url URL] [--federation ID]
  *           Release that grant on the issuing core through the CLI forwarder.
  *           The token is read from the reserve JSON and never printed.
+ *   extend  --reserve FILE --ttl-ms N [--url URL] [--federation ID]
+ *           Extend that grant's lease to N ms through the CLI forwarder. A
+ *           local-core grant, including a spill, uses the session route with
+ *           the token passed like release; the local core extends the global
+ *           grant behind it. A global grant (phase "pool-global") gets exactly
+ *           `extend --global --session-id GRANT_ID --ttl-ms N`, with no session
+ *           token (the API key authorizes it, and the global counts it as a
+ *           holder renewal), and must come back from the global grant route
+ *           (`grantId` and `expiresAt`). A CLI that prints usage for it, or
+ *           extends some other way, exits 1 with an upgrade message.
  *
  * Run dirs and reports stay in this worktree. Usage errors exit 2.
  */
@@ -48,6 +58,8 @@ const PIECES = {
 };
 const FIELDS = ['sessionId', 'slot', 'placement'];
 const GLOBAL_PLACEMENT_DOC = 'okf-bundle/testing/running-e2e-distributed.md#global-grant-placement';
+const RENEWAL_DOC = 'okf-bundle/testing/running-e2e-distributed.md#held-grant-renewal';
+const CLI_REJECTED = /unknown (flag|option)|unrecognized (flag|option)|^usage:/im;
 
 function usage(message) {
   console.error(`mellifera-distributed-reduce: ${message}`);
@@ -113,6 +125,10 @@ function slotOf(grant) {
   return placementOf(grant) === 'slot' && Number.isInteger(grant.slot) && grant.slot >= 0
     ? grant.slot
     : null;
+}
+
+function isGlobalGrant(grant) {
+  return grant.phase === 'pool-global';
 }
 
 function cmdField(flags) {
@@ -290,12 +306,102 @@ function cmdReport(flags) {
 
 function cmdRelease(flags) {
   const grant = readReserve(need(flags, 'reserve'));
+  const result = runWithToken(flags, grant, ['release'], []);
+  process.exit(result.status == null ? 1 : result.status);
+}
+
+function cmdExtend(flags) {
+  const ttl = need(flags, 'ttl-ms');
+  if (!/^[1-9]\d*$/.test(ttl)) {
+    usage(`--ttl-ms must be a positive whole number of milliseconds, got ${JSON.stringify(ttl)}`);
+  }
+  const grant = readReserve(need(flags, 'reserve'));
+  if (!isGlobalGrant(grant)) {
+    const result = runWithToken(flags, grant, ['extend'], ['--ttl-ms', ttl]);
+    process.exit(result.status == null ? 1 : result.status);
+  }
+  const grantId = globalGrantId(grant);
+  // Without --global the CLI takes the global grant route only for the
+  // worktree pointer's grant, and a distributed run's later reserves replace it.
+  // No session token: a CLI without `extend --global` then prints usage and
+  // exits 1 instead of extending through the session route.
+  const env = { ...process.env };
+  delete env.MELLIFERA_SESSION_TOKEN;
+  const result = spawnSync(
+    process.execPath,
+    [FORWARDER, '1', 'extend', '--global', '--session-id', grantId, '--ttl-ms', ttl],
+    { cwd: REPO_ROOT, env, encoding: 'utf8', stdio: ['inherit', 'pipe', 'pipe'] },
+  );
+  if (result.error) {
+    usage(result.error.message);
+  }
+  const out = result.stdout || '';
+  const err = result.stderr || '';
+  const upgrade =
+    'Upgrade mellifera-cli to a release whose usage lists ' +
+    '`extend --global [--session-id ID] --ttl-ms N` and run this again; ' +
+    `see ${RENEWAL_DOC}.`;
+  if (result.status !== 0) {
+    if (CLI_REJECTED.test(`${out}\n${err}`)) {
+      console.error(
+        `mellifera-distributed-reduce: the installed mellifera-cli printed usage for ` +
+          `\`extend --global --session-id ${grantId}\`, so global grant ${grantId} was not ` +
+          `renewed. ${upgrade}`,
+      );
+      process.exit(1);
+    }
+    process.stdout.write(out);
+    process.stderr.write(err);
+    console.error(
+      `mellifera-distributed-reduce: extend --global for global grant ${grantId} exited ` +
+        `${result.status}; the grant was not renewed. See ${RENEWAL_DOC}.`,
+    );
+    process.exit(result.status == null ? 1 : result.status);
+  }
+  process.stderr.write(err);
+  let body = null;
+  try {
+    body = JSON.parse(out);
+  } catch {
+    body = null;
+  }
+  if (!body || body.grantId !== grantId || typeof body.expiresAt !== 'string') {
+    console.error(
+      `mellifera-distributed-reduce: mellifera-cli did not extend global grant ${grantId} ` +
+        'through the global grant route (no `grantId` and `expiresAt` in its answer), so the ' +
+        `holder renewal did not happen. ${upgrade}`,
+    );
+    process.exit(1);
+  }
+  process.stdout.write(out);
+  process.exit(0);
+}
+
+/**
+ * The id the global knows a pool-global grant by. `reserve --global` writes it
+ * as the session id; a `federation.grantId`, when present, must agree.
+ */
+function globalGrantId(grant) {
+  const fed = grant.federation && grant.federation.grantId;
+  if (fed && fed !== grant.sessionId) {
+    usage(
+      `reserve JSON for a global grant has sessionId ${JSON.stringify(grant.sessionId)} and ` +
+        `federation.grantId ${JSON.stringify(fed)}; they must be the same grant id`,
+    );
+  }
+  if (typeof grant.sessionId !== 'string' || !grant.sessionId) {
+    usage('reserve JSON for a global grant has no sessionId');
+  }
+  return grant.sessionId;
+}
+
+function runWithToken(flags, grant, words, extra, options = {}) {
   if (typeof grant.token !== 'string' || !grant.token) {
     usage('reserve JSON has no token');
   }
   // The CLI reads MELLIFERA_SESSION_TOKEN only alongside --session-id. Passing
   // it in the child env keeps the token off argv, where ps would show it.
-  const args = [FORWARDER, '1', 'release', '--session-id', grant.sessionId];
+  const args = [FORWARDER, '1', ...words, '--session-id', grant.sessionId, ...extra];
   for (const name of ['url', 'federation']) {
     if (flags[name] !== undefined) {
       args.push(`--${name}`, flags[name]);
@@ -305,18 +411,29 @@ function cmdRelease(flags) {
     ...process.env,
     MELLIFERA_SESSION_TOKEN: grant.token,
   };
-  const result = spawnSync(process.execPath, args, { cwd: REPO_ROOT, env, stdio: 'inherit' });
+  const result = spawnSync(process.execPath, args, {
+    cwd: REPO_ROOT,
+    env,
+    encoding: 'utf8',
+    stdio: options.capture ? ['inherit', 'pipe', 'pipe'] : 'inherit',
+  });
   if (result.error) {
     usage(result.error.message);
   }
-  process.exit(result.status == null ? 1 : result.status);
+  return result;
 }
 
 function main() {
   const [sub, ...rest] = process.argv.slice(2);
-  const commands = { field: cmdField, record: cmdRecord, report: cmdReport, release: cmdRelease };
+  const commands = {
+    field: cmdField,
+    record: cmdRecord,
+    report: cmdReport,
+    release: cmdRelease,
+    extend: cmdExtend,
+  };
   if (!commands[sub]) {
-    usage('usage: mellifera-distributed-reduce.js field|record|report|release [flags]');
+    usage('usage: mellifera-distributed-reduce.js field|record|report|release|extend [flags]');
   }
   commands[sub](parseFlags(rest));
 }

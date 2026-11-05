@@ -10,6 +10,11 @@
  * A global grant (placement "pool", or no placement) names no slot index:
  * `field slot` and the piece runner refuse it rather than pick a slot or a
  * whole-host release; a global grant with placement "slot" reads its slot.
+ * `extend` passes the token like release for a local-core grant, and exactly
+ * `extend --global --session-id GRANT_ID --ttl-ms N` with no token for a global
+ * grant, with a fake CLI that records argv and, when MELLIFERA_BUILT_CLI is set,
+ * with the real CLI against a 127.0.0.1 global stub; `node-check` runs on stub
+ * node and corepack binaries.
  * Run: yarn tests:mellifera:assert-distributed-reduce
  */
 'use strict';
@@ -18,7 +23,7 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { spawnSync } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 
 const SCRIPT_DIR = __dirname;
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
@@ -197,6 +202,7 @@ function main() {
   fs.mkdirSync(path.join(REPO_ROOT, 'tests/mellifera-distributed'), { recursive: true });
   const root = fs.mkdtempSync(path.join(REPO_ROOT, 'tests/mellifera-distributed', 'assert-'));
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-reduce-'));
+  let realCli = false;
   try {
     const pass = expectReport(scenario(root, 'pass'), 0);
     assert.deepStrictEqual(
@@ -363,6 +369,45 @@ function main() {
     assert.ok(!rel.stdout.includes(TOKEN) && !rel.stderr.includes(TOKEN), 'token printed');
 
     fs.rmSync(argvLog, { force: true });
+    const ext = reduce(
+      [
+        'extend',
+        '--reserve',
+        slotReserve,
+        '--ttl-ms',
+        '5400000',
+        '--url',
+        'u',
+        '--federation',
+        'f',
+      ],
+      { MELLIFERA_CLI: fakeCli, MELLIFERA_SESSION_TOKEN: 'inherited-token' },
+    );
+    assert.strictEqual(ext.status, 0, ext.stderr);
+    const extended = JSON.parse(fs.readFileSync(argvLog, 'utf8'));
+    assert.deepStrictEqual(extended.argv, [
+      'extend',
+      '--session-id',
+      's-slot',
+      '--ttl-ms',
+      '5400000',
+      '--url',
+      'u',
+      '--federation',
+      'f',
+    ]);
+    assert.strictEqual(extended.token, TOKEN, 'extend env lacks the grant token');
+    assert.ok(!ext.stdout.includes(TOKEN) && !ext.stderr.includes(TOKEN), 'extend printed token');
+    fs.rmSync(argvLog, { force: true });
+    assertGlobalExtend(tmp);
+    realCli = assertGlobalExtendRealCli(tmp);
+    for (const bad of [[], ['--ttl-ms', '0'], ['--ttl-ms', '90m']]) {
+      const refused = reduce(['extend', '--reserve', slotReserve, ...bad], {
+        MELLIFERA_CLI: fakeCli,
+      });
+      assert.strictEqual(refused.status, 2, `extend ${JSON.stringify(bad)} must exit 2`);
+      assert.ok(!fs.existsSync(argvLog), `extend ${JSON.stringify(bad)} ran the CLI`);
+    }
     const pathBin = path.join(tmp, 'path-bin');
     fs.mkdirSync(pathBin);
     fs.symlinkSync(fakeCli, path.join(pathBin, 'mellifera-cli'));
@@ -717,13 +762,292 @@ function main() {
 
     assertLeftovers(tmp);
     assertGitBaseline(tmp);
+    assertNodeCheck(tmp);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
     fs.rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, TestingAVD create-if-missing, free-disk check, spill leftovers, and git baseline',
+    `OK mellifera-distributed-reduce report, failure cases, release, extend (local and --global; real CLI ${realCli ? 'checked' : 'skipped: MELLIFERA_BUILT_CLI unset'}), piece dry-run, TestingAVD create-if-missing, free-disk check, spill leftovers, git baseline, and node check`,
   );
+}
+
+/**
+ * `extend` on a global grant (phase "pool-global") runs exactly
+ * `extend --global --session-id GRANT_ID --ttl-ms N`, with no session token in
+ * the child env (even an inherited one) and no `--url` or `--federation`. It
+ * succeeds only when the CLI answers from the global grant route (`grantId`
+ * and `expiresAt`). An old CLI (no `extend --global`: with no session token it
+ * prints usage and exits 1), a CLI that answers some other way, or a failing
+ * CLI exits non-zero and says so. A local-core spill keeps the session route
+ * with its local session id and token; its local core extends the global grant.
+ */
+function assertGlobalExtend(tmp) {
+  const argvLog = path.join(tmp, 'global-argv.json');
+  const fakeCli = path.join(tmp, 'fake-global-cli.js');
+  fs.writeFileSync(
+    fakeCli,
+    `#!/usr/bin/env node
+const argv = process.argv.slice(2);
+const token = process.env.MELLIFERA_SESSION_TOKEN;
+require('fs').writeFileSync(${JSON.stringify(argvLog)}, JSON.stringify({ argv, token }));
+const id = argv[argv.indexOf('--session-id') + 1];
+const mode = process.env.FAKE_CLI_MODE;
+if (mode === 'old' && !token) {
+  process.stdout.write('Usage:\\n  mellifera-cli extend [--session-id ID [--token T | --token-file PATH|-]] [--ttl-ms N]\\n');
+  process.exit(1);
+}
+if (mode === 'old' || mode === 'session-route') {
+  process.stdout.write(JSON.stringify({ sessionId: id, expiresAt: '2026-01-01T00:00:00Z' }) + '\\n');
+  process.exit(0);
+}
+if (mode === 'no-expiry') {
+  process.stdout.write(JSON.stringify({ grantId: id }) + '\\n');
+  process.exit(0);
+}
+if (mode === 'fails') {
+  process.stderr.write('[mellifera-cli] not-found: grant not found\\n');
+  process.exit(4);
+}
+process.stdout.write(JSON.stringify({ grantId: id, expiresAt: '2026-01-01T00:00:00Z', capped: false }, null, 2) + '\\n');
+`,
+  );
+  fs.chmodSync(fakeCli, 0o755);
+  const globalGrant = {
+    sessionId: 'g-global',
+    token: TOKEN,
+    placement: 'slot',
+    slot: 1,
+    phase: 'pool-global',
+    execution: { workerId: 'pool', host: 'global', checkoutMode: 'remote' },
+    federation: { grantId: 'g-global' },
+    env: {},
+  };
+  const reserve = path.join(tmp, 'global.reserve.json');
+  fs.writeFileSync(reserve, JSON.stringify(globalGrant));
+  const extend = (file, mode) => {
+    fs.rmSync(argvLog, { force: true });
+    const r = reduce(
+      ['extend', '--reserve', file, '--ttl-ms', '5400000', '--url', 'u', '--federation', 'f'],
+      { MELLIFERA_CLI: fakeCli, MELLIFERA_SESSION_TOKEN: 'inherited-token', FAKE_CLI_MODE: mode },
+    );
+    const call = fs.existsSync(argvLog) ? JSON.parse(fs.readFileSync(argvLog, 'utf8')) : null;
+    assert.ok(!(r.stdout + r.stderr).includes(TOKEN), `extend (${mode}) printed the token`);
+    assert.ok(
+      !call || !call.argv.some(a => a.includes(TOKEN)),
+      `extend (${mode}) put the token on argv`,
+    );
+    return { ...r, call };
+  };
+  const GLOBAL_ARGV = ['extend', '--global', '--session-id', 'g-global', '--ttl-ms', '5400000'];
+
+  const renewed = extend(reserve, 'global');
+  assert.strictEqual(renewed.status, 0, `global extend: ${renewed.stderr}`);
+  assert.deepStrictEqual(renewed.call.argv, GLOBAL_ARGV);
+  assert.strictEqual(renewed.call.token, undefined, 'global extend must not pass a session token');
+  assert.strictEqual(JSON.parse(renewed.stdout).grantId, 'g-global');
+
+  const old = extend(reserve, 'old');
+  assert.deepStrictEqual(old.call.argv, GLOBAL_ARGV);
+  assert.strictEqual(old.status, 1, 'an old CLI must fail');
+  assert.match(
+    old.stderr,
+    /printed usage for `extend --global --session-id g-global`, so global grant g-global was not renewed/,
+  );
+  assert.match(old.stderr, /Upgrade mellifera-cli to a release whose usage lists/);
+  assert.strictEqual(old.stdout, '', 'the old CLI usage text is not printed as output');
+
+  for (const mode of ['session-route', 'no-expiry']) {
+    const wrong = extend(reserve, mode);
+    assert.strictEqual(wrong.status, 1, `a CLI answering ${mode} must fail`);
+    assert.match(wrong.stderr, /did not extend global grant g-global through the global grant/);
+    assert.match(wrong.stderr, /Upgrade mellifera-cli/);
+    assert.strictEqual(wrong.stdout, '', `the ${mode} answer is not printed as success`);
+  }
+
+  const failed = extend(reserve, 'fails');
+  assert.strictEqual(failed.status, 4, 'a failing CLI keeps its exit status');
+  assert.match(failed.stderr, /not-found: grant not found/);
+  assert.match(failed.stderr, /exited 4; the grant was not renewed/);
+
+  const split = path.join(tmp, 'global-split.reserve.json');
+  fs.writeFileSync(split, JSON.stringify({ ...globalGrant, federation: { grantId: 'g-other' } }));
+  const refused = extend(split, 'global');
+  assert.strictEqual(refused.status, 2, 'a global reserve with two grant ids must be refused');
+  assert.strictEqual(refused.call, null, 'the CLI ran for a global reserve with two grant ids');
+  assert.match(refused.stderr, /federation\.grantId "g-other"; they must be the same grant id/);
+
+  const spill = path.join(tmp, 'spill.reserve.json');
+  fs.writeFileSync(
+    spill,
+    JSON.stringify({
+      ...globalGrant,
+      sessionId: 's-spill',
+      phase: 'spill-existing',
+      federation: { spillId: 'sp-1', grantId: 'g-donor' },
+    }),
+  );
+  const local = extend(spill, 'session-route');
+  assert.strictEqual(local.status, 0, `local spill extend: ${local.stderr}`);
+  assert.deepStrictEqual(
+    local.call.argv,
+    ['extend', '--session-id', 's-spill', '--ttl-ms', '5400000', '--url', 'u', '--federation', 'f'],
+    'a local-core spill extends its local session; its local core extends grant g-donor',
+  );
+  assert.strictEqual(local.call.token, TOKEN, 'local spill extend env lacks the grant token');
+}
+
+/**
+ * With MELLIFERA_BUILT_CLI set, `extend` on a global grant runs the real CLI
+ * against a 127.0.0.1 stand-in for the global's grant routes. The CLI must
+ * POST `/v1/pool/grants/GRANT_ID/extend` with `{ttlMs}` and the API key, and
+ * the reducer must accept its real answer. A grant the global no longer has
+ * (404) exits non-zero. Returns false when MELLIFERA_BUILT_CLI is unset.
+ */
+function assertGlobalExtendRealCli(tmp) {
+  const cli = process.env.MELLIFERA_BUILT_CLI;
+  if (!cli) {
+    return false;
+  }
+  const dir = path.join(tmp, 'real-cli');
+  fs.mkdirSync(path.join(dir, 'config'), { recursive: true });
+  const portFile = path.join(dir, 'port');
+  const requestLog = path.join(dir, 'requests.jsonl');
+  const server = path.join(dir, 'global-stub.js');
+  fs.writeFileSync(
+    server,
+    `const fs = require('fs');
+require('http')
+  .createServer((req, res) => {
+    let body = '';
+    req.on('data', chunk => (body += chunk));
+    req.on('end', () => {
+      fs.appendFileSync(${JSON.stringify(requestLog)}, JSON.stringify({
+        method: req.method, url: req.url, auth: req.headers.authorization || '', body,
+      }) + '\\n');
+      const live = req.method === 'POST' && req.url === '/v1/pool/grants/g-real/extend';
+      res.writeHead(live ? 200 : 404, { 'content-type': 'application/json' });
+      res.end(JSON.stringify(live
+        ? { grantId: 'g-real', expiresAt: '2026-01-01T01:30:00.000Z', capped: false }
+        : { error: 'not-found' }));
+    });
+  })
+  .listen(0, '127.0.0.1', function () {
+    fs.writeFileSync(${JSON.stringify(portFile)}, String(this.address().port));
+  });
+`,
+  );
+  const stub = spawn(process.execPath, [server], { stdio: 'ignore' });
+  try {
+    const deadline = Date.now() + 10_000;
+    while (!fs.existsSync(portFile) && Date.now() < deadline) {
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
+    }
+    assert.ok(fs.existsSync(portFile), 'global stub did not start');
+    const env = {
+      MELLIFERA_CLI: cli,
+      MELLIFERA_CONFIG_DIR: path.join(dir, 'config'),
+      MELLIFERA_GLOBAL_URL: `http://127.0.0.1:${fs.readFileSync(portFile, 'utf8')}`,
+      MELLIFERA_GLOBAL_TOKEN: 'key-real-cli-assert',
+      MELLIFERA_UPDATE_CHECK: 'off',
+      MELLIFERA_SESSION_TOKEN: 'inherited-token',
+    };
+    const reserveFor = id => {
+      const file = path.join(dir, `${id}.reserve.json`);
+      fs.writeFileSync(
+        file,
+        JSON.stringify({
+          sessionId: id,
+          token: TOKEN,
+          placement: 'pool',
+          slot: 0,
+          phase: 'pool-global',
+          execution: { workerId: 'pool', host: 'global', checkoutMode: 'remote' },
+          federation: { grantId: id },
+          env: {},
+        }),
+      );
+      return file;
+    };
+
+    const live = reduce(['extend', '--reserve', reserveFor('g-real'), '--ttl-ms', '5400000'], env);
+    assert.strictEqual(live.status, 0, `real CLI global extend: ${live.stdout}${live.stderr}`);
+    assert.deepStrictEqual(JSON.parse(live.stdout), {
+      grantId: 'g-real',
+      expiresAt: '2026-01-01T01:30:00.000Z',
+      capped: false,
+    });
+    const requests = fs
+      .readFileSync(requestLog, 'utf8')
+      .trim()
+      .split('\n')
+      .map(line => JSON.parse(line));
+    assert.deepStrictEqual(requests, [
+      {
+        method: 'POST',
+        url: '/v1/pool/grants/g-real/extend',
+        auth: 'Bearer key-real-cli-assert',
+        body: JSON.stringify({ ttlMs: 5400000 }),
+      },
+    ]);
+    assert.ok(!(live.stdout + live.stderr).includes(TOKEN), 'real CLI extend printed the token');
+
+    const gone = reduce(['extend', '--reserve', reserveFor('g-gone'), '--ttl-ms', '5400000'], env);
+    assert.notStrictEqual(gone.status, 0, 'real CLI extend of a grant the global lacks must fail');
+    assert.match(gone.stderr, /exited \d+; the grant was not renewed/);
+  } finally {
+    stub.kill();
+  }
+  return true;
+}
+
+/**
+ * `node-check` against stub `node` and `corepack` on a PATH that otherwise
+ * holds only the system directories: it passes on node 24 or newer with
+ * corepack, and names the gap and the guest requirements otherwise.
+ */
+function assertNodeCheck(tmp) {
+  const systemPath = '/usr/bin:/bin:/usr/sbin:/sbin';
+  const stubBin = (name, major, withCorepack) => {
+    const dir = path.join(tmp, `node-${name}`);
+    fs.mkdirSync(dir, { recursive: true });
+    if (major !== null) {
+      fs.writeFileSync(path.join(dir, 'node'), `#!/bin/sh\necho ${major}\n`);
+      fs.chmodSync(path.join(dir, 'node'), 0o755);
+    }
+    if (withCorepack) {
+      fs.writeFileSync(path.join(dir, 'corepack'), '#!/bin/sh\nexit 0\n');
+      fs.chmodSync(path.join(dir, 'corepack'), 0o755);
+    }
+    return `${dir}:${systemPath}`;
+  };
+  const check = (pathValue, env = {}) => piece(['node-check'], { PATH: pathValue, ...env });
+
+  const ok = check(stubBin('24', 24, true));
+  assert.strictEqual(ok.status, 0, `node 24 with corepack: ${ok.stderr}`);
+  assert.match(ok.stderr, /node 24 and corepack found/);
+  assert.strictEqual(check(stubBin('25', 25, true)).status, 0, 'a newer node passes');
+
+  const old = check(stubBin('22', 22, true));
+  assert.strictEqual(old.status, 1, `node 22: ${old.stderr}`);
+  assert.match(old.stderr, /node 22 found; node 24 or newer is required/);
+  assert.match(old.stderr, /running-e2e-distributed\.md#guest-requirements/);
+
+  const noCorepack = check(stubBin('24-no-corepack', 24, false));
+  assert.strictEqual(noCorepack.status, 1, `no corepack: ${noCorepack.stderr}`);
+  assert.match(noCorepack.stderr, /corepack is not on PATH beside node 24/);
+
+  if (!systemPath.split(':').some(dir => fs.existsSync(path.join(dir, 'node')))) {
+    const missing = check(stubBin('none', null, true));
+    assert.strictEqual(missing.status, 1, `no node: ${missing.stderr}`);
+    assert.match(missing.stderr, /node is not on PATH/);
+  }
+
+  const lowered = check(stubBin('22-override', 22, true), { RNFB_NODE_VERSION: '22' });
+  assert.strictEqual(lowered.status, 0, `RNFB_NODE_VERSION=22: ${lowered.stderr}`);
+  const bad = check(stubBin('24-bad-override', 24, true), { RNFB_NODE_VERSION: 'lts' });
+  assert.strictEqual(bad.status, 1);
+  assert.match(bad.stderr, /RNFB_NODE_VERSION must be a whole node major version, got lts/);
 }
 
 /**

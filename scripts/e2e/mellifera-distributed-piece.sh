@@ -37,11 +37,15 @@
 # sync) stages the tree into a fresh index of its own, so `git diff` drift
 # checks such as `yarn codegen:verify` compare against the synced source. No
 # commit is made. It exits 2 inside another repository's work tree.
+# `node-check` (on a grant, before `yarn install`) exits 1 unless `node` on
+# PATH is major RNFB_NODE_VERSION (default 24, as CI) or newer and `corepack`
+# is on PATH.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd | leftovers [--stop] | git-baseline"
+USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd | leftovers [--stop] | git-baseline | node-check"
+GUEST_REQUIREMENTS_DOC="okf-bundle/testing/running-e2e-distributed.md#guest-requirements"
 BASE_AVD="TestingAVD"
 
 PLATFORM=""
@@ -54,7 +58,7 @@ for arg in "$@"; do
     --dry-run) DRY_RUN=1 ;;
     --stop) STOP=1 ;;
     --placement=slot | --placement=host | --placement=pool) PLACEMENT="${arg#--placement=}" ;;
-    android | ios | macos | ensure-avd | leftovers | git-baseline)
+    android | ios | macos | ensure-avd | leftovers | git-baseline | node-check)
       [[ -z "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
       PLATFORM="$arg"
       ;;
@@ -73,7 +77,7 @@ if [[ "$STOP" -eq 1 && "$PLATFORM" != leftovers ]]; then
   echo "$USAGE" >&2
   exit 2
 fi
-if [[ "$PLATFORM" != ensure-avd && "$PLATFORM" != leftovers && "$PLATFORM" != git-baseline ]]; then
+if [[ "$PLATFORM" != ensure-avd && "$PLATFORM" != leftovers && "$PLATFORM" != git-baseline && "$PLATFORM" != node-check ]]; then
   case "$PLACEMENT" in
     slot)
       [[ -n "$SLOT" ]] || {
@@ -697,6 +701,34 @@ run_git_baseline() {
   git add -A || return $?
   echo "mellifera-distributed-piece: git baseline staged in ${physical}" >&2
 }
+
+# Yarn resolves the packageManager version through corepack; CI pins node 24.
+run_node_check() {
+  local want="${RNFB_NODE_VERSION:-24}" major
+  if [[ ! "$want" =~ ^[0-9]+$ ]]; then
+    echo "mellifera-distributed-piece: RNFB_NODE_VERSION must be a whole node major version, got ${want}" >&2
+    return 1
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    echo "mellifera-distributed-piece: node is not on PATH; the guest must provide node ${want} with corepack (${GUEST_REQUIREMENTS_DOC})" >&2
+    return 1
+  fi
+  major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null)"
+  if [[ ! "$major" =~ ^[0-9]+$ || "$major" -lt "$want" ]]; then
+    echo "mellifera-distributed-piece: node ${major:-unknown} found; node ${want} or newer is required (CI uses node ${want}; ${GUEST_REQUIREMENTS_DOC})" >&2
+    return 1
+  fi
+  if ! command -v corepack >/dev/null 2>&1; then
+    echo "mellifera-distributed-piece: corepack is not on PATH beside node ${major}; yarn cannot resolve the packageManager version (${GUEST_REQUIREMENTS_DOC})" >&2
+    return 1
+  fi
+  echo "mellifera-distributed-piece: node ${major} and corepack found" >&2
+}
+
+if [[ "$PLATFORM" == node-check ]]; then
+  run_node_check
+  exit $?
+fi
 
 if [[ "$PLATFORM" == leftovers ]]; then
   run_leftovers
