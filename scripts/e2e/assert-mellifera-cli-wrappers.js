@@ -61,6 +61,7 @@ const CLI_WORDS = [
   ['tests:mellifera:exec', ['exec'], ['--', 'echo', 'marker']],
   ['tests:mellifera:release', ['release'], ['--session-id', 'abc']],
   ['tests:mellifera:extend', ['extend'], ['--global', '--ttl-ms', '5400000']],
+  ['tests:mellifera:releases', ['releases'], ['--global', '--grant', 'abc']],
 ];
 
 const ALLOWED = new Set([
