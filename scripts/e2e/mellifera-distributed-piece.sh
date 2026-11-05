@@ -30,11 +30,15 @@
 # sends them TERM, then KILL after RNFB_SPILL_STOP_WAIT_S (default 10) seconds
 # to those still listed in the tree or the scratch dir.
 # It exits 2 when it cannot list processes; the dirs must not be removed then.
+# `git-baseline` (on a synced tree with its sibling DIR.scratch, right after
+# sync) stages the tree into a fresh index of its own, so `git diff` drift
+# checks such as `yarn codegen:verify` compare against the synced source. No
+# commit is made. It exits 2 inside another repository's work tree.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd | leftovers [--stop]"
+USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd | leftovers [--stop] | git-baseline"
 BASE_AVD="TestingAVD"
 
 PLATFORM=""
@@ -47,7 +51,7 @@ for arg in "$@"; do
     --dry-run) DRY_RUN=1 ;;
     --stop) STOP=1 ;;
     --placement=slot | --placement=host) PLACEMENT="${arg#--placement=}" ;;
-    android | ios | macos | ensure-avd | leftovers)
+    android | ios | macos | ensure-avd | leftovers | git-baseline)
       [[ -z "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
       PLATFORM="$arg"
       ;;
@@ -66,7 +70,7 @@ if [[ "$STOP" -eq 1 && "$PLATFORM" != leftovers ]]; then
   echo "$USAGE" >&2
   exit 2
 fi
-if [[ "$PLATFORM" != ensure-avd && "$PLATFORM" != leftovers ]]; then
+if [[ "$PLATFORM" != ensure-avd && "$PLATFORM" != leftovers && "$PLATFORM" != git-baseline ]]; then
   case "$PLACEMENT" in
     slot)
       [[ -n "$SLOT" ]] || {
@@ -661,8 +665,39 @@ run_leftovers() {
   return 0
 }
 
+# The sync filter drops .git, and `git diff` outside a work tree is not a
+# drift check (it exits 1 or 129). An index of the synced files is enough:
+# `git diff` compares the work tree with the index, so no commit, identity or
+# signing is needed. A later sync into the same DIR keeps this .git (the
+# filter excludes it), and a rerun restages the tree.
+run_git_baseline() {
+  local physical top
+  physical="$(pwd -P)"
+  if [[ ! -d "${physical}.scratch" ]]; then
+    echo "mellifera-distributed-piece: git-baseline runs on a synced spill tree; ${physical}.scratch is missing" >&2
+    return 2
+  fi
+  if ! command -v git >/dev/null 2>&1; then
+    echo "mellifera-distributed-piece: git is not on PATH; the guest image must provide git" >&2
+    return 1
+  fi
+  top="$(git rev-parse --show-toplevel 2>/dev/null)" || top=""
+  if [[ -n "$top" && "$(cd "$top" && pwd -P)" != "$physical" ]]; then
+    echo "mellifera-distributed-piece: ${physical} is inside the git work tree ${top}; refusing to create a baseline there" >&2
+    return 2
+  fi
+  [[ -n "$top" ]] || git init -q || return $?
+  git add -A || return $?
+  echo "mellifera-distributed-piece: git baseline staged in ${physical}" >&2
+}
+
 if [[ "$PLATFORM" == leftovers ]]; then
   run_leftovers
+  exit $?
+fi
+
+if [[ "$PLATFORM" == git-baseline ]]; then
+  run_git_baseline
   exit $?
 fi
 

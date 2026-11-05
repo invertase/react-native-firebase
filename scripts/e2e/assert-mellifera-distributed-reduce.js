@@ -661,13 +661,78 @@ function main() {
     );
 
     assertLeftovers(tmp);
+    assertGitBaseline(tmp);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
     fs.rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, TestingAVD create-if-missing, free-disk check, and spill leftovers',
+    'OK mellifera-distributed-reduce report, failure cases, release, piece dry-run, TestingAVD create-if-missing, free-disk check, spill leftovers, and git baseline',
   );
+}
+
+/**
+ * `git-baseline` on a copy of the piece script in a fake synced tree with no
+ * .git, as the default sync filter leaves it: `git diff` there is not a drift
+ * check until the baseline is staged, then it passes on the synced files and
+ * fails on a later change. It refuses a tree with no sibling scratch dir and a
+ * tree inside another repository's work tree, creating no .git in either.
+ */
+function assertGitBaseline(tmp) {
+  const gitDiff = cwd =>
+    spawnSync('git', ['diff', '--exit-code', '--', 'packages/*/ios/generated/**'], {
+      cwd,
+      encoding: 'utf8',
+    });
+  const fakeTree = dir => {
+    const generated = path.join(dir, 'packages', 'app', 'ios', 'generated', 'Spec.h');
+    fs.mkdirSync(path.dirname(generated), { recursive: true });
+    fs.writeFileSync(generated, '// synced\n');
+    fs.mkdirSync(path.join(dir, 'scripts', 'e2e'), { recursive: true });
+    fs.copyFileSync(PIECE, path.join(dir, 'scripts', 'e2e', 'mellifera-distributed-piece.sh'));
+    return generated;
+  };
+  const baseline = dir =>
+    spawnSync(
+      'bash',
+      [path.join(dir, 'scripts', 'e2e', 'mellifera-distributed-piece.sh'), 'git-baseline'],
+      {
+        cwd: REPO_ROOT,
+        encoding: 'utf8',
+      },
+    );
+
+  const tree = path.join(tmp, 'baseline-work', 'b1');
+  const generated = fakeTree(tree);
+  assert.notStrictEqual(gitDiff(tree).status, 0, 'git diff outside a work tree is not a pass');
+  const noScratch = baseline(tree);
+  assert.strictEqual(noScratch.status, 2, `git-baseline without scratch: ${noScratch.stderr}`);
+  assert.match(noScratch.stderr, /b1\.scratch is missing/);
+  assert.ok(!fs.existsSync(path.join(tree, '.git')), 'no .git without the scratch dir');
+
+  fs.mkdirSync(`${tree}.scratch`);
+  const staged = baseline(tree);
+  assert.strictEqual(staged.status, 0, `git-baseline: ${staged.stderr}`);
+  assert.match(staged.stderr, /git baseline staged in /);
+  assert.strictEqual(gitDiff(tree).status, 0, 'git diff passes on the synced files');
+  fs.writeFileSync(generated, '// drift\n');
+  const drift = gitDiff(tree);
+  assert.strictEqual(drift.status, 1, `git diff reports drift: ${drift.stdout}${drift.stderr}`);
+  assert.match(drift.stdout, /^\+\/\/ drift$/m);
+  const restaged = baseline(tree);
+  assert.strictEqual(restaged.status, 0, `git-baseline rerun: ${restaged.stderr}`);
+  assert.strictEqual(gitDiff(tree).status, 0, 'a rerun restages the synced files');
+
+  const outer = path.join(tmp, 'baseline-outer');
+  fs.mkdirSync(outer, { recursive: true });
+  assert.strictEqual(spawnSync('git', ['init', '-q'], { cwd: outer }).status, 0);
+  const nested = path.join(outer, 'b2');
+  fakeTree(nested);
+  fs.mkdirSync(`${nested}.scratch`);
+  const inside = baseline(nested);
+  assert.strictEqual(inside.status, 2, `git-baseline inside a work tree: ${inside.stderr}`);
+  assert.match(inside.stderr, /is inside the git work tree .*; refusing/);
+  assert.ok(!fs.existsSync(path.join(nested, '.git')), 'no .git inside another work tree');
 }
 
 /**
