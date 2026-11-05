@@ -184,7 +184,7 @@ Note that for obvious reasons, configuring Firebase Analytics for use without ID
 If your app uses Analytics but does not use advertising features, you can opt out of the Advertising ID.
 On Android this takes two settings, because they do different things.
 
-### 1. Stop the SDK from collecting the Advertising ID
+## 1. Stop the SDK from collecting the Advertising ID
 
 ```json
 // <project-root>/firebase.json
@@ -197,10 +197,12 @@ On Android this takes two settings, because they do different things.
 
 This is written to the Android manifest as a `<meta-data>` entry at build time, so it cannot be changed at runtime.
 
-### 2. Remove the `AD_ID` permission from the final manifest
+## 2. Remove the `AD_ID` permission from the final manifest
 
 The Firebase Analytics SDK declares `com.google.android.gms.permission.AD_ID` in its own manifest, and the build merges it into your app.
 The `firebase.json` setting above does **not** remove the permission.
+
+Other dependencies in your app can also declare this permission, not just Firebase Analytics, so the removal step below works regardless of which library adds it.
 
 If your Play Console declaration says the app does not use the Advertising ID, Google Play rejects the release:
 
