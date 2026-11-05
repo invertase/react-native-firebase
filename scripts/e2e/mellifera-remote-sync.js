@@ -10,9 +10,13 @@
  * exits 1 before any exec. `--dest` must be relative, must not contain `.` or `..` segments,
  * and each segment uses only letters, digits, `.`, `_`, and `-`.
  *
+ * Before anything is created, `<cli> exec ... -- sh -c '<probe>'` checks that
+ * `rsync` is on the remote PATH. When it is not, this exits 1 naming the guest
+ * requirement, with no remote directory created and no rsync started.
+ *
  * The run's scratch directory is the sibling `DIR.scratch`, outside the
  * synced tree so a later sync's deletes and the tree's file watchers never
- * reach it. Both are created first with
+ * reach it. Both are created next with
  * `<cli> exec ... -- mkdir -p -- DIR DIR.scratch`, because the remote rsync
  * may be openrsync or older than `--mkpath`. Then `<cli> exec ... -w
  * DIR.scratch -- pwd -P` resolves the scratch directory's absolute path, which
@@ -47,6 +51,9 @@ const SAFE_SEGMENT = /^[A-Za-z0-9._-]+$/;
 const USAGE =
   'usage: mellifera-remote-sync.js [--filter FILE] [--dest DIR] [--scratch-file FILE] [--session ID] [--url URL] [--federation ID]';
 const FORWARDED_FLAGS = ['--session', '--url', '--federation'];
+const RSYNC_MISSING = 'mellifera-remote-sync:rsync-missing';
+const RSYNC_PROBE = `command -v rsync >/dev/null 2>&1 || { echo ${RSYNC_MISSING}; exit 1; }`;
+const GUEST_REQUIREMENTS_DOC = 'okf-bundle/testing/running-e2e-distributed.md#guest-requirements';
 
 function resolveCli() {
   const fromEnv = process.env.MELLIFERA_CLI && process.env.MELLIFERA_CLI.trim();
@@ -230,6 +237,35 @@ function run(label, command, args, onSuccess) {
   });
 }
 
+/** Fails unless the remote grant has `rsync` on PATH, the receiving end of the sync. */
+function checkRemoteRsync(cli, forwarded, onSuccess) {
+  const child = spawn(cli, ['exec', ...forwarded, '--', 'sh', '-c', RSYNC_PROBE], {
+    cwd: REPO_ROOT,
+    stdio: ['ignore', 'pipe', 'inherit'],
+  });
+  let out = '';
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', chunk => {
+    out += chunk;
+  });
+  child.on('error', err => {
+    fail(err.message);
+  });
+  child.on('close', (code, signal) => {
+    if (out.split('\n').includes(RSYNC_MISSING)) {
+      fail(
+        'the remote grant has no rsync on PATH; the guest image for this kind must provide ' +
+          `rsync (see ${GUEST_REQUIREMENTS_DOC}). Nothing was synced.`,
+      );
+    }
+    if (signal || code !== 0) {
+      process.stderr.write(`mellifera-remote-sync: remote rsync check exited ${signal || code}\n`);
+      process.exit(signal || code == null ? 1 : code);
+    }
+    onSuccess();
+  });
+}
+
 /** Absolute remote path of `scratchDir` (relative to the grant's start directory). */
 function resolveScratch(cli, forwarded, scratchDir, onSuccess) {
   const child = spawn(cli, ['exec', ...forwarded, '-w', scratchDir, '--', 'pwd', '-P'], {
@@ -288,18 +324,20 @@ function main() {
   const cli = resolveCli();
   const rsh = [cli, 'exec', ...parsed.forwarded, '--rsh'].map(quoteRshToken).join(' ');
   const mkdirArgs = ['exec', ...parsed.forwarded, '--', 'mkdir', '-p', '--', remoteDir, scratchDir];
-  run('remote mkdir', cli, mkdirArgs, () =>
-    resolveScratch(cli, parsed.forwarded, scratchDir, scratchPath => {
-      process.stderr.write(`mellifera-remote-sync: scratch ${scratchPath}\n`);
-      if (parsed.scratchFile !== undefined) {
-        try {
-          fs.writeFileSync(parsed.scratchFile, `${scratchPath}\n`);
-        } catch (err) {
-          fail(`cannot write --scratch-file ${parsed.scratchFile}: ${err.message}`);
+  checkRemoteRsync(cli, parsed.forwarded, () =>
+    run('remote mkdir', cli, mkdirArgs, () =>
+      resolveScratch(cli, parsed.forwarded, scratchDir, scratchPath => {
+        process.stderr.write(`mellifera-remote-sync: scratch ${scratchPath}\n`);
+        if (parsed.scratchFile !== undefined) {
+          try {
+            fs.writeFileSync(parsed.scratchFile, `${scratchPath}\n`);
+          } catch (err) {
+            fail(`cannot write --scratch-file ${parsed.scratchFile}: ${err.message}`);
+          }
         }
-      }
-      sync(rsh, parsed.filter, remoteDir);
-    }),
+        sync(rsh, parsed.filter, remoteDir);
+      }),
+    ),
   );
 }
 

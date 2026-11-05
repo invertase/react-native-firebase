@@ -11,7 +11,9 @@
  * remote-sync uses rsync --rsh "<cli> exec --rsh" when no session, url, or
  * federation flag is passed. Those caller flags are placed before --rsh in
  * caller order. The destination is mellifera-work/<name> on a remote
- * placeholder, created first by exec mkdir, never the remote start directory.
+ * placeholder, created by exec mkdir, never the remote start directory.
+ * Before that, an exec probe checks the remote PATH for rsync; without it the
+ * sync fails naming the guest requirement and creates nothing remotely.
  * A smoke run syncs into a fake remote start directory that already holds
  * unrelated files, then runs exec -w on the printed directory.
  * Run: yarn tests:mellifera:assert-cli-wrappers
@@ -349,6 +351,14 @@ function rsyncArgValue(argv, flag) {
   return argv[index + 1];
 }
 
+function assertRsyncProbe(label, argv, forwarded) {
+  const head = ['exec', ...forwarded, '--', 'sh', '-c'];
+  assertDeepEqual(`${label} remote rsync probe`, argv.slice(0, head.length), head);
+  if (argv.length !== head.length + 1 || !argv[head.length].includes('command -v rsync')) {
+    fail(`${label} remote rsync probe is not one sh -c script: ${JSON.stringify(argv)}`);
+  }
+}
+
 function assertRemoteSync(env, stubLog, rsyncLog) {
   const pointerEnv = { ...env, STUB_SESSION_ID: 's-pointer' };
 
@@ -399,7 +409,7 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     if (filterPath !== DEFAULT_FILTER && filterArg.includes(DEFAULT_FILTER)) {
       fail(`${label} used the default filter and the caller filter`);
     }
-    const expectedCalls = options.sessionShow ? 4 : 3;
+    const expectedCalls = options.sessionShow ? 5 : 4;
     if (stubCalls.length !== expectedCalls) {
       fail(`${label} stub calls: ${JSON.stringify(stubCalls)}\nrsync stderr: ${result.stderr}`);
     }
@@ -407,7 +417,8 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
       assertDeepEqual(`${label} session show`, stubCalls[0], ['session', 'show']);
     }
     const scratchDir = `${remoteDir}.scratch`;
-    const [mkdirArgv, pwdArgv, stubArgv] = stubCalls.slice(expectedCalls - 3);
+    const [probeArgv, mkdirArgv, pwdArgv, stubArgv] = stubCalls.slice(expectedCalls - 4);
+    assertRsyncProbe(label, probeArgv, forwarded);
     assertDeepEqual(`${label} remote mkdir`, mkdirArgv, [
       'exec',
       ...forwarded,
@@ -559,10 +570,28 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     status: 1,
     stderr: 'session s-pointer is expired; reserve again',
   });
+  expectFail('remote rsync missing', ['--session', session], {
+    env: { ...env, STUB_RSYNC_MISSING: '1' },
+    status: 1,
+    execCalls: 1,
+    stderr:
+      'the remote grant has no rsync on PATH; the guest image for this kind must provide rsync',
+  });
+  expectFail('remote rsync missing links the guest requirements', ['--session', session], {
+    env: { ...env, STUB_RSYNC_MISSING: '1' },
+    execCalls: 1,
+    stderr: 'running-e2e-distributed.md#guest-requirements',
+  });
+  expectFail('remote rsync check fails', ['--session', session], {
+    env: { ...env, STUB_RSYNC_PROBE_EXIT: '255' },
+    status: 255,
+    execCalls: 1,
+    stderr: 'remote rsync check exited 255',
+  });
   expectFail('remote mkdir fails', ['--session', session], {
     env: { ...env, STUB_MKDIR_EXIT: '7' },
     status: 7,
-    execCalls: 1,
+    execCalls: 2,
   });
   expectFail('scratch file missing', ['--scratch-file']);
   expectFail('scratch file empty equals', ['--scratch-file=']);
@@ -577,30 +606,30 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
   fs.chmodSync(readOnly, 0o444);
   expectFail('scratch file not writable', ['--session', session, '--scratch-file', readOnly], {
     status: 1,
-    execCalls: 2,
+    execCalls: 3,
     stderr: `cannot write --scratch-file ${readOnly}`,
   });
   fs.chmodSync(readOnly, 0o644);
   expectFail('remote scratch path fails', ['--session', session], {
     env: { ...env, STUB_PWD_EXIT: '5' },
     status: 5,
-    execCalls: 2,
+    execCalls: 3,
   });
   expectFail('remote scratch path relative', ['--session', session], {
     env: { ...env, STUB_PWD_OUT: `mellifera-work/${session}.scratch` },
     status: 1,
-    execCalls: 2,
+    execCalls: 3,
     stderr: 'remote scratch path is not one absolute path',
   });
   expectFail('remote scratch path wrong leaf', ['--session', session], {
     env: { ...env, STUB_PWD_OUT: '/stub-home' },
     status: 1,
-    execCalls: 2,
+    execCalls: 3,
   });
   expectFail('remote scratch path extra lines', ['--session', session], {
     env: { ...env, STUB_PWD_OUT: `motd\n/stub-home/mellifera-work/${session}.scratch` },
     status: 1,
-    execCalls: 2,
+    execCalls: 3,
   });
 }
 
@@ -617,6 +646,20 @@ function assertRemoteSyncSmoke(env, stubLog, home) {
   const localPackage = fs.readFileSync(path.join(REPO_ROOT, 'packages/app/package.json'), 'utf8');
 
   const scratchFile = path.join(home, 'smoke.scratch');
+  const noRsync = runYarn(
+    'tests:mellifera:remote-sync',
+    ['--session', session, '--filter', filter, '--scratch-file', scratchFile],
+    { ...smokeEnv, STUB_REMOTE_PATH: path.join(home, 'no-such-bin') },
+  );
+  if (noRsync.status !== 1 || !noRsync.stderr.includes('the remote grant has no rsync on PATH')) {
+    fail(`smoke without remote rsync (exit ${noRsync.status})\nstderr: ${noRsync.stderr}`);
+  }
+  if (noRsync.stdout !== '' || fs.existsSync(path.join(remote, 'mellifera-work'))) {
+    fail('smoke without remote rsync printed a directory or created the remote work parent');
+  }
+  if (fs.existsSync(scratchFile)) {
+    fail('smoke without remote rsync wrote the scratch file');
+  }
   const scratchAbs = path.join(fs.realpathSync(remote), `${remoteDir}.scratch`);
   for (const pass of ['first', 'repeat']) {
     clearLog(stubLog);
@@ -764,6 +807,14 @@ if (argv[0] === 'session' && argv[1] === 'show' && process.env.STUB_SESSION_ID !
   process.stdout.write(JSON.stringify(id ? { status, sessionId: id } : { status }) + '\\n');
   process.exit(status === 'live' ? 0 : 1);
 }
+const rsyncProbe = argv[0] === 'exec' && argv.includes('sh') && /command -v rsync/.test(argv[argv.length - 1]);
+if (rsyncProbe && process.env.STUB_RSYNC_PROBE_EXIT) {
+  process.exit(Number(process.env.STUB_RSYNC_PROBE_EXIT));
+}
+if (rsyncProbe && process.env.STUB_RSYNC_MISSING) {
+  process.stdout.write('mellifera-remote-sync:rsync-missing\\n');
+  process.exit(1);
+}
 if (argv[0] === 'exec' && argv.includes('mkdir') && process.env.STUB_MKDIR_EXIT) {
   process.exit(Number(process.env.STUB_MKDIR_EXIT));
 }
@@ -790,7 +841,11 @@ if (argv[0] === 'exec' && remote) {
     if (w >= 0) cwd = path.resolve(remote, flags[w + 1]);
     command = argv.slice(sep + 1);
   }
-  const ran = spawnSync(command[0], command.slice(1), { cwd, stdio: 'inherit' });
+  // STUB_REMOTE_PATH stands in for a guest whose PATH has no rsync.
+  const remotePath = process.env.STUB_REMOTE_PATH;
+  const env = remotePath ? { ...process.env, PATH: remotePath } : process.env;
+  if (remotePath && command[0] === 'sh') command[0] = '/bin/sh';
+  const ran = spawnSync(command[0], command.slice(1), { cwd, stdio: 'inherit', env });
   process.exit(ran.status == null ? 1 : ran.status);
 }
 process.exit(0);
