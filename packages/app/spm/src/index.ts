@@ -45,7 +45,8 @@ function reactNativeFirebaseSpmPlugin(context: PluginContext): PluginResult {
     throw new Error(`${APP_PACKAGE} is not autolinked, so its SwiftPM package cannot be built.`);
   }
 
-  const targets = packages.flatMap(targetsFor);
+  const appTargets = targetsFor(app);
+  const targets = packages.flatMap(pkg => (pkg === app ? appTargets : targetsFor(pkg, appTargets)));
   const packageDir = path.join(outputDir, PACKAGE_NAME);
   const appPackageJson = path.join(app.root, 'package.json');
   const manifest = renderManifest({

@@ -24,12 +24,6 @@ export const ON_DEVICE_CONVERSION: ExternalProduct = {
   from: '3.6.1',
 };
 
-// Every other package keeps its sources in a folder named after its module (podspec name).
-const MODULE_NAMES: Record<string, string> = {
-  RNFBConfig: 'RNFBRemoteConfig',
-  RNFBFiam: 'RNFBInAppMessaging',
-};
-
 // `firebase_dependency(spec, version, spm_products, pods)` (firebase_spm.rb): the third argument
 // lists the firebase-ios-sdk SwiftPM products the package needs.
 const FIREBASE_DEPENDENCY =
@@ -91,7 +85,8 @@ function readPackage(
 ): RnfbPackage {
   const iosDir = path.join(root, 'ios');
   const sourceFolder = findSourceFolder(name, iosDir);
-  const module = MODULE_NAMES[sourceFolder] ?? sourceFolder;
+  // The podspec name, as with CocoaPods: remote-config keeps its sources in ios/RNFBConfig.
+  const module = path.basename(podspecPath, '.podspec');
   const turboModules = path.join('generated', `${module}TurboModules`);
   const podspec = stripRubyComments(fs.readFileSync(podspecPath, 'utf8'));
   const inSourceFolder = (extensions: string[]) =>

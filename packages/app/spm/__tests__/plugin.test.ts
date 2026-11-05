@@ -9,6 +9,7 @@ import {
   firebaseProducts,
   FIXTURE_SDK,
   libraryTargets,
+  manifestTargets,
   sources,
   target,
   targetDependencies,
@@ -329,7 +330,7 @@ describe('ReactNativeFirebase SwiftPM autolinking plugin', () => {
       const core = target(manifest, 'RNFBFirestoreCore');
       expect(core.kind).toBe('objc');
       expect(sources(core).sort()).toEqual(CORE.map(f => `root/RNFBFirestore/${f}.m`));
-      expect(targetDependencies(core)).toContain('RNFBAppObjC');
+      expect(targetDependencies(core)).toEqual(['RNFBAppObjC']);
 
       const swiftTarget = target(manifest, 'RNFBFirestore');
       expect(swiftTarget.kind).toBe('swift');
@@ -673,6 +674,92 @@ describe('ReactNativeFirebase SwiftPM autolinking plugin', () => {
       expect(manifest).not.toContain('.xcodeproj');
       expect(manifest).not.toContain('RNFBFirebase');
       expect(manifest).not.toContain('RNFB_DYNAMIC_FIREBASE_PROBE');
+    });
+  });
+
+  describe('app without Swift sources', () => {
+    it('makes every other package depend only on the app targets that exist', () => {
+      const f = setUp(['app', 'crashlytics', 'firestore']);
+      for (const file of ['RNFBHandleMapStorage.swift', 'RNFBAppModuleFirebase.swift']) {
+        fs.rmSync(path.join(f.packageRoot('app'), 'ios', 'RNFBApp', file));
+      }
+      const { manifest } = generate(f);
+
+      const names = targetNames(manifest);
+      expect(names).not.toContain('RNFBAppObjC');
+      expect(target(manifest, 'RNFBApp').kind).toBe('objc');
+      const dangling = manifestTargets(manifest).flatMap(t =>
+        targetDependencies(t)
+          .filter(d => !names.includes(d))
+          .map(d => `${t.name} -> ${d}`),
+      );
+      expect(dangling).toEqual([]);
+      expect(libraryTargets(manifest)).toEqual(names);
+      expect(targetDependencies(target(manifest, 'RNFBCrashlytics'))).toEqual(['RNFBApp']);
+      expect(targetDependencies(target(manifest, 'RNFBCrashlyticsObjC'))).toEqual([
+        'RNFBCrashlytics',
+        'RNFBApp',
+      ]);
+      expect(targetDependencies(target(manifest, 'RNFBFirestoreCore'))).toEqual(['RNFBApp']);
+    });
+  });
+
+  describe('module names', () => {
+    it('names the module after the podspec when the source folder has another name', () => {
+      const f = setUp(['app']);
+      f.addDependency('@react-native-firebase/widgets', {
+        'package.json': JSON.stringify({ name: '@react-native-firebase/widgets' }),
+        'RNFBWidgets.podspec':
+          "firebase_dependency(s, firebase_sdk_version, ['FirebaseCore'], 'Firebase/CoreOnly')\n",
+        'ios/RNFBWidget/RNFBWidgetModule.h': '#import <Foundation/Foundation.h>\n',
+        'ios/RNFBWidget/RNFBWidgetModule.mm': '#import "RNFBWidgetModule.h"\n',
+        'ios/generated/RNFBWidgetsTurboModules/RNFBWidgetsTurboModules-generated.mm':
+          '#import "RNFBWidgetsTurboModules.h"\n',
+      });
+      const { manifest } = generate(f);
+
+      expect(targetNames(manifest)).toEqual(['RNFBApp', 'RNFBAppObjC', 'RNFBWidgets']);
+      expect(sources(target(manifest, 'RNFBWidgets'))).toEqual([
+        'root/RNFBWidget/RNFBWidgetModule.mm',
+        'root/generated/RNFBWidgetsTurboModules/RNFBWidgetsTurboModules-generated.mm',
+      ]);
+    });
+  });
+
+  describe('script phase ids', () => {
+    const configWithPhases = (count: number) =>
+      `module.exports = { dependency: { platforms: { ios: { scriptPhases: ${JSON.stringify(
+        Array.from({ length: count }, (_, i) => ({ name: `[RNFB] Phase ${i}`, path: './run.sh' })),
+      )} } } } };\n`;
+
+    it('names SCRIPT_PHASE_IDS when a package declares a script phase without a pinned id', () => {
+      const f = setUp(['app']);
+      f.addDependency('@react-native-firebase/widgets', {
+        'package.json': JSON.stringify({ name: '@react-native-firebase/widgets' }),
+        'react-native.config.js': configWithPhases(1),
+        'RNFBWidgets.podspec':
+          "firebase_dependency(s, firebase_sdk_version, ['FirebaseCore'], 'Firebase/CoreOnly')\n",
+        'ios/RNFBWidgets/RNFBWidgetsModule.mm': '#import <Foundation/Foundation.h>\n',
+      });
+
+      expect(() => plugin(f.context)).toThrow(
+        '@react-native-firebase/widgets: its iOS script phase has no pinned id. ' +
+          "Add '@react-native-firebase/widgets' to SCRIPT_PHASE_IDS in " +
+          'packages/app/spm/src/scriptPhases.ts.',
+      );
+    });
+
+    it('names SCRIPT_PHASE_IDS when a package declares more than one script phase', () => {
+      const f = setUp(['app', 'crashlytics']);
+      fs.writeFileSync(
+        path.join(f.packageRoot('crashlytics'), 'react-native.config.js'),
+        configWithPhases(2),
+      );
+
+      expect(() => plugin(f.context)).toThrow(
+        '@react-native-firebase/crashlytics: declares 2 iOS script phases, but SCRIPT_PHASE_IDS ' +
+          'in packages/app/spm/src/scriptPhases.ts pins one id per package.',
+      );
     });
   });
 });

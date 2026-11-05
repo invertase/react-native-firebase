@@ -224,6 +224,15 @@ reads `firebase.json` from your project root instead:
   `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`. See
   [Google Analytics on-device conversion measurement](/analytics/usage#google-analytics-on-device-conversion-measurement).
 
+### Known limits
+
+- On React Native 0.88, a changed RNFB build phase reaches the Xcode project
+  only after `npx react-native spm update`. `npx react-native spm sync` does
+  not apply it.
+- The `ReactNativeFirebase` package declares iOS, macOS and tvOS. With
+  `analytics_google_app_measurement_on_device_conversion` set, RNFB is tested
+  only on iOS; macOS and tvOS builds are not verified.
+
 ## Troubleshooting
 
 - **`pod install` fails with "Firebase Apple SDK is no longer distributed through CocoaPods":**
