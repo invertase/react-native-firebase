@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
+
+### Features
+
+- **app, sdk:** bump Firebase Android SDK to 35.0.2 ([da2d14e](https://github.com/invertase/react-native-firebase/commit/da2d14e6bfdf3e4388198a7184b4ff166afd1cb0))
+- **app, sdk:** bump Firebase iOS SDK to 13.1.0 ([4a1ceaf](https://github.com/invertase/react-native-firebase/commit/4a1ceafa6f914b712aeef5350142abd95597dde6))
+- **app, sdk:** bump Firebase JS SDK to 13.1.0 ([1d28f07](https://github.com/invertase/react-native-firebase/commit/1d28f076722ca7566a450a5bc1c7a3415ca2f7d0))
+
+### Bug Fixes
+
+- **app, sdk:** bump Firebase iOS SDK to 13.1.1 ([4505c11](https://github.com/invertase/react-native-firebase/commit/4505c1172d731e3a73f8d47cb977c8bc2e6b0f60))
+- **app, sdk:** sync RNFBFirebase Package.swift pin to 13.1.0 ([dc83824](https://github.com/invertase/react-native-firebase/commit/dc8382425d1a2957db83d0b721a365f97a3f8fb8))
+- **ci:** branch dist-tag for off-main publish and pin npm 12.2.1 ([8700dec](https://github.com/invertase/react-native-firebase/commit/8700dec0158b03cd02af5dd13b0f0f6bb81907d4))
+- **ci:** surface partial-publish recovery in the publish workflow summary ([dd29832](https://github.com/invertase/react-native-firebase/commit/dd2983276c8a231556f1f63b30190f1100a83d36))
+- **crashlytics, ios:** time out SPM upload-symbols so a stalled upload cannot hang the build ([1cdb7de](https://github.com/invertase/react-native-firebase/commit/1cdb7de24ef5ca12a24cf599cce11d3d8797cbb2))
+- **crashlytics:** reach Android Crashlytics internals by reflection only ([c3f15e3](https://github.com/invertase/react-native-firebase/commit/c3f15e37b1f53e0a81469183e896003ea6e80141))
+- **crashlytics:** save JS fatal report before exiting when chaining is disabled ([cfd00b6](https://github.com/invertase/react-native-firebase/commit/cfd00b65754186aad0f765f61a5db3f19e84b716))
+- **firestore:** align query filter limits with Firestore (30 in/or/and, 10 not-in) ([8823f96](https://github.com/invertase/react-native-firebase/commit/8823f968b88098128c9feed6e483a012083b7160))
+- **remote-config, web:** preserve read-only navigator state ([64d9b69](https://github.com/invertase/react-native-firebase/commit/64d9b6910ee26f9976c81949e25a4ddfeb2a9d08))
+- **test:** cold-boot Android emulator on ANR and missing package/activity services ([b02ef7f](https://github.com/invertase/react-native-firebase/commit/b02ef7f9d85fc2adcd6b9a19150aebb24040df8d))
+- **test:** serialize platform unit tests after native builds in test:full ([96b03c4](https://github.com/invertase/react-native-firebase/commit/96b03c4f7905b61cf8a6234ae13d6af90b597d0a))
+
+### Reverts
+
+- Revert "docs: use relative link to Crashlytics usage in tips" ([e823c1e](https://github.com/invertase/react-native-firebase/commit/e823c1ef78bf863e8df43630d5be3d2978abaa8c))
+
 ## [27.0.0](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v27.0.0) (2026-10-19)
 
 ### ⚠ BREAKING CHANGES

@@ -3,9 +3,9 @@
 # Integrity is hardcoded from registry dist.integrity at pin time — never fetch at runtime.
 set -euo pipefail
 
-NPM_VERSION="12.0.2"
-# npm view npm@12.0.2 dist.integrity (recorded at pin time)
-NPM_INTEGRITY="sha512-uIXokLlBj6FpNUTQX1PmT5pz7BlIN9QlixX+zdaSNHsd0qUXsbDLr50xzY6Sw7cJVr0uzHKDOle0swmPW/p5Qw=="
+NPM_VERSION="12.2.1"
+# npm view npm@12.2.1 dist.integrity (recorded at pin time)
+NPM_INTEGRITY="sha512-bKCmFRVT/BB+YPEYbZwQ1XUI3N5t4xKSpU1MxOjo7z3iWzKBJ0ZXRC1xFdEN+TC7N5TdywaBzf2dMXGJq/e2PQ=="
 NPM_TGZ_URL="https://registry.npmjs.org/npm/-/npm-${NPM_VERSION}.tgz"
 
 # engines: ^22.22.2 || ^24.15.0 || >=26.0.0 — setup-node "24" must resolve >=24.15

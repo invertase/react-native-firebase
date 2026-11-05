@@ -62,7 +62,9 @@ Lerna remains the owner of version bumping, changelog generation, and `lerna pub
 
 **GitHub Releases (intentional):** `lerna.json` sets `command.version.createRelease: "github"` so `yarn lerna version` creates GitHub Release objects when it cuts tags. `.github/workflows/publish.yml` must export **`GH_TOKEN`** (Lerna's GitHub client reads `process.env.GH_TOKEN`) and grant the publish job **`contents: write`** (plus the existing `id-token: write` for npm OIDC). Keep `GITHUB_TOKEN` wired to the same org admin secret for changelog/tag push under branch protection.
 
-**Why:** The publish workflow is mature (conventional commits, `ignoreChanges`, trusted publishing, Lerna-owned Releases). Nx adoption is scoped to task running/caching only; splitting publish from task-running is the documented Lerna+Nx pattern.
+**Publish branch policy (accepted):** During Publish (`.github/workflows/publish.yml`): (1) API reference deploy runs only from `main` after a successful npm publish job; (2) off-`main`, npm `--dist-tag` is the branch name (`github.ref_name`); on `main`, default/`latest`; (3) a partial publish is recovered by rerunning the exact same publish (same ref and dist-tag). Procedure owner: [maintainer publish](maintainer-publish.md).
+
+**Why:** The publish workflow is mature (conventional commits, `ignoreChanges`, trusted publishing, Lerna-owned Releases). Nx adoption is scoped to task running/caching only; splitting publish from task-running is the documented Lerna+Nx pattern. Branch-gated docs and dist-tags keep off-`main` releases from overwriting stable `latest` or the public API reference; same-publish recovery matches `from-package` semantics.
 
 **Publish impact of the new devDeps (verify, expected-nil):** [MonoTool-AD-3](#monotool-ad-3--build-order-via-devdependencies-not-manual-phase-scripts--accepted) adds internal `@react-native-firebase/app` `devDependencies`. In this repo's **fixed** versioning (`lerna.json` `version: 25.1.0`, `exact: true`) every package already bumps in lockstep and Lerna already rewrites internal `peerDependencies` ranges each release; the new devDep ranges are rewritten by the same mechanism. Confirm with a `lerna version` dry run that (a) the exact devDep ranges are rewritten to the new version and (b) nothing else in the release flow (provenance, `ignoreChanges`) is affected. No side effects expected.
 
@@ -235,6 +237,7 @@ Detail: [prepare-and-cache § patch-package prepare](prepare-and-cache.md#patch-
 | Topic                                          | Document                                                             |
 | ---------------------------------------------- | -------------------------------------------------------------------- |
 | Design detail (cache, graph, watch, benchmark) | [prepare-and-cache.md](prepare-and-cache.md)                         |
+| Maintainer publish procedure                   | [maintainer-publish.md](maintainer-publish.md)                       |
 | Ephemeral rollout state                        | [work-queue.md](work-queue.md)                                       |
 | Agent shell commands                           | [agent command policy](../testing/agent-command-policy.md)           |
 | Change loop / gates                            | [change authoring workflow](../testing/change-authoring-workflow.md) |
