@@ -320,7 +320,7 @@ Gate close / push: return [validation evidence package](validation-checklist.md#
 
 ## Mellifera command policy
 
-Allowlisted commands for the local desk, the worktree session, source sync, and remote execution. Packaged `mellifera-cli` is resolved from `PATH` or `MELLIFERA_CLI`. Wrappers pass flags through. They do not read Mellifera config, call the Mellifera HTTP API, read a grant URL, or start a remote shell.
+Allowlisted commands for the local desk, the worktree session, source sync, and remote execution. Packaged `mellifera-cli` is resolved from `PATH` or `MELLIFERA_CLI` ([install and minimum version](running-e2e.md#mellifera-cli-install)). Do not vendor the CLI or point `MELLIFERA_CLI` at a copy inside this repo. Wrappers pass flags through. They do not read Mellifera config, call the Mellifera HTTP API, read a grant URL, or start a remote shell.
 
 Bare `mellifera-cli` is only for Mellifera product development, where no wrapper applies. `bare --wait is not a supported command.`
 

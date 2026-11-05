@@ -4,7 +4,8 @@
  * and exits non-zero for a non-zero piece, a missing or empty coverage
  * artifact, a missing piece, a shared session, or non-overlapping lifetimes.
  * Also checks the release token reaches the CLI through MELLIFERA_SESSION_TOKEN
- * (not argv), overrides an inherited token, and stays off stdout, plus the
+ * (not argv), overrides an inherited token, and stays off stdout, both with
+ * MELLIFERA_CLI set and with mellifera-cli resolved from PATH, plus the
  * piece runner's dry-run step order and its free-disk check against a stubbed df.
  * Run: yarn tests:mellifera:assert-distributed-reduce
  */
@@ -314,6 +315,27 @@ function main() {
     );
     assert.strictEqual(released.token, TOKEN, 'release env lacks the grant token');
     assert.ok(!rel.stdout.includes(TOKEN) && !rel.stderr.includes(TOKEN), 'token printed');
+
+    fs.rmSync(argvLog, { force: true });
+    const pathBin = path.join(tmp, 'path-bin');
+    fs.mkdirSync(pathBin);
+    fs.symlinkSync(fakeCli, path.join(pathBin, 'mellifera-cli'));
+    const relPath = reduce(
+      ['release', '--reserve', slotReserve, '--url', 'u', '--federation', 'f'],
+      {
+        MELLIFERA_CLI: undefined,
+        MELLIFERA_SESSION_TOKEN: 'inherited-token',
+        PATH: `${pathBin}${path.delimiter}${process.env.PATH}`,
+      },
+    );
+    assert.strictEqual(relPath.status, 0, relPath.stderr);
+    const releasedPath = JSON.parse(fs.readFileSync(argvLog, 'utf8'));
+    assert.deepStrictEqual(releasedPath.argv, released.argv, 'PATH release argv');
+    assert.strictEqual(releasedPath.token, TOKEN, 'PATH release env lacks the grant token');
+    assert.ok(
+      !relPath.stdout.includes(TOKEN) && !relPath.stderr.includes(TOKEN),
+      'PATH release printed the token',
+    );
 
     const ios = piece(['ios', '--placement=slot', '3', '--dry-run']);
     assert.strictEqual(ios.status, 0, ios.stderr);

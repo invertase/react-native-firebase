@@ -32,7 +32,6 @@ const { spawnSync } = require('child_process');
 const SCRIPT_DIR = __dirname;
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
 const FORWARDER = path.join(SCRIPT_DIR, 'mellifera-cli-forward.js');
-const DEFAULT_CLI = path.join(REPO_ROOT, 'scripts/mellifera/cli.js');
 
 const PIECES = {
   android: {
@@ -282,7 +281,6 @@ function cmdRelease(flags) {
   }
   const env = {
     ...process.env,
-    MELLIFERA_CLI: process.env.MELLIFERA_CLI || DEFAULT_CLI,
     MELLIFERA_SESSION_TOKEN: grant.token,
   };
   const result = spawnSync(process.execPath, args, { cwd: REPO_ROOT, env, stdio: 'inherit' });

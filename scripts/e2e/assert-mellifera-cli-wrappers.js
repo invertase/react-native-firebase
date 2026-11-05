@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 /**
- * CLI-word wrappers forward argv unchanged to MELLIFERA_CLI.
+ * CLI-word wrappers forward argv unchanged to MELLIFERA_CLI, or to
+ * mellifera-cli on PATH when MELLIFERA_CLI is unset. No wrapper defaults to a
+ * CLI copy inside this repo.
+ * The closed-port check runs a real CLI (MELLIFERA_BUILT_CLI, else PATH) that
+ * must report version 0.2.0 or later.
  * apply forwards to the reservation mapper and does not invoke the CLI.
  * reserve-apply runs reserve with argv unchanged, then passes the grant JSON
  * to the mapper.
@@ -24,6 +28,12 @@ const SCRIPT_DIR = __dirname;
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
 const DEFAULT_FILTER = path.join(SCRIPT_DIR, 'mellifera-remote-sync.rsync-filter');
 const PKG = require(path.join(REPO_ROOT, 'package.json'));
+const IN_REPO_CLI_DIR = path.join(REPO_ROOT, 'scripts', 'mellifera');
+// 0.2.0 is the first CLI that reads MELLIFERA_SESSION_TOKEN, which the reducer's release needs.
+const MIN_CLI_VERSION = [0, 2, 0];
+const INSTALL_HINT =
+  'install mellifera-cli 0.2.0 or later (Mellifera CLI README § Bootstrap from your global core, ' +
+  'or § Pinned install from GitHub release) or set MELLIFERA_BUILT_CLI';
 
 const CLI_WORDS = [
   ['tests:mellifera:status', ['status'], ['--json']],
@@ -96,11 +106,25 @@ function resolveBuiltCli() {
   if (found) {
     return found;
   }
-  const vendored = path.join(REPO_ROOT, 'scripts', 'mellifera', 'cli.js');
-  if (fs.existsSync(vendored)) {
-    return vendored;
+  fail(`mellifera-cli is not on PATH; ${INSTALL_HINT}`);
+}
+
+function assertCliVersion(builtCli) {
+  const ran = spawnSync(builtCli, ['--version'], { encoding: 'utf8', timeout: 30000 });
+  const text = `${ran.stdout || ''}${ran.stderr || ''}`;
+  const match = /\bversion=(\d+)\.(\d+)\.(\d+)/.exec(text);
+  if (ran.status !== 0 || !match) {
+    fail(`${builtCli} --version did not report version=X.Y.Z (exit ${ran.status})\n${text}`);
   }
-  fail('built mellifera-cli is not on PATH; set PATH or MELLIFERA_BUILT_CLI');
+  const actual = match.slice(1, 4).map(Number);
+  for (let i = 0; i < MIN_CLI_VERSION.length; i++) {
+    if (actual[i] > MIN_CLI_VERSION[i]) {
+      return;
+    }
+    if (actual[i] < MIN_CLI_VERSION[i]) {
+      fail(`${builtCli} is mellifera-cli ${actual.join('.')}; ${INSTALL_HINT}`);
+    }
+  }
 }
 
 function listenClosedPort() {
@@ -168,6 +192,12 @@ function assertScriptSet() {
     if (/acquire|desk:|remote-run|setup-/.test(name)) {
       fail(`forbidden wrapper name ${name}`);
     }
+    if (/scripts\/mellifera\b/.test(PKG.scripts[name])) {
+      fail(`${name} points at a CLI copy inside this repo: ${PKG.scripts[name]}`);
+    }
+  }
+  if (fs.existsSync(IN_REPO_CLI_DIR)) {
+    fail(`${path.relative(REPO_ROOT, IN_REPO_CLI_DIR)} exists; do not vendor the Mellifera CLI`);
   }
   for (const name of ALLOWED) {
     if (!PKG.scripts[name]) {
@@ -805,6 +835,7 @@ async function main() {
   }
 
   const builtCli = resolveBuiltCli();
+  assertCliVersion(builtCli);
   const realRsync = which('rsync');
   if (!realRsync) {
     fail('rsync is not on PATH');
@@ -837,6 +868,12 @@ async function main() {
   });
 
   assertForwarding(env, stubLog);
+  const pathBin = path.join(home, 'path-bin');
+  fs.mkdirSync(pathBin);
+  fs.symlinkSync(stub, path.join(pathBin, 'mellifera-cli'));
+  const pathEnv = { ...env, PATH: `${pathBin}${path.delimiter}${env.PATH}` };
+  delete pathEnv.MELLIFERA_CLI;
+  assertForwarding(pathEnv, stubLog);
   assertApplyDoesNotCallCli(env, stubLog, home);
   assertReserveApply(env, stubLog);
   assertRemoteSync(env, stubLog, rsyncLog);
@@ -853,7 +890,7 @@ async function main() {
   }
 
   console.log(
-    'OK mellifera CLI wrappers, reserve-apply, remote-sync, remote-sync smoke, and closed-port reserve',
+    'OK mellifera CLI wrappers (MELLIFERA_CLI and PATH), reserve-apply, remote-sync, remote-sync smoke, CLI version floor, and closed-port reserve',
   );
 }
 
