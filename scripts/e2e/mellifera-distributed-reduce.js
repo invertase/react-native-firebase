@@ -5,8 +5,13 @@
  *
  * Subcommands:
  *   field   --reserve FILE --field sessionId|slot|placement
- *           Print one non-secret grant field. `slot` prints the slot for
- *           placement "slot" and an empty line for any other placement.
+ *           Print one non-secret grant field. A grant with no placement is
+ *           placement "pool". `slot` prints the slot for placement "slot"
+ *           (local or global) and an empty line for placement "host". Any
+ *           other placement, such as "pool" from a global grant, or a "slot"
+ *           grant with no non-negative integer slot, names no slot index:
+ *           `slot` exits 3 rather than let a caller pick a slot or a
+ *           whole-host release.
  *   record  --run-dir DIR --piece android|ios|macos --reserve FILE
  *           (--exit N | --exit-file FILE) [--coverage PATH]
  *           [--started EPOCH_S] [--ended EPOCH_S]
@@ -42,6 +47,7 @@ const PIECES = {
   macos: { kind: 'macos-self-hosted', coverage: null },
 };
 const FIELDS = ['sessionId', 'slot', 'placement'];
+const GLOBAL_PLACEMENT_DOC = 'okf-bundle/testing/running-e2e-distributed.md#global-grant-placement';
 
 function usage(message) {
   console.error(`mellifera-distributed-reduce: ${message}`);
@@ -99,8 +105,14 @@ function readReserve(file) {
   return grant;
 }
 
+function placementOf(grant) {
+  return grant.placement == null ? 'pool' : grant.placement;
+}
+
 function slotOf(grant) {
-  return grant.placement === 'slot' && Number.isInteger(grant.slot) ? grant.slot : null;
+  return placementOf(grant) === 'slot' && Number.isInteger(grant.slot) && grant.slot >= 0
+    ? grant.slot
+    : null;
 }
 
 function cmdField(flags) {
@@ -109,7 +121,17 @@ function cmdField(flags) {
   if (!FIELDS.includes(field)) {
     usage(`--field must be one of ${FIELDS.join(', ')}`);
   }
-  const value = field === 'slot' ? slotOf(grant) : grant[field];
+  const placement = placementOf(grant);
+  if (field === 'slot' && placement !== 'host' && slotOf(grant) === null) {
+    console.error(
+      `mellifera-distributed-reduce: grant placement is ${JSON.stringify(placement)} and ` +
+        'the reserve JSON names no slot index. Refusing to choose a slot or a whole-host ' +
+        `release (--placement=host would wipe every slot on a desk); see ${GLOBAL_PLACEMENT_DOC}`,
+    );
+    process.exit(3);
+  }
+  const values = { sessionId: grant.sessionId, slot: slotOf(grant), placement };
+  const value = values[field];
   process.stdout.write(`${value == null ? '' : value}\n`);
 }
 
@@ -161,7 +183,7 @@ function cmdRecord(flags) {
     piece,
     kind: spec.kind,
     sessionId: grant.sessionId,
-    placement: grant.placement == null ? null : grant.placement,
+    placement: placementOf(grant),
     slot: slotOf(grant),
     checkoutMode: (grant.execution && grant.execution.checkoutMode) || null,
     exitCode: parseExit(flags),

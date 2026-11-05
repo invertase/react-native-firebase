@@ -55,7 +55,7 @@ Run this for every grant after its work, pass or fail, in this order. `ID`, `DIR
 
 1. **Liveness.** `yarn tests:mellifera:exec --session "$ID" "${M[@]}" -- true`. When it fails (expired grant, host offline), skip to step 6 and report that the work dir, the scratch dir and any processes were left on the host.
 2. **Fetch artifacts.** Bring coverage back as exec stdout ([distributed e2e step 4](#distributed-e2e-run) for the piece paths). Logs, when wanted, are the scratch dir's `rnfb-*` entries (the `yarn test:full` LOGDIR, Metro and emulator logs, the piece's logcat): `yarn tests:mellifera:exec --session "$ID" "${M[@]}" -w "$(cat "$SF")" -- sh -c 'exec tar -czf - rnfb-*' > "$RUN/P.logs.tgz"` (no `-t`, so stdout is a byte stream).
-3. **Slot or host release, then check.** `yarn tests:mellifera:exec --session "$ID" "${M[@]}" "${E[@]}" -w "$DIR" -- yarn tests:e2e:release --devices --placement=slot --slot=N` ([desk slot release](#desk-slot-release); `--placement=host` with no slot on a whole-guest grant), then the same exec with `-- yarn tests:e2e:check --slot=N --services` (`-- yarn tests:e2e:check --services` on a whole guest), which must exit 0.
+3. **Slot or host release, then check.** Read the placement and slot with `yarn tests:mellifera:reduce field --reserve "$RUN/P.reserve.json" --field placement` and `--field slot`; never guess them. `yarn tests:mellifera:exec --session "$ID" "${M[@]}" "${E[@]}" -w "$DIR" -- yarn tests:e2e:release --devices --placement=slot --slot=N` ([desk slot release](#desk-slot-release); `--placement=host` with no slot on a whole-guest grant), then the same exec with `-- yarn tests:e2e:check --slot=N --services` (`-- yarn tests:e2e:check --services` on a whole guest), which must exit 0. When `field slot` exits 3 (placement `pool`, a [global grant](#global-grant-placement) that names no slot index), skip this step and report it: release and check refuse `--placement=pool`, and `--placement=host` would wipe every slot on a desk. Steps 4 to 6 still run; they act only on `DIR`, `DIR.scratch` and the grant. The `linux-self-hosted` grant and the [simple mode](#mellifera-simple-mode) proof start no devices, Metro or emulators, so they skip this step whatever the placement.
 4. **Our processes.** `yarn tests:mellifera:exec --session "$ID" "${M[@]}" "${E[@]}" -w "$DIR" -- bash scripts/e2e/mellifera-distributed-piece.sh leftovers` lists this user's processes whose working directory is `DIR`, `DIR.scratch`, or under either (logical and physical paths), and exits 0 when there are none. A process that only names those paths in its arguments is not counted, and the exec shell and its other ancestors are never listed or signalled. Metro, Jet, Node and the emulator suite run with their working directory in the tree. With the spill exec env, each Gradle build uses a single-use daemon that stops when the build ends and Kotlin compiles in that process, so expect no build daemon. A leftover Gradle JVM whose working directory is in the tree (one started from `tests/android` without the spill exec env, for example) is matched like any other process. Kotlin daemons normally run with their working directory outside the tree and are not matched. When it exits 1, run it again with `leftovers --stop` (TERM, then, after `RNFB_SPILL_STOP_WAIT_S`, default 10 seconds, KILL to those still listed), which must exit 0. Exit 2 means it could not check (no `lsof` on macOS, a failed process listing, or no sibling scratch dir); that blocks step 5. For a daemon outside the tree, fix the spill exec env rather than stopping it by name: never run `./gradlew --stop`, `pkill` or `killall` by name on a desk slot, since they reach other slots' daemons.
 5. **Remove the work and scratch dirs**, only after step 4 exited 0. From the grant's initial directory (no `-w`): `yarn tests:mellifera:exec --session "$ID" "${M[@]}" -- rm -rf -- "$DIR" "$DIR.scratch"`, then `yarn tests:mellifera:exec --session "$ID" "${M[@]}" -- sh -c '! test -e "$1" && ! test -e "$1.scratch"' sh "$DIR"`, which must exit 0.
 6. **Release the grant** on the issuing core, even when an earlier step failed: `yarn tests:mellifera:reduce release --reserve "$RUN/P.reserve.json" "${M[@]}"` for a grant of a distributed run, `yarn tests:mellifera:release` for the worktree pointer.
@@ -126,14 +126,14 @@ yarn tests:mellifera:reserve --kinds macos-self-hosted "${R[@]}" "${M[@]}" > "$R
 
 Autoscale is the caller's choice. The commands leave the CLI default. Append `--no-autoscale` to `R` when no new paid capacity should be booted; the reserve then waits only on existing donated offers. The piece runner and the reducer never reserve. The acceptance proof run for distributed e2e uses `--no-autoscale` and the 90-minute TTL.
 
-Confirm each JSON has `execution.checkoutMode` `remote` and `execution.connectUrl`; a `placement: "host"` with `slot: 0` guest is a valid piece.
+Confirm each JSON has `execution.checkoutMode` `remote` and `execution.connectUrl`; a `placement: "host"` with `slot: 0` guest is a valid piece, and so is a `placement: "slot"` grant with its slot index, including a global grant on a desk slot. A `placement: "pool"` grant, or one with no placement, is not a valid piece ([global grant placement](#global-grant-placement)): release it and stop.
 
 **2. Sync and install each piece** (`P` is `android`, `ios`, or `macos`; repeat per piece and keep its `ID_P`, `SLOT_P`, `DIR_P`; `spill_env` is from [spill exec env](#spill-exec-env)):
 
 ```bash
 ID_P=$(yarn tests:mellifera:reduce field --reserve "$RUN/P.reserve.json" --field sessionId)
 PLACEMENT_P=$(yarn tests:mellifera:reduce field --reserve "$RUN/P.reserve.json" --field placement)   # slot or host
-SLOT_P=$(yarn tests:mellifera:reduce field --reserve "$RUN/P.reserve.json" --field slot)   # empty for placement host
+SLOT_P=$(yarn tests:mellifera:reduce field --reserve "$RUN/P.reserve.json" --field slot)   # empty for placement host; exits 3 for pool
 DIR_P=$(yarn tests:mellifera:remote-sync --session "$ID_P" "${M[@]}" --scratch-file "$RUN/P.scratch")
 spill_env "$RUN/P.scratch"
 yarn tests:mellifera:exec --session "$ID_P" "${M[@]}" "${E[@]}" -w "$DIR_P" -- yarn install --immutable
@@ -200,6 +200,20 @@ yarn tests:mellifera:exec "${L[@]}" -- yarn codegen:verify
 
 A desk shares its host with other slots and the operator. Release a desk-slot grant as `yarn tests:e2e:release --devices --placement=slot --slot=N`, with `N` equal to `grant.slot`, locally or through `exec`. Release re-applies slot `N`'s env (keeping a caller's `RNFB_E2E_PLATFORM`; `--platform=` still wins) and stops only that slot's Metro, Jet and emulator-suite ports, `TestingAVD-N` / `emulator-<5556+2N>`, Detox strays whose AVD is `TestingAVD-N`, `RN E2E iOS slot-N`, and `io.invertase.testing.sN`. It exits 2 before touching anything when `--slot` is missing, `--all-slots` is passed, or a different slot's env is loaded. A bare `--slot=N` on check or release re-applies slot `N` the same way. `--placement=host` is the whole-guest shape only (a provisioned guest, placement `host`, slot `0`): it drops slot env and wipes every slot.
 
+<a id="global-grant-placement"></a>
+
+### Global grant placement (`pool`)
+
+A grant reserved through the global core only (a service-key login with no local core) has `phase: "pool-global"` and `host: "global"`. When it landed on a desk slot and the global core reports that, it has `placement: "slot"` and the desk's slot index in `slot`; RNFB then treats it like any desk slot grant (`field slot` prints the index, and pieces, release and teardown take `--placement=slot --slot=N`). Otherwise it has `placement: "pool"` and `slot: 0`, whatever unit it landed on: a desk slot or a whole guest. That `slot: 0` is a placeholder, not the unit's slot index. A grant with no `placement` reads as `pool`. RNFB cannot tell a desk slot from a whole guest from a `pool` grant, and the wrong guess is unsafe: `--placement=host` on a donor desk wipes every slot and the donor's own devices. So, for a `pool` grant:
+
+- `yarn tests:mellifera:reduce field --field slot` exits 3 with a message for any placement other than `slot` (with a non-negative integer slot) or `host`. `--field placement` prints `pool`.
+- `scripts/e2e/mellifera-distributed-piece.sh` and `yarn tests:e2e:release` exit 2 on `--placement=pool`, before touching anything. Never substitute `--placement=host`.
+- [Spill teardown](#spill-teardown) skips step 3 for that grant and still runs steps 4 to 6.
+- What still works on a `pool` grant: sync, `git-baseline`, install, the [linux grant](#distributed-full-linux) commands, the [simple mode](#mellifera-simple-mode) proof, `leftovers`, removing the work dirs and release. None of them use the slot index.
+- What does not: distributed e2e pieces and any device release.
+
+Known limitation: a `pool` grant runs no distributed e2e piece and gets no device release, since only the global reserve knows whether it is a desk slot ([mellifera-cli § Layered reserve](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#layered-reserve)). The refusals above stay for it.
+
 <a id="mellifera-simple-mode"></a>
 
 ## Simple mode
@@ -208,7 +222,7 @@ A kind-`slot` remote desk grant: `execution.checkoutMode` is `remote`, `placemen
 
 Reserve prints the full grant JSON. `rememberGrant` does not store `connectUrl`. A session-record `connectUrl` is not the URL for this proof. `exec` on a phase-local grant returns `remote-exec-unavailable`. When the federation has no offer of kind `slot`, the proof fails. Do not name a donor.
 
-1. `yarn tests:mellifera:reserve` with `--kinds slot`, plus `--url` and `--federation` as in [Plane B](running-e2e.md#worktree-session). Save the reserve JSON from stdout. Read `execution.connectUrl` from that JSON. Confirm `execution.checkoutMode` is `remote`, `placement` is `slot`, and `phase` is not `local`.
+1. `yarn tests:mellifera:reserve` with `--kinds slot`, plus `--url` and `--federation` as in [Plane B](running-e2e.md#worktree-session). Save the reserve JSON from stdout. Read `execution.connectUrl` from that JSON. Confirm `execution.checkoutMode` is `remote`, `placement` is `slot` (or `pool` for a [global grant](#global-grant-placement); this proof uses no slot index), and `phase` is not `local`.
 2. `yarn tests:mellifera:remote-sync` syncs this checkout onto that slot, into `mellifera-work/<sessionId>` under the desk login's home. Pass that reserve's `sessionId` as `--session` before `--rsh`, with the same `--url` and `--federation`, and `--scratch-file "$RUN/scratch"`. Save the directory it prints (`DIR`).
 3. `spill_env "$RUN/scratch"` ([spill exec env](#spill-exec-env)), then `yarn tests:mellifera:exec` with that `--session`, `--url`, and `--federation`, then `"${E[@]}" -w DIR -- yarn lint`, exits 0. That exit is the remote command's exit.
 4. The `version` field in the synced `DIR/packages/app/package.json` on the slot equals the same field in this worktree.

@@ -18,7 +18,8 @@
 # RN E2E iOS slot-N, io.invertase.testing.sN) and fails when a different slot's
 # env is loaded. --placement is the grant shape from the reserve JSON:
 # `slot` requires --slot=N and refuses --all-slots; `host` drops slot env and
-# wipes the whole machine (--all-slots). Never guess the shape.
+# wipes the whole machine (--all-slots). `pool` (a global grant that names
+# no slot index) is refused with exit 2. Never guess the shape.
 #
 # After export-slot-env (full carry-in), default release clears all three platform port
 # blocks for that slot (ports+apps only — not AVD/sims). End-of-slot / final free so
@@ -116,6 +117,10 @@ case "$PLACEMENT" in
     eval "$(e2e_slot_env_clear_print)"
     E2E_ALL_SLOTS=1
     export E2E_ALL_SLOTS
+    ;;
+  pool)
+    echo "[release-e2e-resources] --placement=pool (a global grant) names no slot index; refusing to release. Do not substitute --placement=host: on a desk it wipes every slot (okf-bundle/testing/running-e2e-distributed.md#global-grant-placement)" >&2
+    exit 2
     ;;
   *)
     echo "[release-e2e-resources] --placement must be slot|host (got ${PLACEMENT})" >&2

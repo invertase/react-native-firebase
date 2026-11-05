@@ -10,6 +10,9 @@
 # `slot` (a desk slot) requires SLOT, the grant's slot; every release re-applies
 # that slot's env and stops only its resources. `host` (the whole guest) takes
 # no SLOT and uses serial defaults; its releases wipe the whole machine.
+# `pool` (a global grant whose reserve JSON names no slot index) is refused
+# with exit 2: the piece cannot tell a desk slot from a whole guest, and
+# guessing `host` on a desk would wipe every slot there.
 # Every step is a canonical `yarn tests:*` command in one shell, so the
 # emulator suite and Metro outlive the steps that start them. The first
 # failing step's status is the exit status. `yarn tests:e2e:release --devices`
@@ -50,7 +53,7 @@ for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
     --stop) STOP=1 ;;
-    --placement=slot | --placement=host) PLACEMENT="${arg#--placement=}" ;;
+    --placement=slot | --placement=host | --placement=pool) PLACEMENT="${arg#--placement=}" ;;
     android | ios | macos | ensure-avd | leftovers | git-baseline)
       [[ -z "$PLATFORM" ]] || { echo "$USAGE" >&2; exit 2; }
       PLATFORM="$arg"
@@ -85,6 +88,10 @@ if [[ "$PLATFORM" != ensure-avd && "$PLATFORM" != leftovers && "$PLATFORM" != gi
         exit 2
       }
       RELEASE=(yarn tests:e2e:release --devices --placement=host)
+      ;;
+    pool)
+      echo "mellifera-distributed-piece: placement pool is a global grant whose reserve JSON names no slot index; refusing to run or release (--placement=host would wipe every slot on a desk). See okf-bundle/testing/running-e2e-distributed.md#global-grant-placement" >&2
+      exit 2
       ;;
     *)
       echo "mellifera-distributed-piece: --placement=slot|host from the reserve JSON is required" >&2

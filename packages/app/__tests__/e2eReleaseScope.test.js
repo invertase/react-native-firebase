@@ -231,6 +231,8 @@ describe('release-e2e-resources grant-shape scoping', function () {
     [['--placement=slot', '--slot=2', '--all-slots'], {}, 'refuses --all-slots'],
     [['--placement=host', '--slot=1'], {}, 'takes no --slot'],
     [['--placement=desk'], {}, 'must be slot|host'],
+    [['--placement=pool', '--devices'], {}, 'names no slot index; refusing to release'],
+    [['--placement=pool', '--slot=0', '--devices'], {}, 'Do not substitute --placement=host'],
     [['--placement=slot', '--slot=2'], { RNFB_E2E_SLOT: '1' }, 'does not match the loaded slot 1'],
   ])('refuses %j before touching anything', function (args, env, message) {
     const r = runRelease(args, env);

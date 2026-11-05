@@ -7,6 +7,9 @@
  * (not argv), overrides an inherited token, and stays off stdout, both with
  * MELLIFERA_CLI set and with mellifera-cli resolved from PATH, plus the
  * piece runner's dry-run step order and its free-disk check against a stubbed df.
+ * A global grant (placement "pool", or no placement) names no slot index:
+ * `field slot` and the piece runner refuse it rather than pick a slot or a
+ * whole-host release; a global grant with placement "slot" reads its slot.
  * Run: yarn tests:mellifera:assert-distributed-reduce
  */
 'use strict';
@@ -268,6 +271,49 @@ function main() {
       reduce(['field', '--reserve', slotReserve, '--field', 'slot']).stdout,
       '2\n',
     );
+    const poolGrant = { placement: 'pool', slot: 0, phase: 'pool-global', host: 'global' };
+    for (const [name, extra] of [
+      ['pool', poolGrant],
+      ['slot-without-index', { placement: 'slot', slot: undefined }],
+      ['slot-negative', { placement: 'slot', slot: -1 }],
+      ['no-placement', { placement: undefined, slot: undefined }],
+      ['no-placement-with-slot', { placement: undefined, slot: 2 }],
+    ]) {
+      const file = writeReserve(tmp, name, grant(`s-${name}`, extra));
+      const slot = reduce(['field', '--reserve', file, '--field', 'slot']);
+      assert.strictEqual(slot.status, 3, `${name}: field slot must refuse (${slot.stderr})`);
+      assert.strictEqual(slot.stdout, '', `${name}: field slot must print no slot`);
+      assert.ok(
+        slot.stderr.includes('names no slot index') &&
+          slot.stderr.includes('running-e2e-distributed.md#global-grant-placement'),
+        `${name}: refusal must explain and link the doc: ${slot.stderr}`,
+      );
+      assert.ok(!(slot.stdout + slot.stderr).includes(TOKEN), `${name}: token printed`);
+      const id = reduce(['field', '--reserve', file, '--field', 'sessionId']);
+      assert.strictEqual(id.stdout, `s-${name}\n`, `${name}: sessionId still reads`);
+    }
+    const poolReserve = writeReserve(tmp, 'pool-placement', grant('s-pool', poolGrant));
+    assert.strictEqual(
+      reduce(['field', '--reserve', poolReserve, '--field', 'placement']).stdout,
+      'pool\n',
+    );
+    const unplaced = writeReserve(tmp, 'unplaced', grant('s-unplaced', { placement: undefined }));
+    assert.strictEqual(
+      reduce(['field', '--reserve', unplaced, '--field', 'placement']).stdout,
+      'pool\n',
+      'a grant with no placement is placement pool',
+    );
+    const globalSlot = writeReserve(
+      tmp,
+      'global-slot',
+      grant('g-slot', { placement: 'slot', slot: 1, phase: 'pool-global' }),
+    );
+    assert.strictEqual(
+      reduce(['field', '--reserve', globalSlot, '--field', 'slot']).stdout,
+      '1\n',
+      'a global grant on a desk slot reads its slot index',
+    );
+
     const tokenField = reduce(['field', '--reserve', slotReserve, '--field', 'token']);
     assert.strictEqual(tokenField.status, 2);
     assert.ok(!tokenField.stdout.includes(TOKEN) && !tokenField.stderr.includes(TOKEN));
@@ -422,10 +468,19 @@ function main() {
       [['android', '--placement=slot', '--dry-run'], 'desk slot without SLOT'],
       [['android', '--placement=host', '1', '--dry-run'], 'host with SLOT'],
       [['android', '--placement=guest', '--dry-run'], 'unknown placement'],
+      [['android', '--placement=pool', '--dry-run'], 'global grant without a slot index'],
+      [['ios', '--placement=pool', '0', '--dry-run'], 'global grant with a guessed slot'],
     ]) {
       const refused = piece(args);
       assert.strictEqual(refused.status, 2, `${why} must exit 2`);
       assert.strictEqual(refused.stdout, '', `${why} must print no steps`);
+      if (args.includes('--placement=pool')) {
+        assert.ok(
+          refused.stderr.includes('placement pool is a global grant') &&
+            refused.stderr.includes('#global-grant-placement'),
+          `${why} must say why and link the doc: ${refused.stderr}`,
+        );
+      }
     }
     const kept = piece(['android', '--placement=host', '--dry-run'], {
       RNFB_ANDROID_EMULATOR_BOOT_ARGS: '-gpu host',
