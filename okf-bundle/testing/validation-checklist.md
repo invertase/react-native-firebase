@@ -188,6 +188,8 @@ If an external link is a true **404** / **not found** at **error** severity, fix
 
 Workspace fixture `test-rn-bare/`: **`yarn test-rn-bare:ios:build`** then **`yarn test-rn-bare:ios:launch-smoke`** (iOS 27 UIScene gate; CI runs both, and again for the dynamic Firebase probe with facade-reference, framework-load, and configure assertions — [probe launch smoke](agent-command-policy.md#dynamic-firebase-probe-launch-smoke)) — [agent command policy](agent-command-policy.md). Not Detox; not the Expo link/launch closers; do not add `yarn tests:ios:*` or ad-hoc `pod` / `xcodebuild` / `simctl` as those closers. App package: [packages/app](../packages/app/index.md).
 
+RN SwiftPM mode (fresh RN CLI app, no Podfile): **`yarn test-rn-swiftpm:ios:build`** (build-only) when a change touches `packages/app/spm/**`, `packages/*/spm-autolinking-plugin.js`, or the SwiftPM declarations — [agent command policy](agent-command-policy.md). Not Detox; not `yarn test-rn-bare:ios:build`.
+
 ## E2e with coverage
 
 [Pre-flight](running-e2e.md#pre-flight-is-the-host-clear-to-start) (host-clear probes + services + **[checkout ownership](running-e2e.md#services-checkout-ownership-blocking)** + harness tier) before every run — [agent command policy](agent-command-policy.md) and [e2e agent rule](running-e2e.md#agent-rule-read-first): use **only** `yarn tests:*` commands from [running e2e](running-e2e.md). Match harness to work type — **unit-focused**/**area-focused** never use full app load ([running e2e § harness](running-e2e.md#3-harness-matches-validation-tier)).

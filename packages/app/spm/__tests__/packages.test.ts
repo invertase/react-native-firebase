@@ -1,9 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import { describe, expect, it } from '@jest/globals';
+import { afterEach, describe, expect, it } from '@jest/globals';
 
-import { discoverPackages, ON_DEVICE_CONVERSION } from '../src/packages';
+import { discoverPackages, ON_DEVICE_CONVERSION, type RnfbPackage } from '../src/packages';
+import { scriptPhasesFor } from '../src/scriptPhases';
 import { targetsFor } from '../src/targets';
+import { createFixture, type Fixture } from './fixture';
 
 const PACKAGES = path.resolve(__dirname, '..', '..', '..');
 
@@ -117,7 +119,93 @@ describe('package discovery on the packages in this repository', () => {
       targets: targetsFor(pkg!).map(t => t.name),
     }).toEqual(expected);
   });
+
+  it('pins an id for the iOS script phases of every package', () => {
+    for (const pkg of discovered) {
+      expect(() => scriptPhasesFor(pkg, PACKAGES)).not.toThrow();
+    }
+  });
+
+  it.each(discovered.map(pkg => [pkg.module, pkg] as const))(
+    '%s Swift uses no Objective-C class of its own package outside CORE_CLASSES',
+    (_, pkg) => expectSwiftUsesOnlyCoreClasses(pkg),
+  );
 });
+
+describe('CORE_CLASSES check', () => {
+  let fixture: Fixture | undefined;
+  afterEach(() => {
+    fixture?.cleanup();
+    fixture = undefined;
+  });
+
+  function crashlyticsWithSwift(swift: string): RnfbPackage {
+    fixture = createFixture(['app', 'crashlytics']);
+    fixture.addSource(
+      'crashlytics',
+      'RNFBCrashlytics/RNFBCrashlyticsLog.h',
+      '@interface RNFBCrashlyticsLog : NSObject\n@end\n',
+    );
+    fixture.addSource('crashlytics', 'RNFBCrashlytics/RNFBCrashlyticsLogger.swift', swift);
+    const pkg = discoverPackages(fixture.context.autolinking.dependencies, {
+      analyticsProduct: 'FirebaseAnalytics',
+    }).find(candidate => candidate.module === 'RNFBCrashlytics');
+    return pkg!;
+  }
+
+  it('names CORE_CLASSES when Swift uses an Objective-C class of its own package', () => {
+    const pkg = crashlyticsWithSwift('let log = RNFBCrashlyticsLog()\n');
+
+    expect(() => expectSwiftUsesOnlyCoreClasses(pkg)).toThrow(
+      'RNFBCrashlytics: RNFBCrashlyticsLogger.swift uses RNFBCrashlyticsLog from ' +
+        'RNFBCrashlyticsLog.h, but a Swift target cannot see the Objective-C target of its own ' +
+        "package. Add 'RNFBCrashlyticsLog' to CORE_CLASSES['RNFBCrashlytics'] in " +
+        'packages/app/spm/src/targets.ts.',
+    );
+  });
+
+  it('ignores a class named only in comments and string literals', () => {
+    const pkg = crashlyticsWithSwift(
+      '// RNFBCrashlyticsLog\n/* RNFBCrashlyticsLog */\nlet name = "RNFBCrashlyticsLog // x"\n',
+    );
+
+    expect(() => expectSwiftUsesOnlyCoreClasses(pkg)).not.toThrow();
+  });
+});
+
+const SWIFT_COMMENTS_AND_STRINGS = /"""[\s\S]*?"""|"(?:\\.|[^"\\\n])*"|\/\/.*|\/\*[\s\S]*?\*\//g;
+const OBJC_DECLARATION = /@(?:interface|protocol)\s+(\w+)\b(?!\s*[;(])/g;
+
+// Fails with the table to update, where the Xcode build would fail with "cannot find X in scope":
+// the Swift target of a package sees only the classes moved to its `<Module>Core` target.
+function expectSwiftUsesOnlyCoreClasses(pkg: RnfbPackage): void {
+  const read = (relative: string) => fs.readFileSync(path.join(pkg.root, 'ios', relative), 'utf8');
+  const core = targetsFor(pkg).find(t => t.name === `${pkg.module}Core`);
+  const coreClasses = new Set(
+    core?.kind === 'objc' ? core.moduleHeaders.map(h => path.basename(h, '.h')) : [],
+  );
+  const declaredIn = new Map(
+    pkg.headers.flatMap(header =>
+      [...read(`${pkg.sourceFolder}/${header}`).matchAll(OBJC_DECLARATION)].map(
+        ([, name]) => [name!, header] as const,
+      ),
+    ),
+  );
+
+  for (const source of pkg.swiftSources) {
+    const code = read(source).replace(SWIFT_COMMENTS_AND_STRINGS, ' ');
+    for (const [name, header] of declaredIn) {
+      const owner = path.basename(header, '.h');
+      if (!coreClasses.has(owner) && new RegExp(`\\b${name}\\b`).test(code)) {
+        throw new Error(
+          `${pkg.module}: ${path.basename(source)} uses ${name} from ${header}, but a Swift ` +
+            'target cannot see the Objective-C target of its own package. ' +
+            `Add '${owner}' to CORE_CLASSES['${pkg.module}'] in packages/app/spm/src/targets.ts.`,
+        );
+      }
+    }
+  }
+}
 
 describe('GoogleAdsOnDeviceConversion package', () => {
   it('matches the spm_dependency of the analytics podspec', () => {
