@@ -16,6 +16,10 @@
  * sync fails naming the guest requirement and creates nothing remotely.
  * A smoke run syncs into a fake remote start directory that already holds
  * unrelated files, then runs exec -w on the printed directory.
+ * Mellifera state paths are excluded ahead of any caller filter, a caller
+ * filter that could undo that is refused, and a state path or a
+ * session-token-shaped file in the outgoing set stops the sync before any
+ * remote exec.
  * Run: yarn tests:mellifera:assert-cli-wrappers
  */
 'use strict';
@@ -31,6 +35,14 @@ const REPO_ROOT = path.resolve(SCRIPT_DIR, '../..');
 const DEFAULT_FILTER = path.join(SCRIPT_DIR, 'mellifera-remote-sync.rsync-filter');
 const PKG = require(path.join(REPO_ROOT, 'package.json'));
 const IN_REPO_CLI_DIR = path.join(REPO_ROOT, 'scripts', 'mellifera');
+const STATE_PATHS = [
+  'tests/mellifera-distributed',
+  'tests/mellifera-platform',
+  'tests/mellifera.env.json',
+  'tests/.mellifera-session.env',
+];
+const STATE_EXCLUDES = STATE_PATHS.flatMap(rel => [`/${rel}`, `/${rel}/`]);
+const FIXTURE_TOKEN = 'tok-sync-guard-secret';
 // 0.2.0 is the first CLI that reads MELLIFERA_SESSION_TOKEN, which the reducer's release needs.
 const MIN_CLI_VERSION = [0, 2, 0];
 const INSTALL_HINT =
@@ -359,6 +371,90 @@ function assertRsyncProbe(label, argv, forwarded) {
   }
 }
 
+/** rsync runs that transfer; the local `--dry-run` listing of outgoing files is not one. */
+function transferCalls(rsyncLog) {
+  return readJsonLines(rsyncLog).filter(argv => !argv.includes('--dry-run'));
+}
+
+/** The Mellifera state excludes come before the merge filter, so a caller filter cannot re-include them. */
+function assertStateExcludes(label, argv) {
+  const filterAt = argv.indexOf('--filter');
+  for (const pattern of STATE_EXCLUDES) {
+    const at = argv.indexOf(`--exclude=${pattern}`);
+    if (at < 0 || filterAt < 0 || at > filterAt) {
+      fail(
+        `${label} rsync argv lacks --exclude=${pattern} before --filter: ${JSON.stringify(argv)}`,
+      );
+    }
+  }
+}
+
+function assertDefaultFilterListsState() {
+  const lines = fs.readFileSync(DEFAULT_FILTER, 'utf8').split('\n');
+  for (const pattern of STATE_EXCLUDES) {
+    if (!lines.includes(`- ${pattern}`)) {
+      fail(`default rsync filter does not exclude ${pattern}`);
+    }
+  }
+  const ignored = fs.readFileSync(path.join(REPO_ROOT, '.gitignore'), 'utf8').split('\n');
+  for (const rel of STATE_PATHS) {
+    if (!ignored.includes(rel) && !ignored.includes(`${rel}/`)) {
+      fail(`.gitignore does not list ${rel}; the sync excludes follow the gitignored state`);
+    }
+  }
+}
+
+/**
+ * The excludes remote-sync passes are anchored at the checkout root and also
+ * match a symlink at a state path, not only a directory. They come from a real
+ * remote-sync listing argv and run with the real rsync on a tree where every
+ * state path is a symlink. A nested `tests/` deeper in the tree is not a state
+ * path and still syncs.
+ */
+function assertStateSymlinksExcluded(env, stubLog, rsyncLog, realRsync, home) {
+  clearLog(stubLog);
+  clearLog(rsyncLog);
+  runYarn('tests:mellifera:remote-sync', ['--session', 'sess-symlink'], env);
+  const listing = readJsonLines(rsyncLog).find(argv => argv.includes('--dry-run'));
+  if (!listing) {
+    fail('remote-sync ran no dry-run listing for the symlink check');
+  }
+  const excludes = listing.filter(arg => arg.startsWith('--exclude='));
+  for (const arg of excludes) {
+    if (!arg.startsWith('--exclude=/')) {
+      fail(`state exclude is not anchored at the checkout root: ${arg}`);
+    }
+  }
+  const src = fs.mkdtempSync(path.join(home, 'symlink-src-'));
+  const dst = fs.mkdtempSync(path.join(home, 'symlink-dst-'));
+  fs.mkdirSync(path.join(src, 'hidden'));
+  fs.writeFileSync(path.join(src, 'hidden', 'state.env'), 'RNFB_E2E_SLOT=1\n');
+  fs.mkdirSync(path.join(src, 'tests'));
+  fs.writeFileSync(path.join(src, 'tests', 'keep.txt'), 'kept\n');
+  for (const rel of STATE_PATHS) {
+    fs.symlinkSync(path.join('..', 'hidden'), path.join(src, rel));
+  }
+  const nested = path.join(src, 'packages', 'x', 'tests', 'mellifera-platform');
+  fs.mkdirSync(nested, { recursive: true });
+  fs.writeFileSync(path.join(nested, 'fixture.env'), 'nested\n');
+  const ran = spawnSync(realRsync, ['-a', ...excludes, `${src}/`, `${dst}/`], {
+    encoding: 'utf8',
+  });
+  if (ran.status !== 0) {
+    fail(`symlink exclude rsync exited ${ran.status}\n${ran.stderr}`);
+  }
+  assertDeepEqual(
+    'symlinked state paths remote tests entries',
+    fs.readdirSync(path.join(dst, 'tests')),
+    ['keep.txt'],
+  );
+  if (
+    !fs.existsSync(path.join(dst, 'packages', 'x', 'tests', 'mellifera-platform', 'fixture.env'))
+  ) {
+    fail('a nested tests/mellifera-platform is not a state path and must still sync');
+  }
+}
+
 function assertRemoteSync(env, stubLog, rsyncLog) {
   const pointerEnv = { ...env, STUB_SESSION_ID: 's-pointer' };
 
@@ -366,8 +462,13 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     clearLog(stubLog);
     clearLog(rsyncLog);
     const result = runYarn('tests:mellifera:remote-sync', yarnArgs, options.env || env);
-    const rsyncCalls = readJsonLines(rsyncLog);
+    const allRsync = readJsonLines(rsyncLog);
+    const rsyncCalls = transferCalls(rsyncLog);
     const stubCalls = readJsonLines(stubLog);
+    if (allRsync.length !== 2 || !allRsync[0].includes('--dry-run')) {
+      fail(`${label} did not list outgoing files before the transfer: ${JSON.stringify(allRsync)}`);
+    }
+    assertStateExcludes(`${label} listing`, allRsync[0]);
     if (rsyncCalls.length !== 1) {
       fail(
         `${label} rsync calls ${rsyncCalls.length} (exit ${result.status})\nstderr: ${result.stderr}`,
@@ -377,6 +478,7 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
       fail(`${label} printed a directory without a completed sync: ${JSON.stringify(result)}`);
     }
     const argv = rsyncCalls[0];
+    assertStateExcludes(label, argv);
     const destination = argv[argv.length - 1];
     if (destination !== `placeholder:${remoteDir}`) {
       fail(`${label} destination is not ${remoteDir} on the remote placeholder: ${destination}`);
@@ -476,7 +578,7 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     if (result.stdout.trim() !== '') {
       fail(`${label} printed to stdout: ${result.stdout}`);
     }
-    if (readJsonLines(rsyncLog).length !== 0) {
+    if (transferCalls(rsyncLog).length !== 0) {
       fail(`${label} spawned rsync`);
     }
     const execCalls = readJsonLines(stubLog).filter(call => call[0] === 'exec');
@@ -490,7 +592,10 @@ function assertRemoteSync(env, stubLog, rsyncLog) {
     sessionShow: true,
   });
   const custom = path.join(path.dirname(rsyncLog), 'caller.rsync-filter');
-  fs.writeFileSync(custom, '# caller filter\n- *.tmp\n');
+  fs.writeFileSync(
+    custom,
+    '# caller filter\n- *.tmp\n+ packages/\n+ packages/app/\n+ packages/app/package.json\n- *\n',
+  );
   check('caller filter', ['--filter', custom], custom, [], 'mellifera-work/s-pointer', {
     env: pointerEnv,
     sessionShow: true,
@@ -716,6 +821,294 @@ function assertRemoteSyncSmoke(env, stubLog, home) {
   assertDeepEqual('smoke exec argv', readJsonLines(stubLog), [['exec', ...execArgs]]);
 }
 
+/**
+ * A token-shaped file that a caller filter would send stops the sync before any
+ * remote exec, and the message names the file but never its contents.
+ */
+function assertSessionTokenGuard(env, stubLog, rsyncLog, home) {
+  const tmpRoot = path.join(REPO_ROOT, '.tmp');
+  const createdTmp = !fs.existsSync(tmpRoot);
+  const rel = `.tmp/rnfb-sync-guard-${process.pid}`;
+  const dir = path.join(REPO_ROOT, rel);
+  const filter = path.join(home, 'guard.rsync-filter');
+  fs.writeFileSync(filter, `+ .tmp/\n+ ${rel}/\n+ ${rel}/**\n- *\n`);
+  const benign = {
+    'redacted.reserve.json': JSON.stringify({ sessionId: 's-1', token: '<redacted>' }),
+    'notes.md': 'The reducer passes MELLIFERA_SESSION_TOKEN in the child env.\n',
+    'ports.json': JSON.stringify({ placement: 'slot', slot: 1, token: FIXTURE_TOKEN }),
+    'bearer-docs.md':
+      'Authorization: Bearer owner\nAuthorization: Bearer ya29.ElqKBGN2Ri_Uz...HnS_uNreA\n' +
+      'curl -H "Authorization: Bearer $(gcloud auth print-access-token)"\n',
+    'service-ref.sh': 'MELLIFERA_TOKEN="$SERVICE_KEY"\nMELLIFERA_SESSION_TOKEN = <token>\n',
+  };
+  const held = {
+    'run/android.reserve.json': JSON.stringify(
+      { sessionId: 's-2', token: FIXTURE_TOKEN, placement: 'pool' },
+      null,
+      2,
+    ),
+    'session.env': `MELLIFERA_SESSION_ID=s-3\nMELLIFERA_SESSION_TOKEN=${FIXTURE_TOKEN}\n`,
+    'export.sh': `export MELLIFERA_SESSION_TOKEN='${FIXTURE_TOKEN}'\n`,
+    'nested.json': JSON.stringify({ grants: [{ grant: { sessionToken: FIXTURE_TOKEN } }] }),
+    'reserve.out': `wait 1\n{"sessionId":"s-4","token":"${FIXTURE_TOKEN}"}\n`,
+    'bom.reserve.json': `\uFEFF${JSON.stringify({ sessionId: 's-5', token: FIXTURE_TOKEN })}`,
+    'bom-line.out': `\uFEFF{"sessionId":"s-6","token":"${FIXTURE_TOKEN}"}\nwait 1\n`,
+    'spaced.env': `MELLIFERA_SESSION_TOKEN = ${FIXTURE_TOKEN}\n`,
+    'bearer.sh': `curl -H "Authorization: Bearer ${FIXTURE_TOKEN}"\n`,
+    'service.env': `MELLIFERA_TOKEN=${FIXTURE_TOKEN}\n`,
+    'service.json': JSON.stringify({ MELLIFERA_TOKEN: FIXTURE_TOKEN }),
+  };
+  const write = files => {
+    for (const [name, body] of Object.entries(files)) {
+      fs.mkdirSync(path.dirname(path.join(dir, name)), { recursive: true });
+      fs.writeFileSync(path.join(dir, name), body);
+    }
+  };
+  const run = () => {
+    clearLog(stubLog);
+    clearLog(rsyncLog);
+    return runYarn(
+      'tests:mellifera:remote-sync',
+      ['--session', 'sess-guard', '--filter', filter],
+      env,
+    );
+  };
+  try {
+    write(benign);
+    for (const [name, body] of Object.entries(held)) {
+      write({ [name]: body });
+      const refused = run();
+      const text = `${refused.stdout}${refused.stderr}`;
+      if (refused.status !== 1 || !refused.stderr.includes('refusing to sync')) {
+        fail(`guard did not refuse ${name} (exit ${refused.status})\nstderr: ${refused.stderr}`);
+      }
+      if (!refused.stderr.includes(`${rel}/${name}`) || text.includes(FIXTURE_TOKEN)) {
+        fail(`guard for ${name} must name the file and never print the token\n${text}`);
+      }
+      for (const benignName of Object.keys(benign)) {
+        if (refused.stderr.includes(`${rel}/${benignName}`)) {
+          fail(`guard flagged benign ${benignName}\nstderr: ${refused.stderr}`);
+        }
+      }
+      if (readJsonLines(stubLog).length !== 0 || transferCalls(rsyncLog).length !== 0) {
+        fail(`guard for ${name} ran a remote exec or a transfer`);
+      }
+      fs.rmSync(path.join(dir, name));
+    }
+    const allowed = run();
+    if (allowed.stderr.includes('refusing to sync') || transferCalls(rsyncLog).length !== 1) {
+      fail(`guard refused benign files (exit ${allowed.status})\nstderr: ${allowed.stderr}`);
+    }
+  } finally {
+    fs.rmSync(createdTmp ? tmpRoot : dir, { recursive: true, force: true });
+  }
+}
+
+/**
+ * A caller filter that names every Mellifera state path still sends none of
+ * them: the sync excludes win over the caller filter, so the token-shaped
+ * fixtures neither trip the guard nor reach the remote tree.
+ */
+function assertStateNeverSynced(env, home) {
+  const remote = fs.mkdtempSync(path.join(home, 'remote-state-'));
+  const runRel = `tests/mellifera-distributed/assert-sync-${process.pid}`;
+  const runDir = path.join(REPO_ROOT, runRel);
+  const sessionEnv = path.join(REPO_ROOT, 'tests', '.mellifera-session.env');
+  const ports = path.join(REPO_ROOT, 'tests', 'mellifera.env.json');
+  const platformEnv = path.join(REPO_ROOT, 'tests', 'mellifera-platform', 'android.env');
+  const saved = [sessionEnv, ports, platformEnv].map(file => [file, snapshotFile(file)]);
+  const filter = path.join(home, 'state.rsync-filter');
+  fs.writeFileSync(
+    filter,
+    [
+      '+ tests/',
+      '+ tests/package.json',
+      '+ tests/mellifera-distributed/',
+      '+ tests/mellifera-distributed/**',
+      '+ tests/mellifera-platform/',
+      '+ tests/mellifera-platform/**',
+      '+ tests/mellifera.env.json',
+      '+ tests/.mellifera-session.env',
+      '- *',
+      '',
+    ].join('\n'),
+  );
+  try {
+    fs.mkdirSync(runDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(runDir, 'slot.reserve.json'),
+      JSON.stringify({ sessionId: 's-state', token: FIXTURE_TOKEN, placement: 'pool' }),
+    );
+    fs.writeFileSync(sessionEnv, `MELLIFERA_SESSION_TOKEN=${FIXTURE_TOKEN}\n`);
+    fs.writeFileSync(ports, JSON.stringify({ sessionId: 's-state', token: FIXTURE_TOKEN }));
+    fs.mkdirSync(path.dirname(platformEnv), { recursive: true });
+    fs.writeFileSync(platformEnv, `MELLIFERA_SESSION_TOKEN=${FIXTURE_TOKEN}\n`);
+    const sync = runYarn(
+      'tests:mellifera:remote-sync',
+      ['--session', 'sess-state', '--filter', filter],
+      { ...env, FAKE_REMOTE_ROOT: remote },
+    );
+    if (sync.status !== 0) {
+      fail(`state sync exited ${sync.status}\nstderr: ${sync.stderr}`);
+    }
+    const tree = path.join(remote, 'mellifera-work', 'sess-state', 'tests');
+    assertDeepEqual('state sync remote tests entries', fs.readdirSync(tree).sort(), [
+      'package.json',
+    ]);
+  } finally {
+    fs.rmSync(runDir, { recursive: true, force: true });
+    for (const [file, previous] of saved) {
+      restoreFile(file, previous);
+    }
+  }
+}
+
+/**
+ * Nothing can undo the state excludes. A caller filter with a clear (`!` or
+ * `clear`), merge or dir-merge rule is refused before session show, any rsync
+ * listing or any exec. rsync options as remote-sync arguments are refused the
+ * same way. `.rsync-filter` files in the tree are never read. A listing that
+ * still names a state path, in any case, stops the sync before any exec. The
+ * state files hold no token, so only these checks keep them off the remote.
+ */
+function assertUnsafeFilterRefused(env, stubLog, rsyncLog, home) {
+  const remote = fs.mkdtempSync(path.join(home, 'remote-unsafe-'));
+  const runRel = `tests/mellifera-distributed/assert-unsafe-${process.pid}`;
+  const runDir = path.join(REPO_ROOT, runRel);
+  const sessionEnv = path.join(REPO_ROOT, 'tests', '.mellifera-session.env');
+  const ports = path.join(REPO_ROOT, 'tests', 'mellifera.env.json');
+  const platformEnv = path.join(REPO_ROOT, 'tests', 'mellifera-platform', 'android.env');
+  const treeFilters = [
+    path.join(REPO_ROOT, '.rsync-filter'),
+    path.join(REPO_ROOT, 'tests', '.rsync-filter'),
+  ];
+  const saved = [sessionEnv, ports, platformEnv, ...treeFilters].map(file => [
+    file,
+    snapshotFile(file),
+  ]);
+  const unsafeEnv = { ...env, FAKE_REMOTE_ROOT: remote };
+  const nested = path.join(home, 'nested.rsync-filter');
+  fs.writeFileSync(nested, '!\n+ tests/***\n');
+  const reinclude = [
+    '+ tests/',
+    '+ tests/mellifera-distributed/***',
+    '+ tests/mellifera-platform/***',
+    '+ tests/mellifera.env.json',
+    '+ tests/.mellifera-session.env',
+    '- *',
+  ];
+  const unsafe = [
+    ['clear short', ['!', ...reinclude], 'line 1 (clear)'],
+    ['clear long', ['clear', ...reinclude], 'line 1 (clear)'],
+    ['clear after rules', ['# keep', '- *.tmp', '  !  ', ...reinclude], 'line 3 (clear)'],
+    ['merge long', [`merge ${nested}`, ...reinclude], 'line 1 (merge)'],
+    ['merge short', [`. ${nested}`, ...reinclude], 'line 1 (merge)'],
+    ['merge modifiers', [`merge,+ ${nested}`, ...reinclude], 'line 1 (merge)'],
+    ['dir-merge long', ['dir-merge .rsync-filter', ...reinclude], 'line 1 (dir-merge)'],
+    ['dir-merge short', [': .rsync-filter', ...reinclude], 'line 1 (dir-merge)'],
+    ['dir-merge modifiers', [':n- .rsync-filter', ...reinclude], 'line 1 (dir-merge)'],
+  ];
+  const run = (args, extraEnv = {}) => {
+    clearLog(stubLog);
+    clearLog(rsyncLog);
+    return runYarn('tests:mellifera:remote-sync', args, { ...unsafeEnv, ...extraEnv });
+  };
+  const noRemoteWork = (label, result) => {
+    if (result.status !== 1 || result.stdout !== '') {
+      fail(`${label}: exit ${result.status}, stdout ${JSON.stringify(result.stdout)}`);
+    }
+    if (readJsonLines(stubLog).some(call => call[0] === 'exec')) {
+      fail(`${label} ran a remote exec: ${JSON.stringify(readJsonLines(stubLog))}`);
+    }
+    if (transferCalls(rsyncLog).length !== 0) {
+      fail(`${label} ran an rsync transfer`);
+    }
+  };
+  try {
+    fs.mkdirSync(runDir, { recursive: true });
+    fs.writeFileSync(path.join(runDir, 'notes.txt'), 'run dir, no token\n');
+    fs.writeFileSync(sessionEnv, 'MELLIFERA_SESSION_ID=s-unsafe\n');
+    fs.writeFileSync(ports, JSON.stringify({ placement: 'slot', slot: 1 }));
+    fs.mkdirSync(path.dirname(platformEnv), { recursive: true });
+    fs.writeFileSync(platformEnv, 'RNFB_E2E_SLOT=1\n');
+
+    for (const [label, lines, where] of unsafe) {
+      const filter = path.join(home, `unsafe-${label.replace(/\W+/g, '-')}.rsync-filter`);
+      fs.writeFileSync(filter, `${lines.join('\n')}\n`);
+      const refused = run(['--session', 'sess-unsafe', '--filter', filter]);
+      noRemoteWork(label, refused);
+      if (!refused.stderr.includes(`refusing filter ${filter}: ${where}`)) {
+        fail(`${label} must name the rule and line\nstderr: ${refused.stderr}`);
+      }
+      if (readJsonLines(stubLog).length !== 0 || readJsonLines(rsyncLog).length !== 0) {
+        fail(`${label} ran the CLI or an rsync listing before refusing the filter`);
+      }
+    }
+
+    for (const args of [
+      ['--include=tests/mellifera.env.json'],
+      ['--include', 'tests/mellifera.env.json'],
+      ['--exclude-from', nested],
+      ['--include-from', nested],
+      ['--filter=+ tests/***'],
+      ['-F'],
+      ['--filter', DEFAULT_FILTER, '--filter', nested],
+    ]) {
+      const refused = run(['--session', 'sess-unsafe', ...args]);
+      noRemoteWork(`argument ${args.join(' ')}`, refused);
+      if (readJsonLines(stubLog).length !== 0 || readJsonLines(rsyncLog).length !== 0) {
+        fail(`argument ${args.join(' ')} ran the CLI or rsync`);
+      }
+    }
+
+    const safe = path.join(home, 'safe-unsafe.rsync-filter');
+    fs.writeFileSync(
+      safe,
+      ['+ tests/', '+ tests/package.json', '+ tests/.rsync-filter', ...reinclude.slice(1)].join(
+        '\n',
+      ) + '\n',
+    );
+    for (const file of treeFilters) {
+      fs.writeFileSync(file, `!\n${reinclude.join('\n')}\n`);
+    }
+    const inert = run(['--session', 'sess-unsafe', '--filter', safe]);
+    if (inert.status !== 0) {
+      fail(`sync with .rsync-filter files in the tree exited ${inert.status}\n${inert.stderr}`);
+    }
+    const tree = path.join(remote, 'mellifera-work', 'sess-unsafe', 'tests');
+    assertDeepEqual('tree .rsync-filter remote tests entries', fs.readdirSync(tree).sort(), [
+      '.rsync-filter',
+      'package.json',
+    ]);
+    fs.rmSync(path.join(remote, 'mellifera-work'), { recursive: true, force: true });
+
+    for (const listed of [
+      `${runRel}/notes.txt`,
+      'tests/mellifera-platform/',
+      'tests/mellifera.env.json',
+      'tests/.mellifera-session.env',
+      'Tests/Mellifera-Platform/android.env',
+      'tests/mellifera-distributed',
+    ]) {
+      const refused = run(['--session', 'sess-unsafe', '--filter', safe], {
+        FAKE_RSYNC_LIST_EXTRA: listed,
+      });
+      noRemoteWork(`listed ${listed}`, refused);
+      if (!refused.stderr.includes(`refusing to sync: ${listed} is Mellifera session state`)) {
+        fail(`listed ${listed} must be refused as state\nstderr: ${refused.stderr}`);
+      }
+    }
+    if (fs.existsSync(path.join(remote, 'mellifera-work'))) {
+      fail('a refused sync created the remote work parent');
+    }
+  } finally {
+    fs.rmSync(runDir, { recursive: true, force: true });
+    for (const [file, previous] of saved) {
+      restoreFile(file, previous);
+    }
+  }
+}
+
 function assertDefaultFilterSkipsGit(realRsync, home) {
   const src = fs.mkdtempSync(path.join(home, 'filter-src-'));
   const dst = fs.mkdtempSync(path.join(home, 'filter-dst-'));
@@ -868,6 +1261,10 @@ fs.appendFileSync(process.env.RSYNC_ARGV_LOG, JSON.stringify(argv) + '\\n');
 const child = spawn(process.env.REAL_RSYNC, argv, { stdio: 'inherit' });
 child.on('exit', (code, signal) => {
   if (signal) process.exit(1);
+  // FAKE_RSYNC_LIST_EXTRA: extra names a dry-run listing reports, one per line.
+  if (code === 0 && argv.includes('--dry-run') && process.env.FAKE_RSYNC_LIST_EXTRA) {
+    process.stdout.write(process.env.FAKE_RSYNC_LIST_EXTRA + '\\n');
+  }
   process.exit(code == null ? 1 : code);
 });
 `,
@@ -879,6 +1276,7 @@ child.on('exit', (code, signal) => {
 async function main() {
   assertScriptSet();
   assertNoShimFile();
+  assertDefaultFilterListsState();
   for (const rel of [
     'scripts/e2e/mellifera-cli-forward.js',
     'scripts/e2e/mellifera-reserve-apply.js',
@@ -933,6 +1331,10 @@ async function main() {
   assertReserveApply(env, stubLog);
   assertRemoteSync(env, stubLog, rsyncLog);
   assertRemoteSyncSmoke(env, stubLog, home);
+  assertSessionTokenGuard(env, stubLog, rsyncLog, home);
+  assertStateNeverSynced(env, home);
+  assertUnsafeFilterRefused(env, stubLog, rsyncLog, home);
+  assertStateSymlinksExcluded(env, stubLog, rsyncLog, realRsync, home);
   assertDefaultFilterSkipsGit(realRsync, home);
   await assertClosedPort(process.env, builtCli);
 
@@ -945,7 +1347,7 @@ async function main() {
   }
 
   console.log(
-    'OK mellifera CLI wrappers (MELLIFERA_CLI and PATH), reserve-apply, remote-sync, remote-sync smoke, CLI version floor, and closed-port reserve',
+    'OK mellifera CLI wrappers (MELLIFERA_CLI and PATH), reserve-apply, remote-sync, remote-sync smoke, remote-sync anchored state excludes (symlinks too), unsafe filter refusal and token guard, CLI version floor, and closed-port reserve',
   );
 }
 

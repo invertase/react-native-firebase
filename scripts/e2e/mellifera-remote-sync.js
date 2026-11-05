@@ -29,6 +29,19 @@
  * or a listen port, and it does not start its own remote shell.
  * The destination host is a fixed placeholder with no user or port.
  *
+ * Mellifera session and reserve state never leaves this machine. The
+ * gitignored state paths in STATE_PATHS go to rsync as `--exclude` ahead of
+ * the merge filter, anchored at the checkout root and matching a directory,
+ * file or symlink of that name, so a caller `--filter` cannot include them. A filter
+ * file with a rule that could drop those excludes or read more rules (`!` or
+ * `clear`, `merge` or `.`, `dir-merge` or `:`) exits 1 before anything runs.
+ * Before any remote exec, a local `rsync --dry-run` with the same filters
+ * lists what would be sent; when a listed path is a state path (any case), or
+ * a listed file holds a token (a non-empty `sessionToken`,
+ * `MELLIFERA_SESSION_TOKEN` or `MELLIFERA_TOKEN`, an `Authorization: Bearer`
+ * value, or `token` beside `sessionId` in JSON, also after a UTF-8 BOM), this
+ * exits 1 naming it, with nothing created or synced.
+ *
  * On success the remote directory is the only stdout line, so callers can
  * run `yarn tests:mellifera:exec [--session ID] -w DIR -- <command>`.
  * Child stdout goes to stderr.
@@ -38,6 +51,7 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
 
@@ -54,6 +68,26 @@ const FORWARDED_FLAGS = ['--session', '--url', '--federation'];
 const RSYNC_MISSING = 'mellifera-remote-sync:rsync-missing';
 const RSYNC_PROBE = `command -v rsync >/dev/null 2>&1 || { echo ${RSYNC_MISSING}; exit 1; }`;
 const GUEST_REQUIREMENTS_DOC = 'okf-bundle/testing/running-e2e-distributed.md#guest-requirements';
+// Keep in step with the Mellifera block in .gitignore and the default rsync filter.
+const STATE_PATHS = [
+  'tests/mellifera-distributed',
+  'tests/mellifera-platform',
+  'tests/mellifera.env.json',
+  'tests/.mellifera-session.env',
+];
+// Anchored at the checkout root. The bare name also matches a file or a
+// symlink at that path; a trailing `/` matches directories only.
+const STATE_EXCLUDES = STATE_PATHS.flatMap(rel => [`/${rel}`, `/${rel}/`]);
+const TOKEN_KEYS = ['sessionToken', 'MELLIFERA_SESSION_TOKEN', 'MELLIFERA_TOKEN'];
+// A value in angle brackets, such as `<redacted>`, is a placeholder, and one
+// starting with `$` is a shell reference; neither is a token.
+const TOKEN_TEXT = [
+  /^\s*(?:export\s+)?MELLIFERA_(?:SESSION_)?TOKEN\s*=\s*['"]?[^\s'"<$]/m,
+  /"(?:sessionToken|MELLIFERA_SESSION_TOKEN|MELLIFERA_TOKEN)"\s*:\s*"[^"<$]/,
+];
+// A bearer value counts when it is one run of 20 or more token characters
+// with no `...` elision, so doc examples such as `Bearer owner` do not.
+const BEARER = /\bAuthorization:\s*Bearer\s+([A-Za-z0-9._~+/=-]{20,})(?=$|[\s'"])/gim;
 
 function resolveCli() {
   const fromEnv = process.env.MELLIFERA_CLI && process.env.MELLIFERA_CLI.trim();
@@ -296,11 +330,174 @@ function resolveScratch(cli, forwarded, scratchDir, onSuccess) {
   });
 }
 
+function filterArgs(filter) {
+  return [...STATE_EXCLUDES.map(pattern => `--exclude=${pattern}`), '--filter', `merge ${filter}`];
+}
+
+/**
+ * The rule word of one filter line: `clear`, `merge` or `dir-merge` (long or
+ * short form, with or without modifiers), else null. rsync ignores blank lines
+ * and lines starting with `#` or `;` in a merge file.
+ */
+function unsafeRule(line) {
+  const text = line.trim();
+  if (!text || text.startsWith('#') || text.startsWith(';')) {
+    return null;
+  }
+  const word = text.split(/[\s_]/, 1)[0];
+  if (word.startsWith('!') || /^clear(,|$)/i.test(word)) {
+    return 'clear';
+  }
+  if (word.startsWith('.') || /^merge(,|$)/i.test(word)) {
+    return 'merge';
+  }
+  if (word.startsWith(':') || /^dir-merge(,|$)/i.test(word)) {
+    return 'dir-merge';
+  }
+  return null;
+}
+
+/**
+ * Exits 1 when the filter file has a rule that could undo the state excludes:
+ * a clear drops them, and a merge or dir-merge reads rules this check never sees.
+ */
+function refuseUnsafeFilter(filter) {
+  let text;
+  try {
+    if (!fs.statSync(filter).isFile()) {
+      fail(`filter file is not a regular file: ${filter}`);
+    }
+    text = fs.readFileSync(filter, 'utf8');
+  } catch (err) {
+    fail(`cannot read filter file ${filter}: ${err.message}`);
+  }
+  const found = [];
+  text.split(/\r?\n/).forEach((line, i) => {
+    const rule = unsafeRule(line);
+    if (rule) {
+      found.push(`line ${i + 1} (${rule})`);
+    }
+  });
+  if (found.length) {
+    fail(
+      `refusing filter ${filter}: ${found.join(', ')}. A clear, merge or dir-merge rule could ` +
+        'undo the Mellifera state excludes; use only include and exclude rules. Nothing was run.',
+    );
+  }
+}
+
+function isStatePath(rel) {
+  const name = rel.replace(/\/+$/, '').toLowerCase();
+  return STATE_PATHS.some(state => name === state || name.startsWith(`${state}/`));
+}
+
+function isTokenValue(value) {
+  return typeof value === 'string' && value !== '' && !/^<[^>]*>$/.test(value);
+}
+
+function tokenShaped(value) {
+  if (Array.isArray(value)) {
+    return value.some(tokenShaped);
+  }
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  if (TOKEN_KEYS.some(key => isTokenValue(value[key]))) {
+    return true;
+  }
+  if (typeof value.sessionId === 'string' && isTokenValue(value.token)) {
+    return true;
+  }
+  return Object.values(value).some(tokenShaped);
+}
+
+function parsesToToken(text) {
+  try {
+    return tokenShaped(JSON.parse(text));
+  } catch {
+    return false;
+  }
+}
+
+function holdsBearer(text) {
+  return [...text.matchAll(BEARER)].some(match => !match[1].includes('...'));
+}
+
+function holdsSessionToken(raw) {
+  const text = raw.replace(/^\uFEFF/, '');
+  if (TOKEN_TEXT.some(pattern => pattern.test(text)) || holdsBearer(text)) {
+    return true;
+  }
+  if (/^\s*[[{]/.test(text) && parsesToToken(text)) {
+    return true;
+  }
+  return text
+    .split('\n')
+    .map(line => line.replace(/^\uFEFF/, ''))
+    .some(line => /^\s*\{/.test(line) && parsesToToken(line));
+}
+
+/** Files a sync with these filters would send, from a local dry run into an empty directory. */
+function listOutgoing(filter) {
+  const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-remote-sync-list-'));
+  try {
+    const listed = spawnSync(
+      'rsync',
+      ['-a', '--dry-run', '--out-format=%n', ...filterArgs(filter), '.', `${empty}/`],
+      { cwd: REPO_ROOT, encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 },
+    );
+    if (listed.error) {
+      fail(`local rsync listing failed: ${listed.error.message}`);
+    }
+    if (listed.status !== 0) {
+      process.stderr.write(listed.stderr || '');
+      fail(`local rsync listing exited ${listed.status}; nothing was synced`);
+    }
+    return listed.stdout.split('\n').filter(Boolean);
+  } finally {
+    fs.rmSync(empty, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Exits 1 before any remote exec when an outgoing path is Mellifera state or
+ * an outgoing file holds a session token.
+ */
+function refuseSessionTokens(filter) {
+  const outgoing = listOutgoing(filter);
+  const state = outgoing.filter(isStatePath);
+  if (state.length) {
+    fail(
+      `refusing to sync: ${state.join(', ')} is Mellifera session state and must not reach the ` +
+        'remote host. Nothing was synced.',
+    );
+  }
+  const held = outgoing.filter(rel => {
+    if (rel.endsWith('/')) {
+      return false;
+    }
+    const abs = path.join(REPO_ROOT, rel);
+    let stat;
+    try {
+      stat = fs.lstatSync(abs);
+    } catch {
+      return false;
+    }
+    return stat.isFile() && holdsSessionToken(fs.readFileSync(abs, 'utf8'));
+  });
+  if (held.length) {
+    fail(
+      `refusing to sync: ${held.join(', ')} would carry a Mellifera session token to the remote ` +
+        'host. Move it out of this checkout or exclude it with --filter. Nothing was synced.',
+    );
+  }
+}
+
 function sync(rsh, filter, remoteDir) {
   run(
     'rsync',
     'rsync',
-    ['-a', '--rsh', rsh, '--filter', `merge ${filter}`, '.', `${PLACEHOLDER_HOST}:${remoteDir}`],
+    ['-a', '--rsh', rsh, ...filterArgs(filter), '.', `${PLACEHOLDER_HOST}:${remoteDir}`],
     () => {
       process.stdout.write(`${remoteDir}\n`);
       process.exit(0);
@@ -313,6 +510,7 @@ function main() {
   if (!fs.existsSync(parsed.filter)) {
     fail(`filter file not found: ${parsed.filter}`);
   }
+  refuseUnsafeFilter(parsed.filter);
   if (parsed.scratchFile !== undefined) {
     const parent = path.dirname(parsed.scratchFile);
     if (!fs.existsSync(parent) || !fs.statSync(parent).isDirectory()) {
@@ -320,6 +518,7 @@ function main() {
     }
   }
   const remoteDir = remoteDirFor(parsed);
+  refuseSessionTokens(parsed.filter);
   const scratchDir = `${remoteDir}${SCRATCH_SUFFIX}`;
   const cli = resolveCli();
   const rsh = [cli, 'exec', ...parsed.forwarded, '--rsh'].map(quoteRshToken).join(' ');
