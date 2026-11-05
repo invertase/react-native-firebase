@@ -39,13 +39,14 @@
 # commit is made. It exits 2 inside another repository's work tree.
 # `node-check` (on a grant, before `yarn install`) exits 1 unless `node` on
 # PATH is major RNFB_NODE_VERSION (default 24, as CI) or newer and `corepack`
-# is on PATH.
+# is on PATH, and then tells the caller to stop and tear the grant down.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 USAGE="usage: mellifera-distributed-piece.sh <android|ios|macos> --placement=<slot|host> [SLOT] [--dry-run] | ensure-avd | leftovers [--stop] | git-baseline | node-check"
 GUEST_REQUIREMENTS_DOC="okf-bundle/testing/running-e2e-distributed.md#guest-requirements"
+NODE_CHECK_FAIL_DOC="okf-bundle/testing/running-e2e-distributed.md#node-check-failure"
 BASE_AVD="TestingAVD"
 
 PLATFORM=""
@@ -702,6 +703,13 @@ run_git_baseline() {
   echo "mellifera-distributed-piece: git baseline staged in ${physical}" >&2
 }
 
+# The requester cannot fix a guest or donor desk, so a failure ends the grant's work.
+node_check_fail() {
+  echo "mellifera-distributed-piece: $1" >&2
+  echo "mellifera-distributed-piece: stop: do not run yarn install or any later step on this grant; run spill teardown, then report the grant id and the line above to the federation operator (${NODE_CHECK_FAIL_DOC})" >&2
+  return 1
+}
+
 # Yarn resolves the packageManager version through corepack; CI pins node 24.
 run_node_check() {
   local want="${RNFB_NODE_VERSION:-24}" major
@@ -710,16 +718,16 @@ run_node_check() {
     return 1
   fi
   if ! command -v node >/dev/null 2>&1; then
-    echo "mellifera-distributed-piece: node is not on PATH; the guest must provide node ${want} with corepack (${GUEST_REQUIREMENTS_DOC})" >&2
+    node_check_fail "node is not on PATH; the guest must provide node ${want} with corepack (${GUEST_REQUIREMENTS_DOC})"
     return 1
   fi
   major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null)"
   if [[ ! "$major" =~ ^[0-9]+$ || "$major" -lt "$want" ]]; then
-    echo "mellifera-distributed-piece: node ${major:-unknown} found; node ${want} or newer is required (CI uses node ${want}; ${GUEST_REQUIREMENTS_DOC})" >&2
+    node_check_fail "node ${major:-unknown} found; node ${want} or newer is required (CI uses node ${want}; ${GUEST_REQUIREMENTS_DOC})"
     return 1
   fi
   if ! command -v corepack >/dev/null 2>&1; then
-    echo "mellifera-distributed-piece: corepack is not on PATH beside node ${major}; yarn cannot resolve the packageManager version (${GUEST_REQUIREMENTS_DOC})" >&2
+    node_check_fail "corepack is not on PATH beside node ${major}; yarn cannot resolve the packageManager version (${GUEST_REQUIREMENTS_DOC})"
     return 1
   fi
   echo "mellifera-distributed-piece: node ${major} and corepack found" >&2

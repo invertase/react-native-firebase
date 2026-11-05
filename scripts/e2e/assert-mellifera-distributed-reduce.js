@@ -1046,10 +1046,15 @@ function assertNodeCheck(tmp) {
   assert.strictEqual(old.status, 1, `node 22: ${old.stderr}`);
   assert.match(old.stderr, /node 22 found; node 24 or newer is required/);
   assert.match(old.stderr, /running-e2e-distributed\.md#guest-requirements/);
+  const stopLine =
+    /stop: do not run yarn install or any later step on this grant; run spill teardown.*#node-check-failure/;
+  assert.match(old.stderr, stopLine);
+  assert.doesNotMatch(ok.stderr, /stop:/);
 
   const noCorepack = check(stubBin('24-no-corepack', 24, false));
   assert.strictEqual(noCorepack.status, 1, `no corepack: ${noCorepack.stderr}`);
   assert.match(noCorepack.stderr, /corepack is not on PATH beside node 24/);
+  assert.match(noCorepack.stderr, stopLine);
 
   if (!systemPath.split(':').some(dir => fs.existsSync(path.join(dir, 'node')))) {
     const missing = check(stubBin('none', null, true));
