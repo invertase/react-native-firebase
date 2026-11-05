@@ -13,8 +13,8 @@
  * `extend` passes the token like release for a local-core grant, and exactly
  * `extend --global --session-id GRANT_ID --ttl-ms N` with no token for a global
  * grant, with a fake CLI that records argv and, when MELLIFERA_BUILT_CLI is set,
- * with the real CLI against a 127.0.0.1 global stub; `node-check` runs on stub
- * node and corepack binaries.
+ * with the real CLI against a 127.0.0.1 global stub; `field grantId` names a spill's donor
+ * grant; `node-check` runs on stub node and corepack binaries.
  * Run: yarn tests:mellifera:assert-distributed-reduce
  */
 'use strict';
@@ -318,6 +318,11 @@ function main() {
       reduce(['field', '--reserve', globalSlot, '--field', 'slot']).stdout,
       '1\n',
       'a global grant on a desk slot reads its slot index',
+    );
+    assert.strictEqual(
+      reduce(['field', '--reserve', slotReserve, '--field', 'grantId']).stdout,
+      's-slot\n',
+      'a grant with no federation grant id names its work dir by session id',
     );
 
     const tokenField = reduce(['field', '--reserve', slotReserve, '--field', 'token']);
@@ -768,7 +773,7 @@ function main() {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
   console.log(
-    `OK mellifera-distributed-reduce report, failure cases, release, extend (local and --global; real CLI ${realCli ? 'checked' : 'skipped: MELLIFERA_BUILT_CLI unset'}), piece dry-run, TestingAVD create-if-missing, free-disk check, spill leftovers, git baseline, and node check`,
+    `OK mellifera-distributed-reduce report, failure cases, release, extend (local and --global; real CLI ${realCli ? 'checked' : 'skipped: MELLIFERA_BUILT_CLI unset'}), grant id, piece dry-run, TestingAVD create-if-missing, free-disk check, spill leftovers, git baseline, and node check`,
   );
 }
 
@@ -895,6 +900,15 @@ process.stdout.write(JSON.stringify({ grantId: id, expiresAt: '2026-01-01T00:00:
     'a local-core spill extends its local session; its local core extends grant g-donor',
   );
   assert.strictEqual(local.call.token, TOKEN, 'local spill extend env lacks the grant token');
+  assert.strictEqual(
+    reduce(['field', '--reserve', spill, '--field', 'grantId']).stdout,
+    'g-donor\n',
+    'a spill names its work dir by the federation grant id',
+  );
+  assert.strictEqual(
+    reduce(['field', '--reserve', reserve, '--field', 'grantId']).stdout,
+    'g-global\n',
+  );
 }
 
 /**

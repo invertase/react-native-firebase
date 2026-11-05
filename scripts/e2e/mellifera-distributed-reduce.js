@@ -4,14 +4,15 @@
  * android, ios, macos). Runs in this worktree after the remote pieces.
  *
  * Subcommands:
- *   field   --reserve FILE --field sessionId|slot|placement
+ *   field   --reserve FILE --field sessionId|grantId|slot|placement
  *           Print one non-secret grant field. A grant with no placement is
  *           placement "pool". `slot` prints the slot for placement "slot"
  *           (local or global) and an empty line for placement "host". Any
  *           other placement, such as "pool" from a global grant, or a "slot"
  *           grant with no non-negative integer slot, names no slot index:
  *           `slot` exits 3 rather than let a caller pick a slot or a
- *           whole-host release.
+ *           whole-host release. `grantId` is the federation grant id of a
+ *           spill (the donor names its work dir by it), else the sessionId.
  *   record  --run-dir DIR --piece android|ios|macos --reserve FILE
  *           (--exit N | --exit-file FILE) [--coverage PATH]
  *           [--started EPOCH_S] [--ended EPOCH_S]
@@ -56,7 +57,7 @@ const PIECES = {
   ios: { kind: 'macos-self-hosted', coverage: 'coverage/ios-native/lcov.info' },
   macos: { kind: 'macos-self-hosted', coverage: null },
 };
-const FIELDS = ['sessionId', 'slot', 'placement'];
+const FIELDS = ['sessionId', 'grantId', 'slot', 'placement'];
 const GLOBAL_PLACEMENT_DOC = 'okf-bundle/testing/running-e2e-distributed.md#global-grant-placement';
 const RENEWAL_DOC = 'okf-bundle/testing/running-e2e-distributed.md#held-grant-renewal';
 const CLI_REJECTED = /unknown (flag|option)|unrecognized (flag|option)|^usage:/im;
@@ -127,6 +128,11 @@ function slotOf(grant) {
     : null;
 }
 
+function grantIdOf(grant) {
+  const fed = grant.federation;
+  return fed && typeof fed.grantId === 'string' && fed.grantId ? fed.grantId : grant.sessionId;
+}
+
 function isGlobalGrant(grant) {
   return grant.phase === 'pool-global';
 }
@@ -146,7 +152,12 @@ function cmdField(flags) {
     );
     process.exit(3);
   }
-  const values = { sessionId: grant.sessionId, slot: slotOf(grant), placement };
+  const values = {
+    sessionId: grant.sessionId,
+    grantId: grantIdOf(grant),
+    slot: slotOf(grant),
+    placement,
+  };
   const value = values[field];
   process.stdout.write(`${value == null ? '' : value}\n`);
 }
