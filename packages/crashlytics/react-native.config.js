@@ -12,7 +12,7 @@ module.exports = {
             path: './ios_config.sh',
             execution_position: 'after_compile',
             input_files: [
-              '${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}',
+              '${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${EXECUTABLE_NAME}',
               '$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)',
             ],
           },
