@@ -114,7 +114,7 @@ jobs:
     steps:
       - name: Free Disk Space (Ubuntu)
         # https://github.com/AdityaGarg8/remove-unwanted-software/releases
-        uses: AdityaGarg8/remove-unwanted-software@90e01b21170618765a73370fcc3abbd1684a7793 # v5
+        uses: AdityaGarg8/remove-unwanted-software@36765610732de8ee2e81a5c6c231506e2b5cabcf # v5.1
         with:
           remove-dotnet: true
           remove-haskell: true
