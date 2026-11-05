@@ -28,6 +28,8 @@ Install, prepare, validation, the workspace Expo example / documented-path iOS *
 yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote-*, detox) and tests/tests-macos patch-package (incl. tests/patches/detox+20.51.0.patch) — [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking)
 ```
 
+**Ruby `>= 3.3.1` with Bundler on `PATH`** for iOS and macOS work (CocoaPods and `yarn tests:ios:ruby`). macOS's system Ruby 2.6 is too old; root `yarn` then skips the gems with one `ruby:install:` line and still exits 0. Setup: [CONTRIBUTING § Ruby for iOS and macOS work](../../CONTRIBUTING.md#ruby-for-ios-and-macos-work).
+
 **Before `yarn tests:ios:build` / `yarn tests:android:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 **Keep host toolchains current.** Android Studio / emulator and Xcode / CocoaPods are expected to track upstream, not be pinned indefinitely. A stale Android Emulator (e.g. 36.2.12.0) can lack CLI flags newer Detox patches rely on (`-crash-report-mode`, requires **≥ 37**, see [detox-patches.md](../ci-workflows/detox-patches.md)) and fail at spawn rather than at test time. When a patch or e2e step breaks only on your host, update the toolchain first — don't reach for a runtime capability probe as the default fix.
@@ -1125,7 +1127,7 @@ Do **not** treat this redbox as a missing TurboModule registration until the ref
 
 ## Daily path for Mellifera
 
-Mellifera reserves capacity and, on spill, the remote connection. RNFB maps the grant and runs the suite. A desk spill requests kind `slot` on a donated desk slot. Tart may host a provisioned guest for a self-hosted kind; that guest is not the desk spill. Commands: [Mellifera command policy](agent-command-policy.md#mellifera-command-policy). A present Mellifera config file is not proof the core or federation is ready. Bastion and cluster setup stay in Mellifera [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). Do not restate that procedure.
+Mellifera reserves capacity and, on spill, the remote connection. RNFB maps the grant and runs the suite. A desk spill requests kind `slot` on a donated desk slot. Tart may host a provisioned guest for a self-hosted kind; that guest is not the desk spill. Commands: [Mellifera command policy](agent-command-policy.md#mellifera-command-policy). A present Mellifera config file is not proof the core or federation is ready. Bastion and cluster setup stay in Mellifera [CLUSTER.md § Spill donated desk slots](https://github.com/invertase/mellifera/blob/main/CLUSTER.md#spill-donated-desk-slots-rnfb). Do not restate that procedure. This checkout first needs root `yarn` to exit 0 ([prerequisites](#prerequisites-once-per-checkout)); a contributor Mac without Ruby 3.3.1 still installs, and only iOS and macOS work needs that Ruby.
 
 1. [Local desk](#local-desk) — register, and donate only when this host should serve spill. When the local core offers no desk slots, skip register and donate. Do not recreate desk supply, and do not return to a local fit.
 2. [Worktree session](#worktree-session) — reserve, apply, run with `grant.slot`, release on the issuing core.
