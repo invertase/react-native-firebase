@@ -205,7 +205,7 @@ Reviews of Pull Requests are based on the following acceptance critical:
   - Other tests through Jest.
 - Do all CI checks pass.
 
-Once a PR is merged into main; new versions of the changed packages are automatically created and published to NPM.
+Merging a PR into `main` does **not** automatically create or publish new npm versions. Package publish is a maintainer workflow — [maintainer publish](okf-bundle/monorepo-tooling/maintainer-publish.md).
 
 ## [No Brown M&M's](http://en.wikipedia.org/wiki/Van_Halen#Contract_riders)
 
