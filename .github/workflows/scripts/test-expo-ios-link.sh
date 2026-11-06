@@ -9,7 +9,7 @@
 # This is a *different* bug from two other RNCore issues tracked elsewhere
 # in this repo -- do not "fix" this script by touching their owning docs:
 #   - compile-time / RNFB podspecs / non-modular includes:
-#     okf-bundle/ios-rncore-podspec.md (GitHub #9200 / CPRN-237)
+#     okf-bundle/ios-rncore-podspec.md (GitHub #9200)
 #   - link-time / tests/ only / third-party pods (react-native-device-info,
 #     @invertase/react-native-apple-authentication):
 #     okf-bundle/testing/test-app-dependency-pins.md (tests/ios/Podfile's
@@ -358,81 +358,119 @@ fi
 
 log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"
 
-# #9322: without an explicit top-level spm_dependency declaration on
-# RNFBAnalytics.podspec / RNFBMessaging.podspec (see the comments there for
-# the full writeup, including what's confirmed vs. still an open question),
-# GoogleUtilities classes (GULNetwork, GULReachabilityChecker, etc.) end up
-# compiled privately into both RNFBAnalytics.framework and
-# RNFBMessaging.framework instead of one shared dynamic framework, and
-# collide at runtime once both are loaded in-process.
-#
-# Requires @react-native-firebase/analytics alongside messaging in
-# test-expo/package.json to actually exercise both sides of the graph.
-log "--- #9322 GoogleUtilities dedupe diagnosis ---"
+# The ObjC runtime registers every class in a loaded binary's
+# __objc_classlist, whatever its symbol visibility (pure-Swift and hidden
+# classes included), so compare classlists of every Mach-O the .app loads.
+log "--- duplicate Objective-C class check ---"
+dup_check_fail() {
+  log "ERROR: $*"
+  log "--- end duplicate Objective-C class check ---"
+  exit 1
+}
+
+DYLD_INFO="/usr/bin/dyld_info"
+if [[ ! -x "$DYLD_INFO" ]]; then
+  dup_check_fail "${DYLD_INFO} not found; it is required to read Objective-C classlists"
+fi
 BUILT_PRODUCTS_DIR="$(grep -oE '/[^ ]*/Build/Products/[A-Za-z0-9_.-]+' "$XCODEBUILD_LOG" | head -1 || true)"
 if [[ -z "$BUILT_PRODUCTS_DIR" || ! -d "$BUILT_PRODUCTS_DIR" ]]; then
-  log "ERROR: could not determine BUILT_PRODUCTS_DIR from xcodebuild log for #9322 check"
-  exit 1
+  dup_check_fail "could not determine BUILT_PRODUCTS_DIR from xcodebuild log"
+fi
+APP_DIR="${BUILT_PRODUCTS_DIR}/${SCHEME}.app"
+if [[ ! -d "$APP_DIR" ]]; then
+  app_candidates="$(find "$BUILT_PRODUCTS_DIR" -maxdepth 1 -type d -name '*.app')"
+  if [[ -z "$app_candidates" || "$(wc -l <<<"$app_candidates" | tr -d ' ')" -ne 1 ]]; then
+    dup_check_fail "expected exactly one built .app in ${BUILT_PRODUCTS_DIR}, found: ${app_candidates:-none}"
+  fi
+  APP_DIR="$app_candidates"
 fi
 
-nine322_classes=(
-  GULNetwork
-  GULMutableDictionary
-  GULNetworkURLSession
-  GULNetworkURLSessionWeakHolder
-  GULSessionDeallocTracker
-  GULReachabilityChecker
-  GULSwizzler
-  GoogleUtilities_GoogleUtilities_Network_SWIFTPM_MODULE_BUNDLER_FINDER
-  GoogleUtilities_GoogleUtilities_Reachability_SWIFTPM_MODULE_BUNDLER_FINDER
-)
+bundle_executable() {
+  local bundle="$1" name=""
+  if [[ -f "${bundle}/Info.plist" ]]; then
+    name="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "${bundle}/Info.plist" 2>/dev/null || true)"
+  fi
+  if [[ -z "$name" ]]; then
+    name="$(basename "$bundle")"
+    name="${name%.*}"
+  fi
+  echo "${bundle}/${name}"
+}
 
-nine322_work_dir="$(mktemp -d)"
-trap 'rm -rf "$nine322_work_dir"' EXIT
+dup_work_dir="$(mktemp -d)"
+trap 'rm -rf "$dup_work_dir"' EXIT
+binaries_file="${dup_work_dir}/binaries.txt"
+class_owners_file="${dup_work_dir}/class-owners.txt"
 
-while IFS= read -r fw_dir; do
-  fw_name="$(basename "$fw_dir" .framework)"
-  bin="$fw_dir/$fw_name"
-  [[ -f "$bin" ]] || continue
-  fw_syms="$(nm -gU "$bin" 2>/dev/null || true)"
-  [[ -z "$fw_syms" ]] && continue
-  for class_name in "${nine322_classes[@]}"; do
-    if grep -qE '_OBJC_CLASS_\$_'"${class_name}"'$' <<<"$fw_syms"; then
-      echo "$fw_name" >>"${nine322_work_dir}/${class_name}.txt"
-    fi
-  done
-done < <(find "$BUILT_PRODUCTS_DIR" -type d -name "*.framework" ! -path "*/*.app/*" 2>/dev/null)
+bundle_executable "$APP_DIR" >"$binaries_file"
+for fw_dir in "$APP_DIR"/Frameworks/*.framework; do
+  if [[ -d "$fw_dir" ]]; then
+    bundle_executable "$fw_dir" >>"$binaries_file"
+  fi
+done
+for dylib in "$APP_DIR"/*.dylib "$APP_DIR"/Frameworks/*.dylib; do
+  if [[ -f "$dylib" ]]; then
+    echo "$dylib" >>"$binaries_file"
+  fi
+done
 
-nine322_failed=0
-for class_name in "${nine322_classes[@]}"; do
-  owners_file="${nine322_work_dir}/${class_name}.txt"
-  if [[ ! -f "$owners_file" ]]; then
-    log "ERROR: #9322 -- ${class_name} not defined in any built framework"
-    nine322_failed=1
+: >"$class_owners_file"
+binary_count=0
+rnfb_class_count=0
+while IFS= read -r bin; do
+  rel="${bin#"${APP_DIR}"/}"
+  if [[ ! -f "$bin" ]]; then
+    dup_check_fail "expected Mach-O binary missing: ${rel}"
+  fi
+  if ! bin_objc="$("$DYLD_INFO" -objc "$bin" 2>&1)"; then
+    dup_check_fail "dyld_info could not read ${rel}: ${bin_objc}"
+  fi
+  if grep -qE '^[[:space:]]*warning:' <<<"$bin_objc"; then
+    dup_check_fail "dyld_info warned on ${rel}: $(sed -n '/^[[:space:]]*warning:/p' <<<"$bin_objc")"
+  fi
+  binary_count=$((binary_count + 1))
+  bin_classes="$(awk '$1 == "@interface" && $2 !~ /\(/ && $3 !~ /^\(/ { print $2 }' <<<"$bin_objc" | LC_ALL=C sort -u)"
+  if [[ -z "$bin_classes" ]]; then
     continue
   fi
-  owner_count="$(wc -l <"$owners_file" | tr -d ' ')"
-  owners="$(tr '\n' ' ' <"$owners_file")"
-  if [[ "$owner_count" -ne 1 ]]; then
-    log "ERROR: #9322 -- expected exactly 1 framework defining ${class_name}, found ${owner_count}: ${owners}"
-    nine322_failed=1
-    continue
-  fi
-  case "$owners" in
-    RNFB*)
-      log "ERROR: #9322 -- ${class_name} is privately duplicated into ${owners} instead of a shared framework"
-      nine322_failed=1
-      ;;
-    *)
-      log "ok: ${class_name} shared in ${owners}"
+  awk -v owner="$rel" '{ print $0 "\t" owner }' <<<"$bin_classes" >>"$class_owners_file"
+  case "$rel" in
+    Frameworks/RNFB*.framework/*)
+      rnfb_class_count=$((rnfb_class_count + $(wc -l <<<"$bin_classes")))
       ;;
   esac
-done
-log "--- end #9322 GoogleUtilities dedupe diagnosis ---"
+done <"$binaries_file"
 
-if [[ "$nine322_failed" -ne 0 ]]; then
-  log "ERROR: #9322 GoogleUtilities duplicate-class regression detected"
-  exit 1
+class_count="$(cut -f1 "$class_owners_file" | LC_ALL=C sort -u | wc -l | tr -d ' ')"
+duplicates="$(LC_ALL=C sort "$class_owners_file" | awk -F'\t' '
+  $1 == prev { owners = owners ", " $2; n++; next }
+  { if (n > 1) print prev ": " owners; prev = $1; owners = $2; n = 1 }
+  END { if (n > 1) print prev ": " owners }
+')"
+duplicate_count=0
+if [[ -n "$duplicates" ]]; then
+  duplicate_count="$(wc -l <<<"$duplicates" | tr -d ' ')"
 fi
 
-log "PASS: no RNFB* framework privately duplicates a shared GoogleUtilities class (#9322)"
+log "scanned ${binary_count} binaries in ${APP_DIR}: ${class_count} distinct classes (${rnfb_class_count} in RNFB* frameworks), ${duplicate_count} duplicated"
+if [[ "$class_count" -eq 0 || "$rnfb_class_count" -eq 0 ]]; then
+  dup_check_fail "found no classes overall or in any RNFB* framework; the scan is not trustworthy"
+fi
+if [[ "$duplicate_count" -ne 0 ]]; then
+  while IFS= read -r line; do
+    log "ERROR: duplicate class ${line}"
+  done <<<"$duplicates"
+  log "NOTE: a reused DerivedData can embed frameworks left over from an earlier build ([RNFB] Embed Firebase SPM Frameworks copies every dynamic framework in PackageFrameworks); re-check a local failure from an empty DerivedData"
+  if [[ "$duplicate_count" -eq 1 ]]; then
+    dup_check_fail "1 Objective-C class is defined in more than one binary"
+  fi
+  dup_check_fail "${duplicate_count} Objective-C classes are defined in more than one binary"
+fi
+canary_owner="$(awk -F'\t' '$1 == "GULNetwork" { print $2 }' "$class_owners_file")"
+if [[ -z "$canary_owner" ]]; then
+  dup_check_fail "GoogleUtilities canary GULNetwork not found in any scanned binary; test-expo/package.json must keep @react-native-firebase/analytics alongside messaging so the GoogleUtilities sharing graph is exercised"
+fi
+log "ok: GoogleUtilities canary GULNetwork defined once, in ${canary_owner}"
+log "--- end duplicate Objective-C class check ---"
+
+log "PASS: no Objective-C class is defined in more than one binary of the built app"
