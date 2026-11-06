@@ -124,12 +124,15 @@ RUN="tests/mellifera-distributed/$(date +%Y%m%d-%H%M%S)"   # gitignored, inside 
 mkdir -p "$RUN" && chmod 700 "$RUN"
 M=(--url URL --federation ID)
 R=(--remote-wait-ms 180000 --ttl-ms 5400000)   # caller may append --no-autoscale
-yarn tests:mellifera:reserve --kinds linux-nested-virt-self-hosted "${R[@]}" "${M[@]}" > "$RUN/android.reserve.json"
+A=(--allow-autoscale --timeout-ms 2400000 --remote-wait-ms 2400000 --ttl-ms 5400000)
+yarn tests:mellifera:reserve --kinds linux-nested-virt-self-hosted "${A[@]}" "${M[@]}" > "$RUN/android.reserve.json"
 yarn tests:mellifera:reserve --kinds macos-self-hosted "${R[@]}" "${M[@]}" > "$RUN/ios.reserve.json"
 yarn tests:mellifera:reserve --kinds macos-self-hosted "${R[@]}" "${M[@]}" > "$RUN/macos.reserve.json"
 ```
 
-`--remote-wait-ms 180000` (3 minutes): a provisioned guest takes about a minute to boot before the grant is ready, and the default remote wait is 0, which fails before any guest can boot. Three minutes covers one boot plus ssh readiness with margin, and a federation with no offer of the kind still fails within minutes instead of hanging. Each reserve waits for its own guest. A service-key login (no local core) always reserves in global mode; the CLI accepts `--remote-wait-ms` there, and how long a global reserve waits is the CLI's ([mellifera-cli § Layered reserve](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#layered-reserve)). Keep it in `R` either way, so the same commands work through a local core.
+`--remote-wait-ms 180000` (3 minutes): a provisioned guest takes about a minute to boot before the grant is ready, and the default remote wait is 0, which fails before any guest can boot. Three minutes covers one boot plus ssh readiness with margin, and a federation with no offer of the kind still fails within minutes instead of hanging. Each reserve waits for its own guest. A service-key login (no local core) always reserves in global mode; the CLI accepts `--remote-wait-ms` there, and how long a global reserve waits is the CLI's ([mellifera-cli § Layered reserve](https://github.com/invertase/mellifera/blob/main/packages/cli/README.md#layered-reserve)). The macOS reserves keep it in `R` either way, so the same commands work through a local core; the Android reserve uses `A` instead.
+
+`A` (Android, 40 minutes): with no eligible nested-virt supply, a cloud autoscale start is estimated well past 3 minutes out (by default 30 minutes per placement wave, counting the request's own wave, so about 30 minutes with nothing ahead). Through a local core, `R` fails `autoscale-not-configured` when its 3-minute remote wait ends; with `--allow-autoscale`, `--timeout-ms` is the spill budget and the core keeps waiting until it ends. In global mode the CLI sends `--timeout-ms` (else `--remote-wait-ms`) as the admission deadline and does not send the autoscale flags; the global refuses a request whose estimated start falls past that deadline, so `R` fails `admission-deadline` at once.
 
 `--ttl-ms 5400000` (90 minutes): the grant must outlive the longest piece. iOS is the longest (Ruby lint, XCTest unit, pod install, build, then the full e2e suite), and 90 minutes covers it with margin; a shorter lease can expire mid-suite and lose the grant. The TTL is an upper bound, not a hold: a global grant also needs [renewal](#held-grant-renewal) while it is held.
 
@@ -155,7 +158,7 @@ while sleep 1200; do node ./scripts/e2e/mellifera-distributed-reduce.js extend -
 
 Every other `yarn tests:mellifera:*` command on this page maps the same way in a checkout with no install ([controller with no local install](running-e2e.md#mellifera-no-install-controller)). Stop the loop before the grant's teardown. A grant lost before its TTL shows as an exec failure (`closed by remote host`, then `Permission denied (publickey)`); go to [spill teardown](#spill-teardown) step 1.
 
-Autoscale is the caller's choice. The commands leave the CLI default. Append `--no-autoscale` to `R` when no new paid capacity should be booted; the reserve then waits only on existing donated offers. The piece runner and the reducer never reserve. The acceptance proof run for distributed e2e uses `--no-autoscale` and the 90-minute TTL.
+Autoscale is the caller's choice. The macOS reserves leave the CLI default (allowed); the Android reserve passes `--allow-autoscale` in `A`. Append `--no-autoscale` to `R` when no new paid capacity should be booted; through a local core the reserve then waits only on existing donated offers. Never add `--no-autoscale` to `A`: the CLI exits when both flags are given. An Android reserve that must not boot paid capacity uses `R` plus `--no-autoscale` instead, and fails when no donated nested-virt offer is free. The piece runner and the reducer never reserve. The acceptance proof run for distributed e2e uses `--no-autoscale` and the 90-minute TTL.
 
 Confirm each JSON has `execution.checkoutMode` `remote` and `execution.connectUrl`; a `placement: "host"` with `slot: 0` guest is a valid piece, and so is a `placement: "slot"` grant with its slot index, including a global grant on a desk slot. A `placement: "pool"` grant, or one with no placement, is not a valid piece ([global grant placement](#global-grant-placement)): release it and stop.
 
