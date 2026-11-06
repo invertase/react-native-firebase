@@ -207,6 +207,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 - There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
 - **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on **Java** under `packages/*/android/src` and fails if the tree would change. It does **not** format Kotlin.
 - **Needs JDK 21+:** the bundled `google-java-format` 1.35.0 jar runs on whatever `java` is first on `PATH` (not Gradle's JDK). On JDK < 21 it fails many files, untouched ones included, with `NoClassDefFoundError: com/sun/tools/javac/tree/JCTree$JCAnyPattern`. This is a host JDK problem, not a formatting failure. Put a JDK 21 first on `PATH` for the same command, e.g. `PATH="$(/usr/libexec/java_home -v 21)/bin:$PATH" yarn lint:android` (macOS).
+- **Two stages:** stage 1 runs `google-java-format`; stage 2 runs `git diff --exit-code packages/*/android/src`, which always exits 1 while Java changes are **unstaged**. During iteration a clean format pass is stage 1 succeeding (no `android formatting error` in the log); a stage-2 `android files changed from linting` failure on unstaged work is not a format failure.
 
 <a id="android-kotlin-format"></a>
 
@@ -220,6 +221,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 
 - **Do not** invent `cd tests && yarn install`, then bare `./gradlew` from an arbitrary cwd.
 - Unit: **`yarn tests:android:unit`** only. Runner choice and `@Config` / `sdk` policy: [AndroidTest-AD-1](android-architecture-decisions.md#androidtest-ad-1).
+- **Proving a change:** the package's `testDebugUnitTest` task must actually execute; Gradle can reuse results and report it `UP-TO-DATE`, which proves nothing new. Force execution with `yarn tests:android:unit --rerun-tasks` (Yarn appends the flag to `./gradlew rnfbDebugUnitTests`; this pass-through is allowed), and validation evidence must state the task executed, not `UP-TO-DATE`.
 - Merged coverage after e2e: **`yarn tests:android:post-e2e-coverage`** (Codecov path is `jacocoTestReport`, not e2e-only `jacocoAndroidTestReport`) — [coverage design](coverage-design.md).
 - Optional explicit merge: **`yarn tests:android:test:jacoco-report`**.
 
