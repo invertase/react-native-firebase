@@ -233,7 +233,11 @@ describe('9-way overlap and latency tolerance (UNI-9way-latency)', function () {
     const killJetAt = src.indexOf('async function killJetForLaunchRetry');
     const drainAt = src.indexOf("await ensureTcpPortClosed(jetRemotePort(), 'drain')");
     const retryAt = src.indexOf('await ensureTcpPortClosed(\n      jetRemotePort(),');
-    expect(src).toMatch(/kill -9 \$\{pids/);
+    const portOwnership = fs.readFileSync(
+      path.join(repoRoot, 'tests/e2e/portOwnership.js'),
+      'utf8',
+    );
+    expect(portOwnership).toMatch(/kill -9 \$\{pids/);
     expect(src).toMatch(/fromStall \? 'stall-kill' : 'launch-retry'/);
     expect(killJetAt).toBeGreaterThan(-1);
     expect(retryAt).toBeGreaterThan(killJetAt);

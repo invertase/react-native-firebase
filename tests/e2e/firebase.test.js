@@ -44,6 +44,14 @@ const {
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
 const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
+const {
+  recordAndroidDevice,
+  recordIosSimulator,
+  recordPid,
+  recordedLivePids,
+} = require('./runRecord');
+const { killTcpPortListener, recordTcpPortListeners } = require('./portOwnership');
+const { simulatorRebootEnv } = require('./simulatorBootEnv');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -384,7 +392,7 @@ function rebootIosSimulator(testsDir) {
     const child = spawn('bash', [bootScript], {
       cwd: repoRoot,
       stdio: 'inherit',
-      env: { ...process.env },
+      env: simulatorRebootEnv(),
     });
     const timer = setTimeout(() => {
       child.kill('SIGTERM');
@@ -620,48 +628,7 @@ function parseGuestLoad1Min(loadavgLine) {
   return Number.isFinite(load) ? load : NaN;
 }
 
-function listTcpListenPids(port) {
-  let pidList = '';
-  try {
-    pidList = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN -t 2>/dev/null || true`, {
-      encoding: 'utf8',
-      timeout: 5000,
-    }).trim();
-  } catch (_) {
-    return [];
-  }
-  return pidList
-    .split(/\s+/)
-    .filter(Boolean)
-    .filter(pid => /^\d+$/.test(pid));
-}
-
-async function killTcpPortListener(port, label) {
-  let pids = listTcpListenPids(port);
-  if (pids.length === 0) {
-    console.log(`[rnfb-e2e] ${label}: no listener on :${port}`);
-    return;
-  }
-
-  console.warn(`[rnfb-e2e] ${label}: killing stray listener on :${port} pid=${pids.join(',')}`);
-  try {
-    execSync(`kill ${pids.join(' ')}`, { stdio: 'inherit', timeout: 5000 });
-  } catch (err) {
-    console.warn(`[rnfb-e2e] ${label}: SIGTERM :${port} failed: ${err?.message || err}`);
-  }
-  await sleep(500);
-  pids = listTcpListenPids(port);
-  if (pids.length === 0) {
-    return;
-  }
-  console.warn(`[rnfb-e2e] ${label}: SIGKILL leftover listener on :${port} pid=${pids.join(',')}`);
-  try {
-    execSync(`kill -9 ${pids.join(' ')}`, { stdio: 'inherit', timeout: 5000 });
-  } catch (err) {
-    console.warn(`[rnfb-e2e] ${label}: SIGKILL :${port} failed: ${err?.message || err}`);
-  }
-}
-
+// Own/recorded listeners only; another owner's holder fails fast (tests/e2e/portOwnership.js).
 async function ensureTcpPortClosed(port, label, timeoutMs = KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS) {
   await killTcpPortListener(port, label);
   await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
@@ -723,21 +690,18 @@ function clearStaleMacOsTestingForSharedJetPort(label) {
     return;
   }
 
+  // Only the macOS app this checkout's runs recorded; a macOS Jet held by another owner
+  // fails ensureTcpPortClosed instead of being killed.
   const macName = process.env.RNFB_MACOS_PRODUCT_NAME || 'io.invertase.testing';
-  console.log(`[rnfb-e2e] ${label}: killing stale macOS ${macName} for shared :${jetRemotePort()}`);
-  try {
-    execSync(`killall ${JSON.stringify(macName)}`, { stdio: 'inherit', timeout: 5000 });
-  } catch (_) {
-    // not running — expected
-  }
-
-  try {
-    execSync("pkill -f 'tests:macos:test-cover|jet --target=macos' 2>/dev/null || true", {
-      stdio: 'inherit',
-      timeout: 5000,
-    });
-  } catch (_) {
-    // no stray macOS jet — expected
+  for (const pid of recordedLivePids(`macos-app:${macName}`)) {
+    console.log(
+      `[rnfb-e2e] ${label}: killing stale macOS ${macName} pid=${pid} for shared :${jetRemotePort()}`,
+    );
+    try {
+      process.kill(pid, 'SIGKILL');
+    } catch (_) {
+      // already gone
+    }
   }
 }
 
@@ -1553,6 +1517,13 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
   }
 }
 
+// Jet outlives this process when a run is interrupted; record its listeners so
+// yarn tests:e2e:release (and the next run's drain) can free them by ownership.
+function recordJetListeners() {
+  recordTcpPortListeners(jetRemotePort(), `jet:${jetRemotePort()}`);
+  recordTcpPortListeners(jetControlPort(), `jet-control:${jetControlPort()}`);
+}
+
 function createJetSession(jetArgs, testsDir) {
   let output = '';
   let jetProcess;
@@ -1619,6 +1590,8 @@ function createJetSession(jetArgs, testsDir) {
       },
     });
     bindProcess(proc);
+    // Recorded at spawn so its listeners stay owned even if this process dies first.
+    recordPid(proc.pid, `jet:${jp}`);
     return proc;
   };
 
@@ -1656,6 +1629,7 @@ function createJetSession(jetArgs, testsDir) {
         output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
         spawnJet();
         await waitForTcpPort(jetRemotePort());
+        recordJetListeners();
         logOrchestrateState('launch-retry-jet-respawned');
       } finally {
         ignoreExit = false;
@@ -1691,6 +1665,7 @@ async function runJetE2eAttempt(attempt) {
     console.log(`[rnfb-e2e] Jet attempt ${attempt}: waiting for port ${jetRemotePort()}`);
     logOrchestrateState('port-wait');
     await waitForTcpPort(jetRemotePort());
+    recordJetListeners();
     if (usesLiveMetro()) {
       console.log(
         `[rnfb-e2e] Jet attempt ${attempt}: waiting for Metro on port ${metroPortForHost()}`,
@@ -1746,6 +1721,16 @@ async function runJetE2eAttempt(attempt) {
   ]);
 }
 
+function recordThisRunDevice(platform, deviceId) {
+  if (platform === 'android') {
+    const serial = recordAndroidDevice(resolveAndroidSerial(), ANDROID_AVD_NAME);
+    console.log(`[rnfb-e2e] run record: android serial=${serial || 'not-found'}`);
+  } else if (platform === 'ios' && deviceId) {
+    const udid = recordIosSimulator(deviceId, process.env.RNFB_IOS_SIMULATOR || 'iPhone 17');
+    console.log(`[rnfb-e2e] run record: ios udid=${udid || 'not-found'}`);
+  }
+}
+
 describe('Jet Tests', function () {
   jest.retryTimes(0, { logErrorsBeforeRetry: true });
 
@@ -1755,6 +1740,10 @@ describe('Jet Tests', function () {
     const testsDir = path.resolve(__dirname, '..');
 
     cacheUsesLiveMetro();
+
+    // The device instance this run works with, so release --devices can stop exactly it
+    // (re-recorded after every relaunch below).
+    recordThisRunDevice(platform, deviceId);
 
     let lastFailure;
 
@@ -1797,12 +1786,17 @@ describe('Jet Tests', function () {
           await drainJetAttempt(platform);
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
+            recordThisRunDevice(platform, deviceId);
           } else if (platform === 'android') {
             foldDetoxChildProcessOutputIntoError(lastFailure);
             enrichAndroidLaunchFailureWithGuestSignals(lastFailure);
             if (shouldColdBootAndroidOnLaunchRetry(lastFailure)) {
               console.warn('[rnfb-e2e] Android device-side launch failure — cold booting emulator');
-              await coldBootAndroidEmulator();
+              try {
+                await coldBootAndroidEmulator();
+              } finally {
+                recordThisRunDevice(platform, deviceId);
+              }
               await waitForAndroidEmulatorReady();
             } else if (isMetroWaitFailure(lastFailure) && usesLiveMetro()) {
               console.warn(

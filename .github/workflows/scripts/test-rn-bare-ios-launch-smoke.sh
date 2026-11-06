@@ -20,6 +20,8 @@ cd "$(dirname "$0")/../../.."
 REPO_ROOT="$(pwd)"
 # shellcheck source=../../../scripts/e2e/lib/ios-simulator-helpers.sh
 source "${REPO_ROOT}/scripts/e2e/lib/ios-simulator-helpers.sh"
+# shellcheck source=../../../scripts/e2e/lib/e2e-run-record.sh
+source "${REPO_ROOT}/scripts/e2e/lib/e2e-run-record.sh"
 
 log() {
   echo "[test-rn-bare-ios-launch-smoke] $*"
@@ -72,10 +74,17 @@ cleanup() {
     wait "$LOG_PID" 2>/dev/null || true
     LOG_PID=""
   fi
-  if [[ -n "$metro_pid" ]]; then
-    kill "$metro_pid" 2>/dev/null || true
+  # Only the Metro this script started (subshell, yarn, node) — never whatever else
+  # listens on the port.
+  local tree
+  tree="$(e2e_pid_tree "$metro_pid")"
+  if [[ -n "$tree" ]]; then
+    # shellcheck disable=SC2086
+    kill $tree 2>/dev/null || true
+    sleep 1
+    # shellcheck disable=SC2086
+    kill -9 $tree 2>/dev/null || true
   fi
-  lsof -ti:"$METRO_PORT" | xargs kill -9 2>/dev/null || true
 }
 
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
@@ -93,7 +102,9 @@ fi
 UDID="$(rnfb_ensure_ios_simulator_udid "$SIM_NAME")"
 log "simulator udid=${UDID} name=\"${SIM_NAME}\" runtime=$(rnfb_ios_sim_runtime_label)"
 
-lsof -ti:"$METRO_PORT" | xargs kill -9 2>/dev/null || true
+for holder in $(e2e_port_listener_pids "$METRO_PORT"); do
+  fail "Metro port :${METRO_PORT} is held by $(e2e_pid_describe "$holder") — not started by this smoke, so it is not killed. Stop it, or set RNFB_TEST_RN_BARE_METRO_PORT to a free port."
+done
 : >"$METRO_LOG"
 (
   cd test-rn-bare
