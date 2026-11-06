@@ -10,14 +10,18 @@
 # e2e_active_platforms() and the caller-side platform_explicit() checks in
 # check-e2e-resources.sh for why "global" must not be treated as "all platforms active"
 # for aggressive per-platform probes (e.g. "any booted iOS simulator").
-# --all-slots (E2E_ALL_SLOTS=1) is the only leftover-slot wipe. --slot=N (E2E_SLOT_OVERRIDE)
-# selects one slot's three platform blocks when RNFB_* env is not already loaded.
+# --all-slots (E2E_ALL_SLOTS=1) is the only leftover-slot wipe (manual use only). --slot=N
+# (E2E_SLOT_OVERRIDE) selects one slot's three platform blocks when RNFB_* env is not
+# already loaded. Release acts only on run-record entries (e2e-run-record.sh) unless
+# --include-unrecorded / --all-slots.
 #
 # shellcheck shell=bash
 
 _E2E_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=e2e-slot-env.sh
 source "${_E2E_LIB_DIR}/e2e-slot-env.sh"
+# shellcheck source=e2e-run-record.sh
+source "${_E2E_LIB_DIR}/e2e-run-record.sh"
 
 # Serial defaults (legacy single-run behaviour).
 E2E_DEFAULT_METRO_PORT=8081
@@ -263,7 +267,7 @@ e2e_android_avd_names_for_release() {
   local slot
   slot="$(e2e_effective_slot)"
   if [[ -n "$slot" ]]; then
-    echo "TestingAVD-${slot}"
+    e2e_slot_android_avd_name "$slot"
     return 0
   fi
   echo "$E2E_DEFAULT_ANDROID_AVD"
@@ -271,7 +275,7 @@ e2e_android_avd_names_for_release() {
     local i max
     max="$(e2e_effective_slot_max)"
     for ((i = 0; i <= max; i++)); do
-      echo "TestingAVD-${i}"
+      e2e_slot_android_avd_name "$i"
     done
   fi
 }
@@ -284,7 +288,7 @@ e2e_ios_simulator_names_for_release() {
   local slot
   slot="$(e2e_effective_slot)"
   if [[ -n "$slot" ]]; then
-    echo "RN E2E iOS slot-${slot}"
+    e2e_slot_ios_simulator_name "$slot"
     return 0
   fi
   echo "$E2E_DEFAULT_IOS_SIMULATOR"
@@ -292,7 +296,7 @@ e2e_ios_simulator_names_for_release() {
     local i max
     max="$(e2e_effective_slot_max)"
     for ((i = 0; i <= max; i++)); do
-      echo "RN E2E iOS slot-${i}"
+      e2e_slot_ios_simulator_name "$i"
     done
   fi
 }
@@ -549,6 +553,35 @@ e2e_sibling_metro_owns_root() {
   return 1
 }
 
+# First slot index whose three platform port blocks have no listener and whose AVD qemu
+# and neutral-base simulator are not running, or nothing. Uses the lsof cache when loaded.
+e2e_first_free_slot() {
+  local slot max plat p busy booted_names
+  max="$(e2e_effective_slot_max)"
+  booted_names="$(command -v xcrun >/dev/null 2>&1 && e2e_ios_booted_devices | cut -f2 || true)"
+  for ((slot = 0; slot <= max; slot++)); do
+    busy=0
+    while read -r _ p; do
+      [[ -z "$p" ]] && continue
+      if e2e_port_listening "$p"; then
+        busy=1
+        break
+      fi
+    done < <(for plat in android ios macos; do e2e_slot_block_port_lines "$plat" "$slot"; done)
+    if [[ "$busy" -eq 0 ]] && pgrep -f "$(e2e_qemu_avd_pgrep_pattern "$(e2e_slot_android_avd_name "$slot")")" >/dev/null 2>&1; then
+      busy=1
+    fi
+    if [[ "$busy" -eq 0 ]] && grep -qxF "$(e2e_slot_ios_simulator_name "$slot")" <<<"$booted_names"; then
+      busy=1
+    fi
+    if [[ "$busy" -eq 0 ]]; then
+      echo "$slot"
+      return 0
+    fi
+  done
+  return 1
+}
+
 e2e_android_app_running() {
   local serial=$1 pkg=$2
   adb -s "$serial" shell pidof "$pkg" >/dev/null 2>&1
@@ -632,20 +665,27 @@ e2e_macos_app_path() {
   echo "$(e2e_repo_root)/tests-macos/macos/build/Build/Products/Debug/${name}.app"
 }
 
-e2e_ios_sim_booted() {
-  local name=$1
-  # Serial/global: any booted counts as busy for iOS clearness when using defaults
-  if [[ "$name" == "$E2E_DEFAULT_IOS_SIMULATOR" ]]; then
-    local count
-    count=$(xcrun simctl list devices booted 2>/dev/null | grep -c '(Booted)' || true)
-    [[ "${count:-0}" -gt 0 ]]
-    return $?
-  fi
-  # Slotted checks must be exact: slot-1 must not collide with slot-10.
+# "<udid>\t<name>" per booted simulator. Overridable in tests.
+e2e_ios_booted_devices() {
   xcrun simctl list devices booted -j 2>/dev/null | node -e "
-    const target = process.argv[1];
-    const input = require('fs').readFileSync(0, 'utf8');
-    const devices = Object.values(JSON.parse(input).devices || {}).flat();
-    process.exit(devices.some(device => device.name === target && device.state === 'Booted') ? 0 : 1);
-  " "$name"
+    const input = require('fs').readFileSync(0, 'utf8') || '{}';
+    for (const d of Object.values(JSON.parse(input).devices || {}).flat()) {
+      if (d.state === 'Booted') console.log(d.udid + '\t' + d.name);
+    }
+  " 2>/dev/null || true
+}
+
+# UDID of the booted simulator with this exact name (slot-1 never matches slot-10).
+e2e_ios_booted_udid() {
+  local name=$1 udid n
+  while IFS=$'\t' read -r udid n; do
+    [[ "$n" == "$name" ]] && echo "$udid" && return 0
+  done < <(e2e_ios_booted_devices)
+  return 1
+}
+
+# Exact-name match for serial and slots alike: another owner's unrelated simulator is
+# not contention for this identity.
+e2e_ios_sim_booted() {
+  e2e_ios_booted_udid "$1" >/dev/null
 }

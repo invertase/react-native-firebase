@@ -122,6 +122,15 @@ e2e_slot_android_console_port() {
   echo $((5556 + 2 * slot))
 }
 
+# Slot device names — single source for export, check/release and the free-slot probe.
+e2e_slot_android_avd_name() {
+  echo "TestingAVD-$1"
+}
+
+e2e_slot_ios_simulator_name() {
+  echo "RN E2E iOS slot-$1"
+}
+
 # Serial yarn tests:android:* must export these so Detox does not FreePortFinder
 # 10000–20000 (emulator-16xxx leftovers). Call after dropping slot carry-in.
 e2e_pin_serial_android_env() {
@@ -195,13 +204,15 @@ e2e_slot_env_apply() {
   # check/release use these so a slot-N env never falls back to serial defaults
   # that would hit other slots or wipe-all .s0..sN.
   export RNFB_DETOX_ANDROID_CONFIG="android.emu.debug.slot${slot}"
-  export RNFB_ANDROID_AVD="TestingAVD-${slot}" RNFB_ANDROID_AVD_NAME="TestingAVD-${slot}"
+  RNFB_ANDROID_AVD="$(e2e_slot_android_avd_name "$slot")"
+  export RNFB_ANDROID_AVD RNFB_ANDROID_AVD_NAME="$RNFB_ANDROID_AVD"
   # Pin qemu -port / adb serial so Detox does not pick FreePortFinder 10000–20000
   # (outside adb's emulator console range). check/release need ANDROID_SERIAL.
   export RNFB_ANDROID_CONSOLE_PORT="$(e2e_slot_android_console_port "$slot")"
   export ANDROID_SERIAL="emulator-${RNFB_ANDROID_CONSOLE_PORT}"
   export RNFB_DETOX_IOS_CONFIG="ios.sim.debug.slot${slot}"
-  export RNFB_IOS_SIMULATOR="RN E2E iOS slot-${slot}"
+  RNFB_IOS_SIMULATOR="$(e2e_slot_ios_simulator_name "$slot")"
+  export RNFB_IOS_SIMULATOR
   export RNFB_IOS_SIM_RUNTIME="${RNFB_IOS_SIM_RUNTIME:-iOS 27.0}"
   export RNFB_MACOS_PRODUCT_NAME="${RNFB_MACOS_PRODUCT_NAME_OVERRIDE:-io.invertase.testing.s${slot}}"
   export RNFB_MACOS_BUNDLE_IDENTIFIER="${RNFB_MACOS_BUNDLE_IDENTIFIER_OVERRIDE:-org.reactjs.native.${RNFB_MACOS_PRODUCT_NAME//./-}}"
