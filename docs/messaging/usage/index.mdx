@@ -522,6 +522,63 @@ async function registerAppWithFCM() {
 > `messaging/registration-superseded`. See
 > [Migrating to v26 — iOS APNs registration](/migrating-to-v26#ios-apns-registration-arm64-simulator--new-promise-rejections).
 
+## iOS AppDelegate forwarding (proxy disabled)
+
+If you set `FirebaseAppDelegateProxyEnabled` to `false` in your `Info.plist`, React Native Firebase no longer receives remote notification callbacks automatically. Forward these three methods from your `AppDelegate` to `RNFBMessagingAppDelegate.sharedInstance`. Forwarding `didRegisterForRemoteNotificationsWithDeviceToken` also passes the APNs token to Firebase Messaging.
+
+With the proxy disabled, Firebase Messaging also needs to be told about each received message for its analytics, so call `appDidReceiveMessage` before forwarding `didReceiveRemoteNotification`, as shown below. To report foreground and tapped notifications too, set your own `UNUserNotificationCenter` delegate in `didFinishLaunchingWithOptions` and call `appDidReceiveMessage` in its `willPresent` and `didReceive` methods: React Native Firebase forwards those callbacks to a delegate that was set before it starts, but if your delegate implements `willPresent` it then controls foreground presentation instead of `messaging_ios_foreground_presentation_options`. See Firebase's [Receive messages in an Apple app](https://firebase.google.com/docs/cloud-messaging/ios/receive-messages) guide for the full list of steps when swizzling is disabled.
+
+```objectivec
+// AppDelegate.mm
+#import <FirebaseMessaging/FirebaseMessaging.h>
+#import <RNFBMessaging/RNFBMessaging+AppDelegate.h>
+
+- (void)application:(UIApplication *)application
+    didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [[RNFBMessagingAppDelegate sharedInstance] application:application
+        didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+
+- (void)application:(UIApplication *)application
+    didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [[RNFBMessagingAppDelegate sharedInstance] application:application
+        didFailToRegisterForRemoteNotificationsWithError:error];
+}
+
+- (void)application:(UIApplication *)application
+    didReceiveRemoteNotification:(NSDictionary *)userInfo
+          fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [[FIRMessaging messaging] appDidReceiveMessage:userInfo];
+  [[RNFBMessagingAppDelegate sharedInstance] application:application
+                            didReceiveRemoteNotification:userInfo
+                                  fetchCompletionHandler:completionHandler];
+}
+```
+
+In Swift, add `#import <RNFBMessaging/RNFBMessaging+AppDelegate.h>` to your bridging header, then:
+
+```swift
+// AppDelegate.swift
+import FirebaseMessaging
+
+func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  RNFBMessagingAppDelegate.sharedInstance().application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+}
+
+func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+  RNFBMessagingAppDelegate.sharedInstance().application(application, didFailToRegisterForRemoteNotificationsWithError: error)
+}
+
+func application(
+  _ application: UIApplication,
+  didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+  fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+) {
+  Messaging.messaging().appDidReceiveMessage(userInfo)
+  RNFBMessagingAppDelegate.sharedInstance().application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+}
+```
+
 ## Foreground Presentation Options (iOS)
 
 React Native Firebase Messaging configures how to present a notification in a foreground app.
