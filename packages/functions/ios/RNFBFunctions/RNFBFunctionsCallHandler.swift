@@ -152,9 +152,10 @@ import FirebaseCore
   }
   
   /// Static method to format error for JavaScript (shared utility)
-  /// - Parameter error: The error to format
+  /// - Parameter receivedError: The error to format
   /// - Returns: Dictionary containing error code, message, and details
-  @objc public static func formatError(_ error: NSError) -> [AnyHashable: Any] {
+  @objc public static func formatError(_ receivedError: NSError) -> [AnyHashable: Any] {
+    let error = RNFBFunctionsNativeErrorMapping.reportedError(for: receivedError)
     var details: Any = NSNull()
     let message = error.localizedDescription
     
@@ -162,6 +163,8 @@ import FirebaseCore
       if let errorDetails = error.userInfo["details"] {
         details = errorDetails
       }
+    } else if let nativeDetails = RNFBFunctionsNativeErrorMapping.details(for: error) {
+      details = nativeDetails
     }
     
     return [
@@ -181,6 +184,10 @@ import FirebaseCore
       code = mapFunctionsErrorCode(error.code)
     }
     
+    if let nativeCode = RNFBFunctionsNativeErrorMapping.code(for: error) {
+      code = nativeCode
+    }
+
     if error.domain == "FirebaseFunctions.FunctionsSerializer.Error" {
       NSLog("RNFBFUNCTIONS error description: %@", error.description)
       let errorDescription = error.description

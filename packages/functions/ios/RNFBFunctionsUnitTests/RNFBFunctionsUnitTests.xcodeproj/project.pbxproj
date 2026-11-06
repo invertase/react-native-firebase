@@ -20,6 +20,8 @@
 		FN1000000000000000000026 /* RNFBSharedUtilsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000027 /* RNFBSharedUtilsHostStub.m */; };
 		FN1000000000000000000028 /* RCTConvert+FIRAppHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000029 /* RCTConvert+FIRAppHostStub.m */; };
 		FN100000000000000000002A /* RNFBFunctionsCallHandlerHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = FN100000000000000000002B /* RNFBFunctionsCallHandlerHostStub.m */; };
+		FN100000000000000000002D /* RNFBFunctionsNativeErrorMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FN100000000000000000002E /* RNFBFunctionsNativeErrorMapping.swift */; };
+		FN100000000000000000002F /* RNFBFunctionsNativeErrorMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FN1000000000000000000030 /* RNFBFunctionsNativeErrorMappingTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		FN1000000000000000000029 /* RCTConvert+FIRAppHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+FIRAppHostStub.m"; path = "HostStubs/RNFBApp/RCTConvert+FIRAppHostStub.m"; sourceTree = "<group>"; };
 		FN100000000000000000002B /* RNFBFunctionsCallHandlerHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBFunctionsCallHandlerHostStub.m; path = HostStubs/RNFBFunctions/RNFBFunctionsCallHandlerHostStub.m; sourceTree = "<group>"; };
 		FN100000000000000000002C /* RNFBFunctionsHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBFunctionsHelper.h; path = ../RNFBFunctions/RNFBFunctionsHelper.h; sourceTree = SOURCE_ROOT; };
+		FN100000000000000000002E /* RNFBFunctionsNativeErrorMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBFunctionsNativeErrorMapping.swift; path = ../RNFBFunctions/RNFBFunctionsNativeErrorMapping.swift; sourceTree = SOURCE_ROOT; };
+		FN1000000000000000000030 /* RNFBFunctionsNativeErrorMappingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNFBFunctionsNativeErrorMappingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +92,8 @@
 				FN1000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
 				FN1000000000000000000029 /* RCTConvert+FIRAppHostStub.m */,
 				FN100000000000000000002B /* RNFBFunctionsCallHandlerHostStub.m */,
+				FN100000000000000000002E /* RNFBFunctionsNativeErrorMapping.swift */,
+				FN1000000000000000000030 /* RNFBFunctionsNativeErrorMappingTests.swift */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -161,6 +167,8 @@
 				FN1000000000000000000028 /* RCTConvert+FIRAppHostStub.m in Sources */,
 				FN100000000000000000002A /* RNFBFunctionsCallHandlerHostStub.m in Sources */,
 				FN1000000000000000000022 /* RNFBFunctionsHelperHostStubTests.m in Sources */,
+				FN100000000000000000002D /* RNFBFunctionsNativeErrorMapping.swift in Sources */,
+				FN100000000000000000002F /* RNFBFunctionsNativeErrorMappingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

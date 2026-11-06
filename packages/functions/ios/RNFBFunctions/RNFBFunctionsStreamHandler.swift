@@ -86,12 +86,6 @@ import FirebaseCore
     streamTask = nil
   }
   
-  /// Get error code name from NSError (delegates to shared utility)
-  private func getErrorCodeName(_ error: Error) -> String {
-    let nsError = error as NSError
-    return RNFBFunctionsCallHandler.getErrorCodeName(nsError)
-  }
-  
   private func performStream(
     functions: Functions,
     callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>>,
@@ -144,27 +138,9 @@ import FirebaseCore
         return
       }
       
-      let nsError = error as NSError
-      
-      // Construct error object similar to httpsCallable
-      var details: Any = NSNull()
-      let message = error.localizedDescription
-      
-      if nsError.domain == "com.firebase.functions" {
-        if let errorDetails = nsError.userInfo["details"] {
-          details = errorDetails
-        }
-      }
-      
-      let errorDict: [String: Any] = [
-        "code": getErrorCodeName(error),
-        "message": message,
-        "details": details
-      ]
-      
       eventCallback([
         "data": NSNull(),
-        "error": errorDict,
+        "error": RNFBFunctionsCallHandler.formatError(error as NSError),
         "done": true
       ])
     }
