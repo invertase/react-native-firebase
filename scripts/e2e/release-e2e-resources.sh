@@ -396,7 +396,8 @@ clear_android_emulator() {
     identity_avds=" $(e2e_android_avd_names_for_release | tr '\n' ' ') "
     # Any other qemu: one a recorded process spawned is this checkout's (as for ports).
     # With --include-unrecorded, also this checkout's unrecorded qemu on the identity's
-    # AVD. Another owner's is never touched.
+    # AVD. Another owner's is never touched. Any unrecorded qemu left on the identity's
+    # AVD is named, so a leak is never silent.
     while IFS=$'\t' read -r qpid port avd; do
       [[ -n "$qpid" && "$recorded" != *" ${qpid} "* ]] || continue
       serial="${port:+emulator-${port}}"
@@ -405,17 +406,18 @@ clear_android_emulator() {
         stop_qemu_instance "$mode" "$serial" "$avd" "$qpid"
         continue
       fi
-      [[ "$INCLUDE_UNRECORDED" -eq 1 ]] || continue
       if [[ -z "$avd" ]]; then
-        [[ "$mode" == soft ]] &&
+        [[ "$INCLUDE_UNRECORDED" -eq 1 && "$mode" == soft ]] &&
           echo "[release] qemu pid=${qpid} serial=${serial:-unknown}: no @<avd> / -avd argument, cannot match it to this identity — left running" >&2
         continue
       fi
       [[ "$identity_avds" == *" ${avd} "* ]] || continue
       owner="$(e2e_pid_owner "$qpid")"
-      if [[ "$owner" == this-checkout-unrecorded ]]; then
+      if [[ "$INCLUDE_UNRECORDED" -eq 1 && "$owner" == this-checkout-unrecorded ]]; then
         echo "[release] android emulator stop serial=${serial:-unknown} avd=${avd} qemu=${qpid} (owner=${owner})"
         stop_qemu_instance "$mode" "$serial" "$avd" "$qpid"
+      elif [[ "$mode" == soft && "$owner" == this-checkout-unrecorded ]]; then
+        echo "[release] android emulator serial=${serial:-unknown} avd=${avd} $(e2e_pid_describe "$qpid") owner=${owner} — runs from this checkout but no run recorded it, left running. Stop it, or (manual) yarn tests:e2e:release --include-unrecorded --devices --only android-emulator${E2E_SLOT_OVERRIDE:+ --slot=${E2E_SLOT_OVERRIDE}}" >&2
       elif [[ "$mode" == soft ]]; then
         echo "[release] android emulator serial=${serial:-unknown} avd=${avd} $(e2e_pid_describe "$qpid") owner=${owner} — not this checkout's, left running: free it from its owner or use another slot" >&2
       fi
