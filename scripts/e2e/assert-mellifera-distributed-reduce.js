@@ -14,7 +14,7 @@
  * `extend --global --session-id GRANT_ID --ttl-ms N` with no token for a global
  * grant, with a fake CLI that records argv and, when MELLIFERA_BUILT_CLI is set,
  * with the real CLI against a 127.0.0.1 global stub; `field grantId` names a spill's donor
- * grant; `node-check` runs on stub node and corepack binaries.
+ * grant; `node-check` runs on stub node, corepack and yarn binaries.
  * Run: yarn tests:mellifera:assert-distributed-reduce
  */
 'use strict';
@@ -1016,13 +1016,17 @@ require('http')
 }
 
 /**
- * `node-check` against stub `node` and `corepack` on a PATH that otherwise
- * holds only the system directories: it passes on node 24 or newer with
- * corepack, and names the gap and the guest requirements otherwise.
+ * `node-check` against stub `node`, `corepack` and `yarn` on a PATH that
+ * otherwise holds only the system directories: it passes on node 24 or newer
+ * with corepack and a `yarn` that reports the root `packageManager` version,
+ * and names the gap and the guest requirements otherwise.
  */
 function assertNodeCheck(tmp) {
   const systemPath = '/usr/bin:/bin:/usr/sbin:/sbin';
-  const stubBin = (name, major, withCorepack) => {
+  const wantYarn = /^yarn@([^+]+)/.exec(
+    JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8')).packageManager,
+  )[1];
+  const stubBin = (name, major, withCorepack, yarnVersion = wantYarn, yarnBody = null) => {
     const dir = path.join(tmp, `node-${name}`);
     fs.mkdirSync(dir, { recursive: true });
     if (major !== null) {
@@ -1033,13 +1037,20 @@ function assertNodeCheck(tmp) {
       fs.writeFileSync(path.join(dir, 'corepack'), '#!/bin/sh\nexit 0\n');
       fs.chmodSync(path.join(dir, 'corepack'), 0o755);
     }
+    if (yarnVersion !== null) {
+      fs.writeFileSync(path.join(dir, 'yarn'), yarnBody || `#!/bin/sh\necho ${yarnVersion}\n`);
+      fs.chmodSync(path.join(dir, 'yarn'), 0o755);
+    }
     return `${dir}:${systemPath}`;
   };
   const check = (pathValue, env = {}) => piece(['node-check'], { PATH: pathValue, ...env });
 
   const ok = check(stubBin('24', 24, true));
-  assert.strictEqual(ok.status, 0, `node 24 with corepack: ${ok.stderr}`);
-  assert.match(ok.stderr, /node 24 and corepack found/);
+  assert.strictEqual(ok.status, 0, `node 24 with corepack and yarn: ${ok.stderr}`);
+  assert.ok(
+    ok.stderr.includes(`node 24, corepack and yarn ${wantYarn} found`),
+    `node-check success line: ${ok.stderr}`,
+  );
   assert.strictEqual(check(stubBin('25', 25, true)).status, 0, 'a newer node passes');
 
   const old = check(stubBin('22', 22, true));
@@ -1055,6 +1066,78 @@ function assertNodeCheck(tmp) {
   assert.strictEqual(noCorepack.status, 1, `no corepack: ${noCorepack.stderr}`);
   assert.match(noCorepack.stderr, /corepack is not on PATH beside node 24/);
   assert.match(noCorepack.stderr, stopLine);
+
+  if (!systemPath.split(':').some(dir => fs.existsSync(path.join(dir, 'yarn')))) {
+    const noYarn = check(stubBin('24-no-yarn', 24, true, null));
+    assert.strictEqual(noYarn.status, 1, `no yarn: ${noYarn.stderr}`);
+    assert.match(noYarn.stderr, /yarn is not on PATH beside node 24 and corepack/);
+    assert.match(noYarn.stderr, /corepack enabled/);
+    assert.match(noYarn.stderr, /running-e2e-distributed\.md#guest-requirements/);
+    assert.match(noYarn.stderr, stopLine);
+  }
+
+  const wrongYarn = check(stubBin('24-yarn-1', 24, true, '1.22.22'));
+  assert.strictEqual(wrongYarn.status, 1, `yarn 1.22.22: ${wrongYarn.stderr}`);
+  assert.ok(
+    wrongYarn.stderr.includes(
+      `yarn --version printed '1.22.22'; the root package.json packageManager is yarn@${wantYarn}`,
+    ),
+    `wrong yarn message: ${wrongYarn.stderr}`,
+  );
+  assert.match(wrongYarn.stderr, /running-e2e-distributed\.md#guest-requirements/);
+  assert.match(wrongYarn.stderr, stopLine);
+  assert.doesNotMatch(wrongYarn.stderr, /\(stderr:/, 'a clean yarn adds no stderr snippet');
+
+  const brokenYarn = check(
+    stubBin(
+      '24-yarn-broken',
+      24,
+      true,
+      '',
+      '#!/bin/sh\necho "Internal Error: .yarn/releases/yarn-x.cjs not found" >&2\necho "second line" >&2\necho "third line" >&2\nexit 1\n',
+    ),
+  );
+  assert.strictEqual(brokenYarn.status, 1, `broken yarn: ${brokenYarn.stderr}`);
+  assert.ok(
+    brokenYarn.stderr.includes(
+      "yarn --version printed '' (stderr: Internal Error: .yarn/releases/yarn-x.cjs not found second line);",
+    ),
+    `broken yarn keeps its stderr: ${brokenYarn.stderr}`,
+  );
+  assert.doesNotMatch(brokenYarn.stderr, /third line/);
+  assert.match(brokenYarn.stderr, stopLine);
+
+  // A `yarn set version` pin carries +sha512.<hash>; yarn --version prints only the semver.
+  const shaTree = path.join(tmp, 'node-check-sha-tree');
+  fs.mkdirSync(path.join(shaTree, 'scripts', 'e2e'), { recursive: true });
+  fs.copyFileSync(PIECE, path.join(shaTree, 'scripts', 'e2e', 'mellifera-distributed-piece.sh'));
+  fs.writeFileSync(
+    path.join(shaTree, 'package.json'),
+    `${JSON.stringify({ name: 'fixture', packageManager: 'yarn@4.14.1+sha512.abc' }, null, 2)}\n`,
+  );
+  const shaCheck = yarnVersion =>
+    spawnSync(
+      'bash',
+      [path.join(shaTree, 'scripts', 'e2e', 'mellifera-distributed-piece.sh'), 'node-check'],
+      {
+        cwd: shaTree,
+        encoding: 'utf8',
+        env: { ...process.env, PATH: stubBin(`24-sha-${yarnVersion}`, 24, true, yarnVersion) },
+      },
+    );
+  const shaOk = shaCheck('4.14.1');
+  assert.strictEqual(shaOk.status, 0, `yarn@4.14.1+sha512 pin with yarn 4.14.1: ${shaOk.stderr}`);
+  assert.match(shaOk.stderr, /node 24, corepack and yarn 4\.14\.1 found/);
+  const shaWrong = shaCheck('1.22.22');
+  assert.strictEqual(shaWrong.status, 1, `sha pin with yarn 1.22.22: ${shaWrong.stderr}`);
+  assert.ok(
+    shaWrong.stderr.includes(
+      "printed '1.22.22'; the root package.json packageManager is yarn@4.14.1;",
+    ),
+    `sha pin wrong yarn message: ${shaWrong.stderr}`,
+  );
+  assert.match(shaWrong.stderr, /running-e2e-distributed\.md#guest-requirements/);
+  assert.match(shaWrong.stderr, stopLine);
 
   if (!systemPath.split(':').some(dir => fs.existsSync(path.join(dir, 'node')))) {
     const missing = check(stubBin('none', null, true));

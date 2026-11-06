@@ -38,8 +38,10 @@
 # checks such as `yarn codegen:verify` compare against the synced source. No
 # commit is made. It exits 2 inside another repository's work tree.
 # `node-check` (on a grant, before `yarn install`) exits 1 unless `node` on
-# PATH is major RNFB_NODE_VERSION (default 24, as CI) or newer and `corepack`
-# is on PATH, and then tells the caller to stop and tear the grant down.
+# PATH is major RNFB_NODE_VERSION (default 24, as CI) or newer, `corepack` is
+# on PATH, and `yarn --version` in the tree equals the root package.json
+# `packageManager` yarn version; otherwise it tells the caller to stop and tear
+# the grant down.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -730,7 +732,29 @@ run_node_check() {
     node_check_fail "corepack is not on PATH beside node ${major}; yarn cannot resolve the packageManager version (${GUEST_REQUIREMENTS_DOC})"
     return 1
   fi
-  echo "mellifera-distributed-piece: node ${major} and corepack found" >&2
+  local want_yarn yarn_version yarn_err err_file
+  want_yarn="$(sed -n 's/^[[:space:]]*"packageManager":[[:space:]]*"yarn@\([^"]*\)".*/\1/p' "${REPO_ROOT}/package.json")"
+  # `yarn set version` pins yarn@X.Y.Z+sha512.<hash>; `yarn --version` prints only X.Y.Z.
+  want_yarn="${want_yarn%%+*}"
+  if [[ -z "$want_yarn" ]]; then
+    echo "mellifera-distributed-piece: ${REPO_ROOT}/package.json has no yarn packageManager" >&2
+    return 1
+  fi
+  if ! command -v yarn >/dev/null 2>&1; then
+    node_check_fail "yarn is not on PATH beside node ${major} and corepack; the login must have corepack enabled so yarn resolves yarn@${want_yarn} (${GUEST_REQUIREMENTS_DOC})"
+    return 1
+  fi
+  # RNFB never runs `corepack enable` on a guest; enabling it is the image's or the donor's setup.
+  err_file="$(mktemp "${TMPDIR:-/tmp}/rnfb-node-check-yarn.XXXXXX")" || return 1
+  yarn_version="$(cd "$REPO_ROOT" && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 yarn --version </dev/null 2>"$err_file" | head -n 1)"
+  yarn_err="$(head -n 2 "$err_file" | tr '\n' ' ')"
+  rm -f -- "$err_file"
+  yarn_err="${yarn_err% }"
+  if [[ "$yarn_version" != "$want_yarn" ]]; then
+    node_check_fail "yarn --version printed '${yarn_version}'${yarn_err:+ (stderr: ${yarn_err})}; the root package.json packageManager is yarn@${want_yarn}; the login must have corepack enabled so yarn resolves that version (${GUEST_REQUIREMENTS_DOC})"
+    return 1
+  fi
+  echo "mellifera-distributed-piece: node ${major}, corepack and yarn ${yarn_version} found" >&2
 }
 
 if [[ "$PLATFORM" == node-check ]]; then

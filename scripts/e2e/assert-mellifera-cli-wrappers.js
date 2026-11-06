@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * Every tests:mellifera:* script is a bare `node ./scripts/e2e/<file>.js` line
+ * that loads only Node built-ins, so it runs in a checkout with no install.
  * CLI-word wrappers forward argv unchanged to MELLIFERA_CLI, or to
  * mellifera-cli on PATH when MELLIFERA_CLI is unset. No wrapper defaults to a
  * CLI copy inside this repo.
@@ -28,6 +30,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const net = require('net');
+const { isBuiltin } = require('module');
 const { spawnSync } = require('child_process');
 
 const SCRIPT_DIR = __dirname;
@@ -231,6 +234,82 @@ function assertScriptSet() {
   const reduce = PKG.scripts['tests:mellifera:reduce'];
   if (!reduce.includes('mellifera-distributed-reduce.js') || reduce.includes('mellifera-cli')) {
     fail(`reduce must run the reducer only: ${reduce}`);
+  }
+}
+
+/**
+ * A checkout with no install runs a wrapper as its package.json value
+ * (running-e2e.md#mellifera-no-install-controller), so each one must be a bare
+ * `node ./scripts/e2e/<file>.js` line whose scripts load only Node built-ins
+ * and other files in this directory.
+ */
+function assertNodeOnlyWrappers(scripts = PKG.scripts, dir = SCRIPT_DIR) {
+  const line = /^node \.\/scripts\/e2e\/([A-Za-z0-9._-]+\.js)(?: [A-Za-z0-9:._-]+)*$/;
+  const specifier =
+    /\brequire\s*\(\s*(['"`])([^'"`]+)\1\s*\)|\bfrom\s+(['"])([^'"]+)\3|\bimport\s*\(\s*(['"])([^'"]+)\5\s*\)/g;
+  const seen = new Set();
+  const visit = (file, from) => {
+    if (seen.has(file)) {
+      return;
+    }
+    seen.add(file);
+    if (path.dirname(file) !== dir || !fs.existsSync(file)) {
+      fail(`${from} loads ${path.basename(file)}, which is not a file in scripts/e2e`);
+    }
+    const text = fs.readFileSync(file, 'utf8');
+    for (const match of text.matchAll(specifier)) {
+      const spec = match[2] || match[4] || match[6];
+      if (spec.startsWith('./')) {
+        const target = path.resolve(path.dirname(file), spec);
+        visit(fs.existsSync(target) ? target : `${target}.js`, path.basename(file));
+      } else if (!isBuiltin(spec)) {
+        fail(`${path.basename(file)} loads ${spec}, which is not a Node built-in`);
+      }
+    }
+  };
+  for (const name of Object.keys(scripts).filter(n => n.startsWith('tests:mellifera:'))) {
+    const match = line.exec(scripts[name]);
+    if (!match) {
+      fail(`${name} is not a bare node ./scripts/e2e/<file>.js line: ${scripts[name]}`);
+    }
+    visit(path.join(dir, match[1]), name);
+  }
+}
+
+/** The check above refuses a yarn-only line, a package dependency, and a load from outside scripts/e2e. */
+function assertNodeOnlyWrappersRefuse(home) {
+  const dir = fs.mkdtempSync(path.join(home, 'node-only-'));
+  const loads = {
+    'ok.js': ['node:fs', './helper'],
+    'helper.js': ['child_process'],
+    'dep.js': ['./helper', 'semver'],
+    'up.js': ['../lib/x'],
+  };
+  for (const [file, specs] of Object.entries(loads)) {
+    const body = specs.map(spec => `require(${JSON.stringify(spec)});\n`).join('');
+    fs.writeFileSync(path.join(dir, file), body);
+  }
+  fs.writeFileSync(path.join(dir, 'esm.js'), `import chalk from ${JSON.stringify('chalk')};\n`);
+  assertNodeOnlyWrappers({ 'tests:mellifera:ok': 'node ./scripts/e2e/ok.js 1 exec' }, dir);
+  const refused = [
+    ['node ./scripts/e2e/dep.js', /dep\.js loads semver/],
+    ['node ./scripts/e2e/esm.js', /esm\.js loads chalk/],
+    ['node ./scripts/e2e/up.js', /up\.js loads \.\.\/lib\/x/],
+    ['node ./scripts/e2e/missing.js', /missing\.js, which is not a file/],
+    ['yarn node ./scripts/e2e/ok.js', /is not a bare node/],
+    ['node ./scripts/e2e/ok.js && rm -rf x', /is not a bare node/],
+    ['node --require x ./scripts/e2e/ok.js', /is not a bare node/],
+  ];
+  for (const [value, message] of refused) {
+    let error = null;
+    try {
+      assertNodeOnlyWrappers({ 'tests:mellifera:x': value }, dir);
+    } catch (e) {
+      error = e;
+    }
+    if (!error || !message.test(error.message)) {
+      fail(`node-only wrapper check did not refuse ${value}: ${error ? error.message : 'passed'}`);
+    }
   }
 }
 
@@ -1277,6 +1356,7 @@ child.on('exit', (code, signal) => {
 
 async function main() {
   assertScriptSet();
+  assertNodeOnlyWrappers();
   assertNoShimFile();
   assertDefaultFilterListsState();
   for (const rel of [
@@ -1297,6 +1377,7 @@ async function main() {
   }
 
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-mlf-wrap-'));
+  assertNodeOnlyWrappersRefuse(home);
   fs.mkdirSync(path.join(home, '.mellifera'), { recursive: true });
   const canary = path.join(home, '.mellifera', 'config.jsonc');
   const canaryBody = 'CANARY-SECRET-DO-NOT-LEAK\n';
@@ -1349,7 +1430,7 @@ async function main() {
   }
 
   console.log(
-    'OK mellifera CLI wrappers (MELLIFERA_CLI and PATH), reserve-apply, remote-sync, remote-sync smoke, remote-sync anchored state excludes (symlinks too), unsafe filter refusal and token guard, CLI version floor, and closed-port reserve',
+    'OK mellifera CLI wrappers (MELLIFERA_CLI and PATH; bare node lines on Node built-ins only), reserve-apply, remote-sync, remote-sync smoke, remote-sync anchored state excludes (symlinks too), unsafe filter refusal and token guard, CLI version floor, and closed-port reserve',
   );
 }
 
