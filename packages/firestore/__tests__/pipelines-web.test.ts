@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
+import { Timestamp as WebTimestamp } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import { executeWebSdkPipeline } from '../lib/web/pipelines/pipeline';
 
 jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines', () => {
@@ -11,6 +12,9 @@ jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestore
   return {
     ...actual,
     execute: jest.fn(),
+    constant: jest.fn(actual.constant as (...args: unknown[]) => unknown),
+    equal: jest.fn(actual.equal as (...args: unknown[]) => unknown),
+    greaterThan: jest.fn(actual.greaterThan as (...args: unknown[]) => unknown),
     array: jest.fn(actual.array as (...args: unknown[]) => unknown),
     conditional: jest.fn(actual.conditional as (...args: unknown[]) => unknown),
     isType: jest.fn(actual.isType as (...args: unknown[]) => unknown),
@@ -502,6 +506,204 @@ describe('Firestore web pipeline bridge', function () {
     expect(isTypeMock.mock.calls.at(-1)?.[1]).toBe('string');
     expect(mapGetMock.mock.calls.at(-1)?.[1]).toBe('theme');
     expect(euclideanDistanceMock.mock.calls.at(-1)?.[1]).toEqual([1, 0]);
+  });
+
+  it('revives serialized timestamps as web SDK Timestamps in every value position', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.where = jest.fn(() => pipelineInstance);
+    pipelineInstance.select = jest.fn(() => pipelineInstance);
+    pipelineInstance.addFields = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    const constantMock = firebaseFirestorePipelines.constant as jest.Mock;
+    const equalMock = firebaseFirestorePipelines.equal as jest.Mock;
+    const greaterThanMock = firebaseFirestorePipelines.greaterThan as jest.Mock;
+    constantMock.mockClear();
+    equalMock.mockClear();
+    greaterThanMock.mockClear();
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 9, nanoseconds: 0 },
+      results: [],
+    }));
+
+    const tsWire = { __kind: 'timestamp', seconds: 1700000000, nanoseconds: 123456000 };
+    const dateWire = { __kind: 'timestamp', seconds: 1700000001, nanoseconds: 789000000 };
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'events' },
+        stages: [
+          {
+            stage: 'where',
+            options: {
+              condition: {
+                __kind: 'expression',
+                exprType: 'Function',
+                name: 'and',
+                args: [
+                  {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'equal',
+                    args: [
+                      { __kind: 'expression', exprType: 'Field', path: 'createdAt' },
+                      { __kind: 'expression', exprType: 'Constant', value: tsWire },
+                    ],
+                  },
+                  {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'greaterThan',
+                    args: [
+                      { __kind: 'expression', exprType: 'Field', path: 'createdAt' },
+                      { __kind: 'expression', exprType: 'Constant', value: dateWire },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            stage: 'select',
+            options: {
+              selections: [
+                {
+                  alias: 'nested',
+                  as: 'nested',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Constant',
+                    value: { at: tsWire, history: [dateWire] },
+                  },
+                },
+              ],
+            },
+          },
+          {
+            stage: 'addFields',
+            options: {
+              fields: [
+                {
+                  alias: 't',
+                  as: 't',
+                  expr: { __kind: 'expression', exprType: 'Constant', value: tsWire },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      undefined,
+    );
+
+    const expectTimestamp = (value: unknown, seconds: number, nanoseconds: number) => {
+      expect(value).toBeInstanceOf(WebTimestamp);
+      expect((value as WebTimestamp).seconds).toBe(seconds);
+      expect((value as WebTimestamp).nanoseconds).toBe(nanoseconds);
+    };
+
+    expect(equalMock).toHaveBeenCalledTimes(1);
+    expect(greaterThanMock).toHaveBeenCalledTimes(1);
+    expectTimestamp(greaterThanMock.mock.calls[0]?.[1], 1700000001, 789000000);
+
+    const constantArgs = constantMock.mock.calls.map(call => call[0]);
+    expect(constantArgs).toHaveLength(3);
+    expectTimestamp(constantArgs[0], 1700000000, 123456000);
+    const nested = constantArgs[1] as { at: unknown; history: unknown[] };
+    expectTimestamp(nested.at, 1700000000, 123456000);
+    expectTimestamp(nested.history[0], 1700000001, 789000000);
+    expectTimestamp(constantArgs[2], 1700000000, 123456000);
+  });
+
+  it('revives timestamps in rawStage params and options for the web SDK', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.rawStage = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 9, nanoseconds: 0 },
+      results: [],
+    }));
+
+    const tsWire = { __kind: 'timestamp', seconds: -1, nanoseconds: 999000000 };
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'events' },
+        stages: [
+          {
+            stage: 'rawStage',
+            options: {
+              name: 'custom',
+              params: [tsWire, { nested: [tsWire] }],
+              options: { since: tsWire },
+            },
+          },
+        ],
+      },
+      undefined,
+    );
+
+    const [name, params, options] = (pipelineInstance.rawStage as jest.Mock).mock.calls[0] as any[];
+    expect(name).toBe('custom');
+    for (const value of [params[0], params[1].nested[0], options.since]) {
+      expect(value).toBeInstanceOf(WebTimestamp);
+      expect(value.seconds).toBe(-1);
+      expect(value.nanoseconds).toBe(999000000);
+    }
+  });
+
+  it('rejects malformed serialized timestamps instead of building a web Timestamp', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.select = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    for (const bad of [
+      { __kind: 'timestamp', seconds: '1', nanoseconds: 0 },
+      { __kind: 'timestamp', seconds: 1, nanoseconds: 1e9 },
+      { __kind: 'timestamp', seconds: 253402300800, nanoseconds: 0 },
+    ]) {
+      await expect(
+        executeWebSdkPipeline(
+          firestore,
+          {
+            source: { source: 'collection', path: 'events' },
+            stages: [
+              {
+                stage: 'select',
+                options: {
+                  selections: [
+                    {
+                      alias: 't',
+                      as: 't',
+                      expr: { __kind: 'expression', exprType: 'Constant', value: bad },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          undefined,
+        ),
+      ).rejects.toThrow(
+        'pipelineExecute() expected stage.options.selections[0].expr.value to be a timestamp with integer seconds between -62135596800 and 253402300799',
+      );
+    }
   });
 
   it('preserves helper-specific shapes for conditional and array builders', async function () {
