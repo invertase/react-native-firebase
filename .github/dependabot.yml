@@ -16,6 +16,25 @@ updates:
       semver-patch-days: 7
     labels:
       - 'dependencies'
+    groups:
+      npm-minor-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
+        # Test-app pins (okf-bundle/testing/test-app-dependency-pins.md) stay as
+        # individual PRs so one pinned package cannot turn the whole group red.
+        exclude-patterns:
+          - 'react'
+          - '@types/react'
+          - 'react-native'
+          - 'react-native-*'
+          - '@react-native/*'
+          - '@react-native-community/*'
+          - '@react-native-async-storage/*'
+          - '@react-native-firebase/*'
+          - 'expo'
+          - 'expo-*'
+          - 'babel-preset-expo'
 
   - package-ecosystem: 'github-actions'
     # Workflow files stored in the
@@ -27,6 +46,11 @@ updates:
       default-days: 7
     labels:
       - 'dependencies'
+    groups:
+      github-actions-minor-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
 
   # Root Gemfile (CocoaPods, xcodeproj, SimpleCov, RuboCop)
   - package-ecosystem: 'bundler'
@@ -40,3 +64,8 @@ updates:
       semver-patch-days: 7
     labels:
       - 'dependencies'
+    groups:
+      bundler-minor-patch:
+        update-types:
+          - 'minor'
+          - 'patch'
