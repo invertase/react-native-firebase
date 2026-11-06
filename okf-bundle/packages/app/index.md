@@ -16,6 +16,8 @@ Knowledge for the core app package: Firebase app lifecycle, Expo config plugin, 
 
 The workspace RN CLI prebuilt RNCore iOS **build** fixture (`test-rn-bare/`) is not Detox e2e and is not the Expo link closer. Canonical command: `yarn test-rn-bare:ios:build` ([agent command policy](../../testing/agent-command-policy.md)). Consumer compile (GitHub #8883) is this fixture; producer podspecs stay in [iOS RNCore podspec invariants](../../ios-rncore-podspec.md). Issue 2 pin stays on `tests/` ([test app dependency pins](../../testing/test-app-dependency-pins.md)).
 
+The React Native SwiftPM-mode autolinking plugin (`packages/app/spm/`) builds every installed RNFB iOS package into one generated Swift package; it does not use CocoaPods or `firebase_spm.rb`. Two tables need a manual update: `CORE_CLASSES` in `spm/src/targets.ts` when a package's Swift code starts to use an Objective-C class of the same package, and `SCRIPT_PHASE_IDS` in `spm/src/scriptPhases.ts` when a package adds an iOS script phase. Tests in `packages/app/spm/__tests__/` fail and name the table until it is updated. CI closer: `yarn test-rn-swiftpm:ios:build` ([agent command policy](../../testing/agent-command-policy.md)).
+
 ## Documents
 
 * Cross-cutting durable SPM decisions: [iOS SPM native integration](../../ios-spm-native-imports.md) ([app-target FirebaseCore link](../../ios-spm-native-imports.md#app-target-firebasecore-link-package-dependency-alone-is-not-enough); [exact SPM Firebase SDK version](../../ios-spm-native-imports.md#exact-spm-firebase-ios-sdk-version); [ObjC flag on RNFB pod targets](../../ios-spm-native-imports.md#objc-flag-on-rnfb-pod-targets); [Expo precompiled linkage repair](../../ios-spm-native-imports.md#expo-precompiled-module-linkage-repair))
@@ -24,6 +26,7 @@ The workspace RN CLI prebuilt RNCore iOS **build** fixture (`test-rn-bare/`) is 
 
 * [`packages/app/firebase_spm.rb`](../../../packages/app/firebase_spm.rb) — SPM activation, embed phase, `rnfirebase_add_spm_core_to_app_target`
 * [`packages/app/__tests__/`](../../../packages/app/__tests__/) — Ruby SPM unit tests
+* [`packages/app/spm/`](../../../packages/app/spm/) — React Native SwiftPM-mode autolinking plugin (TypeScript source, Jest tests)
 * [`packages/app/plugin/src/ios/appDelegate.ts`](../../../packages/app/plugin/src/ios/appDelegate.ts) — Expo AppDelegate `FirebaseApp.configure()` injection
 * [`test-expo/`](../../../test-expo/) — workspace Expo example and documented-path iOS link closer (not Detox; closer is build-only)
 * [`test-rn-bare/`](../../../test-rn-bare/) — workspace RN CLI prebuilt RNCore iOS compile fixture (not Detox)

@@ -18,4 +18,7 @@ module.exports = {
       },
     },
   },
+  spm: {
+    autolinkingPlugin: './spm/build/index.js',
+  },
 };
