@@ -80,6 +80,13 @@ function macOsTestAppPidsByName() {
   }
 }
 
+// Jet loads this config in the process that listens on the Jet and control ports (under
+// --coverage, nyc's child). Record it so an interrupted run's Jet stays owned and the
+// default yarn tests:e2e:release frees its ports; the app it spawns is owned through it.
+function recordJetProcess(jetPort) {
+  recordPid(process.pid, `jet:${jetPort}`);
+}
+
 let currentMacApp = null;
 
 function macOsAppRecordLabel() {
@@ -246,6 +253,7 @@ async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
 }
 
 module.exports = {
+  recordJetProcess,
   config: {
     port: parseEnvPort(process.env.JET_REMOTE_PORT) ?? SERIAL_JET_PORT,
     slow: 3000,
@@ -268,6 +276,7 @@ module.exports = {
         const jetPort = readJetPort();
         config.metroPort = metroPort;
         config.port = jetPort;
+        recordJetProcess(jetPort);
         console.warn(`[rnfb-e2e] macos Jet port=${jetPort} metro=${metroPort}`);
         await waitForMetroMacosBundle(metroPort);
         const macBinary = macOsBinaryPath();

@@ -318,8 +318,9 @@ function foreignHolderError(what, pids, category, env = process.env) {
   const owners = pids.map(pid => pidOwner(pid, env));
   const holders = pids.map((pid, i) => `${describePid(pid)} owner=${owners[i]}`).join('; ');
   const hint = owners.includes('this-checkout-unrecorded')
-    ? `It runs from this checkout but no run recorded it (started before the run record, or ` +
-      `outside yarn tests:*). Stop it, or in this shell's slot env run: ` +
+    ? `It runs from this checkout but no run recorded it (for example started outside ` +
+      `yarn tests:*, before the run record existed, or by a step that does not record what ` +
+      `it starts). Stop it, or in this shell's slot env run: ` +
       `yarn tests:e2e:release --include-unrecorded --only ${category}`
     : `Another owner holds it, so it is not killed. Free it from its owner, or use a free slot: ` +
       `eval "$(yarn tests:e2e:export-slot-env <platform> N)" (yarn tests:e2e:check --services names one)`;
