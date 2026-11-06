@@ -52,12 +52,12 @@ const config: PackageConfig = {
     {
       name: 'ReactNativeFirebaseAppCheckProviderWebOptions',
       reason:
-        'RN Firebase-specific web provider config shape used by `ReactNativeFirebaseAppCheckProvider.configure()`.',
+        'Deprecated RN Firebase-specific web provider config shape; accepted by `ReactNativeFirebaseAppCheckProvider.configure()` for compatibility but not read at runtime (other platforms use `CustomProvider`).',
     },
     {
       name: 'ReactNativeFirebaseAppCheckProviderAppleOptions',
       reason:
-        'RN Firebase-specific Apple provider config shape used to select native iOS/macOS App Check providers.',
+        'RN Firebase-specific provider config shape for the iOS (`apple` key) options, used to select native iOS App Check providers.',
     },
     {
       name: 'ReactNativeFirebaseAppCheckProviderAndroidOptions',
@@ -67,7 +67,7 @@ const config: PackageConfig = {
     {
       name: 'ReactNativeFirebaseAppCheckProviderOptionsMap',
       reason:
-        'RN Firebase-specific cross-platform provider options map used to configure Android, Apple, and web providers together.',
+        'RN Firebase-specific cross-platform provider options map used to configure Android and iOS (`apple` key) native providers together (the `web` key is deprecated and not read).',
     },
     {
       name: 'ReactNativeFirebaseAppCheckProviderConfig',

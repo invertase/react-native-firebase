@@ -141,7 +141,7 @@ v26 aligns React Native Firebase modular types and several runtime signatures wi
 | Method | Before | After | Notes |
 | ------ | ------ | ----- | ----- |
 | `logEvent(analytics, …)` | `Promise<void>` | `void` | Fire-and-forget; remove `await` / `.then()` |
-| `initializeAppCheck(app?, options?)` | `Promise<AppCheck>` | `AppCheck` | Returns handle immediately; provider setup continues natively |
+| `initializeAppCheck(app?, options?)` | `Promise<AppCheck>` | `AppCheck` | Returns handle immediately; provider setup continues in the background (native SDK, or firebase-js-sdk web interop on macOS and web); setup failures are reported with `console.warn` |
 | `initializeFirestore(app, settings, databaseId?)` | `Promise<Firestore>` | `Firestore` | Returns instance immediately; `settings()` runs on native bridge |
 | `getRemoteConfig(app?, options?)` | `(app?)` only | `(app?, options?: RemoteConfigOptions)` | `options` accepted for parity; no-op on native |
 | `aggregateFieldEqual()` | Not exported | Exported | Aggregate query helper |
@@ -554,7 +554,7 @@ The namespaced API for `@react-native-firebase/app-check` has been **removed**. 
 
 ## Signature changes
 
-- `initializeAppCheck(app?, options?)` returns `AppCheck` synchronously (previously `Promise<AppCheck>`). Native provider setup continues in the background — remove `await` and do not chain `.then()`.
+- `initializeAppCheck(app?, options?)` returns `AppCheck` synchronously (previously `Promise<AppCheck>`). Provider setup continues in the background (native SDK, or firebase-js-sdk web interop on macOS and web) — remove `await` and do not chain `.then()`. A failure while configuring the provider is reported with `console.warn` instead of an unhandled promise rejection; invalid options still throw synchronously.
 
 # Analytics
 

@@ -22,13 +22,14 @@ import androidx.annotation.NonNull;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.AppCheckProvider;
 import com.google.firebase.appcheck.AppCheckProviderFactory;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ReactNativeFirebaseAppCheckProviderFactory implements AppCheckProviderFactory {
   private static final String LOGTAG = "RNFBAppCheck";
 
   // This object has one job - create + maintain control over one provider per app
-  public HashMap<String, ReactNativeFirebaseAppCheckProvider> providers = new HashMap<>();
+  public Map<String, ReactNativeFirebaseAppCheckProvider> providers = new ConcurrentHashMap<>();
 
   // Our provider will serve as a facade to all the supported native providers,
   // we will just pass through configuration calls to it
@@ -41,15 +42,14 @@ public class ReactNativeFirebaseAppCheckProviderFactory implements AppCheckProvi
             + providerName
             + (debugToken != null ? "/(not shown)" : "/null"));
 
-    ReactNativeFirebaseAppCheckProvider provider;
-
-    // Look up the correct provider for the given appName, create it if not created
-    provider = providers.get(appName);
-    if (provider == null) {
-      provider = new ReactNativeFirebaseAppCheckProvider();
-      providers.put(appName, provider);
-    }
+    ReactNativeFirebaseAppCheckProvider provider =
+        providers.computeIfAbsent(appName, k -> new ReactNativeFirebaseAppCheckProvider());
     provider.configure(appName, providerName, debugToken);
+  }
+
+  boolean isProviderReady(String appName) {
+    ReactNativeFirebaseAppCheckProvider provider = providers.get(appName);
+    return provider != null && provider.delegateProvider != null;
   }
 
   @NonNull
