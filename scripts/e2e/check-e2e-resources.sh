@@ -341,7 +341,7 @@ fi
 if [[ "$BUSY" -ne 0 ]]; then
   if [[ "$JSON" -eq 0 ]]; then
     if [[ -n "$LOCAL_UNRECORDED_CATEGORIES" ]]; then
-      echo "[check-e2e-resources] owner=this-checkout-unrecorded: running from this checkout but no run recorded it (started before the run record, or outside yarn tests:*). Stop it, or in this shell's slot env run: yarn tests:e2e:release --include-unrecorded --only ${LOCAL_UNRECORDED_CATEGORIES}${E2E_SLOT_OVERRIDE:+ --slot=${E2E_SLOT_OVERRIDE}}" >&2
+      echo "[check-e2e-resources] owner=this-checkout-unrecorded: running from this checkout but no run recorded it (for example started outside yarn tests:*, before the run record existed, or by a step that does not record what it starts). Stop it, or in this shell's slot env run: yarn tests:e2e:release --include-unrecorded --only ${LOCAL_UNRECORDED_CATEGORIES}${E2E_SLOT_OVERRIDE:+ --slot=${E2E_SLOT_OVERRIDE}}" >&2
     fi
     if [[ "$UNRECORDED_BUSY" -eq 1 ]]; then
       free_slot="$(e2e_first_free_slot || true)"

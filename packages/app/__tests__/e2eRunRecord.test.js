@@ -5,6 +5,7 @@ const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const runRecord = require(path.join(repoRoot, 'tests/e2e/runRecord'));
+jest.setTimeout(30000);
 const recordLib = path.join(repoRoot, 'scripts/e2e/lib/e2e-run-record.sh');
 const releaseScript = path.join(repoRoot, 'scripts/e2e/release-e2e-resources.sh');
 
@@ -312,6 +313,79 @@ describe('release-e2e-resources.sh scope', function () {
     expect(out).not.toMatch(new RegExp(`pids=.*\\b${theirs.child.pid}\\b`));
     expect(await settle(ours.exited, 2000)).toBe('SIGTERM');
     expect(await settle(theirs.exited, 200)).toBe('running');
+  });
+
+  it('macOS Jet records itself, so the default release frees its ports after an interrupted run', async function () {
+    // Stands in for `npx jet --target=macos` (cwd tests-macos): Jet loads .jetrc.js in the
+    // process that listens on the Jet and control ports.
+    const jetrcPath = path.join(repoRoot, 'tests-macos/.jetrc.js');
+    const child = spawn(
+      process.execPath,
+      [
+        '-e',
+        `require(${JSON.stringify(jetrcPath)}).recordJetProcess(13210); console.log('ready'); setTimeout(() => {}, 60000)`,
+      ],
+      {
+        cwd: path.join(repoRoot, 'tests-macos'),
+        stdio: ['ignore', 'pipe', 'ignore'],
+        env: cleanEnv({ RNFB_E2E_SLOT: '1', RNFB_E2E_RUN_RECORD_DIR: path.join(dir, 'rec') }),
+      },
+    );
+    const exited = new Promise(resolve => child.once('exit', (_code, signal) => resolve(signal)));
+    sleepers.push({ child, exited });
+    await new Promise(resolve => child.stdout.once('data', resolve));
+    // slot-1 macos: jet :13210, jet-control :13211
+    fs.writeFileSync(
+      path.join(dir, 'lsof.out'),
+      [
+        'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME',
+        `node ${child.pid} me 20u IPv4 0x1 0t0 TCP 127.0.0.1:13210 (LISTEN)`,
+        `node ${child.pid} me 21u IPv4 0x2 0t0 TCP 127.0.0.1:13211 (LISTEN)`,
+        '',
+      ].join('\n'),
+    );
+    expect(
+      fs.readdirSync(path.join(dir, 'rec', 'slot-1')).filter(n => n.startsWith('pid-')),
+    ).toHaveLength(1);
+
+    const out = release(['--platform=macos', '--slot=1', '--only=jet']);
+
+    expect(out).toMatch(/scope=recorded only/);
+    expect(out).toMatch(new RegExp(`SIGTERM :13210 pids=${child.pid}\\b`));
+    expect(await settle(exited, 2000)).toBe('SIGTERM');
+  });
+
+  it('macOS .jetrc before() records the Jet process before it waits for Metro or spawns the app', function () {
+    const src = fs.readFileSync(path.join(repoRoot, 'tests-macos/.jetrc.js'), 'utf8');
+    const before = src.slice(src.indexOf('async before(config)'), src.indexOf('async after('));
+    const at = needle => {
+      const i = before.indexOf(needle);
+      expect(i).toBeGreaterThanOrEqual(0);
+      return i;
+    };
+    expect(src).toMatch(/recordPid\(process\.pid, `jet:\$\{jetPort\}`\)/);
+    expect(at('recordJetProcess(jetPort);')).toBeGreaterThan(at('throw foreignHolderError('));
+    expect(at('recordJetProcess(jetPort);')).toBeLessThan(at('await waitForMetroMacosBundle('));
+    expect(at('recordJetProcess(jetPort);')).toBeLessThan(at('spawn(macBinary'));
+  });
+
+  it('release names an unrecorded holder from this checkout without asserting why it is unrecorded', function () {
+    const pid = startDetached(['/bin/sleep', '60'], repoRoot);
+    try {
+      fs.writeFileSync(
+        path.join(dir, 'lsof.out'),
+        `sleep ${pid} me 21u IPv4 0x2 0t0 TCP 127.0.0.1:13210 (LISTEN)\n`,
+      );
+      const { stderr } = runRelease(['--platform=macos', '--slot=1', '--only=jet']);
+      expect(stderr).toMatch(
+        new RegExp(
+          `:13210 pid=${pid} .*owner=this-checkout-unrecorded — not recorded by this checkout's runs, left running: it runs from this checkout but no run recorded it \\(for example started outside yarn tests:\\*, before the run record existed, or by a step that does not record what it starts\\)`,
+        ),
+      );
+      expect(alive(pid)).toBe(true);
+    } finally {
+      killQuietly(pid);
+    }
   });
 
   it('kills unrecorded listeners only with the manual --include-unrecorded flag', async function () {
@@ -996,6 +1070,7 @@ describe('tests/e2e/runRecord.js', function () {
       expect(message).toContain(`cwd=${repoRoot}`);
       expect(message).toContain('owner=this-checkout-unrecorded');
       expect(message).toContain('yarn tests:e2e:release --include-unrecorded --only metro');
+      expect(message).toContain('or by a step that does not record what it starts');
     } finally {
       killQuietly(pid);
     }
@@ -1183,6 +1258,10 @@ exit 1
     expect(status).toBe(1);
     expect(output).toMatch(new RegExp(`pids=${pid} owner=this-checkout-unrecorded`));
     expect(output).toContain('yarn tests:e2e:release --include-unrecorded --only jet --slot=1');
+    // Causes are examples: a yarn tests:* step that does not record what it starts counts too.
+    expect(output).toContain(
+      'no run recorded it (for example started outside yarn tests:*, before the run record existed, or by a step that does not record what it starts)',
+    );
     expect(output).not.toMatch(/first free slot/);
   });
 

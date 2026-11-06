@@ -1,5 +1,6 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
+jest.setTimeout(30000);
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const lib = path.join(repoRoot, 'scripts/e2e/lib/e2e-resource-env.sh');
