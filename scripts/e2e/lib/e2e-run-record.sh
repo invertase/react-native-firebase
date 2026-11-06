@@ -330,7 +330,7 @@ e2e_pid_describe() {
 e2e_foreign_holder_hint() {
   local owner=$1 category=$2
   if [[ "$owner" == this-checkout-unrecorded ]]; then
-    echo "it runs from this checkout but no run recorded it (started before the run record, or outside yarn tests:*). Stop it, or in this shell's slot env run: yarn tests:e2e:release --include-unrecorded --only ${category}"
+    echo "it runs from this checkout but no run recorded it (for example started outside yarn tests:*, before the run record existed, or by a step that does not record what it starts). Stop it, or in this shell's slot env run: yarn tests:e2e:release --include-unrecorded --only ${category}"
   else
     echo "another owner holds it. Free it from its owner, or use a free slot: eval \"\$(yarn tests:e2e:export-slot-env <platform> N)\" (yarn tests:e2e:check --services names one)"
   fi
