@@ -147,15 +147,25 @@ function startedDuringThisRun(pid) {
  * `release --include-unrecorded --devices` reads `-avd X` too, but `test` is never an
  * identity AVD.)
  */
-function recordAndroidDevice(serial, avd, env = process.env, { onlyIfStartedDuringRun } = {}) {
+function recordAndroidDevice(
+  serial,
+  avd,
+  env = process.env,
+  { onlyIfStartedDuringRun, requireSerial } = {},
+) {
   if (!avd) {
     return null;
   }
   let candidates = listProcesses().filter(
     p => /qemu-system/.test(p.args) && qemuCmdlineMatchesAvd(p.args, avd),
   );
-  if (candidates.length > 1 && serial) {
+  // requireSerial: the caller spawned `-port <serial port>` itself, so a lone same-AVD
+  // qemu on another port, or another owner's qemu on this port, is never adopted.
+  if (requireSerial || (candidates.length > 1 && serial)) {
     candidates = candidates.filter(p => consoleSerialFromQemuArgs(p.args) === serial);
+  }
+  if (requireSerial) {
+    candidates = candidates.filter(p => pidOwner(p.pid, env) !== 'unrecorded');
   }
   if (candidates.length !== 1) {
     return null;
@@ -261,6 +271,13 @@ function recordedLivePids(label, env = process.env) {
     .map(({ fields }) => Number(fields[1]));
 }
 
+/** Live recorded qemu pids (instance start time still matches) for an AVD. */
+function recordedLiveAndroidQemuPids(avd, env = process.env) {
+  return listEntries('android', env)
+    .filter(({ fields }) => fields[2] === avd && processStartTime(fields[3]) === fields[4])
+    .map(({ fields }) => Number(fields[3]));
+}
+
 /**
  * True when pid is this process, one of its descendants, or (an ancestor is) a live
  * pid recorded by this checkout's runs for the current identity.
@@ -316,6 +333,7 @@ module.exports = {
   foreignHolderError,
   isOwnedPid,
   listEntries,
+  listProcesses,
   pidOwner,
   processCwd,
   processStartTime,
@@ -323,6 +341,7 @@ module.exports = {
   recordIosSimulator,
   recordPid,
   recordRunDevice,
+  recordedLiveAndroidQemuPids,
   recordedLivePids,
   runIdentity,
   runRecordDir,

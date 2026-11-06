@@ -543,6 +543,278 @@ setTimeout(() => {}, 60000);`,
     });
   }
 
+  describe('harness device reboot (launchApp-retry cold boot)', function () {
+    const { bootAndRecord } = require(path.join(repoRoot, 'tests/e2e/deviceBoot'));
+    const slotEnv = () => ({
+      RNFB_E2E_SLOT: '1',
+      RNFB_E2E_RUN_RECORD_DIR: path.join(dir, 'rec'),
+    });
+    const scoped = ['--platform=android', '--slot=1', '--devices', '--only=android-emulator'];
+    const testsDir = path.join(repoRoot, 'tests');
+    const started = [];
+
+    afterEach(function () {
+      for (const pid of started.splice(0)) {
+        if (pidAlive(pid)) {
+          process.kill(pid, 'SIGKILL');
+        }
+      }
+    });
+
+    // Stands in for coldBootAndroidEmulator: the old qemu is gone and a new one is spawned
+    // by the (unrecorded) Detox worker from tests/, then reparented once that worker exits.
+    function coldBoot(port, cwd = testsDir) {
+      const pid = startDetached(
+        [
+          process.execPath,
+          '-e',
+          'setTimeout(() => {}, 60000)',
+          'qemu-system-fake',
+          '@TestingAVD-1',
+          '-port',
+          port,
+        ],
+        cwd,
+      );
+      started.push(pid);
+      return pid;
+    }
+
+    // As the harness wrapper does: the cold boot spawned `-port <port>` itself.
+    function recordColdBoot(port) {
+      return runRecord.recordAndroidDevice(`emulator-${port}`, 'TestingAVD-1', slotEnv(), {
+        requireSerial: true,
+      });
+    }
+
+    function check() {
+      return spawnSync(
+        '/bin/bash',
+        [
+          path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh'),
+          '--platform=android',
+          '--slot=1',
+        ],
+        {
+          encoding: 'utf8',
+          cwd: repoRoot,
+          env: cleanEnv({
+            PATH: `${dir}:${process.env.PATH}`,
+            RNFB_E2E_RUN_RECORD_DIR: path.join(dir, 'rec'),
+            RNFB_FAKE_LSOF: path.join(dir, 'lsof.out'),
+            // As export-slot-env android 1 pins them.
+            ANDROID_SERIAL: 'emulator-5558',
+            RNFB_ANDROID_CONSOLE_PORT: '5558',
+            RNFB_ANDROID_AVD: 'TestingAVD-1',
+          }),
+        },
+      );
+    }
+
+    beforeEach(function () {
+      writeExecutable(path.join(dir, 'adb'), '#!/bin/bash\nexit 0\n');
+    });
+
+    it('without a re-record, release --devices leaves the new emulator running but names it', async function () {
+      const qemuPid = coldBoot('16250');
+      const out = runRelease(scoped);
+      expect(out.stderr).toMatch(
+        new RegExp(
+          `serial=emulator-16250 avd=TestingAVD-1 .*owner=this-checkout-unrecorded — runs from this checkout but no run recorded it, left running.*--include-unrecorded --devices --only android-emulator --slot=1`,
+        ),
+      );
+      expect(await waitGone(qemuPid, 300)).toBe(false);
+    });
+
+    it('bootAndRecord re-records the cold-booted instance, so release --devices stops it', async function () {
+      let qemuPid;
+      await bootAndRecord(
+        async () => {
+          qemuPid = coldBoot('16252');
+        },
+        () => expect(recordColdBoot('16252')).toBe('emulator-16252'),
+      );
+      expect(fs.readdirSync(path.join(dir, 'rec', 'slot-1'))).toContain('android-emulator-16252');
+      const out = runRelease(scoped);
+      expect(out.stdout).toMatch(
+        new RegExp(
+          `stop serial=emulator-16252 avd=TestingAVD-1 qemu=${qemuPid} \\(recorded instance\\)`,
+        ),
+      );
+      expect(await waitGone(qemuPid, 3000)).toBe(true);
+    });
+
+    it('bootAndRecord records even when the boot throws after the new instance is up', async function () {
+      let qemuPid;
+      await expect(
+        bootAndRecord(
+          async () => {
+            qemuPid = coldBoot('16254');
+            throw new Error('cold-boot spawn did not register');
+          },
+          () => recordColdBoot('16254'),
+        ),
+      ).rejects.toThrow('did not register');
+      expect(fs.readdirSync(path.join(dir, 'rec', 'slot-1'))).toContain('android-emulator-16254');
+      runRelease(scoped);
+      expect(await waitGone(qemuPid, 3000)).toBe(true);
+    });
+
+    it('check names an unrecorded emulator on the identity AVD at its allocated serial', function () {
+      const qemuPid = coldBoot('5558');
+      const result = check();
+      expect(result.stdout).toMatch(
+        new RegExp(
+          `INFO\\s+android emulator emulator-5558 avd=TestingAVD-1 qemu pid=${qemuPid} cwd=${testsDir} owner=this-checkout-unrecorded — no run recorded it, so release --devices leaves it running`,
+        ),
+      );
+      expect(result.stdout).not.toMatch(/BUSY\s+android emulator/);
+      recordColdBoot('5558');
+      expect(check().stdout).not.toMatch(/android emulator emulator-5558/);
+    });
+
+    it("check is BUSY for another owner's emulator on this identity's serial, INFO with a remedy elsewhere", function () {
+      const foreignCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-other-owner-'));
+      try {
+        const onOurs = coldBoot('5558', foreignCwd);
+        const onSlot2 = coldBoot('5560', foreignCwd);
+        const result = check();
+        expect(result.status).toBe(1);
+        expect(result.stdout).toMatch(
+          new RegExp(
+            `BUSY\\s+android emulator emulator-5558 avd=TestingAVD-1 qemu pid=${onOurs} cwd=${fs.realpathSync(foreignCwd)} owner=unrecorded — another owner's emulator on this identity's serial emulator-5558; release leaves it running \\(free it from its owner, or move this run to a free slot\\)`,
+          ),
+        );
+        expect(result.stdout).toMatch(
+          new RegExp(
+            `INFO\\s+android emulator emulator-5560 avd=TestingAVD-1 qemu pid=${onSlot2} .*owner=unrecorded — not this checkout's; release leaves it running \\(free it from its owner, or move this run to a free slot\\)`,
+          ),
+        );
+        expect(result.stderr).toMatch(
+          /owner=unrecorded: held by another owner .*first free slot: \d+/,
+        );
+      } finally {
+        fs.rmSync(foreignCwd, { recursive: true, force: true });
+      }
+    });
+
+    it('requireSerial never adopts a lone same-AVD emulator on another serial', function () {
+      coldBoot('16240');
+      expect(
+        runRecord.recordAndroidDevice('emulator-5558', 'TestingAVD-1', slotEnv(), {
+          requireSerial: true,
+        }),
+      ).toBeNull();
+      expect(fs.existsSync(path.join(dir, 'rec', 'slot-1'))).toBe(false);
+      expect(runRecord.recordAndroidDevice('emulator-5558', 'TestingAVD-1', slotEnv())).toBe(
+        'emulator-16240',
+      );
+    });
+
+    it("the cold-boot stop ends only this run's emulator; another owner's same-AVD one survives", async function () {
+      const { ownQemuPids, ownQemuRunning, stopQemuPids } = require(
+        path.join(repoRoot, 'tests/e2e/androidColdBoot'),
+      );
+      const foreignCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-other-owner-'));
+      try {
+        const ownOnPort = coldBoot('5558');
+        const ownRecorded = coldBoot('16264');
+        expect(recordColdBoot('16264')).toBe('emulator-16264');
+        const foreign = coldBoot('16262', foreignCwd);
+        const foreignOtherAvd = startDetached(
+          [
+            process.execPath,
+            '-e',
+            'setTimeout(() => {}, 60000)',
+            'qemu-system-fake',
+            '@Other',
+            '-port',
+            '5558',
+          ],
+          foreignCwd,
+        );
+        started.push(foreignOtherAvd);
+
+        // Another owner's same-AVD qemu on our console port (the tokens bind no socket).
+        const foreignOnOurPort = coldBoot('5558', foreignCwd);
+
+        expect(ownQemuRunning('5558', 'TestingAVD-1', { env: slotEnv() })).toBe(true);
+        const pids = ownQemuPids('5558', 'TestingAVD-1', { env: slotEnv() });
+        expect(pids.sort()).toEqual([ownOnPort, ownRecorded].sort());
+        await stopQemuPids(pids, { timeoutMs: 5000, pollMs: 50 });
+        expect(pidAlive(ownOnPort)).toBe(false);
+        expect(pidAlive(ownRecorded)).toBe(false);
+        expect(await waitGone(foreign, 300)).toBe(false);
+        expect(pidAlive(foreignOtherAvd)).toBe(true);
+        expect(pidAlive(foreignOnOurPort)).toBe(true);
+        // Neither waited on nor re-recorded as this run's relaunch.
+        expect(ownQemuRunning('5558', 'TestingAVD-1', { env: slotEnv() })).toBe(false);
+        expect(ownQemuRunning('16262', 'TestingAVD-1', { env: slotEnv() })).toBe(false);
+        expect(recordColdBoot('5558')).toBeNull();
+        expect(fs.readdirSync(path.join(dir, 'rec', 'slot-1'))).not.toContain(
+          'android-emulator-5558',
+        );
+      } finally {
+        fs.rmSync(foreignCwd, { recursive: true, force: true });
+      }
+    });
+
+    it('the cold-boot stop SIGKILLs an own qemu that ignores SIGTERM', async function () {
+      const { stopQemuPids } = require(path.join(repoRoot, 'tests/e2e/androidColdBoot'));
+      const stubborn = startDetached(
+        [
+          process.execPath,
+          '-e',
+          "process.on('SIGTERM', () => {}); setTimeout(() => {}, 60000)",
+          'qemu-system-fake',
+          '@TestingAVD-1',
+          '-port',
+          '5558',
+        ],
+        testsDir,
+      );
+      started.push(stubborn);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await stopQemuPids([stubborn], { timeoutMs: 300, killTimeoutMs: 3000, pollMs: 50 });
+      expect(pidAlive(stubborn)).toBe(false);
+    });
+
+    it('every harness reboot path goes through bootAndRecord', function () {
+      const src = fs.readFileSync(path.join(repoRoot, 'tests/e2e/firebase.test.js'), 'utf8');
+      const body = name => {
+        const start = src.search(new RegExp(`^(async )?function ${name}\\(`, 'm'));
+        expect(start).toBeGreaterThanOrEqual(0);
+        const end = src.indexOf('\n}\n', start);
+        return src.slice(start, end);
+      };
+      expect(body('coldBootAndroidEmulator')).toMatch(
+        /bootAndRecord\(\s*\(\) => coldBootAndroidEmulatorUnrecorded\(\),\s*\(\) => recordThisRunDevice\('android', undefined, \{ requireSerial: true \}\),?\s*\)/,
+      );
+      expect(body('rebootIosSimulator')).toMatch(
+        /bootAndRecord\(\s*\(\) => rebootIosSimulatorUnrecorded\(testsDir\),\s*\(\) => recordThisRunDevice\('ios'\),?\s*\)/,
+      );
+      // The unrecorded bodies are reachable only through those wrappers.
+      expect(src.match(/coldBootAndroidEmulatorUnrecorded\(/g)).toHaveLength(2);
+      expect(src.match(/rebootIosSimulatorUnrecorded\(/g)).toHaveLength(2);
+      expect(src.match(/coldBootAndroidEmulatorUnrecorded\b/g)).toHaveLength(2);
+      expect(src.match(/rebootIosSimulatorUnrecorded\b/g)).toHaveLength(2);
+      // The cold boot stops only this run's emulator: never by AVD-name pattern.
+      const coldBootBody = body('coldBootAndroidEmulatorUnrecorded');
+      expect(src).not.toMatch(/pkill|qemuAvdPgrepPattern/);
+      expect(coldBootBody).toMatch(/ownQemuPids\(port, ANDROID_AVD_NAME\)/);
+      expect(coldBootBody).toMatch(/await stopQemuPids\(ownPids\)/);
+      expect(src.match(/emu kill`, \{/g)).toHaveLength(1);
+      expect(coldBootBody).toMatch(
+        /if \(ownOnSerial && consoleAvd === ANDROID_AVD_NAME\) \{\s*try \{\s*execSync\(`\$\{adb\} -s \$\{serial\} emu kill`/,
+      );
+      // Nothing else spawns an emulator or the simulator boot script.
+      expect(src.match(/spawn\(emulatorPath/g)).toHaveLength(1);
+      expect(body('coldBootAndroidEmulatorUnrecorded')).toMatch(/spawn\(emulatorPath/);
+      expect(src.match(/boot-simulator\.sh'\)/g)).toHaveLength(1);
+      expect(body('rebootIosSimulatorUnrecorded')).toMatch(/boot-simulator\.sh'\)/);
+    });
+  });
+
   it('--include-unrecorded force-stops apps on the configured serial only when its emulator traces to this checkout', async function () {
     const log = path.join(dir, 'actions.log');
     writeExecutable(

@@ -31,7 +31,6 @@ const {
   parseEmulatorConsolePort,
   shouldFailFastQemuWithoutAdb,
   qemuCmdlineMatchesAvd,
-  qemuAvdPgrepPattern,
   adbRangeDiagnosis,
   isMetroWaitFailure,
   shouldColdBootAndroidOnLaunchRetry,
@@ -52,6 +51,8 @@ const {
 } = require('./runRecord');
 const { killTcpPortListener, recordTcpPortListeners } = require('./portOwnership');
 const { simulatorRebootEnv } = require('./simulatorBootEnv');
+const { bootAndRecord } = require('./deviceBoot');
+const { ownQemuPids, ownQemuRunning, stopQemuPids } = require('./androidColdBoot');
 
 const E2E_TEST_PROJECT = 'react-native-firebase-testing';
 const E2E_CLOUD_PRESSURE_LOG_FILTER = 'jsonPayload.message="[rnfb-e2e-metrics]"';
@@ -385,6 +386,13 @@ function logLaunchInstallState(label) {
 }
 
 function rebootIosSimulator(testsDir) {
+  return bootAndRecord(
+    () => rebootIosSimulatorUnrecorded(testsDir),
+    () => recordThisRunDevice('ios'),
+  );
+}
+
+function rebootIosSimulatorUnrecorded(testsDir) {
   return new Promise((resolve, reject) => {
     const repoRoot = path.resolve(testsDir, '..');
     const bootScript = path.join(repoRoot, '.github/workflows/scripts/boot-simulator.sh');
@@ -714,26 +722,14 @@ async function ensureAndroidJetHostClear(label = 'android-jet-host-clear') {
   console.log(`[rnfb-e2e] ${label}: host clear`);
 }
 
-async function waitUntilQemuGoneForAvd(avdName, timeoutMs = 60000) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    if (!qemuRunningForAvd(avdName)) {
-      return;
-    }
-    await sleep(500);
-  }
-  throw new Error(
-    `[rnfb-e2e] cold-boot: qemu for AVD ${avdName} still present after kill within ${timeoutMs}ms`,
-  );
-}
-
 async function waitForColdBootEmulatorRegistered(serial, avdName, timeoutMs) {
   const deadline = Date.now() + timeoutMs;
   console.log(
     `[rnfb-e2e] cold-boot: waiting up to ${timeoutMs}ms for qemu @${avdName} and adb serial ${serial}`,
   );
+  const port = resolveAndroidEmulatorPort(serial);
   while (Date.now() < deadline) {
-    const qemuUp = qemuRunningForAvd(avdName);
+    const qemuUp = ownQemuRunning(port, avdName);
     const state = adbDeviceState(serial);
     if (qemuUp && state === 'device') {
       console.log(`[rnfb-e2e] cold-boot: qemu+adb registered serial=${serial}`);
@@ -741,7 +737,7 @@ async function waitForColdBootEmulatorRegistered(serial, avdName, timeoutMs) {
     }
     await sleep(1000);
   }
-  const qemuUp = qemuRunningForAvd(avdName);
+  const qemuUp = ownQemuRunning(port, avdName);
   const state = adbDeviceState(serial);
   throw new Error(
     `[rnfb-e2e] cold-boot spawn did not register: AVD=${avdName} serial=${serial} ` +
@@ -750,7 +746,14 @@ async function waitForColdBootEmulatorRegistered(serial, avdName, timeoutMs) {
   );
 }
 
-async function coldBootAndroidEmulator() {
+function coldBootAndroidEmulator() {
+  return bootAndRecord(
+    () => coldBootAndroidEmulatorUnrecorded(),
+    () => recordThisRunDevice('android', undefined, { requireSerial: true }),
+  );
+}
+
+async function coldBootAndroidEmulatorUnrecorded() {
   const adb = resolveAdbPath();
   const serial = resolveAndroidSerial();
   const port = resolveAndroidEmulatorPort(serial);
@@ -763,23 +766,38 @@ async function coldBootAndroidEmulator() {
       `(kill + relaunch with ${extraBootArgs.join(' ')})`,
   );
 
-  try {
-    execSync(`${adb} -s ${serial} emu kill`, { stdio: 'inherit', timeout: 60000 });
-  } catch (err) {
-    console.warn(`[rnfb-e2e] emu kill failed (continuing): ${err?.message || err}`);
-  }
+  // Only this run's emulator: its qemu on this console port, or its recorded instance.
+  // Another owner's `-read-only` qemu on the same AVD is never touched.
+  const ownPids = ownQemuPids(port, ANDROID_AVD_NAME);
+  const ownOnSerial = ownQemuRunning(port, ANDROID_AVD_NAME);
+  console.warn(`[rnfb-e2e] cold-boot: stopping own qemu pid(s) ${ownPids.join(',') || 'none'}`);
 
+  let consoleAvd = '';
   try {
-    execSync(`pkill -f ${JSON.stringify(qemuAvdPgrepPattern(ANDROID_AVD_NAME))}`, {
-      stdio: 'ignore',
-      timeout: 5000,
-    });
+    consoleAvd = execSync(`${adb} -s ${serial} emu avd name`, {
+      encoding: 'utf8',
+      timeout: 10000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .split(/\r?\n/)[0]
+      .trim();
   } catch (_) {
-    // No matching emulator process.
+    // Console not reachable; the qemu pid signal below still applies.
+  }
+  if (ownOnSerial && consoleAvd === ANDROID_AVD_NAME) {
+    try {
+      execSync(`${adb} -s ${serial} emu kill`, { stdio: 'inherit', timeout: 60000 });
+    } catch (err) {
+      console.warn(`[rnfb-e2e] emu kill failed (continuing): ${err?.message || err}`);
+    }
+  } else {
+    console.warn(
+      `[rnfb-e2e] cold-boot: no emu kill on ${serial} (own qemu on ${serial}=${ownOnSerial}, console avd=${consoleAvd || 'unknown'}, want ${ANDROID_AVD_NAME})`,
+    );
   }
 
-  // Do not spawn while a dying Detox/prior qemu for this exact @AVD is still listed.
-  await waitUntilQemuGoneForAvd(ANDROID_AVD_NAME);
+  // Do not spawn while this run's dying qemu is still listed.
+  await stopQemuPids(ownPids);
 
   const emulatorArgs = [
     '-verbose',
@@ -1721,9 +1739,14 @@ async function runJetE2eAttempt(attempt) {
   ]);
 }
 
-function recordThisRunDevice(platform, deviceId) {
+function recordThisRunDevice(platform, deviceId = detox.device?.id ?? device?.id, options = {}) {
   if (platform === 'android') {
-    const serial = recordAndroidDevice(resolveAndroidSerial(), ANDROID_AVD_NAME);
+    const serial = recordAndroidDevice(
+      resolveAndroidSerial(),
+      ANDROID_AVD_NAME,
+      process.env,
+      options,
+    );
     console.log(`[rnfb-e2e] run record: android serial=${serial || 'not-found'}`);
   } else if (platform === 'ios' && deviceId) {
     const udid = recordIosSimulator(deviceId, process.env.RNFB_IOS_SIMULATOR || 'iPhone 17');
@@ -1742,7 +1765,7 @@ describe('Jet Tests', function () {
     cacheUsesLiveMetro();
 
     // The device instance this run works with, so release --devices can stop exactly it
-    // (re-recorded after every relaunch below).
+    // (coldBootAndroidEmulator / rebootIosSimulator re-record after every reboot).
     recordThisRunDevice(platform, deviceId);
 
     let lastFailure;
@@ -1786,17 +1809,12 @@ describe('Jet Tests', function () {
           await drainJetAttempt(platform);
           if (platform === 'ios' && process.platform === 'darwin') {
             await rebootIosSimulator(testsDir);
-            recordThisRunDevice(platform, deviceId);
           } else if (platform === 'android') {
             foldDetoxChildProcessOutputIntoError(lastFailure);
             enrichAndroidLaunchFailureWithGuestSignals(lastFailure);
             if (shouldColdBootAndroidOnLaunchRetry(lastFailure)) {
               console.warn('[rnfb-e2e] Android device-side launch failure — cold booting emulator');
-              try {
-                await coldBootAndroidEmulator();
-              } finally {
-                recordThisRunDevice(platform, deviceId);
-              }
+              await coldBootAndroidEmulator();
               await waitForAndroidEmulatorReady();
             } else if (isMetroWaitFailure(lastFailure) && usesLiveMetro()) {
               console.warn(
