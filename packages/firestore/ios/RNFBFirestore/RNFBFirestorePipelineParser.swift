@@ -15,6 +15,7 @@
  */
 
 import Foundation
+import FirebaseFirestore
 
 struct RNFBFirestoreParsedPipelineRequest {
   let source: RNFBFirestoreParsedPipelineSource
@@ -1186,6 +1187,16 @@ enum RNFBFirestorePipelineParser {
     return parsedValue
   }
 
+  /// The GeoPoint JS serializes as `{ __kind: 'geoPoint', latitude, longitude }`.
+  static func serializedGeoPoint(_ map: [String: Any]) -> GeoPoint? {
+    guard (map["__kind"] as? String) == "geoPoint",
+          let latitude = (map["latitude"] as? NSNumber)?.doubleValue,
+          let longitude = (map["longitude"] as? NSNumber)?.doubleValue else {
+      return nil
+    }
+    return GeoPoint(latitude: latitude, longitude: longitude)
+  }
+
   private static func isExpressionLike(_ map: [String: Any]) -> Bool {
     if isSerializedReferencePathConstantMap(map) {
       return false
@@ -1406,6 +1417,11 @@ enum RNFBFirestorePipelineParser {
         ])
       case let .valueEnter(value, box, fieldName):
         if let map = value as? [String: Any] {
+          if let geoPoint = serializedGeoPoint(map) {
+            box.value = .primitive(geoPoint)
+            continue
+          }
+
           // A PipelineValue is an opaque nested-pipeline subquery (scalar/array).
           // Preserve the raw map verbatim so the node builder can re-parse the
           // nested pipeline via parsePipelineMap. Descending into it here would

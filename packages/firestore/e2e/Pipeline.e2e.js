@@ -207,6 +207,33 @@ describe('FirestorePipeline', function () {
       first.get('nested.embedding').toArray().should.eql([9, 8, 7]);
     });
 
+    it('sends GeoPoint constants as geo points', async function () {
+      const { execute, field, constant } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc, GeoPoint } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const location = new GeoPoint(40.7, -74);
+
+      await setDoc(doc(db, docPath), { location });
+
+      // A GeoPoint sent as a map would neither equal the stored geo point nor
+      // read back as one.
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .documents([docPath])
+          .where(field('location').equal(constant(location)))
+          .select(constant(new GeoPoint(1, 2)).as('point')),
+      );
+
+      snapshot.results.should.have.length(1);
+      const point = snapshot.results[0].get('point');
+      point.constructor.name.should.equal('GeoPoint');
+      point.latitude.should.equal(1);
+      point.longitude.should.equal(2);
+    });
+
     it('throws helpful validation errors for invalid source arguments', function () {
       const { getFirestore } = firestoreModular;
       const db = getFirestore(DATABASE_ID);
