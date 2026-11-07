@@ -1127,12 +1127,13 @@ describe('harness fail-fast on holders another owner started', function () {
 
   it('macOS .jetrc before() fails fast on a same-name app it did not start and leaves it running', async function () {
     const name = `rnfbmac${process.pid % 100000}`;
-    // Symlinked node keeps the product name as its process name (a copied system binary
-    // is killed on exec by macOS).
+    // A symlinked sleep keeps the product name as its process name on macOS and Linux.
+    // Not node: on Linux it renames its main thread to MainThread. Not a copy: macOS
+    // kills a copied system binary on exec.
     const bin = path.join(dir, name);
-    fs.symlinkSync(process.execPath, bin);
+    fs.symlinkSync('/bin/sleep', bin);
     process.env.RNFB_MACOS_PRODUCT_NAME = name;
-    const pid = startDetached([bin, '-e', 'setTimeout(() => {}, 60000)']);
+    const pid = startDetached([bin, '60']);
     try {
       expect(
         await waitFor(() => {
