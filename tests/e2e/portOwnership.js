@@ -4,7 +4,7 @@
  * this checkout's runs recorded; any other holder fails fast and is never killed.
  */
 const { execSync } = require('child_process');
-const { foreignHolderError, isOwnedPid, recordPid } = require('./runRecord');
+const { describePid, foreignHolderError, isOwnedPid, pidOwner, recordPid } = require('./runRecord');
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -64,6 +64,15 @@ async function killTcpPortListener(port, label, category = 'jet') {
   }
 }
 
+/** For a port that stays open: what lsof sees on it now, with each holder's owner. */
+function describeTcpListeners(port) {
+  const pids = listTcpListenPids(port);
+  if (pids.length === 0) {
+    return `lsof lists no listener on :${port}`;
+  }
+  return pids.map(pid => `${describePid(pid)} owner=${pidOwner(pid)}`).join('; ');
+}
+
 /** Record owned listeners only (a foreign holder that won the bind is never recorded). */
 function recordTcpPortListeners(port, label) {
   for (const pid of listOwnedTcpListenPids(port)) {
@@ -72,6 +81,7 @@ function recordTcpPortListeners(port, label) {
 }
 
 module.exports = {
+  describeTcpListeners,
   killTcpPortListener,
   listOwnedTcpListenPids,
   listTcpListenPids,

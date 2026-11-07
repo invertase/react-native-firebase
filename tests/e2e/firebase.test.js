@@ -43,13 +43,18 @@ const {
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
 const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
+const { JetAttemptAbandonedError, stopAttemptJet } = require('./jetAttemptDrain');
 const {
   recordAndroidDevice,
   recordIosSimulator,
   recordPid,
   recordedLivePids,
 } = require('./runRecord');
-const { killTcpPortListener, recordTcpPortListeners } = require('./portOwnership');
+const {
+  describeTcpListeners,
+  killTcpPortListener,
+  recordTcpPortListeners,
+} = require('./portOwnership');
 const { simulatorRebootEnv } = require('./simulatorBootEnv');
 const { bootAndRecord } = require('./deviceBoot');
 const { ownQemuPids, ownQemuRunning, stopQemuPids } = require('./androidColdBoot');
@@ -639,7 +644,12 @@ function parseGuestLoad1Min(loadavgLine) {
 // Own/recorded listeners only; another owner's holder fails fast (tests/e2e/portOwnership.js).
 async function ensureTcpPortClosed(port, label, timeoutMs = KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS) {
   await killTcpPortListener(port, label);
-  await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
+  try {
+    await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
+  } catch (err) {
+    err.message = `${err.message} [${label}: ${describeTcpListeners(port)}]`;
+    throw err;
+  }
 }
 
 function forceStopAndroidTestingApps(label) {
@@ -978,6 +988,8 @@ async function waitForAndroidEmulatorReady() {
 async function drainJetAttempt(platform) {
   const ctx = lastJetAttemptContext;
   console.warn('[rnfb-e2e] Draining Jet attempt before outer retry...');
+  // Before the orchestrate wait: a launch retry still running must not respawn Jet.
+  ctx?.jetSession?.abandon();
 
   if (platform === 'android') {
     try {
@@ -1005,10 +1017,9 @@ async function drainJetAttempt(platform) {
     ]);
   }
 
-  if (ctx?.jetProcess && !ctx.jetProcess.killed) {
-    ctx.jetProcess.kill('SIGTERM');
-    await sleep(500);
-    killSpawnedProcessTree(ctx.jetProcess);
+  const stoppedPid = stopAttemptJet(ctx?.jetSession, { killTree: killSpawnedProcessTree });
+  if (stoppedPid) {
+    console.warn(`[rnfb-e2e] drain: stopped the attempt's current Jet pid=${stoppedPid}`);
   }
 
   if (platform === 'android') {
@@ -1518,6 +1529,9 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
       });
       return;
     } catch (err) {
+      if (err?.jetAttemptAbandoned) {
+        throw err;
+      }
       foldDetoxChildProcessOutputIntoError(err);
       if (detoxPlatformKey() === 'android') {
         enrichAndroidLaunchFailureWithGuestSignals(err);
@@ -1546,6 +1560,7 @@ function createJetSession(jetArgs, testsDir) {
   let output = '';
   let jetProcess;
   let ignoreExit = false;
+  let abandoned = false;
   let resolveExit;
   let rejectExit;
 
@@ -1591,6 +1606,9 @@ function createJetSession(jetArgs, testsDir) {
   };
 
   const spawnJet = () => {
+    if (abandoned) {
+      throw new JetAttemptAbandonedError();
+    }
     const jp = jetRemotePort();
     const mp = metroPortForHost();
     const jcp = jetControlPort();
@@ -1623,6 +1641,9 @@ function createJetSession(jetArgs, testsDir) {
       return output;
     },
     exitPromise,
+    abandon() {
+      abandoned = true;
+    },
     /**
      * Kill Jet with ignoreExit held so exitPromise does not reject and steal an
      * outer Promise.race from a retryable caller error (await-exit stall).
@@ -1717,7 +1738,7 @@ async function runJetE2eAttempt(attempt) {
   };
 
   const orchestratePromise = orchestrate();
-  lastJetAttemptContext = { jetProcess: jetSession.process, orchestratePromise };
+  lastJetAttemptContext = { jetSession, orchestratePromise };
 
   return Promise.race([
     orchestratePromise
