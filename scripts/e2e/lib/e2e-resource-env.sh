@@ -239,6 +239,25 @@ e2e_is_unscoped_global() {
   [[ "$(e2e_active_platforms)" == "global" ]]
 }
 
+# --slot=N on check/release: apply slot N's env so ports, adb serial, AVD,
+# simulator and macOS names are slot N's (not serial defaults). Keeps the
+# caller's RNFB_E2E_PLATFORM narrowing; E2E_PLATFORM_OVERRIDE is untouched.
+# Returns 2 when a different slot's env is already loaded.
+e2e_reapply_selected_slot() {
+  local slot=$1
+  local keep_platform="${RNFB_E2E_PLATFORM:-}"
+  local loaded="${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}"
+  if [[ -n "$loaded" && "$loaded" != "$slot" ]]; then
+    echo "[e2e-resource-env] --slot=${slot} does not match the loaded slot ${loaded} env" >&2
+    return 2
+  fi
+  e2e_slot_env_apply "${E2E_PLATFORM_OVERRIDE:-${keep_platform:-android}}" "$slot" || return 1
+  if [[ -n "$keep_platform" ]]; then
+    export RNFB_E2E_PLATFORM="$keep_platform"
+  fi
+  return 0
+}
+
 e2e_effective_slot() {
   echo "${E2E_SLOT_OVERRIDE:-${RNFB_E2E_SLOT:-${RNFB_E2E_HOST_SLOT:-}}}"
 }

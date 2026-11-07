@@ -10,9 +10,10 @@
 # when you want a single command that also confirms nothing is bound on those ports.
 #
 # Default (no args, no slot env) = serial ports/devices only. --all-slots is the only
-# leftover-slot wipe. Slot via env or --slot=N. BUSY lines carry owner=this-checkout
-# (recorded; release frees it), owner=this-checkout-unrecorded (runs from this repo but
-# unrecorded; the exact --include-unrecorded command is printed) or owner=unrecorded
+# leftover-slot wipe. Slot via env or --slot=N (re-applies slot N's env, as release
+# does). BUSY lines carry owner=this-checkout (recorded; release frees it),
+# owner=this-checkout-unrecorded (runs from this repo but unrecorded; the exact
+# --include-unrecorded command is printed) or owner=unrecorded
 # (another owner; never killed — a free slot is suggested). iOS: only the identity's
 # exact simulator counts; other booted simulators are INFO.
 #
@@ -56,7 +57,7 @@ for arg in "$@"; do
       E2E_PLATFORM_OVERRIDE="${arg#--platform=}"
       ;;
     -h | --help)
-      sed -n '2,26p' "$0"
+      sed -n '2,27p' "$0"
       exit 0
       ;;
     *)
@@ -73,6 +74,9 @@ if [[ -n "${E2E_SLOT_OVERRIDE:-}" || "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
 fi
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && e2e_validate_platform_name "$E2E_PLATFORM_OVERRIDE"
 [[ -n "${RNFB_E2E_PLATFORM:-}" ]] && e2e_validate_platform_name "$RNFB_E2E_PLATFORM"
+if [[ "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 && "$E2E_ALL_SLOTS" != "1" ]]; then
+  e2e_reapply_selected_slot "$E2E_SLOT_OVERRIDE" || exit $?
+fi
 
 e2e_collect_targets
 e2e_lsof_cache_load

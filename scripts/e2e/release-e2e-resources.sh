@@ -25,6 +25,10 @@
 #   bash scripts/e2e/release-e2e-resources.sh --slot=1
 #   bash scripts/e2e/release-e2e-resources.sh --all-slots --devices   # manual only
 #
+# --slot=N re-applies slot N's env (ports, TestingAVD-N / emulator-<5556+2N>,
+# RN E2E iOS slot-N, io.invertase.testing.sN) and fails (exit 2) when a different
+# slot's env is loaded.
+#
 # After export-slot-env (full carry-in), default release clears all three platform port
 # blocks for that slot (ports+apps only — not AVD/sims). End-of-slot / final free so
 # check --platform=ios is CLEAR: pass --devices. Mid-wave early free of one platform
@@ -83,7 +87,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h|--help)
-      sed -n '2,33p' "$0"
+      sed -n '2,37p' "$0"
       exit 0
       ;;
     *)
@@ -101,6 +105,9 @@ if [[ -n "${E2E_SLOT_OVERRIDE:-}" || "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 ]]; then
 fi
 [[ -n "${E2E_PLATFORM_OVERRIDE:-}" ]] && e2e_validate_platform_name "$E2E_PLATFORM_OVERRIDE"
 [[ -n "${RNFB_E2E_PLATFORM:-}" ]] && e2e_validate_platform_name "$RNFB_E2E_PLATFORM"
+if [[ "$E2E_SLOT_SELECTOR_PRESENT" -eq 1 && "$E2E_ALL_SLOTS" != "1" ]]; then
+  e2e_reapply_selected_slot "$E2E_SLOT_OVERRIDE" || exit $?
+fi
 
 E2E_KNOWN_CATEGORIES=(metro jet jet-control emulators android-apps macos-app ios-sims android-emulator)
 

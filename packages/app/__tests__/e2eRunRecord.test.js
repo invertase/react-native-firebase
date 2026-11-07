@@ -1492,7 +1492,7 @@ exit 1
     const { status, output } = check(pid);
     expect(status).toBe(1);
     expect(output).toMatch(
-      new RegExp(`BUSY\\s+port :13010 \\(jet:android-slot1\\) pids=${pid} owner=unrecorded`),
+      new RegExp(`BUSY\\s+port :13010 \\(jet:android\\) pids=${pid} owner=unrecorded`),
     );
     expect(output).toMatch(
       /owner=unrecorded: held by another owner .*first free slot: \d+ — eval "\$\(yarn tests:e2e:export-slot-env <platform> \d+\)"/,
