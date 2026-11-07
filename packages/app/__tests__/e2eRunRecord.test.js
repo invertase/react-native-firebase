@@ -1127,13 +1127,18 @@ describe('harness fail-fast on holders another owner started', function () {
 
   it('macOS .jetrc before() fails fast on a same-name app it did not start and leaves it running', async function () {
     const name = `rnfbmac${process.pid % 100000}`;
-    // A symlinked sleep keeps the product name as its process name on macOS and Linux.
-    // Not node: on Linux it renames its main thread to MainThread. Not a copy: macOS
-    // kills a copied system binary on exec.
+    // macOS names a symlinked node after the link (a copied system binary is killed on
+    // exec). Linux node renames its main thread MainThread, so it sets the name itself
+    // (process.title → PR_SET_NAME). A symlinked sleep is no good: uutils coreutils
+    // refuses to run under another name.
     const bin = path.join(dir, name);
-    fs.symlinkSync('/bin/sleep', bin);
+    fs.symlinkSync(process.execPath, bin);
     process.env.RNFB_MACOS_PRODUCT_NAME = name;
-    const pid = startDetached([bin, '60']);
+    const pid = startDetached([
+      bin,
+      '-e',
+      `if (process.platform === 'linux') process.title = ${JSON.stringify(name)}; setTimeout(() => {}, 60000)`,
+    ]);
     try {
       expect(
         await waitFor(() => {
