@@ -33,8 +33,12 @@ function writeStub(dir, name, body) {
   fs.chmodSync(file, 0o755);
 }
 
-// An idle host: lsof sees no listener and no emulator, simulator, or macOS app runs. The
-// Jet-port loopback probe still reaches the real host, so tests do not assert CLEAR ports.
+// Unreachable pid: a stubbed listener is never a real process and never recorded.
+const FAKE_PID = '99999999';
+
+// An idle host: no emulator, simulator, or macOS app runs, and lsof sees a listener only on
+// the ports in RNFB_FAKE_LISTEN (owned by FAKE_PID). The Jet-port loopback probe still
+// reaches the real host, so tests do not assert CLEAR ports.
 function stubHost() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-release-scope-'));
   writeStub(
@@ -43,7 +47,23 @@ function stubHost() {
     `[[ "$1" == devices ]] && printf 'List of devices attached\\n\\n'
 exit 1`,
   );
-  writeStub(dir, 'lsof', 'exit 1');
+  writeStub(
+    dir,
+    'lsof',
+    `ports="\${RNFB_FAKE_LISTEN:-}"
+[[ -n "$ports" ]] || exit 1
+for a in "$@"; do
+  case "$a" in
+    -iTCP:*)
+      p="\${a#-iTCP:}"
+      [[ " $ports " == *" $p "* ]] || exit 1
+      [[ " $* " == *" -t "* ]] && echo ${FAKE_PID} || echo "node ${FAKE_PID} u 20u IPv4 0 0t0 TCP *:$p (LISTEN)"
+      exit 0
+      ;;
+  esac
+done
+for p in $ports; do echo "node ${FAKE_PID} u 20u IPv4 0 0t0 TCP *:$p (LISTEN)"; done`,
+  );
   writeStub(dir, 'xcrun', `[[ " $* " == *" list devices "* ]] && echo '{"devices":{}}'\nexit 0`);
   writeStub(dir, 'pgrep', 'exit 1');
   writeStub(dir, 'ps', `[[ " $* " == *" pid=,args= "* ]] && exit 0\nexec /bin/ps "$@"`);
@@ -53,15 +73,29 @@ exit 1`,
   return dir;
 }
 
-function run(script, args, extraEnv = {}) {
+function run(script, args, extraEnv = {}, { observeCheckTmp = false } = {}) {
   const dir = stubHost();
   const log = path.join(dir, 'actions.log');
+  const tmp = path.join(dir, 'tmp');
+  fs.mkdirSync(tmp);
+  if (observeCheckTmp) {
+    // release runs the recheck as `bash check-e2e-resources.sh`: list TMPDIR while it runs.
+    writeStub(
+      dir,
+      'bash',
+      `if [[ "$1" == */check-e2e-resources.sh ]]; then
+  printf 'check-tmp %s\\n' "$(ls "$TMPDIR" | tr '\\n' ' ')" >> "$RNFB_ACTION_LOG"
+fi
+exec /bin/bash "$@"`,
+    );
+  }
   try {
     const res = spawnSync('/bin/bash', [script, ...args], {
       cwd: repoRoot,
       encoding: 'utf8',
       env: {
         ...cleanEnv(),
+        TMPDIR: `${tmp}/`,
         ...extraEnv,
         PATH: `${dir}:${process.env.PATH || '/usr/bin:/bin'}`,
         RNFB_ACTION_LOG: log,
@@ -72,6 +106,8 @@ function run(script, args, extraEnv = {}) {
     return {
       status: res.status,
       out: `${res.stdout}${res.stderr}`,
+      actions,
+      tmpLeft: fs.readdirSync(tmp),
       // Device and app actions; read-only probes (devices, list, pgrep, ps) are excluded.
       kills: actions.filter(l =>
         /^(adb -s \S+ (emu kill|shell am force-stop)|xcrun simctl shutdown|pkill|killall)/.test(l),
@@ -145,5 +181,30 @@ describe('check and release --slot=N re-apply the slot env', function () {
   it('leaves --all-slots unscoped (no slot env applied)', function () {
     const r = run(check, ['--slot=2', '--all-slots']);
     expect(r.out).toContain('android serial=emulator-5554 avd=TestingAVD');
+  });
+});
+
+describe('release recheck output under TMPDIR', function () {
+  // Another owner's Metro on slot 2's android Metro port: release leaves it and rechecks.
+  const busy = { RNFB_FAKE_LISTEN: '14007' };
+
+  it('prints the recheck output and leaves no check-output file in TMPDIR', function () {
+    const r = run(release, ['--slot=2', '--devices'], busy);
+    expect(r.status).toBe(1);
+    expect(r.out).toContain('[release-e2e-resources] still BUSY');
+    expect(r.out).toMatch(/BUSY\s+port :14007 .*owner=unrecorded/);
+    expect(r.tmpLeft).toEqual([]);
+  });
+
+  it('creates the check output under the caller TMPDIR during the recheck and removes it', function () {
+    const r = run(release, ['--slot=2', '--devices'], busy, { observeCheckTmp: true });
+    const seen = r.actions.filter(l => l.startsWith('check-tmp '));
+    // Two forceful rounds plus the final recheck.
+    expect(seen).toHaveLength(3);
+    for (const line of seen) {
+      expect(line).toMatch(/^check-tmp rnfb-check-e2e-resources\.\w{6} $/);
+    }
+    expect(new Set(seen).size).toBe(1);
+    expect(r.tmpLeft).toEqual([]);
   });
 });

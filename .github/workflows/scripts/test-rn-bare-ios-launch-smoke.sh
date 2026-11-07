@@ -44,14 +44,17 @@ WORKSPACE="${RNFB_TEST_RN_BARE_WORKSPACE:-test-rn-bare/ios/testrnbare.xcworkspac
 SCHEME="${RNFB_TEST_RN_BARE_SCHEME:-testrnbare}"
 SIM_NAME="${RNFB_TEST_RN_BARE_IOS27_DEVICE:-iPhone 18 Pro}"
 METRO_PORT="${RNFB_TEST_RN_BARE_METRO_PORT:-8081}"
-METRO_LOG="${RNFB_TEST_RN_BARE_METRO_LOG:-/tmp/test-rn-bare-launch-smoke-metro.log}"
-APP_LOG="${RNFB_TEST_RN_BARE_LAUNCH_LOG:-/tmp/test-rn-bare-launch-smoke.log}"
-XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG:-/tmp/test-rn-bare-launch-smoke-xcodebuild.log}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+METRO_LOG="${RNFB_TEST_RN_BARE_METRO_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-metro.log}"
+APP_LOG="${RNFB_TEST_RN_BARE_LAUNCH_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke.log}"
+XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-xcodebuild.log}"
 PODS_PBXPROJ="test-rn-bare/ios/Pods/Pods.xcodeproj/project.pbxproj"
 LAUNCH_DERIVED_DATA=""
 LOG_LEVEL="default"
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
-  LAUNCH_DERIVED_DATA="${RNFB_TEST_RN_BARE_LAUNCH_DERIVED_DATA:-/tmp/test-rn-bare-launch-derived-data-dynamic-firebase}"
+  LAUNCH_DERIVED_DATA="${RNFB_TEST_RN_BARE_LAUNCH_DERIVED_DATA:-${TMP_ROOT}/test-rn-bare-launch-derived-data-dynamic-firebase}"
   # FirebaseCore's configure marker is a debug-level log.
   LOG_LEVEL="debug"
 fi
@@ -93,7 +96,7 @@ if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   if [[ -z "$LAUNCH_DERIVED_DATA" || "$LAUNCH_DERIVED_DATA" == "/" ]]; then
     fail "refusing to delete launch DerivedData path '${LAUNCH_DERIVED_DATA}'"
   fi
-  # Same rule as the probe build: a surviving /tmp path from another checkout
+  # Same rule as the probe build: a surviving temp path from another checkout
   # is not evidence for this one.
   rm -rf "$LAUNCH_DERIVED_DATA"
   log "removed launch DerivedData at ${LAUNCH_DERIVED_DATA} before xcodebuild"

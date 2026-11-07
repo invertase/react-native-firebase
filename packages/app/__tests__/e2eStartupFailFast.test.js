@@ -26,12 +26,21 @@ ${body}`,
   );
 }
 
+const tempDirs = [];
+
 function writeTemp(contents) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-failfast-'));
+  tempDirs.push(dir);
   const file = path.join(dir, 'log.txt');
   fs.writeFileSync(file, contents);
   return file;
 }
+
+afterEach(function () {
+  for (const dir of tempDirs.splice(0)) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 describe('startup fail-fast markers (UNI-9way-latency)', function () {
   const idleLine =

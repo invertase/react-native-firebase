@@ -454,7 +454,7 @@ clear_android_emulator() {
   fi
 }
 
-CHECK_OUT="$(mktemp "${TMPDIR:-/tmp}/rnfb-check-e2e-resources.XXXXXX")"
+CHECK_OUT="$(mktemp "$(e2e_tmp_root)/rnfb-check-e2e-resources.XXXXXX")"
 trap 'rm -f "$CHECK_OUT"' EXIT
 
 clear_ports_matching soft

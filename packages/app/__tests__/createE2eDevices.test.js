@@ -235,6 +235,7 @@ exec /bin/bash "$@"
       }
     }
     env.PATH = `${dir}:${env.PATH}`;
+    env.TMPDIR = dir;
     env.RNFB_XCRUN_LOG = log;
     env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
     const release = (...extra) =>
@@ -382,6 +383,7 @@ exec /bin/bash "$@"
     }
     env.E2E_SLOTTED_MAX = '99';
     env.PATH = `${dir}:${env.PATH}`;
+    env.TMPDIR = dir;
     env.RNFB_ACTION_LOG = log;
     env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
 

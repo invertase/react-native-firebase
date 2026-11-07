@@ -2,6 +2,7 @@ const { execFileSync, spawn, spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { createHermeticHost } = require('./e2eHermeticHost');
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const scriptPath = path.join(repoRoot, 'scripts/e2e/start-packager.sh');
@@ -12,7 +13,8 @@ describe('start-packager.sh yarn surface', function () {
 
   it('honors RCT_METRO_PORT and interpolates TMPDIR with the listen port', function () {
     expect(src).toMatch(/PORT="\$\{RCT_METRO_PORT:-/);
-    expect(src).toMatch(/\$\{HOME\}\/\.metro\/rnfb-\$\{PORT\}/);
+    expect(src).toMatch(/RNFB_METRO_CACHE_ROOT:-\$\{HOME\}\/\.metro\}/);
+    expect(src).toMatch(/CACHE_DIR="\$\{METRO_CACHE_ROOT\}\/rnfb-\$\{PORT\}"/);
   });
 
   it('SIGTERM then SIGKILL only recorded listeners on the Metro port (no PGID / setsid)', function () {
@@ -171,20 +173,109 @@ describe('start-packager.sh yarn surface', function () {
   });
 });
 
+describe('start-packager.sh temp and cache paths (stubbed Metro)', function () {
+  let host;
+
+  beforeEach(function () {
+    host = createHermeticHost('rnfb-start-packager-');
+    const stubs = {
+      // Serial sanitize pins :8081; with no listeners reported nothing on the host is killed.
+      lsof: 'exit 1',
+      watchman: 'exit 0',
+      // Ready only once the stub Metro has written its log line, so the log
+      // is complete when start-packager.sh returns.
+      curl: '[[ -f "$METRO_STUB_READY" ]] && echo packager-status:running\nexit 0',
+      // Stands in for `yarn react-native start`; stdout is the Metro log. Stays
+      // alive (bounded) until afterEach removes the sentinel with the scratch dir.
+      yarn: [
+        'echo "metro TMPDIR=$TMPDIR"',
+        'touch "$METRO_STUB_READY"',
+        'for _ in $(seq 1 120); do [[ -f "$METRO_STUB_READY" ]] || exit 0; sleep 0.5; done',
+      ].join('\n'),
+    };
+    for (const [name, body] of Object.entries(stubs)) {
+      const file = path.join(host.bin, name);
+      fs.writeFileSync(file, `#!/bin/bash\n${body}\n`);
+      fs.chmodSync(file, 0o755);
+    }
+  });
+
+  afterEach(function () {
+    host.cleanup();
+  });
+
+  function run(extraEnv) {
+    const env = host.env();
+    for (const key of Object.keys(env)) {
+      if (key.startsWith('RNFB_') || key.startsWith('JET_') || key === 'RCT_METRO_PORT') {
+        delete env[key];
+      }
+    }
+    const home = path.join(host.root, 'home');
+    fs.mkdirSync(home, { recursive: true });
+    return execFileSync('bash', [scriptPath, 'tests'], {
+      encoding: 'utf8',
+      cwd: repoRoot,
+      env: {
+        ...env,
+        HOME: home,
+        METRO_STUB_READY: path.join(host.root, 'metro-ready'),
+        RNFB_METRO_FORCE_WATCHMAN_RESET: '1',
+        RNFB_METRO_STATUS_WAIT_SEC: '10',
+        ...extraEnv,
+      },
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+  }
+
+  it('defaults the Metro log to the caller TMPDIR and the cache to $HOME/.metro', function () {
+    const out = run({ TMPDIR: `${host.tmp}/` });
+    const log = path.join(host.tmp, 'rnfb-metro-8081.log');
+    const cache = path.join(host.root, 'home/.metro/rnfb-8081');
+    expect(out).toContain(`TMPDIR=${cache} log=${log}`);
+    expect(fs.readFileSync(log, 'utf8')).toContain(`metro TMPDIR=${cache}`);
+  });
+
+  it('RNFB_METRO_CACHE_ROOT moves the Metro cache', function () {
+    const cacheRoot = path.join(host.tmp, 'metro-cache');
+    const out = run({ RNFB_METRO_CACHE_ROOT: `${cacheRoot}/` });
+    expect(out).toContain(`TMPDIR=${cacheRoot}/rnfb-8081 `);
+    expect(fs.readFileSync(path.join(host.tmp, 'rnfb-metro-8081.log'), 'utf8')).toContain(
+      `metro TMPDIR=${cacheRoot}/rnfb-8081`,
+    );
+    expect(fs.existsSync(path.join(cacheRoot, 'rnfb-8081'))).toBe(true);
+    expect(fs.existsSync(path.join(host.root, 'home/.metro'))).toBe(false);
+  });
+
+  it.each(['', '/'])('RNFB_METRO_CACHE_ROOT=%j falls back to $HOME/.metro', function (value) {
+    const cache = path.join(host.root, 'home/.metro/rnfb-8081');
+    const out = run({ RNFB_METRO_CACHE_ROOT: value });
+    expect(out).toContain(`TMPDIR=${cache} `);
+    expect(fs.readFileSync(path.join(host.tmp, 'rnfb-metro-8081.log'), 'utf8')).toContain(
+      `metro TMPDIR=${cache}`,
+    );
+    expect(fs.existsSync(cache)).toBe(true);
+  });
+});
+
 describe('check-e2e-resources.sh CLI', function () {
   const checkPath = path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh');
 
   it('rejects --mellifera (core surface is RNFB_* env only)', function () {
+    const host = createHermeticHost('rnfb-check-cli-');
     let status = 0;
     try {
       execFileSync('bash', [checkPath, '--mellifera'], {
         encoding: 'utf8',
         cwd: repoRoot,
+        env: host.env(),
         stdio: ['pipe', 'pipe', 'pipe'],
       });
     } catch (e) {
       status = e.status;
       expect(`${e.stderr || ''}`).toMatch(/unknown arg: --mellifera/);
+    } finally {
+      host.cleanup();
     }
     expect(status).toBe(2);
   });
