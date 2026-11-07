@@ -503,12 +503,14 @@ e2e_port_listening() {
 
 # A loopback connect sees listeners lsof cannot (other users' sockets). A wedged
 # listener with a full backlog drops the SYN, so the connect is cut off at ~1 s.
-# Tests set RNFB_E2E_PORT_ACCEPTS_CMD to a stub (called with the port) so the
-# probe does not reach the real host.
+# Tests set RNFB_E2E_TEST_PORT_ACCEPTS_CMD to a stub (called with the port) so the
+# probe does not reach the real host. A stub that is not executable counts as
+# accepting, so the port reads BUSY rather than silently CLEAR.
 e2e_port_accepts() {
   local pid i=0
-  if [[ -n "${RNFB_E2E_PORT_ACCEPTS_CMD:-}" ]]; then
-    "$RNFB_E2E_PORT_ACCEPTS_CMD" "$1"
+  if [[ -n "${RNFB_E2E_TEST_PORT_ACCEPTS_CMD:-}" ]]; then
+    [[ -x "$RNFB_E2E_TEST_PORT_ACCEPTS_CMD" ]] || { echo "[e2e-resource-env] RNFB_E2E_TEST_PORT_ACCEPTS_CMD is not executable: $RNFB_E2E_TEST_PORT_ACCEPTS_CMD" >&2; return 0; }
+    "$RNFB_E2E_TEST_PORT_ACCEPTS_CMD" "$1"
     return
   fi
   (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null &

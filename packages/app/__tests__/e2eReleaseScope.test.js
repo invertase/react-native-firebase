@@ -38,7 +38,7 @@ const FAKE_PID = '99999999';
 
 // An idle host: no emulator, simulator, or macOS app runs, and lsof sees a listener only on
 // the ports in RNFB_FAKE_LISTEN (owned by FAKE_PID). The Jet-port loopback probe is
-// stubbed (RNFB_E2E_PORT_ACCEPTS_CMD): only ports in RNFB_FAKE_ACCEPT accept a connect,
+// stubbed (RNFB_E2E_TEST_PORT_ACCEPTS_CMD): only ports in RNFB_FAKE_ACCEPT accept a connect,
 // so it never reaches the real host.
 function stubHost() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-release-scope-'));
@@ -98,11 +98,11 @@ exec /bin/bash "$@"`,
       env: {
         ...cleanEnv(),
         TMPDIR: `${tmp}/`,
+        RNFB_E2E_TEST_PORT_ACCEPTS_CMD: path.join(dir, 'port-accepts'),
         ...extraEnv,
         PATH: `${dir}:${process.env.PATH || '/usr/bin:/bin'}`,
         RNFB_ACTION_LOG: log,
         RNFB_E2E_RUN_RECORD_DIR: path.join(dir, 'rec'),
-        RNFB_E2E_PORT_ACCEPTS_CMD: path.join(dir, 'port-accepts'),
       },
     });
     const actions = fs.existsSync(log) ? fs.readFileSync(log, 'utf8').trim().split('\n') : [];
@@ -189,6 +189,19 @@ describe('check and release --slot=N re-apply the slot env', function () {
   it("reports slot 2's Jet port BUSY owner=unrecorded when it accepts but lsof sees no listener", function () {
     const r = run(check, ['--slot=2'], { RNFB_E2E_PLATFORM: 'android', RNFB_FAKE_ACCEPT: '14010' });
     expect(r.status).toBe(1);
+    expect(r.out).toMatch(/^BUSY\s+port :14010 \(jet:android\).*owner=unrecorded/m);
+    expect(ports(r.out)).not.toContain(14010);
+    expect(ports(r.out)).toContain(14007);
+  });
+
+  it('reports the Jet port BUSY when the port-accepts stub path is missing', function () {
+    const missing = path.join(os.tmpdir(), 'rnfb-missing-port-accepts', 'port-accepts');
+    const r = run(check, ['--slot=2'], {
+      RNFB_E2E_PLATFORM: 'android',
+      RNFB_E2E_TEST_PORT_ACCEPTS_CMD: missing,
+    });
+    expect(r.status).toBe(1);
+    expect(r.out).toContain(`RNFB_E2E_TEST_PORT_ACCEPTS_CMD is not executable: ${missing}`);
     expect(r.out).toMatch(/^BUSY\s+port :14010 \(jet:android\).*owner=unrecorded/m);
     expect(ports(r.out)).not.toContain(14010);
     expect(ports(r.out)).toContain(14007);
