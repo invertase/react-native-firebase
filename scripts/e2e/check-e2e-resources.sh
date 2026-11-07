@@ -192,6 +192,10 @@ for port in "${E2E_PORTS[@]}"; do
         note_owner "$owner" "$category"
         ;;
     esac
+  elif [[ "$label" == jet:* ]] && command -v lsof >/dev/null 2>&1 && e2e_port_accepts "$port"; then
+    # lsof lists only this user's sockets; Jet cannot stop another user's server.
+    report BUSY "port :${port} (${label}) accepts connections but has no listener lsof can attribute to this user owner=unrecorded (likely another user's process; release cannot stop it)"
+    note_owner unrecorded jet
   else
     report CLEAR "port :${port} (${label})"
   fi

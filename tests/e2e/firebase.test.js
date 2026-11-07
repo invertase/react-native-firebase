@@ -61,6 +61,7 @@ const {
   killTcpPortListener,
   recordTcpPortListeners,
 } = require('./portOwnership');
+const { failIfForeignListener } = require('./foreignListener');
 const { simulatorRebootEnv } = require('./simulatorBootEnv');
 const { bootAndRecord } = require('./deviceBoot');
 const { ownQemuPids, ownQemuRunning, stopQemuPids } = require('./androidColdBoot');
@@ -657,6 +658,7 @@ function parseGuestLoad1Min(loadavgLine) {
 
 // Own/recorded listeners only; another owner's holder fails fast (tests/e2e/portOwnership.js).
 async function ensureTcpPortClosed(port, label, timeoutMs = KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS) {
+  await failIfForeignListener(port, label);
   await killTcpPortListener(port, label);
   try {
     await waitForTcpPortClosed(port, '127.0.0.1', timeoutMs);
