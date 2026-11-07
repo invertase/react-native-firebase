@@ -782,6 +782,10 @@ No second lifecycle (no host flock, no Metro-after-build, no slotted packager/te
 
 `scripts/run-full-tests.sh` is the **prescribed full gate** for pre-merge validation in a single worktree. It runs install → Apple pods (ios ∥ macos) → parallel verify (builds, tsc, attw, lint, jest, android/ios unit) → `:test-cover` e2e with coverage post-process. attw ∥ ios unit: [Types-AD-5](architecture-decisions.md#types-ad-5--pack-ignores-nested-ios-unit-build-trees--accepted).
 
+<a id="overlapping-verify-jest"></a>
+
+**Overlapping verify / Jest:** when several worktrees run `yarn test:full` (or the verify phase) concurrently while Apple `:build` writes under `tests/ios/build` / `tests-macos/macos/build`, a Jest walk that recurses those trees can hit ENOENT (live SPM extracts) or SIGSEGV under multi-worker verify. Committed-harness scans skip `build` / `Pods` / `DerivedData` (and similar) directories — [`packages/app/__tests__/harnessCommittedDefaults.test.ts`](../../packages/app/__tests__/harnessCommittedDefaults.test.ts). If verify still flakes under heavy overlap, retry that worktree’s verify (or the full command) once; do not treat a single ENOENT/SIGSEGV under sibling `:build` as product failure.
+
 **Deterministic by default:** every run performs scoped `yarn tests:e2e:release --devices` + check before e2e, and the same release after (pass or fail). That release clears Metro, Jet, Firebase emulator suite ports, test apps, and scoped AVD/sims — `--devices` adds physical device teardown on top of the default port wipe, not instead of it ([release script default](../../scripts/e2e/release-e2e-resources.sh)). Fast reuse / tight edit loops use the decomposed `yarn tests:*` commands in this doc — not `yarn test:full`.
 
 ```bash
