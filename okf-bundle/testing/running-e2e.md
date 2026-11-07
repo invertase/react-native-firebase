@@ -786,7 +786,7 @@ Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080
 # iOS
 eval "$(yarn tests:e2e:clear-slot-env)"                 # serial only: drop leftover export-slot-env
 eval "$(yarn tests:e2e:export-slot-env ios N)"          # omit for serial defaults; N is the slot index
-yarn tests:ios:pod:install                              # separate prior step; :build does not install pods
+yarn tests:ios:pod:install                              # separate prior step; :build does not install pods; serialize across worktrees
 yarn tests:ios:build                                    # compiles only; does not run tests
 yarn tests:e2e:check --platform=ios                     # host-clear
 yarn tests:emulator:start                               # long-running; not the CI-only -ci script
