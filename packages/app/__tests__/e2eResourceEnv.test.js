@@ -31,6 +31,7 @@ function cleanEnv() {
     }
   }
   env.E2E_SLOTTED_MAX = '2';
+  env.RNFB_E2E_RUN_RECORD_DIR = host.runRecordDir;
   return env;
 }
 

@@ -219,6 +219,7 @@ describe('start-packager.sh temp and cache paths (stubbed Metro)', function () {
       env: {
         ...env,
         HOME: home,
+        RNFB_E2E_RUN_RECORD_DIR: host.runRecordDir,
         METRO_STUB_READY: path.join(host.root, 'metro-ready'),
         RNFB_METRO_FORCE_WATCHMAN_RESET: '1',
         RNFB_METRO_STATUS_WAIT_SEC: '10',
@@ -234,6 +235,10 @@ describe('start-packager.sh temp and cache paths (stubbed Metro)', function () {
     const cache = path.join(host.root, 'home/.metro/rnfb-8081');
     expect(out).toContain(`TMPDIR=${cache} log=${log}`);
     expect(fs.readFileSync(log, 'utf8')).toContain(`metro TMPDIR=${cache}`);
+    const recorded = fs
+      .readdirSync(path.join(host.runRecordDir, 'serial'))
+      .map(f => fs.readFileSync(path.join(host.runRecordDir, 'serial', f), 'utf8'));
+    expect(recorded.some(line => /\tmetro:8081$/m.test(line))).toBe(true);
   });
 
   it('RNFB_METRO_CACHE_ROOT moves the Metro cache', function () {
