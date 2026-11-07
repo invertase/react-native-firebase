@@ -628,16 +628,22 @@ If this recurs: `yarn tests:e2e:release --only macos-app` in the run's slot env 
 
 ## Typical loop
 
-```bash
-# Background (once):
-yarn tests:emulator:start
-yarn tests:packager:jet            # iOS/Android
-# yarn tests:macos:packager:jet    # when running macOS Jet instead
+iOS is one order. On a shared host, slot env is loaded before the packager or emulator. `yarn tests:ios:pod:install` is a separate prior step. `yarn tests:ios:build` compiles only and does not install pods. `yarn tests:ios:test-cover` does not build. The agent emulator command is `yarn tests:emulator:start` (`yarn tests:emulator:start-ci` is CI-only). The agent test command is `yarn tests:ios:test-cover` (`yarn tests:ios:test` is a different script). After the packager starts, its status body contains `packager-status:running`, then [services ready](#2-services-ready) repeats that check after the build.
 
-# Per platform (rebuild when native changed). Apple :build compiles only —
-# full e2e requires pod:install as a separate prior step (skip for Android).
+```bash
+# iOS
 yarn tests:ios:pod:install
-yarn tests:ios:build && yarn tests:ios:test-cover
+yarn tests:ios:build
+yarn tests:e2e:check --platform=ios          # host-clear
+yarn tests:emulator:start                    # long-running
+yarn tests:packager:jet                      # long-running; status body contains packager-status:running
+# services-ready, then:
+yarn tests:ios:test-cover
+
+# Android / macOS. Apple :build compiles only — pod:install is a separate prior step (skip for Android).
+yarn tests:emulator:start
+yarn tests:packager:jet
+# yarn tests:macos:packager:jet              # when running macOS Jet instead
 yarn tests:android:build && yarn tests:android:test-cover
 yarn tests:macos:pod:install
 yarn tests:macos:build && yarn tests:macos:test-cover
@@ -774,15 +780,32 @@ Serial e2e uses committed defaults (Metro `:8081`, Jet `:8090`, emulators `:8080
 
 **Parallel e2e topology (worktrees):** same-platform parallel needs **one git worktree per concurrent instance** of that platform. Populate each instance with `git worktree add` (or clone) + `yarn` in **that** tree — never `rsync` sources between local slot worktrees. A single worktree may run **at most** `1× android ∥ 1× ios ∥ 1× macos` (distinct Metro/Jet/emulator blocks + distinct AVD/sim + distinct macOS `PRODUCT_NAME`). Example: `3× android + 3× ios + 3× macos` ⇒ three worktrees. Do **not** launch two of the same platform from one worktree — native products, Detox configs, coverage, and (macOS) one `macos/build` tree are not multi-instance-safe. Why: [e2e parallel design](e2e-parallel-design.md). iOS derived data is `tests/ios/build`; macOS is `tests-macos/macos/build`. Do **not** change Swift explicit-module (or other) xcodebuild settings to paper over concurrent builds — [infrastructure change bar](#e2e-infrastructure-change-bar).
 
-**The Law — same runbook as serial:** set slot env, then **only** [Rules §1–4](#rules):
+**The Law — same runbook as serial:** load slot env in this shell, then use the [Rules §1–4](#rules) yarn scripts. On a shared host, load that env before the first packager or emulator start. iOS is one order: `yarn tests:ios:pod:install`, then `yarn tests:ios:build` (compiles only; does not install pods), then host-clear, then `yarn tests:emulator:start` and `yarn tests:packager:jet`, then [services ready](#2-services-ready) (Metro status contains `packager-status:running` after the build), then `yarn tests:ios:test-cover`. The agent emulator command is `yarn tests:emulator:start` (`yarn tests:emulator:start-ci` is CI-only). The agent test command is `yarn tests:ios:test-cover`. `yarn tests:ios:test` is a different script. `:test-cover` does not build; the native app has to exist first.
 
 ```bash
+# iOS
 eval "$(yarn tests:e2e:clear-slot-env)"                 # serial only: drop leftover export-slot-env
-eval "$(yarn tests:e2e:export-slot-env <platform> N)"   # omit for serial defaults; N is the slot index
+eval "$(yarn tests:e2e:export-slot-env ios N)"          # omit for serial defaults; N is the slot index
+yarn tests:ios:pod:install                              # separate prior step; :build does not install pods
+yarn tests:ios:build                                    # compiles only; does not run tests
+yarn tests:e2e:check --platform=ios                     # host-clear
+yarn tests:emulator:start                               # long-running; not the CI-only -ci script
+yarn tests:packager:jet                                 # long-running; status body contains packager-status:running
+# services-ready (that status check after the build), then:
+yarn tests:ios:test-cover                               # does not build
+yarn tests:e2e:release [--devices]                      # optional
+```
+
+Android and macOS keep slot env, then packager, emulator, `:build`, and `:test-cover`. macOS `pod:install` stays a separate prior step before `yarn tests:macos:build`. That block is not the iOS order.
+
+```bash
+# Android or macOS
+eval "$(yarn tests:e2e:clear-slot-env)"                 # serial only: drop leftover export-slot-env
+eval "$(yarn tests:e2e:export-slot-env <platform> N)"   # android or macos; omit for serial defaults
 yarn tests:e2e:check                                    # optional; default = serial-only; slotted = env from the line above
-yarn tests:packager:jet                                 # or yarn tests:macos:packager:jet
+yarn tests:packager:jet                                 # macos: yarn tests:macos:packager:jet
 yarn tests:emulator:start
-yarn tests:<platform>:pod:install                       # Apple, when needed — serialize across worktrees (shared CocoaPods CDN)
+yarn tests:macos:pod:install                            # macOS, when needed — serialize across worktrees (shared CocoaPods CDN)
 yarn tests:<platform>:build                             # compiles only; does not invoke pod install
 yarn tests:<platform>:test-cover
 yarn tests:e2e:release [--devices]                      # optional
@@ -1046,7 +1069,7 @@ ls ~/Library/Detox/ios/framework/*/Detox.framework
 ls ~/Library/Detox/ios/xcuitest-runner/*/
 ```
 
-Then resume the normal iOS loop: [pre-flight](#pre-flight-is-the-host-clear-to-start) → `yarn tests:ios:pod:install` (when pods may be stale) → `yarn tests:ios:build` (if native changed; compiles only) → `yarn tests:ios:test-cover`.
+Then resume the iOS order in [Typical loop](#typical-loop).
 
 CI restores the same tree from `~/Library/Detox/ios` keyed by Xcode version ([iOS workflow § Detox Framework Cache Restore](../ci-workflows/ios.md)). Local developers must rebuild when the cache is missing — it is not committed to git.
 
