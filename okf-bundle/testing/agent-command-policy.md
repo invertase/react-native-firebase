@@ -205,7 +205,7 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 ### Android Java format
 
 - There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
-- **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on **Java** under `packages/*/android/src` and fails if the tree would change. It does **not** format Kotlin.
+- **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on **Java** under `packages/*/android/src` and fails if the tree would change. Outside a git work tree (for example an rsync copy of the checkout) it skips the `git diff` step and relies on the formatter exit alone. It does **not** format Kotlin.
 - **Needs JDK 21+:** the bundled `google-java-format` 1.35.0 jar runs on whatever `java` is first on `PATH` (not Gradle's JDK). On JDK < 21 it fails many files, untouched ones included, with `NoClassDefFoundError: com/sun/tools/javac/tree/JCTree$JCAnyPattern`. This is a host JDK problem, not a formatting failure. Put a JDK 21 first on `PATH` for the same command, e.g. `PATH="$(/usr/libexec/java_home -v 21)/bin:$PATH" yarn lint:android` (macOS).
 
 <a id="android-kotlin-format"></a>
