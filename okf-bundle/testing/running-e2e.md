@@ -26,6 +26,8 @@ Install, prepare, validation, the workspace Expo example / documented-path iOS *
 yarn   # repo root — exit 0 required. Applies .yarn/patches (jet, mocha-remote-*, detox) and tests/tests-macos patch-package (incl. tests/patches/detox+20.51.0.patch) — [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking)
 ```
 
+**Ruby `>= 3.3.1` with Bundler on `PATH`** for iOS and macOS work (CocoaPods and `yarn tests:ios:ruby`). macOS's system Ruby 2.6 is too old; root `yarn` then skips the gems with one `ruby:install:` line and still exits 0. Setup: [CONTRIBUTING § Ruby for iOS and macOS work](../../CONTRIBUTING.md#ruby-for-ios-and-macos-work).
+
 **Before `yarn tests:ios:build` / `yarn tests:android:build`:** [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking) (root `yarn` exit 0 + fmt **≥ 12.1.0**).
 
 **Keep host toolchains current.** Android Studio / emulator and Xcode / CocoaPods are expected to track upstream, not be pinned indefinitely. A stale Android Emulator (e.g. 36.2.12.0) can lack CLI flags newer Detox patches rely on (`-crash-report-mode`, requires **≥ 37**, see [detox-patches.md](../ci-workflows/detox-patches.md)) and fail at spawn rather than at test time. When a patch or e2e step breaks only on your host, update the toolchain first — don't reach for a runtime capability probe as the default fix.
