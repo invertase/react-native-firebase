@@ -503,8 +503,14 @@ e2e_port_listening() {
 
 # A loopback connect sees listeners lsof cannot (other users' sockets). A wedged
 # listener with a full backlog drops the SYN, so the connect is cut off at ~1 s.
+# Tests set RNFB_E2E_PORT_ACCEPTS_CMD to a stub (called with the port) so the
+# probe does not reach the real host.
 e2e_port_accepts() {
   local pid i=0
+  if [[ -n "${RNFB_E2E_PORT_ACCEPTS_CMD:-}" ]]; then
+    "$RNFB_E2E_PORT_ACCEPTS_CMD" "$1"
+    return
+  fi
   (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null &
   pid=$!
   while kill -0 "$pid" 2>/dev/null && ((i < 100)); do
