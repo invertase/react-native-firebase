@@ -322,9 +322,11 @@ if RNFIREBASE_SPM_SHAPE_CHECK_GEMS_AVAILABLE
     # never touches disk by itself (it only builds the default in-memory
     # object graph), so this is safe to construct in every test without ever
     # calling `#save`. `path` only needs to be a plausible location, not an
-    # existing `.xcodeproj`.
+    # existing `.xcodeproj`, so the scratch dir is removed once it is built.
     def new_scratch_project
-      Xcodeproj::Project.new(File.join(Dir.mktmpdir('rnfb-spm-shape-check'), 'ShapeCheck.xcodeproj'))
+      Dir.mktmpdir('rnfb-spm-shape-check') do |dir|
+        Xcodeproj::Project.new(File.join(dir, 'ShapeCheck.xcodeproj'))
+      end
     end
   end
 end

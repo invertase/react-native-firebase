@@ -63,7 +63,11 @@ describe('foreignListener', function () {
     const os = require('os');
     const path = require('path');
     const empty = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-no-lsof-'));
-    expect(lsofListenPidsOrNull(8090, { ...process.env, PATH: empty })).toBeNull();
+    try {
+      expect(lsofListenPidsOrNull(8090, { ...process.env, PATH: empty })).toBeNull();
+    } finally {
+      fs.rmSync(empty, { recursive: true, force: true });
+    }
   });
 
   it('lsofListenPidsOrNull sees this process listening', async function () {

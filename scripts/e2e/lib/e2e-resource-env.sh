@@ -42,6 +42,13 @@ E2E_ANDROID_TEST_APP_ID=com.invertase.testing.test
 # Default macOS process / PRODUCT_NAME. Override with RNFB_MACOS_PRODUCT_NAME for
 # concurrent slotted macOS (e.g. io.invertase.testing.s1) — see running-e2e.md.
 E2E_DEFAULT_MACOS_APP_PROCESS=io.invertase.testing
+
+# Caller's temp root with no trailing slash; /tmp when TMPDIR is unset, empty, or /.
+e2e_tmp_root() {
+  local root="${TMPDIR:-/tmp}"
+  root="${root%/}"
+  echo "${root:-/tmp}"
+}
 E2E_MACOS_APP_PROCESS="${RNFB_MACOS_PRODUCT_NAME:-$E2E_DEFAULT_MACOS_APP_PROCESS}"
 # When RNFB_MACOS_PRODUCT_NAME is unset (serial / unscoped host wipe), also probe/kill
 # known slotted siblings so parallel leftovers fail host-clear and get released.
