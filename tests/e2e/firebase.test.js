@@ -46,7 +46,7 @@ const {
   killJetAfterOrchestrateFailure,
   killJetForRetry,
   stopAttemptJet,
-  waitForOrchestrate,
+  waitAtMost,
 } = require('./jetAttemptDrain');
 const { createJetAttemptSession } = require('./jetSession');
 const {
@@ -214,6 +214,10 @@ const ANDROID_AVD_NAME =
 const ANDROID_EMULATOR_COLD_BOOT_ARGS = (
   process.env.RNFB_ANDROID_EMULATOR_BOOT_ARGS || '-no-snapshot-load -no-snapshot-save'
 ).trim();
+const DRAIN_TERMINATE_TIMEOUT_MS = parseInt(
+  process.env.RNFB_DRAIN_TERMINATE_TIMEOUT_MS || '15000',
+  10,
+);
 const DRAIN_ORCHESTRATE_TIMEOUT_MS = parseInt(
   process.env.RNFB_DRAIN_ORCHESTRATE_TIMEOUT_MS || '30000',
   10,
@@ -996,24 +1000,22 @@ async function drainJetAttempt(platform) {
   // Before the orchestrate wait: a launch retry still running must not respawn Jet.
   ctx?.jetSession?.abandon();
 
+  // Detox terminateApp has no timeout of its own and may already be disconnected.
+  if (
+    await waitAtMost(
+      Promise.resolve().then(() => device.terminateApp()),
+      DRAIN_TERMINATE_TIMEOUT_MS,
+    )
+  ) {
+    console.warn(`[rnfb-e2e] drain terminateApp timed out after ${DRAIN_TERMINATE_TIMEOUT_MS}ms`);
+  }
   if (platform === 'android') {
-    try {
-      await device.terminateApp();
-    } catch (_) {
-      // Detox may already be disconnected.
-    }
     forceStopAndroidTestingApps('drain');
-  } else {
-    try {
-      await device.terminateApp();
-    } catch (_) {
-      // No-op
-    }
   }
 
   if (
     ctx?.orchestratePromise &&
-    (await waitForOrchestrate(ctx.orchestratePromise, DRAIN_ORCHESTRATE_TIMEOUT_MS))
+    (await waitAtMost(ctx.orchestratePromise, DRAIN_ORCHESTRATE_TIMEOUT_MS))
   ) {
     console.warn(`[rnfb-e2e] drain orchestrate timed out after ${DRAIN_ORCHESTRATE_TIMEOUT_MS}ms`);
   }
@@ -1478,7 +1480,10 @@ async function killJetForLaunchRetry(jetProcess, reason = 'launch-retry') {
   });
 }
 
-async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {}) {
+async function launchAppWithRetry(
+  launchArgs,
+  { testsDir, onBeforeRelaunch, throwIfAbandoned } = {},
+) {
   const liveMetro = usesLiveMetro();
   let lastLaunchFailure;
   let deleteAppAfterColdBoot = false;
@@ -1486,6 +1491,8 @@ async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {
   for (let launchAttempt = 1; launchAttempt <= LAUNCH_APP_MAX_ATTEMPTS; launchAttempt++) {
     try {
       if (launchAttempt > 1) {
+        // Before the cold boot: a drained attempt must not reboot the next attempt's device.
+        throwIfAbandoned?.();
         console.warn(
           `[rnfb-e2e] Retrying launchApp after launch failure (attempt ${launchAttempt}/${LAUNCH_APP_MAX_ATTEMPTS}) liveMetro=${liveMetro}`,
         );
@@ -1635,14 +1642,15 @@ async function runJetE2eAttempt(attempt) {
       },
       {
         testsDir,
+        throwIfAbandoned: () => jetSession.throwIfAbandoned(),
         onBeforeRelaunch: async () => {
           await jetSession.respawnAfterLaunchRetry();
         },
       },
     );
-    logOrchestrateState('launch-ok');
-    // A launch that finishes after the drain must not start the next attempt's Jet run.
+    // A launch that finishes after the drain must not post to or start the next attempt's Jet.
     jetSession.throwIfAbandoned();
+    logOrchestrateState('launch-ok');
     await signalJetLaunchReady();
     logOrchestrateState('tests-run-permitted');
   };
@@ -1657,7 +1665,9 @@ async function runJetE2eAttempt(attempt) {
         return awaitJetExitWithStallGuard(jetSession);
       })
       .catch(async err => {
-        logOrchestrateState('orchestrate-failed');
+        if (!jetSession.abandoned) {
+          logOrchestrateState('orchestrate-failed');
+        }
         await killJetAfterOrchestrateFailure(jetSession, err, killJetForLaunchRetry);
         err.jetOutput = jetSession.output;
         throw err;

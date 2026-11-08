@@ -69,18 +69,21 @@ function settle(promise, ms) {
 
 /** Long-lived process whose args carry a device token needle (qemu @AVD / launchd_sim UDID). */
 function startTokenProcess(...tokenArgs) {
-  const child = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000)', ...tokenArgs], {
-    stdio: 'ignore',
-  });
+  const child = spawn(
+    process.execPath,
+    ['-e', 'setTimeout(() => {}, 60000)', ...tokenArgs, HOST_MARK],
+    { stdio: 'ignore' },
+  );
   const exited = new Promise(resolve => child.once('exit', (_code, signal) => resolve(signal)));
   return { child, exited };
 }
 
 function startTokenProcessIn(cwd, ...tokenArgs) {
-  const child = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000)', ...tokenArgs], {
-    stdio: 'ignore',
-    cwd,
-  });
+  const child = spawn(
+    process.execPath,
+    ['-e', 'setTimeout(() => {}, 60000)', ...tokenArgs, HOST_MARK],
+    { stdio: 'ignore', cwd },
+  );
   const exited = new Promise(resolve => child.once('exit', (_code, signal) => resolve(signal)));
   return { child, exited };
 }
@@ -110,9 +113,10 @@ async function waitGone(pid, ms) {
  * Jest worker: ownership must then come from the run record alone.
  */
 function startDetached(argv, cwd = os.tmpdir()) {
+  const marked = argv[0] === process.execPath ? [...argv, HOST_MARK] : argv;
   const out = execFileSync(
     '/bin/sh',
-    ['-c', '"$@" >/dev/null 2>&1 </dev/null & echo $!', 'sh', ...argv],
+    ['-c', '"$@" >/dev/null 2>&1 </dev/null & echo $!', 'sh', ...marked],
     {
       encoding: 'utf8',
       cwd,
@@ -163,6 +167,78 @@ function freePort() {
 function realBin(name) {
   return execFileSync('/bin/sh', ['-c', `command -v ${name}`], { encoding: 'utf8' }).trim();
 }
+
+/*
+ * Host device discovery sees only the fake devices this run started (they carry
+ * HOST_MARK): a real emulator or simulator, or another run of this suite (same fake
+ * names, same cwd), must not change results. ps -ax / pgrep / pkill hide unmarked
+ * qemu-system and launchd_sim processes; adb and simctl list no devices. Tests that
+ * need other answers put their own adb / xcrun earlier on PATH.
+ */
+const HOST_MARK = `rnfb-run-record-test=${process.pid}-${Date.now()}`;
+const hostStubDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-run-record-host-'));
+const hostPath = process.env.PATH;
+const deviceFilter = `re='qemu-system|launchd_sim'
+foreign_device() { [[ "$1" =~ $re && "$1" != *${JSON.stringify(HOST_MARK)}* ]]; }`;
+writeExecutable(
+  path.join(hostStubDir, 'ps'),
+  `#!/bin/bash
+case " $* " in
+  *" -ax"*) ;;
+  *) exec ${realBin('ps')} "$@" ;;
+esac
+${deviceFilter}
+${realBin('ps')} "$@" | while IFS= read -r line; do
+  foreign_device "$line" || printf '%s\\n' "$line"
+done
+exit "\${PIPESTATUS[0]}"
+`,
+);
+writeExecutable(
+  path.join(hostStubDir, 'pgrep'),
+  `#!/bin/bash
+${deviceFilter}
+out="$(${realBin('pgrep')} "$@")" || exit
+kept=1
+while IFS= read -r line; do
+  [[ -n "$line" ]] || continue
+  foreign_device "$(${realBin('ps')} -p "\${line%% *}" -o args= 2>/dev/null)" && continue
+  printf '%s\\n' "$line"
+  kept=0
+done <<<"$out"
+exit "$kept"
+`,
+);
+writeExecutable(
+  path.join(hostStubDir, 'pkill'),
+  `#!/bin/bash
+sig=TERM
+args=()
+for a in "$@"; do
+  case "$a" in
+    -f) args+=("$a") ;;
+    -[0-9]* | -[A-Z]*) sig="\${a#-}" ;;
+    *) args+=("$a") ;;
+  esac
+done
+pids="$(${JSON.stringify(path.join(hostStubDir, 'pgrep'))} "\${args[@]}")" || exit 1
+kill -s "$sig" $pids
+`,
+);
+writeExecutable(
+  path.join(hostStubDir, 'adb'),
+  `#!/bin/bash\n[[ "$1" == devices ]] && printf 'List of devices attached\\n\\n' && exit 0\nexit 1\n`,
+);
+writeExecutable(
+  path.join(hostStubDir, 'xcrun'),
+  `#!/bin/bash\n[[ "$*" == *-j* ]] && printf '{"devices":{}}\\n'\nexit 0\n`,
+);
+process.env.PATH = `${hostStubDir}:${hostPath}`;
+
+afterAll(function () {
+  process.env.PATH = hostPath;
+  fs.rmSync(hostStubDir, { recursive: true, force: true });
+});
 
 describe('e2e run record (shell)', function () {
   let dir;
@@ -501,6 +577,7 @@ exit 0
       '@TestingAVD-1',
       '-port',
       '16224',
+      HOST_MARK,
     ]);
     const parent = spawn(
       process.execPath,
@@ -961,6 +1038,83 @@ setTimeout(() => {}, 60000);`,
       ),
     );
     expect(await settle(noAvd.exited, 300)).toBe('running');
+  });
+});
+
+describe('host device discovery in this suite', function () {
+  let dir;
+  const unmarked = [];
+
+  beforeEach(function () {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-run-record-host-test-'));
+  });
+
+  afterEach(async function () {
+    for (const p of unmarked.splice(0)) {
+      p.child.kill('SIGKILL');
+      await p.exited;
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  // What another run of this suite, or a real emulator / simulator, looks like.
+  function startUnmarked(...args) {
+    const child = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000)', ...args], {
+      stdio: 'ignore',
+      cwd: path.join(repoRoot, 'tests'),
+    });
+    const p = { child, exited: new Promise(resolve => child.once('exit', resolve)) };
+    unmarked.push(p);
+    return p;
+  }
+
+  it('hides device processes this run did not start from ps, pgrep, pkill, adb and simctl', async function () {
+    const foreignQemu = startUnmarked('qemu-system-fake', '@TestingAVD-1', '-port', '5558');
+    const foreignSim = startUnmarked(
+      'launchd_sim',
+      '/sims/CoreSimulator/Devices/UDID-HOST/data/var/run/launchd_bootstrap.plist',
+    );
+    const own = startTokenProcess('qemu-system-fake', '@TestingAVD-1', '-port', '16240');
+    try {
+      await waitFor(() => runRecord.listProcesses().some(p => p.pid === own.child.pid));
+      const listed = runRecord.listProcesses().map(p => p.pid);
+      expect(listed).toContain(own.child.pid);
+      expect(listed).not.toContain(foreignQemu.child.pid);
+      expect(listed).not.toContain(foreignSim.child.pid);
+      expect(listed).toContain(process.pid);
+
+      const env = { RNFB_E2E_SLOT: '1', RNFB_E2E_RUN_RECORD_DIR: dir };
+      expect(runRecord.recordAndroidDevice('emulator-5558', 'TestingAVD-1', env)).toBe(
+        'emulator-16240',
+      );
+      expect(runRecord.recordIosSimulator('UDID-HOST', 'RN E2E iOS slot-1', env)).toBeNull();
+
+      const shell = execFileSync(
+        '/bin/bash',
+        [
+          '-c',
+          `source "${recordLib}"
+e2e_qemu_instances | cut -f1
+echo "sim=$(e2e_device_instance_pid ios UDID-HOST)"
+pgrep -f 'qemu-system.*@TestingAVD-1([[:space:]]|$)'
+adb devices
+xcrun simctl list devices booted -j`,
+        ],
+        { encoding: 'utf8', env: cleanEnv({}) },
+      );
+      expect(shell.split('\n')).toContain(String(own.child.pid));
+      expect(shell).not.toMatch(new RegExp(`\\b${foreignQemu.child.pid}\\b`));
+      expect(shell).toMatch(/^sim=$/m);
+      expect(shell).toMatch(/List of devices attached\n\n\{"devices":\{\}\}/);
+
+      execFileSync('/bin/bash', ['-c', `pkill -f 'qemu-system.*@TestingAVD-1([[:space:]]|$)'`], {
+        env: cleanEnv({}),
+      });
+      expect(await settle(own.exited, 3000)).toBe('SIGTERM');
+      expect(await settle(foreignQemu.exited, 300)).toBe('running');
+    } finally {
+      own.child.kill('SIGKILL');
+    }
   });
 });
 

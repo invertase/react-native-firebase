@@ -68,15 +68,18 @@ async function killJetAfterOrchestrateFailure(session, err, killJet) {
   return true;
 }
 
-/** Wait at most `timeoutMs` for an orchestrate to settle; true when the wait timed out. */
-async function waitForOrchestrate(orchestratePromise, timeoutMs) {
+/**
+ * Wait at most `timeoutMs` for a promise (orchestrate, terminateApp) to settle; true when
+ * the wait timed out. A rejection counts as settled.
+ */
+async function waitAtMost(promise, timeoutMs) {
   let timer;
   const timedOut = new Promise(resolve => {
     timer = setTimeout(() => resolve(true), timeoutMs);
   });
   try {
     return await Promise.race([
-      orchestratePromise.then(
+      promise.then(
         () => false,
         () => false,
       ),
@@ -93,5 +96,5 @@ module.exports = {
   killJetAfterOrchestrateFailure,
   killJetForRetry,
   stopAttemptJet,
-  waitForOrchestrate,
+  waitAtMost,
 };
