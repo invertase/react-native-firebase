@@ -562,6 +562,8 @@ GoogleService-Info.plist
 
 tests/harness.overrides.js
 tests/e2e-slots.env.json
+tests/mellifera.env.json
+tests/mellifera-platform/
 .github/workflows/scripts/.e2e-emulator-*.json
 # e2e run record (scripts/e2e/lib/e2e-run-record.sh): what this checkout's runs started
 .e2e-run/
