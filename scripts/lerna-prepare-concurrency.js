@@ -16,10 +16,10 @@ function cpuCount() {
 
 // process.constrainedMemory() reports a cgroup memory limit; it returns 0 (or a
 // huge number) when there is none.
-function memoryBytes() {
-  const total = os.totalmem();
-  const constrained =
-    typeof process.constrainedMemory === 'function' ? process.constrainedMemory() : 0;
+function memoryBytes({
+  total = os.totalmem(),
+  constrained = typeof process.constrainedMemory === 'function' ? process.constrainedMemory() : 0,
+} = {}) {
   return constrained > 0 && constrained < total ? constrained : total;
 }
 
@@ -34,7 +34,7 @@ function lernaPrepareConcurrency({
   return Math.max(1, Math.min(cpus, Math.floor(memory / MEMORY_PER_TASK_BYTES)));
 }
 
-module.exports = { lernaPrepareConcurrency, MEMORY_PER_TASK_BYTES };
+module.exports = { lernaPrepareConcurrency, memoryBytes, MEMORY_PER_TASK_BYTES };
 
 if (require.main === module) {
   process.stdout.write(`${lernaPrepareConcurrency()}\n`);
