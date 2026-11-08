@@ -10,6 +10,7 @@ jest.setTimeout(30000);
 
 const {
   JetAttemptAbandonedError,
+  boundedTerminate,
   jetProcessAlive,
   killJetAfterOrchestrateFailure,
   killJetForRetry,
@@ -493,6 +494,69 @@ describe('waitAtMost', function () {
   });
 });
 
+describe('boundedTerminate', function () {
+  afterEach(function () {
+    jest.useRealTimers();
+  });
+
+  it('joins a terminate that outlived its cap, so the next launch starts after it', async function () {
+    jest.useFakeTimers();
+    let finish;
+    const terminate = jest.fn(
+      () =>
+        new Promise(resolve => {
+          finish = resolve;
+        }),
+    );
+    const t = boundedTerminate(terminate, { capMs: 15000, joinMs: 90000 });
+    const capped = t.capped();
+    await jest.advanceTimersByTimeAsync(15000);
+    expect(await capped).toBe(true);
+
+    let joined;
+    t.join().then(result => {
+      joined = result;
+    });
+    await jest.advanceTimersByTimeAsync(25000);
+    expect(joined).toBeUndefined();
+    finish();
+    await jest.advanceTimersByTimeAsync(0);
+    expect(joined).toBe(false);
+    expect(terminate).toHaveBeenCalledTimes(1);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('gives up joining at joinMs after the terminate started, not after the join began', async function () {
+    jest.useFakeTimers();
+    const t = boundedTerminate(() => new Promise(() => {}), { capMs: 15000, joinMs: 90000 });
+    const capped = t.capped();
+    await jest.advanceTimersByTimeAsync(15000);
+    expect(await capped).toBe(true);
+    await jest.advanceTimersByTimeAsync(45000);
+
+    let joined;
+    t.join().then(result => {
+      joined = result;
+    });
+    await jest.advanceTimersByTimeAsync(29999);
+    expect(joined).toBeUndefined();
+    await jest.advanceTimersByTimeAsync(1);
+    expect(joined).toBe(true);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('adds no wait when the terminate finished before the join', async function () {
+    jest.useFakeTimers();
+    const t = boundedTerminate(() => Promise.reject(new Error('detox disconnected')), {
+      capMs: 15000,
+      joinMs: 90000,
+    });
+    expect(await t.capped()).toBe(false);
+    expect(await t.join()).toBe(false);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+});
+
 describe('harness wiring for the Jet attempt drain', function () {
   const src = fs.readFileSync(path.join(repoRoot, 'tests/e2e/firebase.test.js'), 'utf8');
   const fnBody = name => {
@@ -557,15 +621,23 @@ describe('harness wiring for the Jet attempt drain', function () {
     expect(attempt).not.toMatch(/await killJetForLaunchRetry\(/);
   });
 
-  it('bounds the drain terminateApp before the orchestrate wait', function () {
+  it('caps the drain terminateApp before the orchestrate wait and joins it after the port close', function () {
     const drain = fnBody('drainJetAttempt');
     expect(drain).toMatch(
-      /await waitAtMost\(\s*Promise\.resolve\(\)\.then\(\(\) => device\.terminateApp\(\)\),\s*DRAIN_TERMINATE_TIMEOUT_MS,\s*\)/,
+      /const terminating = boundedTerminate\(\(\) => device\.terminateApp\(\), \{\s*capMs: DRAIN_TERMINATE_TIMEOUT_MS,\s*joinMs: DRAIN_TERMINATE_JOIN_TIMEOUT_MS,\s*\}\);/,
     );
-    expect(drain).not.toMatch(/await device\.terminateApp\(\)/);
-    expect(drain.indexOf('DRAIN_TERMINATE_TIMEOUT_MS')).toBeLessThan(
-      drain.indexOf('ctx?.orchestratePromise'),
-    );
+    expect(drain.match(/device\.terminateApp\(\)/g)).toHaveLength(1);
+    const cappedAt = drain.indexOf('await terminating.capped()');
+    const orchestrateAt = drain.indexOf('ctx?.orchestratePromise');
+    const portAt = drain.indexOf("ensureTcpPortClosed(jetRemotePort(), 'drain')");
+    const hostClearAt = drain.indexOf("ensureAndroidJetHostClear('drain')");
+    const joinAt = drain.indexOf('await terminating.join()');
+    const completeAt = drain.indexOf('Jet attempt drain complete');
+    expect(cappedAt).toBeGreaterThan(-1);
+    expect(cappedAt).toBeLessThan(orchestrateAt);
+    expect(joinAt).toBeGreaterThan(portAt);
+    expect(joinAt).toBeGreaterThan(hostClearAt);
+    expect(joinAt).toBeLessThan(completeAt);
   });
 
   it('kills a launch-retry or stalled Jet by tree, only while it is alive', function () {

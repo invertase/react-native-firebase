@@ -90,8 +90,23 @@ async function waitAtMost(promise, timeoutMs) {
   }
 }
 
+/**
+ * Start one terminate call. `capped()` waits for it at most `capMs`; `join()` waits for the
+ * same call until `joinMs` after it started, so a late terminate cannot land on the next
+ * attempt's app. Both resolve true on timeout.
+ */
+function boundedTerminate(terminate, { capMs, joinMs }) {
+  const startedAt = Date.now();
+  const promise = Promise.resolve().then(terminate);
+  return {
+    capped: () => waitAtMost(promise, capMs),
+    join: () => waitAtMost(promise, Math.max(0, joinMs - (Date.now() - startedAt))),
+  };
+}
+
 module.exports = {
   JetAttemptAbandonedError,
+  boundedTerminate,
   jetProcessAlive,
   killJetAfterOrchestrateFailure,
   killJetForRetry,

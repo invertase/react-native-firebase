@@ -171,22 +171,20 @@ function realBin(name) {
 /*
  * Host device discovery sees only the fake devices this run started (they carry
  * HOST_MARK): a real emulator or simulator, or another run of this suite (same fake
- * names, same cwd), must not change results. ps -ax / pgrep / pkill hide unmarked
- * qemu-system and launchd_sim processes; adb and simctl list no devices. Tests that
- * need other answers put their own adb / xcrun earlier on PATH.
+ * names, same cwd), must not change results. ps (every form), pgrep and pkill hide
+ * unmarked qemu-system and launchd_sim processes; adb and simctl list no devices. pkill
+ * accepts only -f, -<signal number> and -<SIGNAME>, and exits 2 on anything else. Tests
+ * that need other answers put their own adb / xcrun earlier on PATH.
  */
 const HOST_MARK = `rnfb-run-record-test=${process.pid}-${Date.now()}`;
 const hostStubDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-run-record-host-'));
 const hostPath = process.env.PATH;
+const hostPs = realBin('ps');
 const deviceFilter = `re='qemu-system|launchd_sim'
 foreign_device() { [[ "$1" =~ $re && "$1" != *${JSON.stringify(HOST_MARK)}* ]]; }`;
 writeExecutable(
   path.join(hostStubDir, 'ps'),
   `#!/bin/bash
-case " $* " in
-  *" -ax"*) ;;
-  *) exec ${realBin('ps')} "$@" ;;
-esac
 ${deviceFilter}
 ${realBin('ps')} "$@" | while IFS= read -r line; do
   foreign_device "$line" || printf '%s\\n' "$line"
@@ -212,16 +210,27 @@ exit "$kept"
 writeExecutable(
   path.join(hostStubDir, 'pkill'),
   `#!/bin/bash
+unsupported() {
+  echo "pkill test stub: unsupported argument '$1' (only -f, -<signal number>, -<SIGNAME>)" >&2
+  exit 2
+}
 sig=TERM
-args=()
+full=
+patterns=()
 for a in "$@"; do
   case "$a" in
-    -f) args+=("$a") ;;
-    -[0-9]* | -[A-Z]*) sig="\${a#-}" ;;
-    *) args+=("$a") ;;
+    -f) full=-f ;;
+    -*)
+      name="\${a#-}"
+      name="\${name#SIG}"
+      [[ "$name" =~ ^([0-9]+|[A-Z][A-Z0-9]*)$ ]] && kill -l "$name" >/dev/null 2>&1 || unsupported "$a"
+      sig="$name"
+      ;;
+    *) patterns+=("$a") ;;
   esac
 done
-pids="$(${JSON.stringify(path.join(hostStubDir, 'pgrep'))} "\${args[@]}")" || exit 1
+[[ \${#patterns[@]} -eq 1 ]] || unsupported "\${patterns[*]:-<no pattern>}"
+pids="$(${JSON.stringify(path.join(hostStubDir, 'pgrep'))} $full "\${patterns[0]}")" || exit 1
 kill -s "$sig" $pids
 `,
 );
@@ -1058,25 +1067,44 @@ describe('host device discovery in this suite', function () {
   });
 
   // What another run of this suite, or a real emulator / simulator, looks like.
-  function startUnmarked(...args) {
+  // Until the child has exec'd, ps shows it with the Jest worker's args.
+  function execed(pid, needle) {
+    return waitFor(() => {
+      try {
+        return execFileSync(hostPs, ['-p', String(pid), '-o', 'args='], {
+          encoding: 'utf8',
+        }).includes(needle);
+      } catch (_) {
+        return false;
+      }
+    });
+  }
+
+  async function startUnmarked(...args) {
     const child = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000)', ...args], {
       stdio: 'ignore',
       cwd: path.join(repoRoot, 'tests'),
     });
     const p = { child, exited: new Promise(resolve => child.once('exit', resolve)) };
     unmarked.push(p);
+    expect(await execed(child.pid, args[args.length - 1])).toBe(true);
     return p;
   }
 
+  async function startMarked(...args) {
+    const t = startTokenProcess(...args);
+    expect(await execed(t.child.pid, HOST_MARK)).toBe(true);
+    return t;
+  }
+
   it('hides device processes this run did not start from ps, pgrep, pkill, adb and simctl', async function () {
-    const foreignQemu = startUnmarked('qemu-system-fake', '@TestingAVD-1', '-port', '5558');
-    const foreignSim = startUnmarked(
+    const foreignQemu = await startUnmarked('qemu-system-fake', '@TestingAVD-1', '-port', '5558');
+    const foreignSim = await startUnmarked(
       'launchd_sim',
       '/sims/CoreSimulator/Devices/UDID-HOST/data/var/run/launchd_bootstrap.plist',
     );
-    const own = startTokenProcess('qemu-system-fake', '@TestingAVD-1', '-port', '16240');
+    const own = await startMarked('qemu-system-fake', '@TestingAVD-1', '-port', '16240');
     try {
-      await waitFor(() => runRecord.listProcesses().some(p => p.pid === own.child.pid));
       const listed = runRecord.listProcesses().map(p => p.pid);
       expect(listed).toContain(own.child.pid);
       expect(listed).not.toContain(foreignQemu.child.pid);
@@ -1114,6 +1142,78 @@ xcrun simctl list devices booted -j`,
       expect(await settle(foreignQemu.exited, 300)).toBe('running');
     } finally {
       own.child.kill('SIGKILL');
+    }
+  });
+
+  it('hides them from every ps listing form and from per-pid queries', async function () {
+    const foreign = await startUnmarked('qemu-system-fake', '@TestingAVD-1', '-port', '5558');
+    const own = await startMarked('qemu-system-fake', '@TestingAVD-1', '-port', '16242');
+    // Jest's process.env is not the one child_process defaults to.
+    const ps = args => execFileSync('ps', args, { encoding: 'utf8', env: process.env });
+    try {
+      for (const args of [
+        ['-ax', '-o', 'pid=,args='],
+        ['-axo', 'pid=,args='],
+        ['-A', '-o', 'pid=,args='],
+        ['-Ao', 'pid=,args='],
+        ['-e', '-o', 'pid=,args='],
+        ['-eo', 'pid=,args='],
+      ]) {
+        const out = ps(args);
+        expect([args.join(' '), new RegExp(`^\\s*${own.child.pid}\\s`, 'm').test(out)]).toEqual([
+          args.join(' '),
+          true,
+        ]);
+        expect([args.join(' '), new RegExp(`^\\s*${foreign.child.pid}\\s`, 'm').test(out)]).toEqual(
+          [args.join(' '), false],
+        );
+      }
+      expect(ps(['-p', String(foreign.child.pid), '-o', 'args=']).trim()).toBe('');
+      expect(ps(['-p', String(own.child.pid), '-o', 'args='])).toMatch(
+        /qemu-system-fake @TestingAVD-1 -port 16242/,
+      );
+    } finally {
+      own.child.kill('SIGKILL');
+    }
+  });
+
+  it('pkill takes only -f and a signal, and rejects any other flag without killing', async function () {
+    const foreign = await startUnmarked('qemu-system-fake', '@TestingAVD-1', '-port', '5558');
+    const pattern = 'qemu-system.*@TestingAVD-1([[:space:]]|$)';
+    const pkill = (...args) =>
+      spawnSync('pkill', args, { encoding: 'utf8', env: cleanEnv({ PATH: process.env.PATH }) });
+    const own = [];
+    try {
+      for (const args of [
+        ['-P', String(process.pid), pattern],
+        ['-U', String(process.getuid()), pattern],
+        ['-s', 'KILL', '-f', pattern],
+        ['-x', pattern],
+        ['-SIGNOPE', '-f', pattern],
+        ['-f'],
+        ['-f', pattern, 'extra'],
+      ]) {
+        const result = pkill(...args);
+        expect([args.join(' '), result.status]).toEqual([args.join(' '), 2]);
+        expect(result.stderr).toMatch(/pkill test stub: unsupported argument/);
+      }
+
+      for (const [signalArg, signal] of [
+        ['-9', 'SIGKILL'],
+        ['-KILL', 'SIGKILL'],
+        ['-SIGINT', 'SIGINT'],
+      ]) {
+        const t = await startMarked('qemu-system-fake', '@TestingAVD-1', '-port', '16246');
+        own.push(t);
+        expect(pkill(signalArg, '-f', pattern).status).toBe(0);
+        expect([signalArg, await settle(t.exited, 3000)]).toEqual([signalArg, signal]);
+      }
+      expect(await settle(foreign.exited, 300)).toBe('running');
+      expect(pkill('-f', pattern).status).toBe(1);
+    } finally {
+      for (const t of own) {
+        t.child.kill('SIGKILL');
+      }
     }
   });
 });

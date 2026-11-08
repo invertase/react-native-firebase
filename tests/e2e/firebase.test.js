@@ -43,6 +43,7 @@ const {
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
 const {
+  boundedTerminate,
   killJetAfterOrchestrateFailure,
   killJetForRetry,
   stopAttemptJet,
@@ -216,6 +217,10 @@ const ANDROID_EMULATOR_COLD_BOOT_ARGS = (
 ).trim();
 const DRAIN_TERMINATE_TIMEOUT_MS = parseInt(
   process.env.RNFB_DRAIN_TERMINATE_TIMEOUT_MS || '15000',
+  10,
+);
+const DRAIN_TERMINATE_JOIN_TIMEOUT_MS = parseInt(
+  process.env.RNFB_DRAIN_TERMINATE_JOIN_TIMEOUT_MS || '90000',
   10,
 );
 const DRAIN_ORCHESTRATE_TIMEOUT_MS = parseInt(
@@ -1001,13 +1006,14 @@ async function drainJetAttempt(platform) {
   ctx?.jetSession?.abandon();
 
   // Detox terminateApp has no timeout of its own and may already be disconnected.
-  if (
-    await waitAtMost(
-      Promise.resolve().then(() => device.terminateApp()),
-      DRAIN_TERMINATE_TIMEOUT_MS,
-    )
-  ) {
-    console.warn(`[rnfb-e2e] drain terminateApp timed out after ${DRAIN_TERMINATE_TIMEOUT_MS}ms`);
+  const terminating = boundedTerminate(() => device.terminateApp(), {
+    capMs: DRAIN_TERMINATE_TIMEOUT_MS,
+    joinMs: DRAIN_TERMINATE_JOIN_TIMEOUT_MS,
+  });
+  if (await terminating.capped()) {
+    console.warn(
+      `[rnfb-e2e] drain terminateApp still running after ${DRAIN_TERMINATE_TIMEOUT_MS}ms; joined at the end of the drain`,
+    );
   }
   if (platform === 'android') {
     forceStopAndroidTestingApps('drain');
@@ -1029,6 +1035,12 @@ async function drainJetAttempt(platform) {
     await ensureAndroidJetHostClear('drain');
   } else {
     await ensureTcpPortClosed(jetRemotePort(), 'drain');
+  }
+
+  if (await terminating.join()) {
+    console.warn(
+      `[rnfb-e2e] drain terminateApp still running ${DRAIN_TERMINATE_JOIN_TIMEOUT_MS}ms after it started; the next launch may race it`,
+    );
   }
 
   console.log('[rnfb-e2e] Jet attempt drain complete');
