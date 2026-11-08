@@ -58,10 +58,11 @@ async function killJetForRetry(proc, { killTree, closePort, onKill }) {
 /**
  * Cleanup when an attempt's orchestrate fails. Once the drain has abandoned the attempt,
  * its Jet is already stopped and the Jet port may be the next attempt's, so a late
- * failure of the old orchestrate kills nothing.
+ * failure of the old orchestrate kills nothing. A Jet the session already killed (the
+ * stall) is not killed again, even while its exit has not been observed.
  */
 async function killJetAfterOrchestrateFailure(session, err, killJet) {
-  if (err?.jetAttemptAbandoned || session.abandoned) {
+  if (err?.jetAttemptAbandoned || session.abandoned || session.currentJetKilled) {
     return false;
   }
   await killJet(session.process);

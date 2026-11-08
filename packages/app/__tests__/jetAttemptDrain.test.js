@@ -389,6 +389,62 @@ describe('a late attempt-1 orchestrate after the drain', function () {
     ).toBe(true);
     expect(killJet).toHaveBeenCalledWith(session.process);
   });
+
+  it('does not kill a stalled Jet again while its exit is not yet observed', async function () {
+    const port = await freePort();
+    // Leaves the stand-in alive, as a SIGKILLed root looks before its exit event.
+    const killJet = jest.fn(async () => {});
+    const session = jetAttemptSession({
+      spawnProcess: () => {
+        const proc = spawnStandInJet(port);
+        procs.push(proc);
+        return proc;
+      },
+      killJet,
+      afterRespawn: async () => {},
+    });
+    const stalledJet = session.process;
+
+    await session.killIgnoringExit('stall');
+    expect(jetProcessAlive(stalledJet)).toBe(true);
+    expect(session.currentJetKilled).toBe(true);
+    expect(
+      await killJetAfterOrchestrateFailure(
+        session,
+        new Error('awaiting-jet-exit stalled'),
+        killJet,
+      ),
+    ).toBe(false);
+
+    expect(killJet).toHaveBeenCalledTimes(1);
+    expect(killJet).toHaveBeenCalledWith(stalledJet, 'stall');
+  });
+
+  it('still kills the Jet a launch retry respawned after killing the first', async function () {
+    const port = await freePort();
+    const killJet = jest.fn(async proc => killTree(proc));
+    const session = jetAttemptSession({
+      spawnProcess: () => {
+        const proc = spawnStandInJet(port);
+        procs.push(proc);
+        return proc;
+      },
+      killJet,
+      afterRespawn: async () => {},
+    });
+    const first = session.process;
+
+    await session.respawnAfterLaunchRetry();
+    const respawned = session.process;
+    expect(respawned).not.toBe(first);
+    expect(session.currentJetKilled).toBe(false);
+    expect(
+      await killJetAfterOrchestrateFailure(session, new Error('launch timeout'), killJet),
+    ).toBe(true);
+
+    expect(killJet).toHaveBeenCalledTimes(2);
+    expect(killJet).toHaveBeenLastCalledWith(respawned);
+  });
 });
 
 describe('killJetForRetry', function () {

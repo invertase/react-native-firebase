@@ -20,6 +20,7 @@ const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
 function createJetAttemptSession({ spawnProcess, killJet, afterRespawn }) {
   let output = '';
   let jetProcess;
+  let killedJet;
   let ignoreExit = false;
   let abandoned = false;
   let resolveExit;
@@ -83,6 +84,11 @@ function createJetAttemptSession({ spawnProcess, killJet, afterRespawn }) {
     ignoreExit = value;
   };
 
+  const killCurrentJet = reason => {
+    killedJet = jetProcess;
+    return killJet(jetProcess, reason);
+  };
+
   spawnJet();
 
   return {
@@ -95,6 +101,13 @@ function createJetAttemptSession({ spawnProcess, killJet, afterRespawn }) {
     get abandoned() {
       return abandoned;
     },
+    /**
+     * The session has already killed its current Jet (stall), whose exit may not be
+     * observed yet. A respawned Jet is a new process and reads false again.
+     */
+    get currentJetKilled() {
+      return killedJet !== undefined && killedJet === jetProcess;
+    },
     exitPromise,
     abandon() {
       abandoned = true;
@@ -106,14 +119,14 @@ function createJetAttemptSession({ spawnProcess, killJet, afterRespawn }) {
      * Leaves ignoreExit true — session is abandoned or respawned next.
      */
     async killIgnoringExit(reason = 'launch-retry') {
-      await killJetIgnoringExit({ setIgnoreExit, kill: () => killJet(jetProcess, reason) });
+      await killJetIgnoringExit({ setIgnoreExit, kill: () => killCurrentJet(reason) });
     },
     async respawnAfterLaunchRetry() {
       throwIfAbandoned();
       try {
         await killJetIgnoringExit({
           setIgnoreExit,
-          kill: () => killJet(jetProcess, 'launch-retry'),
+          kill: () => killCurrentJet('launch-retry'),
         });
         output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
         spawnJet();
