@@ -42,8 +42,13 @@ const {
   androidAdbSerialAppearTimeoutMs,
   jetAwaitExitStallTimeoutMs,
 } = require('./detoxLatencyPolicy');
-const { killJetIgnoringExit } = require('./jetExitIgnoreKill');
-const { JetAttemptAbandonedError, stopAttemptJet } = require('./jetAttemptDrain');
+const {
+  killJetAfterOrchestrateFailure,
+  killJetForRetry,
+  stopAttemptJet,
+  waitForOrchestrate,
+} = require('./jetAttemptDrain');
+const { createJetAttemptSession } = require('./jetSession');
 const {
   recordAndroidDevice,
   recordIosSimulator,
@@ -1006,15 +1011,11 @@ async function drainJetAttempt(platform) {
     }
   }
 
-  if (ctx?.orchestratePromise) {
-    await Promise.race([
-      ctx.orchestratePromise.catch(() => {}),
-      sleep(DRAIN_ORCHESTRATE_TIMEOUT_MS).then(() => {
-        console.warn(
-          `[rnfb-e2e] drain orchestrate timed out after ${DRAIN_ORCHESTRATE_TIMEOUT_MS}ms`,
-        );
-      }),
-    ]);
+  if (
+    ctx?.orchestratePromise &&
+    (await waitForOrchestrate(ctx.orchestratePromise, DRAIN_ORCHESTRATE_TIMEOUT_MS))
+  ) {
+    console.warn(`[rnfb-e2e] drain orchestrate timed out after ${DRAIN_ORCHESTRATE_TIMEOUT_MS}ms`);
   }
 
   const stoppedPid = stopAttemptJet(ctx?.jetSession, { killTree: killSpawnedProcessTree });
@@ -1455,32 +1456,26 @@ async function awaitJetExitWithStallGuard(jetSession, stallMs = jetAwaitExitStal
 }
 
 async function killJetForLaunchRetry(jetProcess, reason = 'launch-retry') {
-  if (!jetProcess || jetProcess.killed) {
-    return;
-  }
-
   const fromStall = reason === 'stall';
-  logOrchestrateState(fromStall ? 'stall-kill-jet' : 'launch-retry-kill-jet');
-  console.warn(
-    fromStall
-      ? '[rnfb-e2e] stall-kill: killing Jet after await-exit stall'
-      : '[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot',
-  );
-  jetProcess.kill('SIGTERM');
-  await sleep(500);
-  killSpawnedProcessTree(jetProcess);
-
-  try {
-    await ensureTcpPortClosed(
-      jetRemotePort(),
-      fromStall ? 'stall-kill' : 'launch-retry',
-      KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS,
-    );
-  } catch (err) {
-    console.warn(
-      `[rnfb-e2e] ${fromStall ? 'stall-kill' : 'launch-retry'}: Jet port still open after kill: ${err?.message || err}`,
-    );
-  }
+  const label = fromStall ? 'stall-kill' : 'launch-retry';
+  await killJetForRetry(jetProcess, {
+    killTree: killSpawnedProcessTree,
+    onKill: () => {
+      logOrchestrateState(fromStall ? 'stall-kill-jet' : 'launch-retry-kill-jet');
+      console.warn(
+        fromStall
+          ? '[rnfb-e2e] stall-kill: killing Jet after await-exit stall'
+          : '[rnfb-e2e] launch-retry: killing Jet before terminateApp/reboot',
+      );
+    },
+    closePort: async () => {
+      try {
+        await ensureTcpPortClosed(jetRemotePort(), label, KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS);
+      } catch (err) {
+        console.warn(`[rnfb-e2e] ${label}: Jet port still open after kill: ${err?.message || err}`);
+      }
+    },
+  });
 }
 
 async function launchAppWithRetry(launchArgs, { testsDir, onBeforeRelaunch } = {}) {
@@ -1557,58 +1552,7 @@ function recordJetListeners() {
 }
 
 function createJetSession(jetArgs, testsDir) {
-  let output = '';
-  let jetProcess;
-  let ignoreExit = false;
-  let abandoned = false;
-  let resolveExit;
-  let rejectExit;
-
-  const exitPromise = new Promise((resolve, reject) => {
-    resolveExit = resolve;
-    rejectExit = reject;
-  });
-
-  const bindProcess = proc => {
-    jetProcess = proc;
-    proc.stdout.on('data', chunk => {
-      const text = chunk.toString();
-      output += text;
-      process.stdout.write(text);
-    });
-    proc.stderr.on('data', chunk => {
-      const text = chunk.toString();
-      output += text;
-      process.stderr.write(text);
-    });
-    proc.on('error', err => {
-      if (ignoreExit) {
-        console.warn(`[rnfb-e2e] ignoring Jet error during launch-retry: ${err?.message || err}`);
-        return;
-      }
-      err.jetOutput = output;
-      rejectExit(err);
-    });
-    proc.on('close', code => {
-      if (ignoreExit) {
-        console.warn(`[rnfb-e2e] ignoring Jet exit code=${code} during launch-retry`);
-        return;
-      }
-      if (code !== 0) {
-        const err = new Error('Jet tests failed!');
-        err.jetOutput = output;
-        err.jetExitCode = code;
-        rejectExit(err);
-        return;
-      }
-      resolveExit({ output });
-    });
-  };
-
-  const spawnJet = () => {
-    if (abandoned) {
-      throw new JetAttemptAbandonedError();
-    }
+  const spawnProcess = () => {
     const jp = jetRemotePort();
     const mp = metroPortForHost();
     const jcp = jetControlPort();
@@ -1625,56 +1569,20 @@ function createJetSession(jetArgs, testsDir) {
         RNFB_JET_CONTROL_PORT: String(jcp),
       },
     });
-    bindProcess(proc);
     // Recorded at spawn so its listeners stay owned even if this process dies first.
     recordPid(proc.pid, `jet:${jp}`);
     return proc;
   };
 
-  spawnJet();
-
-  return {
-    get process() {
-      return jetProcess;
+  return createJetAttemptSession({
+    spawnProcess,
+    killJet: killJetForLaunchRetry,
+    afterRespawn: async () => {
+      await waitForTcpPort(jetRemotePort());
+      recordJetListeners();
+      logOrchestrateState('launch-retry-jet-respawned');
     },
-    get output() {
-      return output;
-    },
-    exitPromise,
-    abandon() {
-      abandoned = true;
-    },
-    /**
-     * Kill Jet with ignoreExit held so exitPromise does not reject and steal an
-     * outer Promise.race from a retryable caller error (await-exit stall).
-     * Leaves ignoreExit true — session is abandoned or respawned next.
-     */
-    async killIgnoringExit(reason = 'launch-retry') {
-      await killJetIgnoringExit({
-        setIgnoreExit: value => {
-          ignoreExit = value;
-        },
-        kill: () => killJetForLaunchRetry(jetProcess, reason),
-      });
-    },
-    async respawnAfterLaunchRetry() {
-      try {
-        await killJetIgnoringExit({
-          setIgnoreExit: value => {
-            ignoreExit = value;
-          },
-          kill: () => killJetForLaunchRetry(jetProcess),
-        });
-        output += '\n[rnfb-e2e] --- jet respawn after launch retry ---\n';
-        spawnJet();
-        await waitForTcpPort(jetRemotePort());
-        recordJetListeners();
-        logOrchestrateState('launch-retry-jet-respawned');
-      } finally {
-        ignoreExit = false;
-      }
-    },
-  };
+  });
 }
 
 async function runJetE2eAttempt(attempt) {
@@ -1733,6 +1641,8 @@ async function runJetE2eAttempt(attempt) {
       },
     );
     logOrchestrateState('launch-ok');
+    // A launch that finishes after the drain must not start the next attempt's Jet run.
+    jetSession.throwIfAbandoned();
     await signalJetLaunchReady();
     logOrchestrateState('tests-run-permitted');
   };
@@ -1748,7 +1658,7 @@ async function runJetE2eAttempt(attempt) {
       })
       .catch(async err => {
         logOrchestrateState('orchestrate-failed');
-        await killJetForLaunchRetry(jetSession.process);
+        await killJetAfterOrchestrateFailure(jetSession, err, killJetForLaunchRetry);
         err.jetOutput = jetSession.output;
         throw err;
       }),

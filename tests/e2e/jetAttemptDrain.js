@@ -39,8 +39,59 @@ function stopAttemptJet(session, { killTree }) {
   return proc.pid;
 }
 
+/**
+ * Stop a Jet this run spawned (launch retry, stall) and wait for the Jet port to close.
+ * A Jet that has already exited is left alone: its pid may be reused, and the Jet port
+ * may already belong to the next attempt's Jet. Tree first, as in stopAttemptJet.
+ * Returns whether a Jet was stopped.
+ */
+async function killJetForRetry(proc, { killTree, closePort, onKill }) {
+  if (!jetProcessAlive(proc)) {
+    return false;
+  }
+  onKill?.();
+  killTree(proc);
+  await closePort();
+  return true;
+}
+
+/**
+ * Cleanup when an attempt's orchestrate fails. Once the drain has abandoned the attempt,
+ * its Jet is already stopped and the Jet port may be the next attempt's, so a late
+ * failure of the old orchestrate kills nothing.
+ */
+async function killJetAfterOrchestrateFailure(session, err, killJet) {
+  if (err?.jetAttemptAbandoned || session.abandoned) {
+    return false;
+  }
+  await killJet(session.process);
+  return true;
+}
+
+/** Wait at most `timeoutMs` for an orchestrate to settle; true when the wait timed out. */
+async function waitForOrchestrate(orchestratePromise, timeoutMs) {
+  let timer;
+  const timedOut = new Promise(resolve => {
+    timer = setTimeout(() => resolve(true), timeoutMs);
+  });
+  try {
+    return await Promise.race([
+      orchestratePromise.then(
+        () => false,
+        () => false,
+      ),
+      timedOut,
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 module.exports = {
   JetAttemptAbandonedError,
   jetProcessAlive,
+  killJetAfterOrchestrateFailure,
+  killJetForRetry,
   stopAttemptJet,
+  waitForOrchestrate,
 };

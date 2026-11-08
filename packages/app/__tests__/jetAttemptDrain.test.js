@@ -11,8 +11,12 @@ jest.setTimeout(30000);
 const {
   JetAttemptAbandonedError,
   jetProcessAlive,
+  killJetAfterOrchestrateFailure,
+  killJetForRetry,
   stopAttemptJet,
+  waitForOrchestrate,
 } = require('../../../tests/e2e/jetAttemptDrain');
+const { createJetAttemptSession } = require('../../../tests/e2e/jetSession');
 
 function freePort() {
   return new Promise((resolve, reject) => {
@@ -219,6 +223,235 @@ describe('Jet attempt drain', function () {
   });
 });
 
+// Like the harness ensureTcpPortClosed for this run's own listeners: kills whatever
+// listens on the port, which after the drain is the next attempt's Jet.
+function killPortHolders(port) {
+  const pids = execSync(`lsof -nP -iTCP:${port} -sTCP:LISTEN -t 2>/dev/null || true`, {
+    encoding: 'utf8',
+  })
+    .split(/\s+/)
+    .filter(Boolean);
+  for (const pid of pids) {
+    try {
+      process.kill(Number(pid), 'SIGKILL');
+    } catch (_) {
+      // already gone
+    }
+  }
+}
+
+// The harness always races exitPromise; a killed stand-in Jet rejects it.
+function jetAttemptSession(deps) {
+  const session = createJetAttemptSession(deps);
+  session.exitPromise.catch(() => {});
+  return session;
+}
+
+function orphaningRoot(port) {
+  return spawn(
+    '/bin/sh',
+    [
+      '-c',
+      `${JSON.stringify(process.execPath)} -e "require('net').createServer().listen(${port}, '127.0.0.1'); setInterval(() => {}, 1000)" & wait`,
+    ],
+    { stdio: 'ignore' },
+  );
+}
+
+describe('a late attempt-1 orchestrate after the drain', function () {
+  const procs = [];
+
+  afterEach(function () {
+    for (const proc of procs.splice(0)) {
+      killTree(proc);
+    }
+  });
+
+  // Attempt 1's session, drained, with attempt 2's Jet now holding the same port.
+  async function drainedAttemptWithNextJet() {
+    const port = await freePort();
+    const killJet = jest.fn(proc =>
+      killJetForRetry(proc, { killTree, closePort: async () => killPortHolders(port) }),
+    );
+    const spawned = [];
+    const session = jetAttemptSession({
+      spawnProcess: () => {
+        const proc = spawnStandInJet(port);
+        spawned.push(proc);
+        procs.push(proc);
+        return proc;
+      },
+      killJet,
+      afterRespawn: async () => {},
+    });
+    expect(await waitFor(() => portOpen(port))).toBe(true);
+    const attempt1Jet = session.process;
+    expect(stopAttemptJet(session, { killTree })).toBe(attempt1Jet.pid);
+    await exited(attempt1Jet);
+    expect(await waitFor(async () => !(await portOpen(port)))).toBe(true);
+
+    const attempt2Jet = spawnStandInJet(port);
+    procs.push(attempt2Jet);
+    expect(await waitFor(() => portOpen(port))).toBe(true);
+    return { port, session, killJet, spawned, attempt2Jet };
+  }
+
+  it('does not respawn: a launch retry throws before killing anything', async function () {
+    const { port, session, killJet, spawned, attempt2Jet } = await drainedAttemptWithNextJet();
+
+    await expect(session.respawnAfterLaunchRetry()).rejects.toBeInstanceOf(
+      JetAttemptAbandonedError,
+    );
+
+    expect(killJet).not.toHaveBeenCalled();
+    expect(spawned).toHaveLength(1);
+    await sleep(300);
+    expect(jetProcessAlive(attempt2Jet)).toBe(true);
+    expect(await portOpen(port)).toBe(true);
+  });
+
+  it('kills nothing when its orchestrate then fails', async function () {
+    const { port, session, killJet, attempt2Jet } = await drainedAttemptWithNextJet();
+
+    expect(
+      await killJetAfterOrchestrateFailure(session, new Error('launch timeout'), killJet),
+    ).toBe(false);
+    expect(
+      await killJetAfterOrchestrateFailure(session, new JetAttemptAbandonedError(), killJet),
+    ).toBe(false);
+
+    expect(killJet).not.toHaveBeenCalled();
+    await sleep(300);
+    expect(jetProcessAlive(attempt2Jet)).toBe(true);
+    expect(await portOpen(port)).toBe(true);
+  });
+
+  it('does not start the next attempt’s Jet run when its launch finishes late', async function () {
+    const { session } = await drainedAttemptWithNextJet();
+    expect(() => session.throwIfAbandoned()).toThrow(JetAttemptAbandonedError);
+  });
+
+  it('does not spawn when the drain abandons it during the respawn kill', async function () {
+    const port = await freePort();
+    const spawned = [];
+    let session;
+    session = jetAttemptSession({
+      spawnProcess: () => {
+        const proc = spawnStandInJet(port);
+        spawned.push(proc);
+        procs.push(proc);
+        return proc;
+      },
+      killJet: async proc => {
+        session.abandon();
+        killTree(proc);
+      },
+      afterRespawn: async () => {},
+    });
+
+    await expect(session.respawnAfterLaunchRetry()).rejects.toBeInstanceOf(
+      JetAttemptAbandonedError,
+    );
+    expect(spawned).toHaveLength(1);
+  });
+
+  it('still cleans up its own Jet when its orchestrate fails before any drain', async function () {
+    const port = await freePort();
+    const killJet = jest.fn(async () => {});
+    const session = jetAttemptSession({
+      spawnProcess: () => {
+        const proc = spawnStandInJet(port);
+        procs.push(proc);
+        return proc;
+      },
+      killJet,
+      afterRespawn: async () => {},
+    });
+    expect(
+      await killJetAfterOrchestrateFailure(session, new Error('launch timeout'), killJet),
+    ).toBe(true);
+    expect(killJet).toHaveBeenCalledWith(session.process);
+  });
+});
+
+describe('killJetForRetry', function () {
+  const procs = [];
+
+  afterEach(function () {
+    for (const proc of procs.splice(0)) {
+      killTree(proc);
+    }
+  });
+
+  it('leaves the port alone when the Jet exited by itself (never signalled)', async function () {
+    const port = await freePort();
+    const attempt1Jet = spawn(process.execPath, ['-e', ''], { stdio: 'ignore' });
+    await exited(attempt1Jet);
+    expect(attempt1Jet.killed).toBe(false);
+    const attempt2Jet = spawnStandInJet(port);
+    procs.push(attempt2Jet);
+    expect(await waitFor(() => portOpen(port))).toBe(true);
+    const onKill = jest.fn();
+
+    expect(
+      await killJetForRetry(attempt1Jet, {
+        killTree,
+        onKill,
+        closePort: async () => killPortHolders(port),
+      }),
+    ).toBe(false);
+
+    expect(onKill).not.toHaveBeenCalled();
+    await sleep(300);
+    expect(jetProcessAlive(attempt2Jet)).toBe(true);
+    expect(await portOpen(port)).toBe(true);
+  });
+
+  it('kills the tree before the root can exit and orphan the listener', async function () {
+    const port = await freePort();
+    const root = orphaningRoot(port);
+    procs.push(root);
+    expect(await waitFor(() => portOpen(port))).toBe(true);
+    const listener = Number(execSync(`pgrep -P ${root.pid}`, { encoding: 'utf8' }).trim());
+    const closePort = jest.fn(async () => {});
+
+    expect(await killJetForRetry(root, { killTree, closePort })).toBe(true);
+
+    expect(closePort).toHaveBeenCalledTimes(1);
+    const listenerGone = () => {
+      try {
+        process.kill(listener, 0);
+        return false;
+      } catch (_) {
+        return true;
+      }
+    };
+    expect(await waitFor(() => listenerGone(), 3000)).toBe(true);
+    expect(await waitFor(async () => !(await portOpen(port)), 3000)).toBe(true);
+  });
+});
+
+describe('waitForOrchestrate', function () {
+  afterEach(function () {
+    jest.useRealTimers();
+  });
+
+  it('clears its timer when the orchestrate settles first', async function () {
+    jest.useFakeTimers();
+    expect(await waitForOrchestrate(Promise.resolve(), 30000)).toBe(false);
+    expect(await waitForOrchestrate(Promise.reject(new Error('launch')), 30000)).toBe(false);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('reports a timeout when the orchestrate is still running', async function () {
+    jest.useFakeTimers();
+    const pending = waitForOrchestrate(new Promise(() => {}), 30000);
+    jest.advanceTimersByTime(30000);
+    expect(await pending).toBe(true);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+});
+
 describe('harness wiring for the Jet attempt drain', function () {
   const src = fs.readFileSync(path.join(repoRoot, 'tests/e2e/firebase.test.js'), 'utf8');
   const fnBody = name => {
@@ -248,12 +481,33 @@ describe('harness wiring for the Jet attempt drain', function () {
 
   it('never respawns Jet for an abandoned attempt and stops the launch retry loop', function () {
     const session = fnBody('createJetSession');
-    expect(session).toMatch(
-      /const spawnJet = \(\) => \{\s*if \(abandoned\) \{\s*throw new JetAttemptAbandonedError\(\);/,
-    );
-    expect(session).toMatch(/abandon\(\) \{\s*abandoned = true;/);
+    expect(session).toMatch(/return createJetAttemptSession\(\{/);
+    expect(session).toMatch(/killJet: killJetForLaunchRetry/);
     const launch = fnBody('launchAppWithRetry');
     expect(launch).toMatch(/catch \(err\) \{\s*if \(err\?\.jetAttemptAbandoned\) \{\s*throw err;/);
+  });
+
+  it('a late orchestrate neither kills the next Jet nor starts its run', function () {
+    const attempt = fnBody('runJetE2eAttempt');
+    expect(attempt).toMatch(/jetSession\.throwIfAbandoned\(\);\s*await signalJetLaunchReady\(\);/);
+    expect(attempt).toMatch(
+      /killJetAfterOrchestrateFailure\(jetSession, err, killJetForLaunchRetry\)/,
+    );
+    expect(attempt).not.toMatch(/await killJetForLaunchRetry\(/);
+  });
+
+  it('kills a launch-retry or stalled Jet by tree, only while it is alive', function () {
+    const kill = fnBody('killJetForLaunchRetry');
+    expect(kill).toMatch(/killJetForRetry\(jetProcess, \{\s*killTree: killSpawnedProcessTree/);
+    expect(kill).not.toMatch(/SIGTERM|\.killed|sleep\(/);
+  });
+
+  it('waits for the orchestrate with a cleared timer and warns only on a real timeout', function () {
+    const drain = fnBody('drainJetAttempt');
+    expect(drain).toMatch(
+      /await waitForOrchestrate\(ctx\.orchestratePromise, DRAIN_ORCHESTRATE_TIMEOUT_MS\)\)\s*\)\s*\{\s*console\.warn\(`\[rnfb-e2e\] drain orchestrate timed out/,
+    );
+    expect(drain).not.toMatch(/sleep\(DRAIN_ORCHESTRATE_TIMEOUT_MS\)/);
   });
 
   it('names what holds the port when the close wait times out', function () {

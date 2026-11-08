@@ -232,7 +232,9 @@ describe('9-way overlap and latency tolerance (UNI-9way-latency)', function () {
     const src = fs.readFileSync(path.join(repoRoot, 'tests/e2e/firebase.test.js'), 'utf8');
     const killJetAt = src.indexOf('async function killJetForLaunchRetry');
     const drainAt = src.indexOf("await ensureTcpPortClosed(jetRemotePort(), 'drain')");
-    const retryAt = src.indexOf('await ensureTcpPortClosed(\n      jetRemotePort(),');
+    const retryAt = src.indexOf(
+      'await ensureTcpPortClosed(jetRemotePort(), label, KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS)',
+    );
     const portOwnership = fs.readFileSync(
       path.join(repoRoot, 'tests/e2e/portOwnership.js'),
       'utf8',
