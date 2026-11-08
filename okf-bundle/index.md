@@ -17,6 +17,7 @@ okf_version: '0.1'
 - [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → `documentation?` → area-focused `independent-review` → commit); [§ validation evidence (blocking)](testing/change-authoring-workflow.md#validation-evidence-blocking); [coverage evidence package](testing/coverage-design.md#coverage-evidence-package)
 - [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
 - [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis; [§ test-app native modules](testing/running-e2e.md#test-app-native-modules); [§ slot lifecycle](testing/running-e2e.md#slot-lifecycle)
+- [Running e2e — Mellifera remote and distributed](/testing/running-e2e-distributed.md) — remote spill, overlapping spill, distributed grid with per-piece commands and the reducer report, simple mode
 - [E2e parallel design](/testing/e2e-parallel-design.md) — resources, why they collide, parameterization, 9 overlapping cells, coordinator rollout
 - [Test app dependency pins](/testing/test-app-dependency-pins.md) — intentional RN / CLI locks (mobile + Expo/RN CLI fixtures share one line; `react-native-macos` is independent)
 - [Validation checklist](/testing/validation-checklist.md) — compile, Jest, lint, `compare:types`, e2e, coverage
