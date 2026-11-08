@@ -111,6 +111,7 @@
     "tests:mellifera:releases": "node ./scripts/e2e/mellifera-cli-forward.js 1 releases",
     "tests:mellifera:apply": "node ./scripts/e2e/mellifera-apply-reservation.js",
     "tests:mellifera:reserve-apply": "node ./scripts/e2e/mellifera-reserve-apply.js",
+    "tests:mellifera:remote-sync": "node ./scripts/e2e/mellifera-remote-sync.js",
     "tests:mellifera:assert-cli-wrappers": "node ./scripts/e2e/assert-mellifera-cli-wrappers.js",
     "tests:mellifera:assert-apply-reservation": "node ./scripts/e2e/assert-mellifera-apply-reservation.js",
     "tests:coverage:capture-baseline": "node tests/scripts/capture-native-coverage-baseline.js",
