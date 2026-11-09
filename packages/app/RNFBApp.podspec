@@ -80,6 +80,10 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   firebase_dependency(s, firebase_sdk_version, ['FirebaseCore', 'FirebaseInstallations'], 'Firebase/CoreOnly')
 
+  # Second GoogleUtilities declarer alongside RNFBMessaging / RNFBAnalytics so a
+  # graph with only one of them shares one framework per product (#9408).
+  rnfirebase_declare_shared_google_utilities(s, __dir__)
+
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework

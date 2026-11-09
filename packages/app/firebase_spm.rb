@@ -296,6 +296,32 @@ def rnfirebase_spm_package_requirement(version)
   { kind: 'exactVersion', version: version }
 end
 
+RNFIREBASE_GUL_SHARING_SIBLINGS = %w[messaging analytics].freeze
+
+# RNFBMessaging and RNFBAnalytics declare these GoogleUtilities products
+# directly. With only one of them in the graph Xcode still compiles the
+# classes privately into that pod's framework; a second declarer (RNFBApp)
+# makes Xcode build one shared framework per product instead.
+def rnfirebase_gul_sharing_sibling_installed?(app_dir)
+  RNFIREBASE_GUL_SHARING_SIBLINGS.any? do |name|
+    File.exist?(File.join(app_dir, '..', name, 'package.json'))
+  end
+end
+
+# Sibling lookup only sees the npm/yarn layout. pnpm's isolated layout has no
+# `@react-native-firebase/messaging` next to `app`, so it falls back to no
+# declaration. A sibling that is installed but not autolinked still declares.
+def rnfirebase_declare_shared_google_utilities(spec, app_dir) # rubocop:disable Naming/PredicateMethod
+  return false unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
+  return false unless rnfirebase_gul_sharing_sibling_installed?(app_dir)
+
+  spm_dependency(spec,
+                 url: 'https://github.com/google/GoogleUtilities.git',
+                 requirement: { kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' },
+                 products: %w[GULNetwork GULReachability GULMethodSwizzler])
+  true
+end
+
 # Xcodeproj assigns a fresh random UUID on every `project.new`. The dynamic
 # probe removes the app target's FirebaseCore package reference, product
 # dependency, and PBXBuildFile, and a later normal install creates them
