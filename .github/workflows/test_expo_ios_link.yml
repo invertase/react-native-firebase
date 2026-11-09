@@ -129,7 +129,5 @@ jobs:
         with:
           name: test-expo-ios-launch-smoke-logs
           path: |
-            /tmp/test-expo-launch-smoke.log
-            /tmp/test-expo-launch-smoke-metro.log
-            /tmp/test-expo-launch-smoke-xcodebuild.log
+            /tmp/test-expo-launch-smoke-*.log
           if-no-files-found: ignore

@@ -60,11 +60,11 @@ done
 
 modules=()
 IFS=',' read -r -a requested <<<"$MODULES"
-for module in "${requested[@]}"; do
+for module in ${requested[@]+"${requested[@]}"}; do
   module="${module// /}"
   [[ -z "$module" || "$module" == "app" ]] && continue
   [[ "$module" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || usage_error "invalid module name '${module}'"
-  for seen in "${modules[@]+"${modules[@]}"}"; do
+  for seen in ${modules[@]+"${modules[@]}"}; do
     [[ "$seen" == "$module" ]] && usage_error "module '${module}' requested twice"
   done
   modules+=("$module")

@@ -5,6 +5,13 @@
 # prints why it refuses and returns 2. The basename must contain
 # "derived-data" or "DerivedData", the path must not contain a ".." component,
 # and it must not be /, $HOME, the repo root, or an ancestor of either.
+#
+# repo_path_tag <repo-root> prints the first 8 hex characters of the SHA-1 of
+# the physical repo root path, so /tmp defaults differ between worktrees.
+
+repo_path_tag() {
+  (cd "$1" && pwd -P) | tr -d '\n' | shasum | cut -c1-8
+}
 
 wipeable_derived_data_path() {
   local path="$1" repo_root="$2" parent rest="" resolved forbidden

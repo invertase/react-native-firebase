@@ -68,9 +68,11 @@ suffix="${checked_modules// /-}"
 suffix="${suffix:-app}"
 
 FIXTURE_DIR="${REPO_ROOT}/test-expo/.fixtures/${suffix}"
-DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_FIXTURE_DERIVED_DATA-/tmp/test-expo-fixture-derived-data-${suffix}}" "$REPO_ROOT")" || exit 2
-PREBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_PREBUILD_LOG:-/tmp/test-expo-fixture-${suffix}-prebuild.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_XCODEBUILD_LOG:-/tmp/test-expo-fixture-${suffix}-xcodebuild.log}"
+REPO_TAG="$(repo_path_tag "$REPO_ROOT")"
+DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_FIXTURE_DERIVED_DATA-/tmp/test-expo-fixture-derived-data-${REPO_TAG}-${suffix}}" "$REPO_ROOT")" || exit 2
+SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-/tmp/test-expo-spm-packages-${REPO_TAG}}"
+PREBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_PREBUILD_LOG:-/tmp/test-expo-fixture-${REPO_TAG}-${suffix}-prebuild.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_XCODEBUILD_LOG:-/tmp/test-expo-fixture-${REPO_TAG}-${suffix}-xcodebuild.log}"
 SCHEME="rnfbfixture"
 
 rm -rf "$FIXTURE_DIR"
@@ -102,7 +104,7 @@ export RCT_NO_LAUNCH_PACKAGER=1
 # build starts empty.
 rm -rf "$DERIVED_DATA"
 HOST_ARCH="$(uname -m)"
-log "xcodebuild build (iOS Simulator, unsigned, Release, arch=${HOST_ARCH}, DerivedData=${DERIVED_DATA}) (log: ${XCODEBUILD_LOG})"
+log "xcodebuild build (iOS Simulator, unsigned, Release, arch=${HOST_ARCH}, DerivedData=${DERIVED_DATA}, SPM packages=${SPM_PACKAGES}) (log: ${XCODEBUILD_LOG})"
 xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
@@ -113,6 +115,7 @@ xcodebuild_args=(
   -configuration Release
   -destination 'generic/platform=iOS Simulator'
   -derivedDataPath "$DERIVED_DATA"
+  -clonedSourcePackagesDirPath "$SPM_PACKAGES"
   CODE_SIGNING_ALLOWED=NO
   CODE_SIGNING_REQUIRED=NO
   CODE_SIGN_IDENTITY=""

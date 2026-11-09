@@ -8,10 +8,30 @@ on:
     branches:
       - '**'
     paths:
+      - 'packages/app/package.json'
       - 'packages/app/RNFBApp.podspec'
       - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+      - 'packages/app/app.plugin.js'
+      - 'packages/app/ios/**'
+      - 'packages/app/plugin/**'
+      - 'packages/messaging/package.json'
+      - 'packages/messaging/app.plugin.js'
       - 'packages/messaging/RNFBMessaging.podspec'
+      - 'packages/messaging/ios/**'
+      - 'packages/messaging/plugin/**'
+      - 'packages/analytics/package.json'
+      - 'packages/analytics/app.plugin.js'
       - 'packages/analytics/RNFBAnalytics.podspec'
+      - 'packages/analytics/ios/**'
+      - 'packages/analytics/plugin/**'
+      - 'packages/auth/package.json'
+      - 'packages/auth/app.plugin.js'
+      - 'packages/auth/RNFBAuth.podspec'
+      - 'packages/auth/ios/**'
+      - 'packages/auth/plugin/**'
+      - 'test-expo/package.json'
+      - 'yarn.lock'
       - '.github/workflows/test_expo_fixture_ios_dupes.yml'
       - '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh'
       - '.github/workflows/scripts/lib/make-expo-fixture.sh'
@@ -23,10 +43,30 @@ on:
       - main
       - release-v*
     paths:
+      - 'packages/app/package.json'
       - 'packages/app/RNFBApp.podspec'
       - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+      - 'packages/app/app.plugin.js'
+      - 'packages/app/ios/**'
+      - 'packages/app/plugin/**'
+      - 'packages/messaging/package.json'
+      - 'packages/messaging/app.plugin.js'
       - 'packages/messaging/RNFBMessaging.podspec'
+      - 'packages/messaging/ios/**'
+      - 'packages/messaging/plugin/**'
+      - 'packages/analytics/package.json'
+      - 'packages/analytics/app.plugin.js'
       - 'packages/analytics/RNFBAnalytics.podspec'
+      - 'packages/analytics/ios/**'
+      - 'packages/analytics/plugin/**'
+      - 'packages/auth/package.json'
+      - 'packages/auth/app.plugin.js'
+      - 'packages/auth/RNFBAuth.podspec'
+      - 'packages/auth/ios/**'
+      - 'packages/auth/plugin/**'
+      - 'test-expo/package.json'
+      - 'yarn.lock'
       - '.github/workflows/test_expo_fixture_ios_dupes.yml'
       - '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh'
       - '.github/workflows/scripts/lib/make-expo-fixture.sh'
@@ -50,10 +90,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        modules:
-          - messaging,auth
-          - analytics,auth
-          - messaging,analytics,auth
+        include:
+          - slug: messaging-auth
+            modules: messaging,auth
+          - slug: analytics-auth
+            modules: analytics,auth
+          - slug: messaging-analytics-auth
+            modules: messaging,analytics,auth
     env:
       XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
@@ -66,6 +109,17 @@ jobs:
       CC: clang
       CPLUSPLUS: clang++
     steps:
+      - name: Check matrix slug matches modules
+        env:
+          MATRIX_SLUG: ${{ matrix.slug }}
+          MATRIX_MODULES: ${{ matrix.modules }}
+        run: |
+          expected="${MATRIX_MODULES//,/-}"
+          if [[ "$MATRIX_SLUG" != "$expected" ]]; then
+            echo "matrix.slug '${MATRIX_SLUG}' does not match matrix.modules '${MATRIX_MODULES}' (expected '${expected}')" >&2
+            exit 1
+          fi
+
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -92,7 +146,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-expo-fixture-dupes-ios-v1-xcode27-${{ matrix.modules }}-${{ steps.xcode_cache_key.outputs.key }}
+          key: ${{ runner.os }}-expo-fixture-dupes-ios-v1-xcode27-${{ matrix.slug }}-${{ steps.xcode_cache_key.outputs.key }}
           append-timestamp: false
           save: ${{ github.ref == 'refs/heads/main' }}
           create-symlink: true
@@ -121,7 +175,7 @@ jobs:
         continue-on-error: true
         if: failure() && steps.dupes.outcome == 'failure'
         with:
-          name: test-expo-fixture-ios-dupes-logs-${{ strategy.job-index }}
+          name: test-expo-fixture-ios-dupes-logs-${{ matrix.slug }}
           path: |
             /tmp/test-expo-fixture-*-prebuild.log
             /tmp/test-expo-fixture-*-xcodebuild.log

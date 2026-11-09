@@ -339,8 +339,10 @@ current Firebase iOS SDK / GoogleUtilities pin). All three run in CI
 
 The fixture resolves `@react-native-firebase/*` to the monorepo `packages/`
 directories, where `messaging` and `analytics` always exist, so fixture runs
-only exercise the "sibling installed" branch. The "not installed" branch is
-covered by `firebase_spm_test.rb`.
+only exercise the "sibling installed" branch. The same holds for every
+monorepo fixture (`test-expo/`, and `test-rn-bare/` including its dynamic
+Firebase probe): RNFBApp always declares the three products there. The
+"not installed" branch is covered by `firebase_spm_test.rb`.
 
 An app-only fixture (`--modules ""`) is not a clean zero baseline:
 `FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
