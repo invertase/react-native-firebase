@@ -1,11 +1,18 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
+const { createHermeticHost } = require('./e2eHermeticHost');
+jest.setTimeout(30000);
 
 const repoRoot = path.resolve(__dirname, '../../..');
 const lib = path.join(repoRoot, 'scripts/e2e/lib/e2e-resource-env.sh');
+const host = createHermeticHost('rnfb-resource-env-');
+
+afterAll(function () {
+  host.cleanup();
+});
 
 function cleanEnv() {
-  const env = { ...process.env };
+  const env = host.env();
   for (const key of Object.keys(env)) {
     if (
       key.startsWith('RNFB_') ||
@@ -24,6 +31,7 @@ function cleanEnv() {
     }
   }
   env.E2E_SLOTTED_MAX = '2';
+  env.RNFB_E2E_RUN_RECORD_DIR = host.runRecordDir;
   return env;
 }
 
@@ -39,6 +47,72 @@ ${body}`,
     { encoding: 'utf8', cwd: repoRoot, env: cleanEnv(), ...extra },
   );
 }
+
+describe('temp root (${TMPDIR:-/tmp} without a trailing slash)', function () {
+  const cases = [
+    ['/', '/tmp'],
+    ['', '/tmp'],
+    [undefined, '/tmp'],
+    ['/scratch/run/', '/scratch/run'],
+    ['/scratch/run', '/scratch/run'],
+  ];
+
+  function envWithTmpdir(tmpdir) {
+    const env = cleanEnv();
+    if (tmpdir === undefined) {
+      delete env.TMPDIR;
+    } else {
+      env.TMPDIR = tmpdir;
+    }
+    return env;
+  }
+
+  it.each(cases)('e2e_tmp_root maps TMPDIR=%j to %s', function (tmpdir, expected) {
+    expect(bashSnippet('e2e_tmp_root', { env: envWithTmpdir(tmpdir) }).trim()).toBe(expected);
+  });
+
+  const inlineScripts = [
+    '.github/workflows/scripts/test-expo-ios-launch-smoke.sh',
+    '.github/workflows/scripts/test-expo-ios-link.sh',
+    '.github/workflows/scripts/test-rn-bare-ios-build.sh',
+    '.github/workflows/scripts/test-rn-bare-ios-launch-smoke.sh',
+    'scripts/repro-android-build-flake.sh',
+    'scripts/tart/prewarm-caches.sh',
+    'scripts/tart/provision-toolchain.sh',
+  ];
+
+  it.each(inlineScripts)('%s resolves its temp root the same way', function (script) {
+    const fs = require('fs');
+    const src = fs.readFileSync(path.join(repoRoot, script), 'utf8');
+    const lines = src.split('\n').filter(l => l.startsWith('TMP_ROOT='));
+    expect(lines).toHaveLength(3);
+    for (const [tmpdir, expected] of cases) {
+      const out = execFileSync('bash', ['-c', `${lines.join('\n')}\nprintf '%s' "$TMP_ROOT"`], {
+        encoding: 'utf8',
+        env: envWithTmpdir(tmpdir),
+      });
+      expect(out).toBe(expected);
+    }
+  });
+
+  it('scripts that source the e2e lib use e2e_tmp_root', function () {
+    const fs = require('fs');
+    for (const script of [
+      'scripts/run-full-tests.sh',
+      'scripts/e2e/release-e2e-resources.sh',
+      'scripts/e2e/start-packager.sh',
+      '.github/workflows/scripts/start-firebase-emulator.sh',
+    ]) {
+      const code = fs
+        .readFileSync(path.join(repoRoot, script), 'utf8')
+        .split('\n')
+        .filter(l => !l.trimStart().startsWith('#'))
+        .join('\n');
+      expect(code).toContain('$(e2e_tmp_root)');
+      expect(code).not.toMatch(/TMPDIR:-\/tmp/);
+    }
+  });
+});
 
 describe('e2e_validate_platform_name', function () {
   it('accepts android, ios, and macos', function () {
@@ -605,14 +679,15 @@ e2e_adb_stray_emulator_serials
     expect(out).not.toMatch(/^emulator-5556$/m);
   });
 
-  it('check --services is BUSY when adb lists a FreePortFinder serial (negative of expected-serial-only probes)', function () {
+  it('check: a FreePortFinder stray is BUSY only when this checkout recorded it; another owner’s is INFO', async function () {
     const fs = require('fs');
     const os = require('os');
+    const { spawn } = require('child_process');
+    const { processStartTime } = require(path.join(repoRoot, 'tests/e2e/runRecord'));
     const checkPath = path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh');
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-fake-adb-'));
-    const adb = path.join(dir, 'adb');
     fs.writeFileSync(
-      adb,
+      path.join(dir, 'adb'),
       `#!/bin/bash
 if [[ "$1" == "devices" ]]; then
   printf '%s\\n' 'List of devices attached' 'emulator-16222\tdevice' 'emulator-5554\tdevice'
@@ -621,24 +696,215 @@ fi
 exit 1
 `,
     );
-    fs.chmodSync(adb, 0o755);
+    fs.writeFileSync(path.join(dir, 'lsof'), '#!/bin/bash\nexit 1\n');
+    fs.chmodSync(path.join(dir, 'adb'), 0o755);
+    fs.chmodSync(path.join(dir, 'lsof'), 0o755);
+    // Stands in for the stray's qemu instance.
+    const qemu = spawn(
+      process.execPath,
+      ['-e', 'setTimeout(() => {}, 60000)', 'qemu-system-fake', '@T66StrayAvd', '-port', '16222'],
+      { stdio: 'ignore', cwd: os.tmpdir() },
+    );
+    const qemuExited = new Promise(resolve => qemu.once('exit', resolve));
     const env = cleanEnv();
     env.PATH = `${dir}:${env.PATH || '/usr/bin:/bin'}`;
-    let status = 0;
-    let combined = '';
+    env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
+    const check = () => {
+      try {
+        return {
+          status: 0,
+          out: execFileSync('bash', [checkPath, '--platform=android'], {
+            encoding: 'utf8',
+            cwd: repoRoot,
+            env,
+            stdio: ['pipe', 'pipe', 'pipe'],
+          }),
+        };
+      } catch (e) {
+        return { status: e.status, out: `${e.stdout || ''}${e.stderr || ''}` };
+      }
+    };
     try {
-      combined = execFileSync('bash', [checkPath, '--services'], {
-        encoding: 'utf8',
-        cwd: repoRoot,
-        env,
-        stdio: ['pipe', 'pipe', 'pipe'],
-      });
-    } catch (e) {
-      status = e.status;
-      combined = `${e.stdout || ''}${e.stderr || ''}`;
+      const foreign = check();
+      expect(foreign.out).toMatch(
+        new RegExp(
+          `INFO\\s+android stray emulator serial emulator-16222 owner=unrecorded qemu pid=${qemu.pid} .*only the manual yarn tests:e2e:release --all-slots`,
+        ),
+      );
+      expect(foreign.out).not.toMatch(/BUSY\s+android stray/);
+      expect(foreign.out).not.toMatch(/stray emulator serial emulator-5554/);
+      expect(foreign.status).toBe(0);
+
+      fs.mkdirSync(path.join(dir, 'rec', 'serial'), { recursive: true });
+      fs.writeFileSync(
+        path.join(dir, 'rec', 'serial', 'android-emulator-16222'),
+        `android\temulator-16222\tT66StrayAvd\t${qemu.pid}\t${processStartTime(qemu.pid)}\n`,
+      );
+      const recorded = check();
+      expect(recorded.status).toBe(1);
+      expect(recorded.out).toMatch(
+        /BUSY\s+android stray emulator serial emulator-16222 .*owner=this-checkout — free it with yarn tests:e2e:release --devices/,
+      );
+    } finally {
+      qemu.kill('SIGKILL');
+      await qemuExited;
+      fs.rmSync(dir, { recursive: true, force: true });
     }
-    expect(status).not.toBe(0);
-    expect(combined).toMatch(/BUSY\s+android stray emulator serial emulator-16222/);
-    expect(combined).not.toMatch(/stray emulator serial emulator-5554/);
+  });
+
+  it('check: names the manual --devices release for this checkout’s unrecorded strays; a recorded child is BUSY', async function () {
+    const fs = require('fs');
+    const os = require('os');
+    const { spawn } = require('child_process');
+    const { recordPid } = require(path.join(repoRoot, 'tests/e2e/runRecord'));
+    const checkPath = path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-fake-adb-own-'));
+    const realLsof = execFileSync('/bin/sh', ['-c', 'command -v lsof'], {
+      encoding: 'utf8',
+    }).trim();
+    fs.writeFileSync(
+      path.join(dir, 'adb'),
+      `#!/bin/bash
+if [[ "$1" == "devices" ]]; then
+  printf '%s\\n' 'List of devices attached' 'emulator-16232\tdevice' 'emulator-16234\tdevice' 'emulator-16236\tdevice'
+  exit 0
+fi
+exit 1
+`,
+    );
+    fs.writeFileSync(
+      path.join(dir, 'lsof'),
+      `#!/bin/bash\n[[ "$1" == "-a" ]] && exec ${realLsof} "$@"\nexit 1\n`,
+    );
+    fs.chmodSync(path.join(dir, 'adb'), 0o755);
+    fs.chmodSync(path.join(dir, 'lsof'), 0o755);
+    const token = (cwd, avd, port) =>
+      spawn(
+        process.execPath,
+        ['-e', 'setTimeout(() => {}, 60000)', 'qemu-system-fake', `@${avd}`, '-port', port],
+        { stdio: 'ignore', cwd },
+      );
+    // Serial identity's AVD and another identity's, both run from this checkout.
+    const ownAvd = token(repoRoot, 'TestingAVD', '16232');
+    const otherAvd = token(repoRoot, 'TestingAVD-3', '16234');
+    // A recorded parent (outside this checkout) whose child qemu is the third stray.
+    const parent = spawn(
+      process.execPath,
+      [
+        '-e',
+        `require('child_process').spawn(process.execPath, ${JSON.stringify([
+          '-e',
+          'setTimeout(() => {}, 60000)',
+          'qemu-system-fake',
+          '@TestingAVD-5',
+          '-port',
+          '16236',
+        ])}, { stdio: 'ignore' }); setTimeout(() => {}, 60000);`,
+      ],
+      { stdio: 'ignore', cwd: os.tmpdir() },
+    );
+    const env = cleanEnv();
+    env.PATH = `${dir}:${env.PATH || '/usr/bin:/bin'}`;
+    env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
+    let childPid;
+    try {
+      recordPid(parent.pid, 'jet:8090', env);
+      const end = Date.now() + 5000;
+      while (!childPid && Date.now() < end) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        const ps = execFileSync('ps', ['-axo', 'pid=,ppid=,args='], { encoding: 'utf8' });
+        const line = ps
+          .split('\n')
+          .find(
+            l => l.includes('@TestingAVD-5') && l.trim().split(/\s+/)[1] === String(parent.pid),
+          );
+        childPid = line ? Number(line.trim().split(/\s+/)[0]) : undefined;
+      }
+      let out;
+      let status = 0;
+      try {
+        out = execFileSync('bash', [checkPath, '--platform=android'], {
+          encoding: 'utf8',
+          cwd: repoRoot,
+          env,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        });
+      } catch (e) {
+        status = e.status;
+        out = `${e.stdout || ''}${e.stderr || ''}`;
+      }
+      expect(out).toMatch(
+        new RegExp(
+          `INFO\\s+android stray emulator serial emulator-16232 owner=this-checkout-unrecorded qemu pid=${ownAvd.pid} cwd=${repoRoot} avd=TestingAVD — .*in this shell's slot env run: yarn tests:e2e:release --include-unrecorded --devices --only android-emulator$`,
+          'm',
+        ),
+      );
+      expect(out).toMatch(
+        /INFO\s+android stray emulator serial emulator-16234 owner=this-checkout-unrecorded .*avd=TestingAVD-3 — .*run yarn tests:e2e:release --include-unrecorded --devices --only android-emulator in the slot env of the identity whose AVD it runs/,
+      );
+      expect(out).toMatch(
+        /BUSY\s+android stray emulator serial emulator-16236 .*owner=this-checkout — free it with yarn tests:e2e:release --devices/,
+      );
+      expect(status).toBe(1);
+    } finally {
+      ownAvd.kill('SIGKILL');
+      otherAvd.kill('SIGKILL');
+      if (childPid) {
+        try {
+          process.kill(childPid, 'SIGKILL');
+        } catch {
+          // already gone
+        }
+      }
+      parent.kill('SIGKILL');
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('check-e2e-resources Jet port held by another user', function () {
+  it('check is BUSY when the Jet port accepts connections that lsof cannot attribute (another user)', async function () {
+    const fs = require('fs');
+    const os = require('os');
+    const net = require('net');
+    const checkPath = path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh');
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-fake-lsof-'));
+    fs.writeFileSync(path.join(dir, 'lsof'), '#!/bin/bash\nexit 0\n');
+    fs.chmodSync(path.join(dir, 'lsof'), 0o755);
+    const server = net.createServer().listen(0, '127.0.0.1');
+    await new Promise(resolve => server.once('listening', resolve));
+    const port = server.address().port;
+    const run = () => {
+      const env = cleanEnv();
+      env.PATH = `${dir}:${env.PATH || '/usr/bin:/bin'}`;
+      env.JET_REMOTE_PORT = String(port);
+      env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
+      try {
+        return execFileSync('bash', [checkPath, '--platform=android'], {
+          encoding: 'utf8',
+          cwd: repoRoot,
+          env,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        });
+      } catch (e) {
+        return `${e.stdout || ''}${e.stderr || ''}`;
+      }
+    };
+    try {
+      try {
+        const out = run();
+        expect(out).toMatch(
+          new RegExp(
+            `BUSY\\s+port :${port} \\(jet:\\w+\\) accepts connections but has no listener lsof can attribute to this user owner=unrecorded`,
+          ),
+        );
+        expect(out).toMatch(/owner=unrecorded: held by another owner/);
+      } finally {
+        await new Promise(resolve => server.close(resolve));
+      }
+      expect(run()).toMatch(new RegExp(`CLEAR\\s+port :${port} \\(jet:\\w+\\)`));
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

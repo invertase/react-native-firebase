@@ -1,9 +1,54 @@
-const { execFileSync } = require('child_process');
+const { execFileSync, spawn } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '../../..');
+const { processStartTime } = require(path.join(repoRoot, 'tests/e2e/runRecord'));
+
+function checkIos(bootedJson, args) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-ios-sim-check-serial-'));
+  fs.writeFileSync(
+    path.join(dir, 'xcrun'),
+    `#!/bin/bash
+if [[ "$*" == "simctl list devices booted -j" ]]; then
+  printf '%s\\n' '${bootedJson}'
+  exit 0
+fi
+exit 92
+`,
+  );
+  fs.writeFileSync(path.join(dir, 'lsof'), '#!/bin/bash\nexit 1\n');
+  fs.chmodSync(path.join(dir, 'xcrun'), 0o755);
+  fs.chmodSync(path.join(dir, 'lsof'), 0o755);
+  const env = { ...process.env };
+  for (const key of Object.keys(env)) {
+    if (
+      key.startsWith('RNFB_') ||
+      key.startsWith('E2E_') ||
+      key.startsWith('JET_') ||
+      key === 'RCT_METRO_PORT'
+    ) {
+      delete env[key];
+    }
+  }
+  env.PATH = `${dir}:${env.PATH}`;
+  env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
+  try {
+    return {
+      status: 0,
+      output: execFileSync(
+        '/bin/bash',
+        [path.join(repoRoot, 'scripts/e2e/check-e2e-resources.sh'), ...args],
+        { encoding: 'utf8', cwd: repoRoot, env, stdio: ['pipe', 'pipe', 'pipe'] },
+      ),
+    };
+  } catch (error) {
+    return { status: error.status, output: `${error.stdout || ''}${error.stderr || ''}` };
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
 
 describe('e2e device setup default count', function () {
   it('create-android-avds.sh defaults count=1 and loops i < COUNT', function () {
@@ -143,12 +188,17 @@ esac
     }
   });
 
-  it('release shuts down only the selected exact neutral base', function () {
+  it('release shuts down only the simulator the selected slot recorded', async function () {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-ios-sim-release-'));
     const log = path.join(dir, 'xcrun.log');
     fs.writeFileSync(
       path.join(dir, 'xcrun'),
       `#!/bin/bash
+if [[ "$*" == "simctl list devices booted -j" ]]; then
+  booted='{"devices":{}}'
+  printf '%s\\n' "\${RNFB_FAKE_SIMCTL_JSON:-$booted}"
+  exit 0
+fi
 printf '%s\\n' "$*" >> "$RNFB_XCRUN_LOG"
 `,
     );
@@ -162,7 +212,14 @@ exec /bin/bash "$@"
 `,
     );
     fs.writeFileSync(path.join(dir, 'sleep'), '#!/bin/bash\nexit 0\n');
-    fs.writeFileSync(path.join(dir, 'lsof'), '#!/bin/bash\nexit 1\n');
+    const realLsof = execFileSync('/bin/sh', ['-c', 'command -v lsof'], {
+      encoding: 'utf8',
+    }).trim();
+    // No listeners, but the real cwd lookup (`lsof -a -p <pid> -d cwd`).
+    fs.writeFileSync(
+      path.join(dir, 'lsof'),
+      `#!/bin/bash\n[[ "$1" == "-a" ]] && exec ${realLsof} "$@"\nexit 1\n`,
+    );
     for (const command of ['xcrun', 'bash', 'sleep', 'lsof']) {
       fs.chmodSync(path.join(dir, command), 0o755);
     }
@@ -178,9 +235,10 @@ exec /bin/bash "$@"
       }
     }
     env.PATH = `${dir}:${env.PATH}`;
+    env.TMPDIR = dir;
     env.RNFB_XCRUN_LOG = log;
-
-    try {
+    env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
+    const release = (...extra) =>
       execFileSync(
         '/bin/bash',
         [
@@ -188,13 +246,92 @@ exec /bin/bash "$@"
           '--platform=ios',
           '--slot=1',
           '--only=ios-sims',
+          ...extra,
         ],
         { encoding: 'utf8', cwd: repoRoot, env },
       );
-      expect(fs.readFileSync(log, 'utf8').trim().split('\n')).toEqual([
-        'simctl shutdown RN E2E iOS slot-1',
-      ]);
+
+    // Stands in for the recorded launchd_sim instance of UDID-1.
+    const token = spawn(
+      process.execPath,
+      [
+        '-e',
+        'setTimeout(() => {}, 60000)',
+        'launchd_sim',
+        '/sims/CoreSimulator/Devices/UDID-1/data/var/run/launchd_bootstrap.plist',
+      ],
+      { stdio: 'ignore' },
+    );
+    const tokenExited = new Promise(resolve => token.once('exit', resolve));
+    let foreign;
+    let own;
+
+    try {
+      release();
+      expect(fs.existsSync(log)).toBe(false);
+
+      const slotRecord = path.join(dir, 'rec', 'slot-1');
+      const entry = path.join(slotRecord, 'ios-sim-UDID-1');
+      fs.mkdirSync(slotRecord, { recursive: true });
+      fs.writeFileSync(
+        entry,
+        `ios-sim\tUDID-1\tRN E2E iOS slot-1\t${token.pid}\t${processStartTime(token.pid)}\n`,
+      );
+      release();
+      expect(fs.readFileSync(log, 'utf8').trim().split('\n')).toEqual(['simctl shutdown UDID-1']);
+      // Kept while the recorded instance is still alive (a later round can retry).
+      expect(fs.existsSync(entry)).toBe(true);
+
+      token.kill('SIGKILL');
+      await tokenExited;
+      fs.rmSync(log);
+      release();
+      // That instance is gone (e.g. rebooted by another owner): no shutdown, entry pruned.
+      expect(fs.existsSync(log)).toBe(false);
+      expect(fs.existsSync(entry)).toBe(false);
+
+      // --include-unrecorded: nothing booted, nothing shut down.
+      release('--include-unrecorded');
+      expect(fs.existsSync(log)).toBe(false);
+
+      // The identity's simulator booted by another owner (launchd_sim outside this
+      // checkout, as every real launchd_sim is): left running.
+      env.RNFB_FAKE_SIMCTL_JSON = JSON.stringify({
+        devices: { runtime: [{ name: 'RN E2E iOS slot-1', udid: 'UDID-2', state: 'Booted' }] },
+      });
+      foreign = spawn(
+        process.execPath,
+        [
+          '-e',
+          'setTimeout(() => {}, 60000)',
+          'launchd_sim',
+          '/sims/CoreSimulator/Devices/UDID-2/data/var/run/launchd_bootstrap.plist',
+        ],
+        { stdio: 'ignore', cwd: os.tmpdir() },
+      );
+      release('--include-unrecorded');
+      expect(fs.existsSync(log)).toBe(false);
+
+      // Traceable to this checkout (launchd_sim cwd inside it): shut down by UDID.
+      env.RNFB_FAKE_SIMCTL_JSON = JSON.stringify({
+        devices: { runtime: [{ name: 'RN E2E iOS slot-1', udid: 'UDID-3', state: 'Booted' }] },
+      });
+      own = spawn(
+        process.execPath,
+        [
+          '-e',
+          'setTimeout(() => {}, 60000)',
+          'launchd_sim',
+          '/sims/CoreSimulator/Devices/UDID-3/data/var/run/launchd_bootstrap.plist',
+        ],
+        { stdio: 'ignore', cwd: repoRoot },
+      );
+      release('--include-unrecorded');
+      expect(fs.readFileSync(log, 'utf8').trim().split('\n')).toEqual(['simctl shutdown UDID-3']);
     } finally {
+      token.kill('SIGKILL');
+      foreign?.kill('SIGKILL');
+      own?.kill('SIGKILL');
       fs.rmSync(dir, { recursive: true, force: true });
     }
   });
@@ -246,7 +383,9 @@ exec /bin/bash "$@"
     }
     env.E2E_SLOTTED_MAX = '99';
     env.PATH = `${dir}:${env.PATH}`;
+    env.TMPDIR = dir;
     env.RNFB_ACTION_LOG = log;
+    env.RNFB_E2E_RUN_RECORD_DIR = path.join(dir, 'rec');
 
     try {
       execFileSync(
@@ -357,5 +496,26 @@ exit 92
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
+  });
+
+  it('serial iOS check fails only on its own iPhone 17 and reports other booted simulators as INFO', function () {
+    const other = checkIos(
+      '{"devices":{"rt":[{"udid":"OTHER-1","name":"iPhone 18 Pro","state":"Booted"}]}}',
+      ['--platform=ios'],
+    );
+    expect(other.status).toBe(0);
+    expect(other.output).toMatch(
+      /INFO\s+ios simulator iPhone 18 Pro \(OTHER-1\) booted — not this identity's device/,
+    );
+    expect(other.output).not.toMatch(/BUSY\s+ios simulator/);
+
+    const own = checkIos(
+      '{"devices":{"rt":[{"udid":"SERIAL-1","name":"iPhone 17","state":"Booted"}]}}',
+      ['--platform=ios'],
+    );
+    expect(own.status).toBe(1);
+    expect(own.output).toMatch(
+      /BUSY\s+ios simulator booted \(iPhone 17 SERIAL-1\) owner=unrecorded/,
+    );
   });
 });

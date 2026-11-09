@@ -4,6 +4,7 @@ const path = require('path');
 const { execSync, spawn } = require('child_process');
 const { promisify } = require('util');
 const execFile = promisify(require('child_process').execFile);
+const { foreignHolderError, recordPid, recordedLivePids } = require('../tests/e2e/runRecord');
 
 let macOsRetries = 0;
 
@@ -67,12 +68,60 @@ function readMetroPort() {
   return prefixed != null ? prefixed : SERIAL_METRO_PORT;
 }
 
-function isMacOsTestAppRunning() {
+// Any process with the product name — may belong to another owner (diagnostics only).
+function macOsTestAppPidsByName() {
   try {
-    execSync(`pgrep -x ${shellSingleQuote(macOsProductName())}`, { stdio: 'ignore' });
+    return execSync(`pgrep -x ${shellSingleQuote(macOsProductName())}`, { encoding: 'utf8' })
+      .split(/\s+/)
+      .filter(pid => /^\d+$/.test(pid))
+      .map(Number);
+  } catch (_e) {
+    return [];
+  }
+}
+
+// Jet loads this config in the process that listens on the Jet and control ports (under
+// --coverage, nyc's child). Record it so an interrupted run's Jet stays owned and the
+// default yarn tests:e2e:release frees its ports; the app it spawns is owned through it.
+function recordJetProcess(jetPort) {
+  recordPid(process.pid, `jet:${jetPort}`);
+}
+
+let currentMacApp = null;
+
+function macOsAppRecordLabel() {
+  return `macos-app:${macOsProductName()}`;
+}
+
+function pidAlive(pid) {
+  try {
+    process.kill(pid, 0);
     return true;
   } catch (_e) {
     return false;
+  }
+}
+
+// The app this process spawned plus any this checkout's runs recorded (interrupted runs).
+function ownMacOsAppPids() {
+  const pids = new Set(recordedLivePids(macOsAppRecordLabel()));
+  if (currentMacApp?.pid && currentMacApp.exitCode == null && currentMacApp.signalCode == null) {
+    pids.add(currentMacApp.pid);
+  }
+  return [...pids].filter(pidAlive);
+}
+
+function isMacOsTestAppRunning() {
+  return ownMacOsAppPids().length > 0;
+}
+
+function signalPids(pids, signal) {
+  for (const pid of pids) {
+    try {
+      process.kill(pid, signal);
+    } catch (_e) {
+      // already gone
+    }
   }
 }
 
@@ -80,30 +129,23 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Never killall by name: only own pids, so another checkout's macOS run survives.
 async function killMacOsTestApp() {
   const name = macOsProductName();
   if (!isMacOsTestAppRunning()) {
     return;
   }
-  try {
-    execSync(`killall ${shellSingleQuote(name)}`, { stdio: 'ignore' });
-  } catch (_e) {
-    // already gone
-  }
+  signalPids(ownMacOsAppPids(), 'SIGTERM');
   await sleep(500);
   if (isMacOsTestAppRunning()) {
-    try {
-      execSync(`killall -9 ${shellSingleQuote(name)}`, { stdio: 'ignore' });
-    } catch (_e) {
-      // already gone
-    }
+    signalPids(ownMacOsAppPids(), 'SIGKILL');
   }
   const deadline = Date.now() + 2000;
   while (Date.now() < deadline && isMacOsTestAppRunning()) {
     await sleep(250);
   }
   if (isMacOsTestAppRunning()) {
-    console.warn(`[rnfb-e2e] ${name} still running after killall -9 — tee/pipe may not close`);
+    console.warn(`[rnfb-e2e] ${name} still running after SIGKILL — tee/pipe may not close`);
   }
 }
 
@@ -115,11 +157,7 @@ function registerMacOsExitHandlers() {
   }
   macOsExitHandlersRegistered = true;
   const cleanup = () => {
-    try {
-      execSync(`killall -9 ${shellSingleQuote(macOsProductName())}`, { stdio: 'ignore' });
-    } catch (_e) {
-      // already gone
-    }
+    signalPids(ownMacOsAppPids(), 'SIGKILL');
   };
   process.on('exit', cleanup);
   process.on('SIGINT', () => {
@@ -215,6 +253,7 @@ async function waitForMetroMacosBundle(metroPort = 8081, timeoutMs = 600000) {
 }
 
 module.exports = {
+  recordJetProcess,
   config: {
     port: parseEnvPort(process.env.JET_REMOTE_PORT) ?? SERIAL_JET_PORT,
     slow: 3000,
@@ -228,11 +267,16 @@ module.exports = {
     macos: {
       async before(config) {
         await killMacOsTestApp();
+        const foreignPids = macOsTestAppPidsByName();
+        if (foreignPids.length > 0) {
+          throw foreignHolderError(`macOS app ${macOsProductName()}`, foreignPids, 'macos-app');
+        }
         registerMacOsExitHandlers();
         const metroPort = readMetroPort();
         const jetPort = readJetPort();
         config.metroPort = metroPort;
         config.port = jetPort;
+        recordJetProcess(jetPort);
         console.warn(`[rnfb-e2e] macos Jet port=${jetPort} metro=${metroPort}`);
         await waitForMetroMacosBundle(metroPort);
         const macBinary = macOsBinaryPath();
@@ -249,6 +293,7 @@ module.exports = {
             JET_REMOTE_PORT: String(jetPort),
           },
         });
+        currentMacApp = macApp;
         macApp.on('close', (code, signal) => {
           if (code === 0 || (code == null && signal)) {
             return;
@@ -269,6 +314,7 @@ module.exports = {
           }
         });
         macApp.on('spawn', () => {
+          recordPid(macApp.pid, macOsAppRecordLabel());
           // eslint-disable-next-line no-console
           console.log('[💻] macOS app started');
         });
