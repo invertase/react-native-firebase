@@ -69,8 +69,8 @@ describe('check-duplicate-objc-classes.sh', function () {
     }
   }
 
-  function run(env = {}) {
-    const result = spawnSync('bash', [scriptPath, appDir], {
+  function run(env = {}, args = []) {
+    const result = spawnSync('bash', [scriptPath, appDir, ...args], {
       encoding: 'utf8',
       env: { ...process.env, RNFB_DYLD_INFO: stubPath, ...env },
     });
@@ -215,6 +215,7 @@ describe('check-duplicate-objc-classes.sh', function () {
     const { status, output } = run();
     expect(status).toBe(1);
     expect(output).toContain('ERROR: GoogleUtilities canary GULNetwork not found');
+    expect(output).toContain('GULNetwork not found in any scanned binary\n');
   });
 
   it('fails when a framework has no executable', function () {
@@ -235,5 +236,202 @@ describe('check-duplicate-objc-classes.sh', function () {
     });
     expect(result.status).toBe(1);
     expect(result.stdout).toContain(`ERROR: app bundle not found: ${missingApp}`);
+  });
+
+  it('rejects a missing app bundle path with exit 2', function () {
+    const result = spawnSync('bash', [scriptPath], {
+      encoding: 'utf8',
+      env: { ...process.env, RNFB_DYLD_INFO: stubPath },
+    });
+    expect(result.status).toBe(2);
+    expect(`${result.stdout}${result.stderr}`).toContain('usage:');
+  });
+
+  function addGoogleUtilitiesDuplicateGraph() {
+    addGreenGraph();
+    addBinary(
+      framework('RNFBMessaging', [
+        '@interface RNFBMessagingModule : NSObject',
+        '@interface GULNetwork : NSObject',
+        '@interface GULAppEnvironmentUtil : NSObject',
+      ]),
+    );
+  }
+
+  const GUL_NETWORK_OWNERS =
+    'Frameworks/GoogleUtilities_1A2B_PackageProduct.framework/GoogleUtilities_1A2B_PackageProduct, Frameworks/RNFBMessaging.framework/RNFBMessaging';
+
+  describe('--expect-duplicates', function () {
+    it('passes when exactly N classes are duplicated and GULNetwork is among them', function () {
+      addGoogleUtilitiesDuplicateGraph();
+      const { status, output } = run({}, ['--expect-duplicates', '2']);
+      expect(status).toBe(0);
+      expect(output).toContain('2 duplicated');
+      expect(output).toContain(`expected-mode: duplicate class GULNetwork: ${GUL_NETWORK_OWNERS}`);
+      expect(output).toContain(
+        'ok: GoogleUtilities canary GULNetwork is duplicated, in 2 binaries',
+      );
+      expect(output).toContain(
+        'PASS: exactly 2 Objective-C classes are defined in more than one binary, as expected',
+      );
+    });
+
+    it('fails when the duplicate count differs from N', function () {
+      addGoogleUtilitiesDuplicateGraph();
+      const { status, output } = run({}, ['--expect-duplicates', '8']);
+      expect(status).toBe(1);
+      expect(output).toContain('ERROR: expected exactly 8 duplicated Objective-C classes, found 2');
+    });
+
+    it('fails with N > 0 when GULNetwork is not among the duplicates', function () {
+      addGreenGraph();
+      const shared = [
+        '@interface GACAppCheck : NSObject',
+        '@interface GACAppCheckToken : NSObject',
+      ];
+      addBinary(framework('RNFBAppCheck', ['@interface RNFBAppCheckModule : NSObject', ...shared]));
+      addBinary(framework('AppCheckCore_9F_PackageProduct', shared));
+      const { status, output } = run({}, ['--expect-duplicates', '2']);
+      expect(status).toBe(1);
+      expect(output).toContain(
+        'ERROR: GoogleUtilities canary GULNetwork is not among the 2 duplicated classes',
+      );
+      expect(output).toContain('the control did not exercise the GoogleUtilities sharing graph');
+    });
+
+    it('fails with N > 0 when GULNetwork is absent', function () {
+      addBinary(MAIN);
+      addBinary(RNFB_APP);
+      addBinary(framework('RNFBAppCheck', ['@interface GACAppCheck : NSObject']));
+      addBinary(framework('AppCheckCore_9F_PackageProduct', ['@interface GACAppCheck : NSObject']));
+      const { status, output } = run({}, ['--expect-duplicates', '1']);
+      expect(status).toBe(1);
+      expect(output).toContain('expected-mode: duplicate class GACAppCheck: ');
+      expect(output).toContain('ERROR: GoogleUtilities canary GULNetwork not found');
+    });
+
+    it('passes with N = 0 when GULNetwork has exactly one owner', function () {
+      addGreenGraph();
+      const { status, output } = run({}, ['--expect-duplicates', '0']);
+      expect(status).toBe(0);
+      expect(output).toContain('ok: GoogleUtilities canary GULNetwork defined once');
+      expect(output).toContain(
+        'PASS: no Objective-C class is defined in more than one binary of the built app',
+      );
+    });
+
+    it('fails with N = 0 when GULNetwork is duplicated', function () {
+      addGoogleUtilitiesDuplicateGraph();
+      const { status, output } = run({}, ['--expect-duplicates', '0']);
+      expect(status).toBe(1);
+      expect(output).toContain(`ERROR: duplicate class GULNetwork: ${GUL_NETWORK_OWNERS}`);
+      expect(output).toContain('ERROR: 2 Objective-C classes are defined in more than one binary');
+    });
+
+    it('fails with N = 0 when GULNetwork is absent', function () {
+      addBinary(MAIN);
+      addBinary(RNFB_APP);
+      const { status, output } = run({}, ['--expect-duplicates', '0']);
+      expect(status).toBe(1);
+      expect(output).toContain('ERROR: GoogleUtilities canary GULNetwork not found');
+    });
+
+    it.each([['08'], ['-1'], ['two'], ['']])('rejects N = %p with exit 2', function (value) {
+      addGreenGraph();
+      const { status, output } = run({}, ['--expect-duplicates', value]);
+      expect(status).toBe(2);
+      expect(output).toContain(
+        `ERROR: --expect-duplicates must be a non-negative integer, got '${value}'`,
+      );
+    });
+
+    it('rejects a missing value with exit 2', function () {
+      addGreenGraph();
+      const { status, output } = run({}, ['--expect-duplicates']);
+      expect(status).toBe(2);
+      expect(output).toContain('ERROR: --expect-duplicates needs a value');
+    });
+  });
+
+  describe('--report-only', function () {
+    it('lists duplicates and the GULNetwork and FIRApp owners and exits 0', function () {
+      addGoogleUtilitiesDuplicateGraph();
+      const { status, output } = run({}, ['--report-only']);
+      expect(status).toBe(0);
+      expect(output).toContain(`report-only: duplicate class GULNetwork: ${GUL_NETWORK_OWNERS}`);
+      expect(output).toContain(
+        `report-only: GULNetwork defined in 2 binaries: ${GUL_NETWORK_OWNERS.replace(', ', ',')}`,
+      );
+      expect(output).toContain('report-only: FIRApp absent');
+      expect(output).toContain(
+        'REPORT: 2 Objective-C classes are defined in more than one binary (report-only, not enforced)',
+      );
+      expect(output).not.toContain('ERROR');
+    });
+
+    it('reports the FIRApp owner and an absent GULNetwork without failing', function () {
+      addBinary(MAIN);
+      addBinary(
+        framework('RNFBApp', [
+          '@interface RNFBAppModule : NSObject',
+          '@interface FIRApp : NSObject',
+        ]),
+      );
+      const { status, output } = run({}, ['--report-only']);
+      expect(status).toBe(0);
+      expect(output).toContain('report-only: GULNetwork absent');
+      expect(output).toContain(
+        'report-only: FIRApp defined in 1 binaries: Frameworks/RNFBApp.framework/RNFBApp',
+      );
+      expect(output).toContain('REPORT: 0 Objective-C classes');
+    });
+
+    it('still fails a scan guard', function () {
+      addGreenGraph();
+      addBinary({ ...RNFB_APP, exitCode: 2, stderr: 'cannot open file' });
+      const { status, output } = run({}, ['--report-only']);
+      expect(status).toBe(1);
+      expect(output).toContain(
+        'ERROR: dyld_info could not read Frameworks/RNFBApp.framework/RNFBApp',
+      );
+    });
+
+    it.each([
+      [['--report-only', '--expect-duplicates', '0']],
+      [['--expect-duplicates', '8', '--report-only']],
+    ])('is mutually exclusive with --expect-duplicates (%p)', function (args) {
+      addGreenGraph();
+      const { status, output } = run({}, args);
+      expect(status).toBe(2);
+      expect(output).toContain(
+        'ERROR: --report-only and --expect-duplicates are mutually exclusive',
+      );
+    });
+  });
+
+  describe('--canary-hint', function () {
+    it('appends the hint when GULNetwork is missing', function () {
+      addBinary(MAIN);
+      addBinary(RNFB_APP);
+      const { status, output } = run({}, ['--canary-hint', 'keep analytics in the graph']);
+      expect(status).toBe(1);
+      expect(output).toContain(
+        'ERROR: GoogleUtilities canary GULNetwork not found in any scanned binary; keep analytics in the graph',
+      );
+    });
+
+    it('rejects a missing value with exit 2', function () {
+      addGreenGraph();
+      const { status, output } = run({}, ['--canary-hint']);
+      expect(status).toBe(2);
+      expect(output).toContain('ERROR: --canary-hint needs a value');
+    });
+  });
+
+  it('rejects an unknown argument with exit 2', function () {
+    addGreenGraph();
+    const { status, output } = run({}, ['--bogus']);
+    expect(status).toBe(2);
+    expect(output).toContain('ERROR: unknown argument: --bogus');
   });
 });

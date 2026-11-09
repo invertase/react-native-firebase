@@ -135,7 +135,7 @@ if [[ "$xcodebuild_status" -ne 0 ]]; then
   exit "$xcodebuild_status"
 fi
 
-bash "${SCRIPTS}/lib/duplicate-objc-class-scan.sh" \
+bash "${SCRIPTS}/check-duplicate-objc-classes.sh" \
   "${DERIVED_DATA}/Build/Products/Release-iphonesimulator/${SCHEME}.app" \
-  test-expo-fixture-ios-dupes \
-  ${scan_mode_args[@]+"${scan_mode_args[@]}"}
+  ${scan_mode_args[@]+"${scan_mode_args[@]}"} \
+  --canary-hint "--modules must include messaging or analytics so the GoogleUtilities sharing graph is exercised"

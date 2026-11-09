@@ -387,4 +387,5 @@ if [[ ! -d "$APP_DIR" ]]; then
   APP_DIR="$app_candidates"
 fi
 
-"${SCRIPTS_DIR}/check-duplicate-objc-classes.sh" "$APP_DIR"
+"${SCRIPTS_DIR}/check-duplicate-objc-classes.sh" "$APP_DIR" \
+  --canary-hint "test-expo/package.json must keep @react-native-firebase/analytics alongside messaging so the GoogleUtilities sharing graph is exercised"

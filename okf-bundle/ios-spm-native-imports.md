@@ -323,13 +323,14 @@ Known gaps:
 Do not add this declaration to other RNFB podspecs unless the duplicate
 Objective-C class check shows that podspec privately duplicating a class.
 
-The check lives in
-`.github/workflows/scripts/check-duplicate-objc-classes.sh`; its fail paths are
-covered by `packages/app/__tests__/checkDuplicateObjcClasses.test.js` (stub
-`dyld_info`, fake `.app`). The same script backs both
+The check is one shared script
+(`.github/workflows/scripts/check-duplicate-objc-classes.sh`), run by both
 `yarn test-expo:ios:link` (all-modules `test-expo` graph) and
 `yarn test-expo-fixture:ios:dupes --modules …` (generated per-module Expo
 fixture; [registry row](testing/agent-command-policy.md#canonical-registry)).
+Its fail paths and `--expect-duplicates` / `--report-only` modes are covered
+by `packages/app/__tests__/checkDuplicateObjcClasses.test.js` (stub
+`dyld_info` via `RNFB_DYLD_INFO`, fake `.app`).
 Fixture graphs that isolate the GoogleUtilities duplication (counts at the
 current Firebase iOS SDK / GoogleUtilities pin). All three run in CI
 (`test_expo_fixture_ios_dupes.yml`) and must report 0:
