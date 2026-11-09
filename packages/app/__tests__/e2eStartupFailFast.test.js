@@ -26,12 +26,21 @@ ${body}`,
   );
 }
 
+const tempDirs = [];
+
 function writeTemp(contents) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rnfb-failfast-'));
+  tempDirs.push(dir);
   const file = path.join(dir, 'log.txt');
   fs.writeFileSync(file, contents);
   return file;
 }
+
+afterEach(function () {
+  for (const dir of tempDirs.splice(0)) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 describe('startup fail-fast markers (UNI-9way-latency)', function () {
   const idleLine =
@@ -232,8 +241,14 @@ describe('9-way overlap and latency tolerance (UNI-9way-latency)', function () {
     const src = fs.readFileSync(path.join(repoRoot, 'tests/e2e/firebase.test.js'), 'utf8');
     const killJetAt = src.indexOf('async function killJetForLaunchRetry');
     const drainAt = src.indexOf("await ensureTcpPortClosed(jetRemotePort(), 'drain')");
-    const retryAt = src.indexOf('await ensureTcpPortClosed(\n      jetRemotePort(),');
-    expect(src).toMatch(/kill -9 \$\{pids/);
+    const retryAt = src.indexOf(
+      'await ensureTcpPortClosed(jetRemotePort(), label, KILL_JET_FOR_LAUNCH_RETRY_TIMEOUT_MS)',
+    );
+    const portOwnership = fs.readFileSync(
+      path.join(repoRoot, 'tests/e2e/portOwnership.js'),
+      'utf8',
+    );
+    expect(portOwnership).toMatch(/kill -9 \$\{pids/);
     expect(src).toMatch(/fromStall \? 'stall-kill' : 'launch-retry'/);
     expect(killJetAt).toBeGreaterThan(-1);
     expect(retryAt).toBeGreaterThan(killJetAt);

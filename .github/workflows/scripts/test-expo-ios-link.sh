@@ -30,8 +30,11 @@ log() {
   echo "[test-expo-ios-link] $*"
 }
 
-PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-/tmp/test-expo-prebuild.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-/tmp/test-expo-xcodebuild.log}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-${TMP_ROOT}/test-expo-prebuild.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-xcodebuild.log}"
 PBXPROJ="ios/testexpo.xcodeproj/project.pbxproj"
 PODS_PBXPROJ="ios/Pods/Pods.xcodeproj/project.pbxproj"
 PODS_XCCONFIG="ios/Pods/Target Support Files/Pods-testexpo/Pods-testexpo.release.xcconfig"

@@ -54,7 +54,11 @@ kill_resolved_simulator() {
   fi
 
   log_boot_status "phase=kill_resolved udid=${udid} name=\"${name}\""
-  rnfb_kill_foreground_simulator_ui
+  # The simulator UI app hosts every simulator's window: restart it only on a
+  # single-tenant CI runner (or on explicit request), never on a shared local host.
+  if [[ "${CI:-}" == "true" || "${RNFB_SIM_UI_RESET:-0}" == "1" ]]; then
+    rnfb_kill_foreground_simulator_ui
+  fi
   xcrun simctl terminate "$udid" io.invertase.testing 2>/dev/null || true
   xcrun simctl shutdown "$udid" 2>/dev/null || true
 }
