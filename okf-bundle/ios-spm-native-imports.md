@@ -448,12 +448,17 @@ Linear CPRN-295.
 
 ## Archive signature-copy collision
 
-Real `xcodebuild archive` builds (not simulator builds) can fail with:
+`xcodebuild archive` builds can fail with:
 
 ```text
 "GoogleAppMeasurementIdentitySupport.xcframework-ios.signature" couldn't be
 copied to "Signatures" because an item with the same name already exists.
 ```
+
+The staged file is named after the archived slice: `-ios.signature` for a
+device archive, `-ios-simulator.signature` for a simulator-destination archive
+(`-destination "generic/platform=iOS Simulator"`, as some CI build-for-simulator
+steps use). Plain simulator `build` actions do not hit it.
 
 This is a long-standing Xcode Archive bug (present since Xcode 15, still
 reproducing on Xcode 26), not specific to react-native-firebase: a Swift
@@ -489,9 +494,13 @@ xcframework name reachable in the resolved SPM package graph
 `-resolvePackageDependencies` run, not guessed) and adds
 `[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature
 files` to application targets that already have `[CP] Embed Pods Frameworks`.
-The phase deletes each named artifact's stale `.signature` file from
-`$(CONFIGURATION_BUILD_DIR)` before Xcode's Archive action tries to copy it,
-so only one copy is ever staged.
+The phase deletes each named artifact's stale `-ios.signature` and
+`-ios-simulator.signature` files from `$(CONFIGURATION_BUILD_DIR)` before
+Xcode's Archive action tries to copy them, so only one copy is ever staged
+for device and simulator archives. The phase content is rewritten in place on
+each `pod install`, so existing projects pick up slice-list changes there.
+The slice list is deliberately iOS-only (device and simulator, the slices seen
+in reported failures); extend it only when a failure names another slice.
 
 Deliberately scoped to this known artifact-name list rather than a bare
 `*.signature` glob — broad enough to cover this whole binary family without
