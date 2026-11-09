@@ -386,5 +386,4 @@ if [[ ! -d "$APP_DIR" ]]; then
   APP_DIR="$app_candidates"
 fi
 
-bash "${REPO_ROOT}/.github/workflows/scripts/lib/duplicate-objc-class-scan.sh" "$APP_DIR" test-expo-ios-link \
-  --canary-hint "test-expo/package.json must keep @react-native-firebase/analytics alongside messaging so the GoogleUtilities sharing graph is exercised"
+bash "${REPO_ROOT}/.github/workflows/scripts/check-duplicate-objc-classes.sh" "$APP_DIR"

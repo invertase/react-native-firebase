@@ -348,6 +348,11 @@ An app-only fixture (`--modules ""`) is not a clean zero baseline:
 `FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
 there.
 
+The standalone `.github/workflows/scripts/check-duplicate-objc-classes.sh`
+scan's fail paths are covered by
+`packages/app/__tests__/checkDuplicateObjcClasses.test.js` (stub
+`dyld_info`, fake `.app`).
+
 ## App target FirebaseCore link: package dependency alone is not enough
 
 `rnfirebase_add_spm_core_to_app_target` exists for the case in the table above
