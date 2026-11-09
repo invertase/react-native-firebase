@@ -299,7 +299,20 @@ by `yarn test-expo:ios:link`'s duplicate Objective-C class check, not
 pre-emptively to every RNFB podspec. The check lives in
 `.github/workflows/scripts/check-duplicate-objc-classes.sh`; its fail paths are
 covered by `packages/app/__tests__/checkDuplicateObjcClasses.test.js` (stub
-`dyld_info`, fake `.app`).
+`dyld_info`, fake `.app`). The same script backs
+`yarn test-expo-fixture:ios:dupes --modules …` (generated per-module Expo
+fixture; [registry row](testing/agent-command-policy.md#canonical-registry)).
+Fixture graphs that isolate the GoogleUtilities duplication (counts at the
+current Firebase iOS SDK / GoogleUtilities pin):
+
+| `--modules` | Duplicated classes |
+| --- | --- |
+| `auth` plus exactly one of `messaging` / `analytics` | 8, between that module's `RNFB*` framework and `GULAppDelegateSwizzler_…_PackageProduct` |
+| `messaging,analytics,auth` | 0 |
+
+An app-only fixture (`--modules ""`) is not a clean zero baseline:
+`FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
+there.
 
 ## App target FirebaseCore link: package dependency alone is not enough
 
