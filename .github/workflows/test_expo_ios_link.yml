@@ -9,6 +9,7 @@ on:
       - '**'
     paths:
       - 'test-expo/**'
+      - 'packages/app/package.json'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
       - 'packages/app/RNFBApp.podspec'
@@ -27,6 +28,7 @@ on:
       - release-v*
     paths:
       - 'test-expo/**'
+      - 'packages/app/package.json'
       - 'packages/app/firebase_spm.rb'
       - 'packages/app/firebase_json.rb'
       - 'packages/app/RNFBApp.podspec'
@@ -52,7 +54,7 @@ jobs:
   test-expo-ios-link:
     name: test-expo iOS link + launch smoke
     runs-on: xcode-27
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
@@ -81,12 +83,17 @@ jobs:
       - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
 
+      # Precompute key: hashFiles re-runs on Post-cache and can exceed 120s on dirty trees.
+      - name: Compute Xcode compile cache key
+        id: xcode_cache_key
+        run: echo "key=$(bash .github/workflows/scripts/compute-xcode-ccache-key.sh expo)" >> "$GITHUB_OUTPUT"
+
       # Sticky content-hash key (append-timestamp: false). Distinct from e2e (`expo-link` app id).
       # https://github.com/hendrikmuhs/ccache-action/releases
       - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-expo-link-ios-v1-xcode27-${{ hashFiles('yarn.lock', 'test-expo/**', 'packages/app/ios/**', 'packages/app/*.podspec', 'packages/app/firebase_spm.rb', 'packages/app/firebase_json.rb', 'packages/app/plugin/**', 'packages/app/app.plugin.js') }}
+          key: ${{ runner.os }}-expo-link-ios-v4-xcode27-${{ steps.xcode_cache_key.outputs.key }}
           append-timestamp: false
           save: ${{ github.ref == 'refs/heads/main' }}
           create-symlink: true
@@ -103,13 +110,18 @@ jobs:
 
       - name: test-expo iOS launch smoke
         id: launch-smoke
+        env:
+          # Pinned so the log upload below finds them whatever TMPDIR the runner sets.
+          RNFB_TEST_EXPO_LAUNCH_LOG: /tmp/test-expo-launch-smoke.log
+          RNFB_TEST_EXPO_METRO_LOG: /tmp/test-expo-launch-smoke-metro.log
+          RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG: /tmp/test-expo-launch-smoke-xcodebuild.log
         run: yarn test-expo:ios:launch-smoke
 
       - name: ccache stats (after)
         if: always()
         run: ccache -s || true
 
-      # Paths match defaults in test-expo-ios-launch-smoke.sh (APP_LOG / METRO_LOG / XCODEBUILD_LOG).
+      # Paths match the launch-smoke step env (APP_LOG / METRO_LOG / XCODEBUILD_LOG).
       - name: Upload launch-smoke logs
         # https://github.com/actions/upload-artifact/releases
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

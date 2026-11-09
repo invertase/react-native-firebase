@@ -56,14 +56,43 @@ const METRO_WAIT_FAILURE_RE = /Metro not responding|Metro bundle not available|p
 // Android cold-boot is only for device-side launch/health faults (ANR, offline, qemu/adb,
 // package-manager / ActivityManager collapse, install SIGTERM under load, unreachable app).
 // Metro wait failures are excluded via isMetroWaitFailure before this regex runs.
+// Includes Detox SPAWN_STDERR / Jet output phrasing: "Can't find service: package|activity|settings".
 const ANDROID_DEVICE_SIDE_LAUNCH_RE =
-  /ANR|\boffline\b|qemu-without-adb|did not become 'device'|cold-boot spawn did not register|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain|Can't find service: package|Can't find service: activity|terminated with SIGTERM|Process was killed with SIGTERM|APP_UNREACHABLE|Failed to run application/i;
+  /ANR|\boffline\b|qemu-without-adb|did not become 'device'|cold-boot spawn did not register|unknown to FrontBoard|FBSOpenApplicationServiceErrorDomain|Can't find service: (?:package|activity|settings)|terminated with SIGTERM|Process was killed with SIGTERM|APP_UNREACHABLE|Failed to run application/i;
+
+// jetOutput is Mocha/Jet log text (product titles like "whilst offline"). Only guest-death
+// phrases — never the full device-side token set (\boffline\b, SIGTERM, APP_UNREACHABLE, …).
+const ANDROID_JET_OUTPUT_GUEST_DEATH_RE =
+  /ANRError|Application Not Responding|Can't find service: (?:package|activity|settings)/i;
 
 function errorMessage(messageOrErr) {
   if (typeof messageOrErr === 'string') {
     return messageOrErr;
   }
   return messageOrErr?.message || '';
+}
+
+// Detox often surfaces only "Process exited with code N" in err.message while the
+// actionable "Can't find service: …" lives on err.stderr / stdout. Full device-side
+// regex applies here only — not to jetOutput (see ANDROID_JET_OUTPUT_GUEST_DEATH_RE).
+function errorProbeText(messageOrErr) {
+  if (typeof messageOrErr === 'string') {
+    return messageOrErr;
+  }
+  if (!messageOrErr || typeof messageOrErr !== 'object') {
+    return '';
+  }
+  return [messageOrErr.message, messageOrErr.stderr, messageOrErr.stdout]
+    .filter(part => part != null && String(part).length > 0)
+    .map(String)
+    .join('\n');
+}
+
+function errorJetOutputText(messageOrErr) {
+  if (typeof messageOrErr === 'string' || !messageOrErr || typeof messageOrErr !== 'object') {
+    return '';
+  }
+  return messageOrErr.jetOutput != null ? String(messageOrErr.jetOutput) : '';
 }
 
 function isMetroWaitFailure(messageOrErr) {
@@ -73,11 +102,14 @@ function isMetroWaitFailure(messageOrErr) {
 // True only when an Android Jet retry should kill+relaunch qemu. Metro wait timeouts
 // must leave the emulator alone and re-wait for packager-status:running / bundle.
 function shouldColdBootAndroidOnLaunchRetry(messageOrErr) {
-  const message = errorMessage(messageOrErr);
-  if (isMetroWaitFailure(message)) {
+  // Metro exclusion stays message-primary so a polluted jetOutput cannot force a cold boot.
+  if (isMetroWaitFailure(messageOrErr)) {
     return false;
   }
-  return ANDROID_DEVICE_SIDE_LAUNCH_RE.test(message);
+  if (ANDROID_DEVICE_SIDE_LAUNCH_RE.test(errorProbeText(messageOrErr))) {
+    return true;
+  }
+  return ANDROID_JET_OUTPUT_GUEST_DEATH_RE.test(errorJetOutputText(messageOrErr));
 }
 
 function adbRangeDiagnosis(serial, avdName) {
@@ -116,6 +148,8 @@ module.exports = {
   adbRangeDiagnosis,
   isMetroWaitFailure,
   shouldColdBootAndroidOnLaunchRetry,
+  errorProbeText,
   METRO_WAIT_FAILURE_RE,
   ANDROID_DEVICE_SIDE_LAUNCH_RE,
+  ANDROID_JET_OUTPUT_GUEST_DEATH_RE,
 };

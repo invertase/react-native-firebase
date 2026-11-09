@@ -11,6 +11,7 @@ const {
   adbRangeDiagnosis,
   isMetroWaitFailure,
   shouldColdBootAndroidOnLaunchRetry,
+  errorProbeText,
 } = require('../../../tests/e2e/androidAdbRange');
 
 const repoRoot = path.resolve(__dirname, '../../..');
@@ -146,6 +147,9 @@ describe('shouldColdBootAndroidOnLaunchRetry', function () {
     expect(shouldColdBootAndroidOnLaunchRetry(new Error("cmd: Can't find service: activity"))).toBe(
       true,
     );
+    expect(shouldColdBootAndroidOnLaunchRetry(new Error("cmd: Can't find service: settings"))).toBe(
+      true,
+    );
     expect(
       shouldColdBootAndroidOnLaunchRetry(
         new Error("APP_UNREACHABLE Detox can't seem to connect to the test app(s)!"),
@@ -153,6 +157,38 @@ describe('shouldColdBootAndroidOnLaunchRetry', function () {
     ).toBe(true);
     expect(
       shouldColdBootAndroidOnLaunchRetry(new Error('Failed to run application on the device')),
+    ).toBe(true);
+  });
+
+  it('cold-boots when ANR is only on jetOutput (Jet session desync path)', function () {
+    const err = new Error('Jet tests failed!');
+    err.jetOutput =
+      'com.github.anrwatchdog.ANRError: Application Not Responding for at least 5000 ms.';
+    expect(shouldColdBootAndroidOnLaunchRetry(err)).toBe(true);
+    // Full device-side probe must not see jetOutput (product titles can say "offline").
+    expect(errorProbeText(err)).toBe('Jet tests failed!');
+  });
+
+  it("cold-boots when Can't find service is only on Detox stderr (exit code 20)", function () {
+    const err = new Error('Process exited with code 20');
+    err.stderr = "cmd: Can't find service: package";
+    expect(shouldColdBootAndroidOnLaunchRetry(err)).toBe(true);
+    expect(errorProbeText(err)).toMatch(/Can't find service: package/);
+  });
+
+  it('does not cold-boot when jetOutput only contains a Mocha title with offline', function () {
+    const err = new Error('Jet tests failed!');
+    err.jetOutput =
+      '  1) database()\n       Reference\n         removes a node whilst offline:\n     Error: expected true to equal false';
+    expect(shouldColdBootAndroidOnLaunchRetry(err)).toBe(false);
+    expect(errorProbeText(err)).toBe('Jet tests failed!');
+  });
+
+  it('cold-boots when launch timeout is enriched with logcat ANR signal', function () {
+    expect(
+      shouldColdBootAndroidOnLaunchRetry(
+        new Error('[rnfb-e2e] launchApp timed out after 300000ms\nANR detected in recent logcat'),
+      ),
     ).toBe(true);
   });
 

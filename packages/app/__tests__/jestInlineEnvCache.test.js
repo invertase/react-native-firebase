@@ -327,6 +327,7 @@ describe('Detox Jest transform cache (UNI-jest-env-cache)', function () {
       } else {
         process.env.RNFB_ANDROID_METRO_PORT = original;
       }
+      fs.rmSync(cacheDir, { recursive: true, force: true });
     }
   });
 });

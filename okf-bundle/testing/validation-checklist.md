@@ -118,7 +118,7 @@ Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/
 - `packages/app/__tests__/*_test.rb`
 
 ```bash
-yarn ruby:install                                         # root Gemfile; included in root yarn via postinstallDev; skips exit 0 when bundle not on PATH
+yarn ruby:install                                         # root Gemfile; included in root yarn via postinstallDev; skips exit 0 when bundle not on PATH, ruby < 3.3.1, or bundle cannot run
 yarn tests:ios:ruby                                       # yarn lint:ruby (RuboCop) then all *_test.rb + SimpleCov → coverage/ios-ruby/lcov.info
 yarn lint:ruby                                          # RuboCop only (same Gemfile; not part of root yarn lint)
 ```

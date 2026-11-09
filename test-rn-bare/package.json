@@ -1,6 +1,6 @@
 {
   "name": "test-rn-bare",
-  "version": "27.0.0",
+  "version": "27.1.0",
   "private": true,
   "engines": {
     "node": "^22.13.0"
@@ -9,7 +9,7 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "@react-native-firebase/app": "27.0.0",
+    "@react-native-firebase/app": "27.1.0",
     "react": "19.3.0",
     "react-native": "0.88.0-rc.3"
   },

@@ -16,6 +16,16 @@
 #
 set -e
 
+# upload-symbols talks to the network and has no timeout of its own, so a stalled
+# request can hang the whole build. perl's alarm is used because macOS has no
+# `timeout`. A timeout exits non-zero, which the callers below report as a
+# warning without failing the build.
+UPLOAD_SYMBOLS_TIMEOUT_SEC="${RNFB_CRASHLYTICS_UPLOAD_TIMEOUT_SEC:-300}"
+
+run_upload_symbols() {
+  perl -e 'alarm shift; exec @ARGV' "${UPLOAD_SYMBOLS_TIMEOUT_SEC}" "$@"
+}
+
 if [[ ${PODS_ROOT} && -f "${PODS_ROOT}/FirebaseCrashlytics/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from Pods"
   if ! "${PODS_ROOT}/FirebaseCrashlytics/run"; then
@@ -49,14 +59,14 @@ else
     echo "warning: GoogleService-Info.plist not found at ${PROJECT_DIR}/${TARGET_NAME}/GoogleService-Info.plist or ${PROJECT_DIR}/GoogleService-Info.plist. Skipping dSYM upload."
   elif [[ -x "${SPM_UPLOAD_SYMBOLS}" ]]; then
     echo "info: Exec FirebaseCrashlytics upload-symbols from SPM"
-    if ! "${SPM_UPLOAD_SYMBOLS}" -gsp "${GSP_PATH}" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"; then
-      echo "warning: FirebaseCrashlytics upload-symbols (SPM) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
+    if ! run_upload_symbols "${SPM_UPLOAD_SYMBOLS}" -gsp "${GSP_PATH}" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"; then
+      echo "warning: FirebaseCrashlytics upload-symbols (SPM) failed or timed out; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
     fi
   elif [[ -f "${SPM_UPLOAD_SYMBOLS}" ]]; then
     echo "info: Exec FirebaseCrashlytics upload-symbols from SPM (chmod +x)"
     chmod +x "${SPM_UPLOAD_SYMBOLS}"
-    if ! "${SPM_UPLOAD_SYMBOLS}" -gsp "${GSP_PATH}" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"; then
-      echo "warning: FirebaseCrashlytics upload-symbols (SPM) failed; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
+    if ! run_upload_symbols "${SPM_UPLOAD_SYMBOLS}" -gsp "${GSP_PATH}" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"; then
+      echo "warning: FirebaseCrashlytics upload-symbols (SPM) failed or timed out; continuing without failing the build. Common causes: no network, invalid/placeholder GoogleService-Info.plist credentials, or Firebase project mismatch."
     fi
   else
     echo "warning: FirebaseCrashlytics run script not found at CocoaPods, framework, or SPM paths. Skipping dSYM upload."
