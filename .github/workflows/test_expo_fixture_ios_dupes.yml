@@ -35,7 +35,7 @@ on:
       - '.github/workflows/test_expo_fixture_ios_dupes.yml'
       - '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh'
       - '.github/workflows/scripts/lib/make-expo-fixture.sh'
-      - '.github/workflows/scripts/lib/duplicate-objc-class-scan.sh'
+      - '.github/workflows/scripts/check-duplicate-objc-classes.sh'
       - '.github/workflows/scripts/lib/derived-data-path.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
   push:
@@ -70,7 +70,7 @@ on:
       - '.github/workflows/test_expo_fixture_ios_dupes.yml'
       - '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh'
       - '.github/workflows/scripts/lib/make-expo-fixture.sh'
-      - '.github/workflows/scripts/lib/duplicate-objc-class-scan.sh'
+      - '.github/workflows/scripts/check-duplicate-objc-classes.sh'
       - '.github/workflows/scripts/lib/derived-data-path.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
 

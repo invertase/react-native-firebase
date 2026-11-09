@@ -4,10 +4,24 @@
 # Frameworks/*.dylib, app-root *.dylib).
 #
 # Usage: check-duplicate-objc-classes.sh <path/to/App.app>
+#          [--expect-duplicates N | --report-only] [--canary-hint TEXT]
 #
 # The ObjC runtime registers every class in a loaded binary's
 # __objc_classlist, whatever its symbol visibility (pure-Swift and hidden
 # classes included), so compare classlists of every Mach-O the .app loads.
+#
+# --expect-duplicates N passes only when exactly N classes are duplicated
+# (default 0). Every other guard still applies, so a control run cannot pass
+# on an empty or unreadable scan. GULNetwork is a canary for the
+# GoogleUtilities sharing graph this check exists for: with 0 expected
+# duplicates it must be defined by exactly one binary; with N > 0 it must be
+# one of the duplicated classes, so a control run proves it hit that graph.
+#
+# --report-only lists every duplicate, the GULNetwork and FIRApp owners, and
+# exits 0 unless a scan guard (dyld_info, missing binary, empty scan) fails.
+#
+# --canary-hint TEXT is appended to the error when GULNetwork is missing.
+# Usage and flag errors exit 2.
 #
 # RNFB_DYLD_INFO overrides the dyld_info path (used by the Jest harness).
 set -euo pipefail
@@ -22,12 +36,54 @@ dup_check_fail() {
   exit 1
 }
 
+USAGE="usage: $0 <path/to/App.app> [--expect-duplicates N | --report-only] [--canary-hint TEXT]"
+
+usage_error() {
+  log "ERROR: $*"
+  log "$USAGE"
+  exit 2
+}
+
 log "--- duplicate Objective-C class check ---"
 
-if [[ $# -ne 1 ]]; then
-  dup_check_fail "usage: $0 <path/to/App.app>"
+if [[ $# -lt 1 ]]; then
+  usage_error "missing app bundle path"
 fi
 APP_DIR="${1%/}"
+shift
+EXPECT_DUPLICATES=0
+EXPECT_SET=0
+REPORT_ONLY=0
+CANARY_HINT=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --expect-duplicates)
+      [[ $# -ge 2 ]] || usage_error "$1 needs a value"
+      EXPECT_DUPLICATES="$2"
+      EXPECT_SET=1
+      shift 2
+      ;;
+    --report-only)
+      REPORT_ONLY=1
+      shift
+      ;;
+    --canary-hint)
+      [[ $# -ge 2 ]] || usage_error "$1 needs a value"
+      CANARY_HINT="$2"
+      shift 2
+      ;;
+    *)
+      usage_error "unknown argument: $1"
+      ;;
+  esac
+done
+if [[ ! "$EXPECT_DUPLICATES" =~ ^(0|[1-9][0-9]*)$ ]]; then
+  usage_error "--expect-duplicates must be a non-negative integer, got '${EXPECT_DUPLICATES}'"
+fi
+if [[ "$REPORT_ONLY" -eq 1 && "$EXPECT_SET" -eq 1 ]]; then
+  usage_error "--report-only and --expect-duplicates are mutually exclusive"
+fi
+
 if [[ ! -d "$APP_DIR" ]]; then
   dup_check_fail "app bundle not found: ${APP_DIR}"
 fi
@@ -115,21 +171,66 @@ log "scanned ${binary_count} binaries in ${APP_DIR}: ${class_count} distinct cla
 if [[ "$class_count" -eq 0 || "$rnfb_class_count" -eq 0 ]]; then
   dup_check_fail "found no classes overall or in any RNFB* framework; the scan is not trustworthy"
 fi
+dup_level="ERROR"
+if [[ "$REPORT_ONLY" -eq 1 ]]; then
+  dup_level="report-only"
+elif [[ "$EXPECT_DUPLICATES" -ne 0 ]]; then
+  dup_level="expected-mode"
+fi
 if [[ "$duplicate_count" -ne 0 ]]; then
   while IFS= read -r line; do
-    log "ERROR: duplicate class ${line}"
+    log "${dup_level}: duplicate class ${line}"
   done <<<"$duplicates"
-  log "NOTE: a reused DerivedData can embed frameworks left over from an earlier build ([RNFB] Embed Firebase SPM Frameworks copies every dynamic framework in PackageFrameworks); re-check a local failure from an empty DerivedData"
+fi
+
+class_owner_list() {
+  awk -F'\t' -v cls="$1" '$1 == cls { print $2 }' "$class_owners_file"
+}
+
+if [[ "$REPORT_ONLY" -eq 1 ]]; then
+  for cls in GULNetwork FIRApp; do
+    owners="$(class_owner_list "$cls")"
+    if [[ -z "$owners" ]]; then
+      log "report-only: ${cls} absent"
+    else
+      log "report-only: ${cls} defined in $(wc -l <<<"$owners" | tr -d ' ') binaries: $(paste -sd ',' - <<<"$owners")"
+    fi
+  done
+  log "--- end duplicate Objective-C class check ---"
+  log "REPORT: ${duplicate_count} Objective-C classes are defined in more than one binary (report-only, not enforced)"
+  exit 0
+fi
+
+if [[ "$duplicate_count" -ne "$EXPECT_DUPLICATES" ]]; then
+  log "NOTE: when a direct caller reuses a DerivedData, it can embed frameworks left over from an earlier build ([RNFB] Embed Firebase SPM Frameworks copies every dynamic framework in PackageFrameworks); re-check such a failure from an empty DerivedData"
+  if [[ "$EXPECT_DUPLICATES" -ne 0 ]]; then
+    dup_check_fail "expected exactly ${EXPECT_DUPLICATES} duplicated Objective-C classes, found ${duplicate_count}"
+  fi
   if [[ "$duplicate_count" -eq 1 ]]; then
     dup_check_fail "1 Objective-C class is defined in more than one binary"
   fi
   dup_check_fail "${duplicate_count} Objective-C classes are defined in more than one binary"
 fi
-canary_owner="$(awk -F'\t' '$1 == "GULNetwork" { print $2 }' "$class_owners_file")"
-if [[ -z "$canary_owner" ]]; then
-  dup_check_fail "GoogleUtilities canary GULNetwork not found in any scanned binary; test-expo/package.json must keep @react-native-firebase/analytics alongside messaging so the GoogleUtilities sharing graph is exercised"
+canary_owners="$(class_owner_list GULNetwork)"
+canary_owner_count=0
+if [[ -n "$canary_owners" ]]; then
+  canary_owner_count="$(wc -l <<<"$canary_owners" | tr -d ' ')"
 fi
-log "ok: GoogleUtilities canary GULNetwork defined once, in ${canary_owner}"
+if [[ "$canary_owner_count" -eq 0 ]]; then
+  dup_check_fail "GoogleUtilities canary GULNetwork not found in any scanned binary${CANARY_HINT:+; ${CANARY_HINT}}"
+fi
+if [[ "$EXPECT_DUPLICATES" -eq 0 ]]; then
+  log "ok: GoogleUtilities canary GULNetwork defined once, in ${canary_owners}"
+else
+  if ! grep -q '^GULNetwork: ' <<<"$duplicates"; then
+    dup_check_fail "GoogleUtilities canary GULNetwork is not among the ${EXPECT_DUPLICATES} duplicated classes (owners: $(paste -sd ',' - <<<"$canary_owners")); the control did not exercise the GoogleUtilities sharing graph"
+  fi
+  log "ok: GoogleUtilities canary GULNetwork is duplicated, in ${canary_owner_count} binaries: $(paste -sd ',' - <<<"$canary_owners")"
+fi
 log "--- end duplicate Objective-C class check ---"
 
-log "PASS: no Objective-C class is defined in more than one binary of the built app"
+if [[ "$EXPECT_DUPLICATES" -ne 0 ]]; then
+  log "PASS: exactly ${EXPECT_DUPLICATES} Objective-C classes are defined in more than one binary, as expected"
+else
+  log "PASS: no Objective-C class is defined in more than one binary of the built app"
+fi
