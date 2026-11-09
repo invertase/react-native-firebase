@@ -628,6 +628,8 @@ test-expo/ios/
 test-expo/android/
 test-expo/node_modules/
 test-expo/.expo/
+# Generated blank Expo apps (test-expo-fixture-ios-dupes.sh)
+test-expo/.fixtures/
 # Fake Expo fixture plist / json (global GoogleService-Info.plist and
 # google-services.json rules would drop them)
 !test-expo/GoogleService-Info.plist

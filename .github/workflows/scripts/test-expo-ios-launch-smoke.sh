@@ -50,6 +50,7 @@ METRO_PORT="${RNFB_TEST_EXPO_METRO_PORT:-8081}"
 METRO_LOG="${RNFB_TEST_EXPO_METRO_LOG:-/tmp/test-expo-launch-smoke-metro.log}"
 APP_LOG="${RNFB_TEST_EXPO_LAUNCH_LOG:-/tmp/test-expo-launch-smoke.log}"
 XCODEBUILD_LOG="${RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG:-/tmp/test-expo-launch-smoke-xcodebuild.log}"
+SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-/tmp/test-expo-spm-packages}"
 # Cap for key-window + sceneOfRecord poll after launch (replaces fixed sleep 10).
 KEY_WINDOW_WAIT_SEC="${RNFB_TEST_EXPO_KEY_WINDOW_WAIT_SEC:-60}"
 
@@ -122,7 +123,7 @@ HOST_ARCH="$(uname -m)"
 xcrun simctl boot "$UDID" 2>/dev/null || true
 xcrun simctl bootstatus "$UDID" -b >/dev/null
 
-log "xcodebuild Debug (simulator ${UDID}, log: ${XCODEBUILD_LOG})"
+log "xcodebuild Debug (simulator ${UDID}, SPM packages=${SPM_PACKAGES}, log: ${XCODEBUILD_LOG})"
 # Cap compile time: prior CI run sat silent after ~18m of xcodebuild env spam until the
 # 60m job timeout. Prefer GNU timeout when present; otherwise perl alarm.
 XCODEBUILD_TIMEOUT_SEC="${RNFB_TEST_EXPO_XCODEBUILD_TIMEOUT_SEC:-2400}"
@@ -136,6 +137,7 @@ if command -v gtimeout >/dev/null 2>&1; then
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
     -destination "id=${UDID}" \
+    -clonedSourcePackagesDirPath "$SPM_PACKAGES" \
     CODE_SIGNING_ALLOWED=NO \
     CODE_SIGNING_REQUIRED=NO \
     CODE_SIGN_IDENTITY="" \
@@ -150,6 +152,7 @@ elif command -v timeout >/dev/null 2>&1; then
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
     -destination "id=${UDID}" \
+    -clonedSourcePackagesDirPath "$SPM_PACKAGES" \
     CODE_SIGNING_ALLOWED=NO \
     CODE_SIGNING_REQUIRED=NO \
     CODE_SIGN_IDENTITY="" \
@@ -165,6 +168,7 @@ else
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
     -destination "id=${UDID}" \
+    -clonedSourcePackagesDirPath "$SPM_PACKAGES" \
     CODE_SIGNING_ALLOWED=NO \
     CODE_SIGNING_REQUIRED=NO \
     CODE_SIGN_IDENTITY="" \
@@ -197,6 +201,7 @@ settings_out="$(
     -scheme "$XCODE_SCHEME" \
     -configuration Debug \
     -destination "id=${UDID}" \
+    -clonedSourcePackagesDirPath "$SPM_PACKAGES" \
     -showBuildSettings 2>"$settings_err"
 )"
 settings_status=$?

@@ -21,6 +21,8 @@ on:
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
       - '.github/workflows/scripts/test-expo-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/lib/duplicate-objc-class-scan.sh'
+      - '.github/workflows/scripts/lib/derived-data-path.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
   push:
     branches:
@@ -40,6 +42,8 @@ on:
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
       - '.github/workflows/scripts/test-expo-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/lib/duplicate-objc-class-scan.sh'
+      - '.github/workflows/scripts/lib/derived-data-path.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
 
 permissions:

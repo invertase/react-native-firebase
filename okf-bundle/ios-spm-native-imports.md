@@ -295,8 +295,25 @@ products specifically; it does **not** change or fix the `FirebaseCore`/
 `FIRApp` sharing limitation described above, which stays unsupported under
 SPM regardless of how explicitly any product is declared. Add this
 declaration only to podspecs actually shown to privately duplicate a class
-by `yarn test-expo:ios:link`'s duplicate Objective-C class check, not
-pre-emptively to every RNFB podspec.
+by the duplicate Objective-C class check, not pre-emptively to every RNFB
+podspec.
+
+The check is one shared script
+(`.github/workflows/scripts/lib/duplicate-objc-class-scan.sh`), run by both
+`yarn test-expo:ios:link` (all-modules `test-expo` graph) and
+`yarn test-expo-fixture:ios:dupes --modules …` (generated per-module Expo
+fixture; [registry row](testing/agent-command-policy.md#canonical-registry)).
+Fixture graphs that isolate the GoogleUtilities duplication (counts at the
+current Firebase iOS SDK / GoogleUtilities pin):
+
+| `--modules` | Duplicated classes |
+| --- | --- |
+| `auth` plus exactly one of `messaging` / `analytics` | 8, between that module's `RNFB*` framework and `GULAppDelegateSwizzler_…_PackageProduct` |
+| `messaging,analytics,auth` | 0 |
+
+An app-only fixture (`--modules ""`) is not a clean zero baseline:
+`FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
+there.
 
 ## App target FirebaseCore link: package dependency alone is not enough
 
