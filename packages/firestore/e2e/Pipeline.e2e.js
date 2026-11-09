@@ -208,6 +208,30 @@ describe('FirestorePipeline', function () {
     });
 
     it('sends GeoPoint constants as geo points', async function () {
+      const { execute, constant } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc, GeoPoint } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+      await setDoc(doc(db, docPath), { score: 1 });
+
+      // A GeoPoint sent as a map would read back as a map.
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .documents([docPath])
+          .select(constant(new GeoPoint(1, 2)).as('point')),
+      );
+
+      snapshot.results.should.have.length(1);
+      const point = snapshot.results[0].get('point');
+      point.should.be.an.instanceOf(GeoPoint);
+      point.latitude.should.equal(1);
+      point.longitude.should.equal(2);
+    });
+
+    it('matches stored geo points against GeoPoint constants', async function () {
       const { execute, field, constant } = firestorePipelinesModular;
       const { getFirestore, doc, setDoc, GeoPoint } = firestoreModular;
 
@@ -217,21 +241,14 @@ describe('FirestorePipeline', function () {
 
       await setDoc(doc(db, docPath), { location });
 
-      // A GeoPoint sent as a map would neither equal the stored geo point nor
-      // read back as one.
       const snapshot = await execute(
         db
           .pipeline()
           .documents([docPath])
-          .where(field('location').equal(constant(location)))
-          .select(constant(new GeoPoint(1, 2)).as('point')),
+          .where(field('location').equal(constant(location))),
       );
 
       snapshot.results.should.have.length(1);
-      const point = snapshot.results[0].get('point');
-      point.constructor.name.should.equal('GeoPoint');
-      point.latitude.should.equal(1);
-      point.longitude.should.equal(2);
     });
 
     it('throws helpful validation errors for invalid source arguments', function () {
