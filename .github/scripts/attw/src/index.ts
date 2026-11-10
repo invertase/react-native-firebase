@@ -28,6 +28,30 @@ const packagesDir = path.join(repoRoot, 'packages');
 const attwBin = path.join(__dirname, '../node_modules/.bin/attw');
 const attwConfigPath = path.join(repoRoot, '.attw.json');
 
+/**
+ * Resolve the monorepo Yarn Berry binary from `.yarnrc.yml`.
+ *
+ * Allowlisted pack staging uses a temp dir outside the workspace. Plain `yarn`
+ * then falls back to a global Yarn Classic (no `yarnPath`), which ignores
+ * `--out` and leaves attw with a missing tarball.
+ */
+function resolveRepoYarnBerry(): string {
+  const yarnrcPath = path.join(repoRoot, '.yarnrc.yml');
+  const yarnrc = fs.readFileSync(yarnrcPath, 'utf8');
+  const match = /^yarnPath:\s*(.+)\s*$/m.exec(yarnrc);
+  if (!match) {
+    throw new Error(`Missing yarnPath in ${yarnrcPath}`);
+  }
+  const yarnPath = match[1].trim().replace(/^['"]|['"]$/g, '');
+  const resolved = path.resolve(repoRoot, yarnPath);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Yarn Berry binary not found at ${resolved}`);
+  }
+  return resolved;
+}
+
+const yarnBerryBin = resolveRepoYarnBerry();
+
 const EXPO_PLUGIN_PACKAGES = [
   'app',
   'analytics',
@@ -166,13 +190,18 @@ function stageAllowlistedPackDir(packageDir: string): string {
 function packPackage(packageDir: string, outputPath: string): void {
   const staging = stageAllowlistedPackDir(packageDir);
   try {
-    const pack = spawnSync('yarn', ['pack', '--out', outputPath], {
+    const pack = spawnSync(process.execPath, [yarnBerryBin, 'pack', '--out', outputPath], {
       cwd: staging,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     if (pack.status !== 0) {
       throw new Error(`yarn pack failed: ${pack.stderr || pack.stdout}`);
+    }
+    if (!fs.existsSync(outputPath)) {
+      throw new Error(
+        `yarn pack reported success but did not write ${outputPath}: ${pack.stderr || pack.stdout}`,
+      );
     }
   } finally {
     try {
@@ -195,20 +224,24 @@ function runAttw(packageDir: string, dirName: string, config: AttwConfig): AttwR
   // truncation) while still avoiding a shell.
   const outFd = fs.openSync(jsonFile, 'w');
   let exitCode = 0;
+  let stderr = '';
   try {
     const result = spawnSync(
       attwBin,
       ['--config-path', attwConfigPath, '--format', 'json', '--no-color', '--no-emoji', tgz],
-      { cwd: tmpDir, stdio: ['ignore', outFd, 'pipe'] },
+      { cwd: tmpDir, encoding: 'utf8', stdio: ['ignore', outFd, 'pipe'] },
     );
     // attw exits non-zero when it finds problems; the JSON report is still written.
     exitCode = result.status ?? 1;
+    stderr = result.stderr || '';
   } finally {
     fs.closeSync(outFd);
   }
 
   if (!fs.existsSync(jsonFile) || !fs.readFileSync(jsonFile, 'utf8').trim()) {
-    throw new Error(`attw produced no output for ${dirName}`);
+    throw new Error(
+      `attw produced no output for ${dirName} (exit ${exitCode})${stderr ? `: ${stderr.trim()}` : ''}`,
+    );
   }
 
   const data = JSON.parse(fs.readFileSync(jsonFile, 'utf8')) as AttwResult;
