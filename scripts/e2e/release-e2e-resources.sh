@@ -177,7 +177,7 @@ run_check() {
 e2e_collect_targets
 
 echo "[release-e2e-resources] platforms: $(e2e_active_platforms | tr '\n' ' ')"
-echo "[release-e2e-resources] identity: $(e2e_run_identity) record=$(e2e_run_record_dir) scope=$([[ "$INCLUDE_UNRECORDED" -eq 1 ]] && echo "include-unrecorded (manual)" || echo "recorded only")"
+echo "[release-e2e-resources] identity: $(e2e_run_identity) record=$(e2e_run_record_dir) scope=$([[ "$INCLUDE_UNRECORDED" -eq 1 ]] && echo "include-unrecorded (manual)" || echo "recorded (+ identity-AVD this-checkout-unrecorded)")"
 echo "[release-e2e-resources] soft clear..."
 e2e_lsof_cache_load
 e2e_run_record_load
@@ -374,8 +374,8 @@ stop_qemu_instance() {
 }
 
 # Every stray emulator-* serial, whoever owns it: the manual --all-slots wipe only. A stray
-# this checkout recorded or spawned (or, with --include-unrecorded, its unrecorded qemu
-# on the identity's AVD) is stopped by clear_android_emulator instead.
+# this checkout recorded or spawned, or this checkout's unrecorded qemu on the identity's
+# AVD (any port), is stopped by clear_android_emulator instead.
 clear_android_stray_emulators() {
   [[ "${E2E_ALL_SLOTS:-0}" == "1" ]] || return 0
   platform_active android || return 0
