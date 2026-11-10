@@ -55,9 +55,9 @@ export interface AppCheckToken {
  */
 export interface AppCheckOptions {
   /**
-   * The App Check provider to use. This can be either the built-in reCAPTCHA provider
-   * or a custom provider. For convenience, you can also pass an object with providerOptions
-   * directly, which will be accepted by the runtime.
+   * The App Check provider to use. On Android and iOS, use a configured
+   * `ReactNativeFirebaseAppCheckProvider` (or an object with `providerOptions`).
+   * On other platforms (macOS, web), use a `CustomProvider`.
    */
   provider:
     | CustomProvider
@@ -65,10 +65,11 @@ export interface AppCheckOptions {
     | ReactNativeFirebaseAppCheckProviderConfig;
 
   /**
-   * If true, enables SDK to automatically
-   * refresh AppCheck token as needed. If undefined, the value will default
-   * to the value of `app.automaticDataCollectionEnabled`. That property
-   * defaults to false and can be set in the app config.
+   * If true, enables SDK to automatically refresh AppCheck token as needed.
+   * On Android and iOS, if omitted (or not a boolean), it falls back to
+   * firebase.json `app_check_token_auto_refresh`, then firebase.json
+   * `app_data_collection_default_enabled`, then `true`.
+   * On other platforms (macOS, web), this fallback is not applied.
    */
   isTokenAutoRefreshEnabled?: boolean;
 }
@@ -104,8 +105,8 @@ export interface AppCheckTokenResult {
 export type AppCheckTokenListener = (token: AppCheckTokenResult) => void;
 
 /**
- * An App Check provider. This can be either the built-in reCAPTCHA provider
- * or a custom provider. For more on custom providers, see
+ * An App Check provider. On Android and iOS, use `ReactNativeFirebaseAppCheckProvider`;
+ * on other platforms (macOS, web), use `CustomProvider`. For more on custom providers, see
  * https://firebase.google.com/docs/app-check/web-custom-provider
  * @public
  */
@@ -129,6 +130,7 @@ export interface ReactNativeFirebaseAppCheckProviderOptions {
 
 /**
  * Options for ReactNativeFirebaseAppCheckProvider on web.
+ * @deprecated Not read at runtime. On other platforms (macOS, web), use `CustomProvider`.
  * @public
  */
 export interface ReactNativeFirebaseAppCheckProviderWebOptions extends ReactNativeFirebaseAppCheckProviderOptions {
@@ -172,6 +174,9 @@ export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends React
  * @public
  */
 export type ReactNativeFirebaseAppCheckProviderOptionsMap = {
+  /**
+   * @deprecated Not read at runtime. On other platforms (macOS, web), use `CustomProvider`.
+   */
   web?: ReactNativeFirebaseAppCheckProviderWebOptions;
   android?: ReactNativeFirebaseAppCheckProviderAndroidOptions;
   apple?: ReactNativeFirebaseAppCheckProviderAppleOptions;
