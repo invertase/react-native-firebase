@@ -16,7 +16,7 @@
  */
 
 import { getOrCreateModularInstance } from '@react-native-firebase/app/dist/module/internal';
-import { isObject } from '@react-native-firebase/app/dist/module/common';
+import { isObject, isString } from '@react-native-firebase/app/dist/module/common';
 import { Query as QueryClass } from './FirestoreQuery';
 import { FirebaseFirestoreModule, config } from './FirestoreModule';
 import FirestoreStatics from './FirestoreStatics';
@@ -64,7 +64,7 @@ import type {
   FirestoreAggregateQueryResultInternal,
   QueryWithAggregateInternals,
 } from './types/internal';
-import type { FieldPath } from './FieldPath';
+import { FieldPath } from './FieldPath';
 
 // react-native at least through 0.77 does not correctly support URL.host, which
 // is needed by firebase-js-sdk. It appears that in 0.80+ it is supported, so this
@@ -298,25 +298,22 @@ export function updateDoc<AppModelType, DbModelType extends DocumentData>(
 ): Promise<void>;
 export function updateDoc<AppModelType, DbModelType extends DocumentData>(
   reference: DocumentReference<AppModelType, DbModelType>,
-  fieldOrUpdateData: string | FieldPath | UpdateData<DbModelType>,
-  value?: unknown,
-  ...moreFieldsAndValues: unknown[]
+  ...args: unknown[]
 ): Promise<void> {
   const ref = reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>;
 
-  if (!fieldOrUpdateData) {
+  if (args.length === 0) {
     return ref.update();
   }
 
-  if (!value) {
-    return ref.update(fieldOrUpdateData);
+  const [fieldOrUpdateData, value, ...moreFieldsAndValues] = args;
+
+  if (isString(fieldOrUpdateData) || fieldOrUpdateData instanceof FieldPath) {
+    return ref.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
   }
 
-  if (!Array.isArray(moreFieldsAndValues)) {
-    return ref.update(fieldOrUpdateData, value);
-  }
-
-  return ref.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
+  // As in firebase-js-sdk, extra arguments after non-field update data are ignored.
+  return ref.update(fieldOrUpdateData);
 }
 
 export function addDoc<AppModelType, DbModelType extends DocumentData>(
@@ -362,10 +359,12 @@ export function waitForPendingWrites(firestore: Firestore): Promise<void> {
 /**
  * Creates a Firestore instance with the given settings.
  *
- * @remarks Returns synchronously for firebase-js-sdk parity; settings are applied through the
- * native bridge in the background. Web-only `settings.localCache` values (`memoryLocalCache`,
- * `persistentLocalCache`, IndexedDB factories) are **not supported**; persistence is controlled
- * by the native Firestore SDK.
+ * @remarks Returns synchronously, as in firebase-js-sdk; settings are applied in the background.
+ * Invalid settings or a failure while applying them are reported with `console.warn`, not thrown.
+ * On iOS and Android, web-only `settings.localCache` values (`memoryLocalCache`,
+ * `persistentLocalCache`, IndexedDB factories) are **not supported** and persistence is
+ * controlled by the native Firestore SDK; on macOS, settings are passed to the firebase-js-sdk
+ * Firestore Lite `initializeFirestore`, which has no local cache or persistence.
  */
 export function initializeFirestore(
   app: FirebaseApp,
@@ -378,7 +377,15 @@ export function initializeFirestore(
     app,
     databaseId,
   ) as unknown as FirestoreInternal;
-  void firestore.settings(settings);
+  const resolvedDatabaseId = (firestore as unknown as FirebaseFirestoreModule)._databaseId;
+  firestore.settings(settings).catch((error: unknown) => {
+    const raw = error instanceof Error ? error.message : String(error);
+    const message = raw.replace(/^firebase\.firestore\(\)\.settings\(\*\) /, '');
+    // eslint-disable-next-line no-console
+    console.warn(
+      `initializeFirestore() could not apply settings for database '${resolvedDatabaseId}': ${message}`,
+    );
+  });
   return firestore as Firestore;
 }
 
