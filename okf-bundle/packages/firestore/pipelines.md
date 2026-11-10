@@ -65,6 +65,20 @@ Vector indexes live in **`firestore.pipelines-e2e.indexes.json`** only. Do **not
 * Expression helpers build plain JSON-serializable trees; `execute()` sends serialized pipeline to native.
 * `pipeline_support.ts` — shared source/stage type lists and unsupported-message helper for native fallback paths.
 
+## Gotcha: no `instanceof` on Firestore value classes in pipeline JS
+
+**Harness:** the e2e Metro configs (`tests/metro.config.js`, `tests-macos/metro.config.js`) resolve `@react-native-firebase/firestore/pipelines` to **source** (`packages/firestore/lib/pipelines/index.ts`) while `@react-native-firebase/firestore` resolves to `dist`. The e2e bundle therefore holds **two copies** of value classes (`Timestamp`, `FieldPath`, `DocumentReference`, …); a `Timestamp` from `firestore` fails `instanceof FirestoreTimestamp` inside `lib/pipelines`. Production apps resolve both to `dist`, so the split exists only in the e2e harness, but pipeline code must tolerate it for e2e to exercise the real paths.
+
+**Rule:** code in `lib/pipelines` that inspects user-supplied values must not rely on `instanceof` for Firestore value classes. Use a structural check (e.g. `instanceof` **or** shape: numeric `seconds`/`nanoseconds` plus `toMillis`/`toDate` functions), matching the `DocumentReference` duck-typing in `serializeValue`. For `FieldPath`, `fieldPathToSegments` (`PipelineResult.get()`) throws on a foreign instance (no `path` property to fall back on); `serializeValue` instead falls through to its generic record branch and emits `{ _segments: [...] }`, which native field-path coercion also accepts.
+
+**Recognise it:** Jest passes (single copy) but e2e fails; the value reaches native as a plain record of private fields (e.g. `{ _seconds, _nanoseconds }`) instead of the typed bridge shape.
+
+## Timestamp / `Date` wire shape
+
+* `serializeValue` (`lib/pipelines/pipeline_runtime.ts`, via `serializeTimestamp`) sends pipeline `Timestamp` values (detected per the [`instanceof` gotcha](#gotcha-no-instanceof-on-firestore-value-classes-in-pipeline-js)) and JS `Date` values as `{ __kind: 'timestamp', seconds, nanoseconds }`, with nanoseconds truncated to microseconds to match firebase-js-sdk `constant()`. Non-integer or out-of-range seconds (year 1–9999), out-of-range nanoseconds, and invalid `Date`s throw in JS before execute.
+* The iOS/Android parsers (`serializedTimestamp`, plus `reviveSerializedTimestamps` for values that bypass the expression parser such as `rawStage` params) and the web builder (`reviveSerializedTimestamp` in `lib/web/pipelines/pipeline_node_builder.ts`) rebuild the SDK `Timestamp`, re-validating the same bounds.
+* **Consequence:** the tag is not escaped. A user constant map that is itself shaped `{ __kind: 'timestamp', … }` is treated as a timestamp; with invalid `seconds`/`nanoseconds` it is rejected at execute.
+
 # Native layer
 
 `RNFBFirestorePipelineNodeBuilder` coerces bridge types, separates literal/expression slots, and builds `ExprBridge` / stage bridges.
