@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **e2e:** record the macOS Jet process so the default release frees it ([f8e0561](https://github.com/invertase/react-native-firebase/commit/f8e0561c8b0f0afa53d3980e58677741de4631c8))
+- **e2e:** release only resources a run recorded; machine wipe is manual-only ([ea8f86d](https://github.com/invertase/react-native-firebase/commit/ea8f86d6e741d69c6a0393106b749360e1a154d5))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 **Note:** Version bump only for package react-native-firebase-tests-macos
