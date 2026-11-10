@@ -43,7 +43,7 @@ Archive-only and macOS-only jobs set `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=0` (Xcode 
 On GHA macOS runners, `simctl list` can show `Booted` before the simulator is test-ready:
 
 1. First-boot `com.apple.datamigrator` can run for minutes; app install/launch is unreliable until done.
-2. Device names are ambiguous across runtimes; `boot-simulator.sh` resolves or creates a **UDID** on the pinned iOS 27 runtime (`RNFB_IOS_SIM_RUNTIME`, default `iOS 27.0`) before boot/install. The serial `simulator` device in `tests/.detoxrc.js` passes the same `RNFB_IOS_SIM_RUNTIME` to Detox as `os`, so Detox allocates the simulator this step booted; `e2e_sanitize_serial_env` keeps that variable. Matched by name alone, Detox can pick a same-named simulator on another runtime the image ships and cold-boot it during the Detox step, next to the pre-booted one.
+2. Device names are ambiguous across runtimes; `boot-simulator.sh` resolves or creates a **UDID** on the pinned iOS 27 runtime (`RNFB_IOS_SIM_RUNTIME`, default `iOS 27.0`) before boot/install. In CI it also writes that UDID to `$GITHUB_ENV` as `RNFB_IOS_SIMULATOR_UDID`. The serial `simulator` device in `tests/.detoxrc.js` passes it to Detox as `id` (and `RNFB_IOS_SIM_RUNTIME` as `os`, the only pin outside CI), so Detox allocates the simulator this step booted; `e2e_sanitize_serial_env` keeps both variables. `tests/e2e/firebase.test.js` fails before the first launch if Detox's device is not that UDID. Matched by name alone, Detox can pick a same-named simulator on another runtime the image ships and cold-boot it during the Detox step, next to the pre-booted one.
 3. `Booted` ≠ ready; install/launch during migration can hang/fail.
 
 ### What we do
@@ -55,7 +55,7 @@ On GHA macOS runners, `simctl list` can show `Booted` before the simulator is te
 | Phase | What happens |
 |--------|----------------|
 | `resolve_device` | Read simulator name from `tests/.detoxrc.js` (e.g. `iPhone 17` or `RN E2E iOS slot-N`) |
-| `resolve_udid` | `rnfb_ensure_ios_simulator_udid` on `RNFB_IOS_SIM_RUNTIME` (default iOS 27.0); export `RNFB_IOS_SIMULATOR_UDID` |
+| `resolve_udid` | `rnfb_ensure_ios_simulator_udid` on `RNFB_IOS_SIM_RUNTIME` (default iOS 27.0); export `RNFB_IOS_SIMULATOR_UDID` (and append it to `$GITHUB_ENV` in CI) |
 | `kill_resolved` | Kill Device Hub (or legacy Simulator.app), terminate app, `simctl shutdown` the resolved UDID |
 | `boot_command` | `xcrun simctl boot <udid>` |
 | `foreground_simulator` | `open <selected-Xcode>/Applications/DeviceHub.app --args -CurrentDeviceUDID <udid>` (never `open -a Simulator` / `open -a Device Hub`) |
@@ -110,7 +110,7 @@ Video artifacts upload only when **`record_screens: true`** (see [CI baseload po
 | Step | Script / action | Notes |
 |------|-----------------|-------|
 | Pre-Boot Simulator | `RNFB_START_SIM_LOGS=0 ./boot-simulator.sh` | Boot + install only; no log streams |
-| Start Simulator App Log | `RNFB_SIM_BOOT_MODE=logs ./boot-simulator.sh` | One filtered stream + `resource-monitor.sh`; sim video only if `RNFB_RECORD_SCREENS=1` |
+| Start Simulator App Log | `RNFB_SIM_BOOT_MODE=logs ./boot-simulator.sh` | One filtered stream + `resource-monitor.sh`; sim video only if `RNFB_RECORD_SCREENS=1`. Streams from `RNFB_IOS_SIMULATOR_UDID` (from `$GITHUB_ENV`), not `booted` |
 | Wait for host load to settle | `wait-for-load-settle.sh` | Poll until `load1 < 20` or 1200s timeout; `continue-on-error: true` |
 | Detox Test Debug / Release | `yarn tests:ios:test-cover` / `:release` | Jet orchestration begins here |
 
@@ -184,7 +184,7 @@ Long `datamigrator` activity with no `io.invertase.testing` means migration/pre-
 
 ### Detox configuration
 
-Device type comes from `tests/.detoxrc.js`; boot script and Detox use it. No hard-coded UDID.
+Device type comes from `tests/.detoxrc.js`; boot script and Detox use it. No hard-coded UDID: in CI, Detox takes the UDID the boot step resolved ([simulator reliability](#problem)).
 
 **Missing Detox framework cache** — if iOS `:test-cover` fails before tests with `Detox.framework could not be found`, rebuild the local cache: [running e2e § iOS Detox framework cache](../testing/running-e2e.md#ios-detox-framework-cache-blocking) (`yarn tests:ios:detox-framework-cache:rebuild`). CI restores `~/Library/Detox/ios` from Actions cache keyed by Xcode version.
 
@@ -236,7 +236,7 @@ Error: Unable to update lock within the stale threshold
 | Defer `server.run()` until host `POST /launch-ready` on control port **8091** (`RNFB_JET_DEFER_RUN=1`) | Jet patch + `firebase.test.js` — [Jet host orchestration](../testing/running-e2e.md#jet-host-orchestration-ports-and-launch-gate) |
 | `POST /orchestrate-state` + `[rnfb-e2e] orchestrate-state=` for launch/retry triage | `firebase.test.js` + Jet patch |
 | Wait for Metro (`/status`) before `launchApp` | `tests/e2e/firebase.test.js` (debug Detox configs only; release skips Metro wait) |
-| Bounded `launchApp` timeout / retries | [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) (consumed by `firebase.test.js`); release uses `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` in `firebase.test.js`; Detox Login / CurrentStatus: [detox-patches](detox-patches.md) |
+| Bounded `launchApp` timeout / retries | [`tests/e2e/detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js) (consumed by `firebase.test.js`); release uses `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` from the same module; Detox Login / CurrentStatus: [detox-patches](detox-patches.md) |
 | `detoxEnableSynchronization: '0'` at launch (native `equals("0")`; `'NO'` still installs Fabric idling) | `tests/e2e/firebase.test.js` — [running e2e § gray screen](../testing/running-e2e.md#android-emulator-gray-screen--quick-boot-blocking) |
 | `detoxURLBlacklistRegex: '.*'` | `tests/e2e/firebase.test.js` (existing) |
 
@@ -276,7 +276,7 @@ Metro can look healthy on the **host** during pre-fetch minutes earlier while be
 | Slow `terminateApp` (≥ `RNFB_SLOW_TERMINATE_MS`, default 10s) → reboot via `boot-simulator.sh` | `tests/e2e/firebase.test.js` |
 | Full Jet e2e retry when inner launch retries exhausted, await-exit stall, or WS/coverage teardown retryable | `tests/e2e/firebase.test.js` (`retryableAtJetLevel`, `isRetryableE2eFailure`; stall → `stall-kill-jet`) |
 | `simctl get_app_container` / `listapps` before and after each launch attempt | `tests/e2e/firebase.test.js` (`[rnfb-e2e] install-state`) |
-| Bounded `launchApp` timeout | Debug: `RNFB_LAUNCH_APP_TIMEOUT_MS` ([`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js)). Release: `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS` in `firebase.test.js` |
+| Bounded `launchApp` timeout | Debug: `RNFB_LAUNCH_APP_TIMEOUT_MS`; release: `RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS`. Defaults for both live in [`detoxLatencyPolicy.js`](../../tests/e2e/detoxLatencyPolicy.js). On CI's boot-prepared simulator, the run's first launch skips `delete: true`, because Detox init (`behavior.init.reinstallApp`) has just reinstalled the app; later launches keep the existing delete rules |
 | Metro log artifacts (`metro.log` + `/tmp/rnfb-metro-*.log`) | `.github/workflows/tests_e2e_ios.yml` |
 | JS load failure + packager probe logging | `tests/ios/testing/AppDelegate.mm` |
 | Bundle URL pinned to `127.0.0.1` (bypasses RN `localhost` fallback) | `tests/ios/testing/AppDelegate.mm` |
