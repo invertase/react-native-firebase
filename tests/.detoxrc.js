@@ -97,13 +97,20 @@ function androidAppWindows(reversePorts) {
 }
 
 const SERIAL_IOS_DEVICE_TYPE = process.env.RNFB_IOS_BASE_SIMULATOR || 'iPhone 17';
+// boot-simulator.sh boots the simulator on this runtime. Without it, Detox matches
+// by name alone and can pick a same-named simulator on another runtime.
+const SERIAL_IOS_SIM_RUNTIME = process.env.RNFB_IOS_SIM_RUNTIME;
 const SERIAL_ANDROID_AVD = 'TestingAVD';
 
 const devices = {
   // Serial unslotted defaults (yarn tests:ios / android without slot env).
   simulator: {
     type: 'ios.simulator',
-    device: { type: SERIAL_IOS_DEVICE_TYPE, name: SERIAL_IOS_DEVICE_TYPE },
+    device: {
+      type: SERIAL_IOS_DEVICE_TYPE,
+      name: SERIAL_IOS_DEVICE_TYPE,
+      ...(SERIAL_IOS_SIM_RUNTIME ? { os: SERIAL_IOS_SIM_RUNTIME } : {}),
+    },
   },
   attached: {
     type: 'android.attached',

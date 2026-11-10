@@ -921,7 +921,7 @@ Slotted iOS devices use a **repo-neutral base name**: **`RN E2E iOS slot-N`**, w
 | `yarn tests:e2e:setup-ios-sims` | create/reuse of the **base** only |
 | Device that runs slotted iOS | exact **`RN E2E iOS slot-N`** base |
 | `RNFB_IOS_SIMULATOR` from `export-slot-env` | the exact base used by Detox, check, and release |
-| Serial `ios.sim.debug` | stock Detox allocates **`iPhone 17`** (unchanged) |
+| Serial `ios.sim.debug` | stock Detox allocates **`iPhone 17`**, on `RNFB_IOS_SIM_RUNTIME` when set ([ios.md § simulator reliability](../ci-workflows/ios.md#simulator-reliability)) |
 
 **Stock Detox is not sufficient for this contract.** Detox 20.51.0 reuses a free matching base, but when every match is registry-taken it calls `AppleSimUtils.create()` and creates a suffixed simulator. [`tests/patches/detox+20.51.0.patch`](../../tests/patches/detox+20.51.0.patch) (`patch-package` via `tests` `prepare`) preserves free exact-base reuse for `RN E2E iOS slot-0`…`slot-7`, but fails before creation when the base is taken. The error directs the operator to confirm Mellifera/manual ownership, release the owner, and inspect the Detox device registry only when no owner is active. Serial `iPhone 17` and unrelated simulator configurations keep stock allocation behavior. Apply the patch with root `yarn` — [install / patch / fmt gate](agent-command-policy.md#install-patch-fmt-gate-blocking). This is **not** the Yarn Berry Detox patch under `.yarn/patches/` ([detox-patches.md](../ci-workflows/detox-patches.md)).
 

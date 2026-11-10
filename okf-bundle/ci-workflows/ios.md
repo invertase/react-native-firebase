@@ -43,7 +43,7 @@ Archive-only and macOS-only jobs set `RNFB_CI_REQUIRE_IOS_SIM_RUNTIME=0` (Xcode 
 On GHA macOS runners, `simctl list` can show `Booted` before the simulator is test-ready:
 
 1. First-boot `com.apple.datamigrator` can run for minutes; app install/launch is unreliable until done.
-2. Device names are ambiguous across runtimes; `boot-simulator.sh` resolves or creates a **UDID** on the pinned iOS 27 runtime (`RNFB_IOS_SIM_RUNTIME`, default `iOS 27.0`) before boot/install. Detox still allocates by name from `tests/.detoxrc.js`.
+2. Device names are ambiguous across runtimes; `boot-simulator.sh` resolves or creates a **UDID** on the pinned iOS 27 runtime (`RNFB_IOS_SIM_RUNTIME`, default `iOS 27.0`) before boot/install. The serial `simulator` device in `tests/.detoxrc.js` passes the same `RNFB_IOS_SIM_RUNTIME` to Detox as `os`, so Detox allocates the simulator this step booted; `e2e_sanitize_serial_env` keeps that variable. Matched by name alone, Detox can pick a same-named simulator on another runtime the image ships and cold-boot it during the Detox step, next to the pre-booted one.
 3. `Booted` ≠ ready; install/launch during migration can hang/fail.
 
 ### What we do

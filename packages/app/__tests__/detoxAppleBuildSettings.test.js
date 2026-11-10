@@ -18,7 +18,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import { describe, expect, it, jest } from '@jest/globals';
+import { afterEach, describe, expect, it, jest } from '@jest/globals';
 
 const REPO_ROOT = join(__dirname, '..', '..', '..');
 const EXPLICIT_MODULES_OFF = 'SWIFT_ENABLE_EXPLICIT_MODULES=NO';
@@ -82,6 +82,80 @@ describe('slotted Detox device contracts', () => {
       app: 'android.debug.slot7',
     });
     expect(detox.configurations['android.emu.debug.slot8']).toBeUndefined();
+  });
+});
+
+describe('serial iOS simulator runtime pin', () => {
+  const originalRuntime = process.env.RNFB_IOS_SIM_RUNTIME;
+
+  afterEach(() => {
+    if (originalRuntime === undefined) {
+      delete process.env.RNFB_IOS_SIM_RUNTIME;
+    } else {
+      process.env.RNFB_IOS_SIM_RUNTIME = originalRuntime;
+    }
+  });
+
+  function loadDetoxrc(runtime) {
+    if (runtime === undefined) {
+      delete process.env.RNFB_IOS_SIM_RUNTIME;
+    } else {
+      process.env.RNFB_IOS_SIM_RUNTIME = runtime;
+    }
+    let detox;
+    jest.isolateModules(() => {
+      detox = require(join(REPO_ROOT, 'tests', '.detoxrc.js'));
+    });
+    return detox;
+  }
+
+  it('pins the serial simulator to RNFB_IOS_SIM_RUNTIME, the runtime boot-simulator.sh boots', () => {
+    const detox = loadDetoxrc('iOS 27.0');
+    expect(detox.devices.simulator.device).toEqual({
+      type: 'iPhone 17',
+      name: 'iPhone 17',
+      os: 'iOS 27.0',
+    });
+  });
+
+  it('matches by name only when RNFB_IOS_SIM_RUNTIME is unset', () => {
+    const detox = loadDetoxrc(undefined);
+    expect(detox.devices.simulator.device).toEqual({ type: 'iPhone 17', name: 'iPhone 17' });
+  });
+
+  it('Detox passes the runtime to applesimutils as --byOS', async () => {
+    const detox = loadDetoxrc('iOS 27.0');
+    const SimulatorAllocDriver = require(
+      join(
+        REPO_ROOT,
+        'tests/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorAllocDriver.js',
+      ),
+    );
+    const SimulatorQuery = require(
+      join(
+        REPO_ROOT,
+        'tests/node_modules/detox/src/devices/allocation/drivers/ios/SimulatorQuery.js',
+      ),
+    );
+    const applesimutils = {
+      list: jest.fn(async () => [{ udid: 'ios-27-0-udid', name: 'iPhone 17' }]),
+    };
+    const driver = new SimulatorAllocDriver({
+      detoxConfig: { behavior: { cleanup: { shutdownDevice: false } } },
+      deviceRegistry: { getTakenDevicesSync: () => [] },
+      applesimutils,
+    });
+
+    const udid = await driver._findOrCreateDevice(
+      new SimulatorQuery(detox.devices.simulator.device),
+    );
+
+    expect(udid).toBe('ios-27-0-udid');
+    expect(applesimutils.list.mock.calls[0][0]).toMatchObject({
+      byName: 'iPhone 17',
+      byType: 'iPhone 17',
+      byOS: 'iOS 27.0',
+    });
   });
 });
 
