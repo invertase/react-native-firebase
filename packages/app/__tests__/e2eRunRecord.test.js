@@ -396,7 +396,9 @@ describe('release-e2e-resources.sh scope', function () {
 
     const out = release(['--platform=android', '--slot=1', '--only=jet']);
 
-    expect(out).toMatch(/identity: slot-1 .*scope=recorded only/);
+    expect(out).toMatch(
+      /identity: slot-1 .*scope=recorded \(\+ identity-AVD this-checkout-unrecorded\)/,
+    );
     expect(out).toMatch(new RegExp(`SIGTERM :13010 pids=${ours.child.pid}\\b`));
     expect(out).not.toMatch(new RegExp(`pids=.*\\b${theirs.child.pid}\\b`));
     expect(await settle(ours.exited, 2000)).toBe('SIGTERM');
@@ -438,7 +440,7 @@ describe('release-e2e-resources.sh scope', function () {
 
     const out = release(['--platform=macos', '--slot=1', '--only=jet']);
 
-    expect(out).toMatch(/scope=recorded only/);
+    expect(out).toMatch(/scope=recorded \(\+ identity-AVD this-checkout-unrecorded\)/);
     expect(out).toMatch(new RegExp(`SIGTERM :13210 pids=${child.pid}\\b`));
     expect(await settle(exited, 2000)).toBe('SIGTERM');
   });
@@ -639,7 +641,7 @@ setTimeout(() => {}, 60000);`,
     }
   });
 
-  it('--include-unrecorded --devices stops only this checkout’s unrecorded emulator on the identity’s AVD', async function () {
+  it('default --devices stops this checkout’s unrecorded emulator on the identity’s AVD; never another owner’s', async function () {
     writeExecutable(path.join(dir, 'adb'), '#!/bin/bash\nexit 0\n');
     const own = startTokenProcessIn(
       repoRoot,
@@ -662,35 +664,57 @@ setTimeout(() => {}, 60000);`,
       '-port',
       '16230',
     );
+    // Register before nested setup so a mkdir/mkdtemp failure cannot leak the tokens.
     sleepers.push(own, foreign, otherIdentity);
-    const run = args =>
-      spawnSync('/bin/bash', [releaseScript, ...args], {
-        encoding: 'utf8',
-        cwd: repoRoot,
-        env: cleanEnv({
-          PATH: `${dir}:${process.env.PATH}`,
-          RNFB_E2E_RUN_RECORD_DIR: path.join(dir, 'rec'),
-          RNFB_FAKE_LSOF: path.join(dir, 'lsof.out'),
-        }),
-      });
-    const scoped = ['--platform=android', '--slot=1', '--devices', '--only=android-emulator'];
+    // Nested worktree under this path (e.g. .claude/): prefix-match alone would claim it.
+    // Parent may be absent on a clean CI checkout (.claude is gitignored).
+    const nestedParent = path.join(repoRoot, '.claude');
+    fs.mkdirSync(nestedParent, { recursive: true });
+    const nestedRoot = fs.mkdtempSync(path.join(nestedParent, 'rnfb-nested-release-'));
+    try {
+      execFileSync('git', ['init', '--quiet'], { cwd: nestedRoot });
+      const nested = startTokenProcessIn(
+        nestedRoot,
+        'qemu-system-fake',
+        '@TestingAVD-1',
+        '-port',
+        '16231',
+      );
+      sleepers.push(nested);
+      const run = args =>
+        spawnSync('/bin/bash', [releaseScript, ...args], {
+          encoding: 'utf8',
+          cwd: repoRoot,
+          env: cleanEnv({
+            PATH: `${dir}:${process.env.PATH}`,
+            RNFB_E2E_RUN_RECORD_DIR: path.join(dir, 'rec'),
+            RNFB_FAKE_LSOF: path.join(dir, 'lsof.out'),
+          }),
+        });
+      const scoped = ['--platform=android', '--slot=1', '--devices', '--only=android-emulator'];
 
-    run(scoped);
-    expect(await settle(own.exited, 300)).toBe('running');
-
-    const manual = run([...scoped, '--include-unrecorded']);
-    expect(manual.stdout).toMatch(
-      new RegExp(`qemu=${own.child.pid} \\(owner=this-checkout-unrecorded\\)`),
-    );
-    expect(await settle(own.exited, 2000)).toBe('SIGTERM');
-    expect(manual.stderr).toMatch(
-      new RegExp(
-        `serial=emulator-16228 avd=TestingAVD-1 .*owner=unrecorded — not this checkout's, left running`,
-      ),
-    );
-    expect(await settle(foreign.exited, 300)).toBe('running');
-    expect(manual.stdout).not.toMatch(/16230/);
-    expect(await settle(otherIdentity.exited, 300)).toBe('running');
+      const out = run(scoped);
+      expect(out.stdout).toMatch(
+        new RegExp(`qemu=${own.child.pid} \\(owner=this-checkout-unrecorded\\)`),
+      );
+      expect(await settle(own.exited, 2000)).toBe('SIGTERM');
+      expect(out.stderr).toMatch(
+        new RegExp(
+          `serial=emulator-16228 avd=TestingAVD-1 .*owner=unrecorded — not this checkout's, left running`,
+        ),
+      );
+      expect(await settle(foreign.exited, 300)).toBe('running');
+      expect(out.stdout).not.toMatch(/16230/);
+      expect(await settle(otherIdentity.exited, 300)).toBe('running');
+      expect(out.stderr).toMatch(
+        new RegExp(
+          `serial=emulator-16231 avd=TestingAVD-1 .*owner=unrecorded — not this checkout's, left running`,
+        ),
+      );
+      expect(await settle(nested.exited, 300)).toBe('running');
+    } finally {
+      fs.rmSync(nestedRoot, { recursive: true, force: true });
+    }
   });
 
   function runRelease(args, extraEnv = {}) {
@@ -778,15 +802,43 @@ setTimeout(() => {}, 60000);`,
       writeExecutable(path.join(dir, 'adb'), '#!/bin/bash\nexit 0\n');
     });
 
-    it('without a re-record, release --devices leaves the new emulator running but names it', async function () {
+    it('without a re-record, release --devices still stops this checkout’s cold-booted emulator', async function () {
       const qemuPid = coldBoot('16250');
       const out = runRelease(scoped);
-      expect(out.stderr).toMatch(
+      expect(out.stdout).toMatch(
         new RegExp(
-          `serial=emulator-16250 avd=TestingAVD-1 .*owner=this-checkout-unrecorded — runs from this checkout but no run recorded it, left running.*--include-unrecorded --devices --only android-emulator --slot=1`,
+          `stop serial=emulator-16250 avd=TestingAVD-1 qemu=${qemuPid} \\(owner=this-checkout-unrecorded\\)`,
         ),
       );
-      expect(await waitGone(qemuPid, 300)).toBe(false);
+      expect(out.stdout + out.stderr).not.toMatch(/--include-unrecorded/);
+      expect(await waitGone(qemuPid, 3000)).toBe(true);
+    });
+
+    it('check is BUSY for a FreePortFinder identity-AVD qemu; default --devices clears it', async function () {
+      const qemuPid = coldBoot('16250');
+      const result = check();
+      expect(result.status).toBe(1);
+      expect(result.stdout).toMatch(
+        new RegExp(
+          `BUSY\\s+android emulator emulator-16250 avd=TestingAVD-1 qemu pid=${qemuPid} cwd=${testsDir} owner=this-checkout-unrecorded — no run recorded it \\(e\\.g\\. cold-boot respawn\\); free with yarn tests:e2e:release --devices --slot=1`,
+        ),
+      );
+      // BUSY line names --devices; must not push --include-unrecorded for this category.
+      expect(result.stdout).not.toMatch(/include-unrecorded/);
+      expect(result.stderr).not.toMatch(/--include-unrecorded --only [^\n]*\bandroid-emulator\b/);
+      const out = runRelease(scoped);
+      expect(out.stdout).toMatch(
+        new RegExp(
+          `stop serial=emulator-16250 avd=TestingAVD-1 qemu=${qemuPid} \\(owner=this-checkout-unrecorded\\)`,
+        ),
+      );
+      expect(out.stdout + out.stderr).not.toMatch(/--include-unrecorded/);
+      expect(await waitGone(qemuPid, 3000)).toBe(true);
+      // Fake adb exit-0 makes app probes BUSY; assert the FreePortFinder qemu line is gone.
+      expect(check().stdout).not.toMatch(/emulator-16250/);
+      // check BUSY on this qemu is what makes release soft-kill miss → forceful round;
+      // the force path itself is covered by clear_android_emulator hard + existing
+      // stopQemuPids SIGTERM-ignore coverage below.
     });
 
     it('bootAndRecord re-records the cold-booted instance, so release --devices stops it', async function () {
@@ -823,16 +875,22 @@ setTimeout(() => {}, 60000);`,
       expect(await waitGone(qemuPid, 3000)).toBe(true);
     });
 
-    it('check names an unrecorded emulator on the identity AVD at its allocated serial', function () {
+    it('check is BUSY for this checkout’s unrecorded emulator on the identity AVD at its allocated serial', function () {
       const qemuPid = coldBoot('5558');
       const result = check();
+      expect(result.status).toBe(1);
       expect(result.stdout).toMatch(
         new RegExp(
-          `INFO\\s+android emulator emulator-5558 avd=TestingAVD-1 qemu pid=${qemuPid} cwd=${testsDir} owner=this-checkout-unrecorded — no run recorded it, so release --devices leaves it running`,
+          `BUSY\\s+android emulator emulator-5558 avd=TestingAVD-1 qemu pid=${qemuPid} cwd=${testsDir} owner=this-checkout-unrecorded — no run recorded it \\(e\\.g\\. cold-boot respawn\\); free with yarn tests:e2e:release --devices --slot=1`,
         ),
       );
-      expect(result.stdout).not.toMatch(/BUSY\s+android emulator/);
+      // Default --devices frees this category; footer must not list android-emulator under
+      // --include-unrecorded (fake adb may still note android-apps separately).
+      expect(result.stdout).not.toMatch(/include-unrecorded/);
+      expect(result.stderr).not.toMatch(/--include-unrecorded --only [^\n]*\bandroid-emulator\b/);
       recordColdBoot('5558');
+      // A live recorded instance is owned by the run record (release --devices frees it);
+      // host-clear does not fail solely on a warm AVD the run still owns.
       expect(check().stdout).not.toMatch(/android emulator emulator-5558/);
     });
 
@@ -1344,6 +1402,39 @@ describe('tests/e2e/runRecord.js', function () {
       expect(message).toContain('or by a step that does not record what it starts');
     } finally {
       killQuietly(pid);
+    }
+  });
+
+  it('does not treat a nested worktree under this checkout as this-checkout-unrecorded', function () {
+    const env = { RNFB_E2E_RUN_RECORD_DIR: dir };
+    // Parent may be absent on a clean CI checkout (.claude is gitignored).
+    const nestedParent = path.join(repoRoot, '.claude');
+    fs.mkdirSync(nestedParent, { recursive: true });
+    const nestedRoot = fs.mkdtempSync(path.join(nestedParent, 'rnfb-nested-owner-'));
+    let pid;
+    try {
+      execFileSync('git', ['init', '--quiet'], { cwd: nestedRoot });
+      pid = startDetached(['/bin/sleep', '60'], nestedRoot);
+      expect(runRecord.pidOwner(pid, env)).toBe('unrecorded');
+      // Same rule in the shell twin (release/check).
+      const shell = execFileSync(
+        '/bin/bash',
+        ['-c', `source "${recordLib}"; e2e_run_record_load; e2e_pid_owner ${pid}`],
+        { encoding: 'utf8', env: cleanEnv(env) },
+      ).trim();
+      expect(shell).toBe('unrecorded');
+      // Path still under this checkout, but a subdirectory of this worktree stays ours.
+      const underTests = startDetached(['/bin/sleep', '60'], path.join(repoRoot, 'tests'));
+      try {
+        expect(runRecord.pidOwner(underTests, env)).toBe('this-checkout-unrecorded');
+      } finally {
+        killQuietly(underTests);
+      }
+    } finally {
+      if (pid) {
+        killQuietly(pid);
+      }
+      fs.rmSync(nestedRoot, { recursive: true, force: true });
     }
   });
 });

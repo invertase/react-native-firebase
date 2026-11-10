@@ -4,17 +4,19 @@
 # Default release frees only what e2e runs from this checkout recorded for the
 # identity (serial or slot-N; scripts/e2e/lib/e2e-run-record.sh): listeners on the
 # identity's ports, the macOS app pid, test apps on recorded serials, and with
-# --devices the recorded emulator (qemu pid) / simulator (launchd_sim pid) instance, or
-# an emulator a recorded process spawned — never a device that was since rebooted by
-# someone else. Unrecorded holders are another
-# owner's: reported, never killed, and the recheck fails. Use --only to limit scope,
+# --devices the recorded emulator (qemu pid) / simulator (launchd_sim pid) instance,
+# an emulator a recorded process spawned, or this checkout's unrecorded qemu on the
+# identity's AVD (cwd in this repo — e.g. Detox/harness cold-boot respawn after the
+# recorded instance died). Never a device another owner rebooted (owner=unrecorded):
+# those are reported, left running, and the recheck fails. Use --only to limit scope,
 # e.g. --only jet,android-apps to leave Metro/emulators up.
 #
 # Manual recovery only, at explicit user direction (never from scripts or CI):
 #   --include-unrecorded  also kill unrecorded holders of this identity's ports and app
-#                         names; with --devices, also this checkout's unrecorded emulator
-#                         running the identity's AVD (qemu cwd in this repo). Another
-#                         owner's device is reported and left running.
+#                         names (Metro/Jet/macOS by name, etc.). With --devices, identity
+#                         AVD qemu from this checkout is already stopped by default; this
+#                         flag still covers that path and other unrecorded device holders.
+#                         Another owner's device is reported and left running.
 #   --all-slots           whole-machine wipe: every slot + serial + stray emulator-* serials
 #
 # Usage:
@@ -402,9 +404,11 @@ clear_android_emulator() {
     done < <(e2e_run_record_live_devices android)
     identity_avds=" $(e2e_android_avd_names_for_release | tr '\n' ' ') "
     # Any other qemu: one a recorded process spawned is this checkout's (as for ports).
-    # With --include-unrecorded, also this checkout's unrecorded qemu on the identity's
-    # AVD. Another owner's is never touched. Any unrecorded qemu left on the identity's
-    # AVD is named, so a leak is never silent.
+    # This checkout's unrecorded qemu on the identity's AVD is also ours — Detox/harness
+    # cold-boot often respawns qemu from tests/ after the recorded instance is gone, and
+    # leaving it would make release/--devices claim CLEAR while TestingAVD-N stays up.
+    # Another owner's (owner=unrecorded) is never touched. Named on soft so a leak is
+    # never silent.
     while IFS=$'\t' read -r qpid port avd; do
       [[ -n "$qpid" && "$recorded" != *" ${qpid} "* ]] || continue
       serial="${port:+emulator-${port}}"
@@ -420,11 +424,9 @@ clear_android_emulator() {
       fi
       [[ "$identity_avds" == *" ${avd} "* ]] || continue
       owner="$(e2e_pid_owner "$qpid")"
-      if [[ "$INCLUDE_UNRECORDED" -eq 1 && "$owner" == this-checkout-unrecorded ]]; then
+      if [[ "$owner" == this-checkout-unrecorded ]]; then
         echo "[release] android emulator stop serial=${serial:-unknown} avd=${avd} qemu=${qpid} (owner=${owner})"
         stop_qemu_instance "$mode" "$serial" "$avd" "$qpid"
-      elif [[ "$mode" == soft && "$owner" == this-checkout-unrecorded ]]; then
-        echo "[release] android emulator serial=${serial:-unknown} avd=${avd} $(e2e_pid_describe "$qpid") owner=${owner} — runs from this checkout but no run recorded it, left running. Stop it, or (manual) yarn tests:e2e:release --include-unrecorded --devices --only android-emulator${E2E_SLOT_OVERRIDE:+ --slot=${E2E_SLOT_OVERRIDE}}" >&2
       elif [[ "$mode" == soft ]]; then
         echo "[release] android emulator serial=${serial:-unknown} avd=${avd} $(e2e_pid_describe "$qpid") owner=${owner} — not this checkout's, left running: free it from its owner or use another slot" >&2
       fi
