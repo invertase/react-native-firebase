@@ -185,10 +185,13 @@ foreign_device() { [[ "$1" =~ $re && "$1" != *${JSON.stringify(HOST_MARK)}* ]]; 
 writeExecutable(
   path.join(hostStubDir, 'ps'),
   `#!/bin/bash
-${deviceFilter}
-${realBin('ps')} "$@" | while IFS= read -r line; do
-  foreign_device "$line" || printf '%s\\n' "$line"
-done
+# awk is much faster than a bash [[ =~ ]] per line; under yarn test:full the slow
+# filter previously made listProcesses hit execFileSync's timeout and return [].
+mark=${JSON.stringify(HOST_MARK)}
+${realBin('ps')} "$@" | awk -v mark="$mark" '
+  /qemu-system|launchd_sim/ && index(\$0, mark) == 0 { next }
+  { print }
+'
 exit "\${PIPESTATUS[0]}"
 `,
 );
@@ -898,9 +901,23 @@ setTimeout(() => {}, 60000);`,
         // Another owner's same-AVD qemu on our console port (the tokens bind no socket).
         const foreignOnOurPort = coldBoot('5558', foreignCwd);
 
-        expect(ownQemuRunning('5558', 'TestingAVD-1', { env: slotEnv() })).toBe(true);
-        const pids = ownQemuPids('5558', 'TestingAVD-1', { env: slotEnv() });
-        expect(pids.sort()).toEqual([ownOnPort, ownRecorded].sort());
+        // One process snapshot for both helpers: separate listProcesses/lsof rounds under
+        // host load previously let ownQemuRunning pass while ownQemuPids saw [].
+        expect(
+          await waitFor(() => {
+            const processes = runRecord.listProcesses();
+            return (
+              ownQemuRunning('5558', 'TestingAVD-1', { env: slotEnv(), processes }) &&
+              ownQemuPids('5558', 'TestingAVD-1', { env: slotEnv(), processes })
+                .slice()
+                .sort()
+                .join(',') === [ownOnPort, ownRecorded].slice().sort().join(',')
+            );
+          }),
+        ).toBe(true);
+        const processes = runRecord.listProcesses();
+        const pids = ownQemuPids('5558', 'TestingAVD-1', { env: slotEnv(), processes });
+        expect(pids.slice().sort()).toEqual([ownOnPort, ownRecorded].slice().sort());
         await stopQemuPids(pids, { timeoutMs: 5000, pollMs: 50 });
         expect(pidAlive(ownOnPort)).toBe(false);
         expect(pidAlive(ownRecorded)).toBe(false);
