@@ -244,6 +244,7 @@ describe('check-duplicate-objc-classes.sh', function () {
       env: { ...process.env, RNFB_DYLD_INFO: stubPath },
     });
     expect(result.status).toBe(2);
+    expect(`${result.stdout}${result.stderr}`).toContain('ERROR: missing app bundle path');
     expect(`${result.stdout}${result.stderr}`).toContain('usage:');
   });
 
