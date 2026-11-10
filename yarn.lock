@@ -24414,9 +24414,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-coverage@npm:0.2.0":
-  version: 0.2.0
-  resolution: "react-native-coverage@npm:0.2.0"
+"react-native-coverage@npm:0.2.2":
+  version: 0.2.2
+  resolution: "react-native-coverage@npm:0.2.2"
   dependencies:
     commander: "npm:^13.1.0"
     nyc: "npm:^17.1.0"
@@ -24429,7 +24429,7 @@ __metadata:
       optional: true
   bin:
     rn-coverage: bin/rn-coverage.js
-  checksum: 10/f49cbf593981ce480ef83fcc0f9dbe00521b846dc2c1a8c59885e01719bea4243f8b5ef49c49dca40b1b1b0259577d03d58c84a9a2424fe17d601dbec5ae3b2c
+  checksum: 10/601fe3ff2eb1b0da25fb8ca3aac837e38994efc9d4e88d5a836b0f11bfe36d4e83e5004ec532c457bff0191720c7064c942305df001595903a8a0ac0939dd9d3
   languageName: node
   linkType: hard
 
@@ -24566,7 +24566,7 @@ __metadata:
     qrcode-generator: "npm:^2.0.4"
     react: "npm:19.3.0"
     react-native: "npm:0.88.0-rc.3"
-    react-native-coverage: "npm:0.2.0"
+    react-native-coverage: "npm:0.2.2"
     react-native-device-info: "npm:^15.0.2"
     should: "npm:^13.2.3"
     should-sinon: "npm:0.0.6"
