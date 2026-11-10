@@ -20,6 +20,7 @@ package io.invertase.firebase.appcheck;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.AppCheckProvider;
 import com.google.firebase.appcheck.AppCheckToken;
@@ -36,13 +37,42 @@ import java.util.concurrent.Executors;
 public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
   private static final String LOGTAG = "RNFBAppCheck";
 
-  AppCheckProvider delegateProvider;
+  static final String PROVIDER_NOT_READY_MESSAGE =
+      "App Check provider is not ready. Call initializeAppCheck before requesting tokens.";
+
+  static final class ProviderNotReadyException extends IllegalStateException {
+    ProviderNotReadyException() {
+      super(PROVIDER_NOT_READY_MESSAGE);
+    }
+  }
+
+  volatile AppCheckProvider delegateProvider;
 
   @NonNull
   @Override
   public Task<AppCheckToken> getToken() {
+    AppCheckProvider delegate = delegateProvider;
+    if (delegate == null) {
+      return providerNotReady("getToken");
+    }
     Log.d(LOGTAG, "Provider::getToken - delegating to native provider");
-    return delegateProvider.getToken();
+    return delegate.getToken();
+  }
+
+  @NonNull
+  @Override
+  public Task<AppCheckToken> getLimitedUseToken() {
+    AppCheckProvider delegate = delegateProvider;
+    if (delegate == null) {
+      return providerNotReady("getLimitedUseToken");
+    }
+    Log.d(LOGTAG, "Provider::getLimitedUseToken - delegating to native provider");
+    return delegate.getLimitedUseToken();
+  }
+
+  private static Task<AppCheckToken> providerNotReady(String method) {
+    Log.d(LOGTAG, "Provider::" + method + " - provider not ready (no delegate configured)");
+    return Tasks.forException(new ProviderNotReadyException());
   }
 
   public void configure(String appName, String providerName, String debugToken) {
@@ -55,39 +85,16 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
             + "/"
             + (debugToken != null ? "(not shown)" : "null"));
 
+    // Reset first so a failed reconfigure cannot leave the previous delegate serving tokens.
+    delegateProvider = null;
+
     try {
-      FirebaseApp app = FirebaseApp.getInstance(appName);
-
       if ("debug".equals(providerName)) {
-
-        // the debug configuration may have a token, or may not
-        if (debugToken != null) {
-          // To use this token, create debug provider using local secret provider + standard thread
-          // pool
-          ExecutorService executor = Executors.newCachedThreadPool();
-          delegateProvider =
-              new DebugAppCheckProvider(
-                  app,
-                  new Provider<InternalDebugSecretProvider>() {
-                    public InternalDebugSecretProvider get() {
-                      return new InternalDebugSecretProvider() {
-                        public String getDebugSecret() {
-                          return debugToken;
-                        }
-                      };
-                    }
-                  },
-                  executor,
-                  executor,
-                  executor);
-
-        } else {
-          delegateProvider = DebugAppCheckProviderFactory.getInstance().create(app);
-        }
+        delegateProvider = createDebugProvider(getFirebaseApp(appName), debugToken);
       }
 
       if ("playIntegrity".equals(providerName)) {
-        delegateProvider = PlayIntegrityAppCheckProviderFactory.getInstance().create(app);
+        delegateProvider = createPlayIntegrityProvider(getFirebaseApp(appName));
       }
 
       if (delegateProvider == null) {
@@ -102,5 +109,34 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
       // This will bubble up and result in a rejected promise with the underlying message
       throw new RuntimeException(e.getMessage());
     }
+  }
+
+  FirebaseApp getFirebaseApp(String appName) {
+    return FirebaseApp.getInstance(appName);
+  }
+
+  AppCheckProvider createDebugProvider(FirebaseApp app, String debugToken) {
+    if (debugToken == null) {
+      return DebugAppCheckProviderFactory.getInstance().create(app);
+    }
+    ExecutorService executor = Executors.newCachedThreadPool();
+    return new DebugAppCheckProvider(
+        app,
+        new Provider<InternalDebugSecretProvider>() {
+          public InternalDebugSecretProvider get() {
+            return new InternalDebugSecretProvider() {
+              public String getDebugSecret() {
+                return debugToken;
+              }
+            };
+          }
+        },
+        executor,
+        executor,
+        executor);
+  }
+
+  AppCheckProvider createPlayIntegrityProvider(FirebaseApp app) {
+    return PlayIntegrityAppCheckProviderFactory.getInstance().create(app);
   }
 }

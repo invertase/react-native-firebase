@@ -159,7 +159,16 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 ### Android Java format
 
 - There is **no** `yarn google-java-format` script. Invented `google-java-format` / `npx google-java-format` invocations are forbidden.
-- **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on `packages/*/android/src` and fails if the tree would change.
+- **Canonical:** `yarn lint:android` (repo root) — wraps `google-java-format --set-exit-if-changed --replace` on **Java** under `packages/*/android/src` and fails if the tree would change. Outside a git work tree (for example an rsync copy of the checkout) it skips the `git diff` step and relies on the formatter exit alone. It does **not** format Kotlin.
+- **Needs JDK 21+:** the bundled `google-java-format` 1.35.0 jar runs on whatever `java` is first on `PATH` (not Gradle's JDK). On JDK < 21 it fails many files, untouched ones included, with `NoClassDefFoundError: com/sun/tools/javac/tree/JCTree$JCAnyPattern`. This is a host JDK problem, not a formatting failure. Put a JDK 21 first on `PATH` for the same command, e.g. `J21="$(/usr/libexec/java_home -v 21 -F)" && PATH="$J21/bin:$PATH" yarn lint:android` (macOS; stops if no JDK 21 is found. Without `-F`, `java_home` returns another installed JDK instead of failing; a Homebrew `/opt/homebrew/opt/openjdk@21/bin` works as the `PATH` entry instead).
+
+<a id="android-kotlin-format"></a>
+
+### Android Kotlin format
+
+- **Canonical:** repo-root `./gradlew ktlintFormat` (the root wrapper forwards into `tests/android`). Do **not** invent a yarn wrapper, a `ktlint` CLI, or `cd tests/android && ./gradlew …`.
+- Pass `-PinternalKtlintGitFilter=` with newline-separated **repo-root-relative** paths (`packages/<pkg>/android/**/*.kt`; `tests/android/**/*.kt` when those files are in the diff). The root wrapper remaps that property; do not pass `-PrnfbKtlintGitFilter` to **root** `./gradlew`. Omit or empty filter → **no** `.kt` files formatted.
+- Other Gradle tasks stay yarn-only (`tests:android:unit` / `:build` / Jacoco rows). `ktlintFormat` is the Gradle exception, not a license to invent Gradle.
 
 ### Android build / unit / Jacoco
 
