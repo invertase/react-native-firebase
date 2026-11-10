@@ -12,10 +12,11 @@
 # Default (no args, no slot env) = serial ports/devices only. --all-slots is the only
 # leftover-slot wipe. Slot via env or --slot=N (re-applies slot N's env, as release
 # does). BUSY lines carry owner=this-checkout (recorded; release frees it),
-# owner=this-checkout-unrecorded (runs from this repo but unrecorded; the exact
-# --include-unrecorded command is printed) or owner=unrecorded
-# (another owner; never killed — a free slot is suggested). iOS: only the identity's
-# exact simulator counts; other booted simulators are INFO.
+# owner=this-checkout-unrecorded (runs from this repo but unrecorded — including a
+# Detox/harness cold-boot qemu on the identity AVD, which default release --devices
+# stops; other categories print the exact --include-unrecorded command) or
+# owner=unrecorded (another owner; never killed — a free slot is suggested). iOS: only
+# the identity's exact simulator counts; other booted simulators are INFO.
 #
 # Exit 0 = all clear; exit 1 = something busy.
 #
@@ -254,7 +255,9 @@ if platform_active android; then
     done < <(e2e_adb_stray_emulator_serials)
   fi
   # An emulator on the identity's AVD at an allocated serial (strays are reported above)
-  # that no run recorded: release --devices leaves it running, so say so.
+  # that no run recorded: still contention when it traces to this checkout (Detox/harness
+  # cold-boot respawn). Default release --devices stops it; BUSY so a soft-kill miss cannot
+  # report CLEAR while TestingAVD-N / the slot serial stays up.
   identity_avds=" $(e2e_android_avd_names_for_release | tr '\n' ' ') "
   recorded_qemu=" $(e2e_run_record_live_devices android | cut -f5 | tr '\n' ' ') "
   while IFS=$'\t' read -r qpid qport qavd; do
@@ -265,7 +268,8 @@ if platform_active android; then
     qowner="$(e2e_pid_owner "$qpid")"
     qdetail="android emulator ${qport:+emulator-${qport} }avd=${qavd} qemu pid=${qpid} cwd=$(e2e_pid_cwd "$qpid") owner=${qowner}"
     if [[ "$qowner" == this-checkout-unrecorded ]]; then
-      report INFO "${qdetail} — no run recorded it, so release --devices leaves it running; stop it, or (manual) yarn tests:e2e:release --include-unrecorded --devices --only android-emulator${E2E_SLOT_OVERRIDE:+ --slot=${E2E_SLOT_OVERRIDE}}"
+      report BUSY "${qdetail} — no run recorded it (e.g. cold-boot respawn); free with yarn tests:e2e:release --devices${E2E_SLOT_OVERRIDE:+ --slot=${E2E_SLOT_OVERRIDE}}"
+      note_owner "$qowner" android-emulator
     elif [[ "$qowner" == unrecorded && -n "$qport" && "$qport" == "${E2E_ANDROID_SERIAL#emulator-}" ]]; then
       # Another owner's emulator holds this identity's serial: this run's Detox would
       # attach to it, so it is contention. Never killed; the closing hint names a free slot.

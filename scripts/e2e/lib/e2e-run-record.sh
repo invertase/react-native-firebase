@@ -210,9 +210,10 @@ e2e_qemu_instances() {
 }
 
 # this-checkout (recorded live instance, or a descendant of a recorded pid),
-# this-checkout-unrecorded (its qemu runs with cwd in this repo — e.g. booted before the
-# run record existed), or unrecorded. A real simulator's launchd_sim is a child of
-# launchd with cwd /, so in practice an unrecorded simulator is unrecorded.
+# this-checkout-unrecorded (its qemu runs with cwd in this checkout's git toplevel —
+# e.g. booted before the run record existed), or unrecorded. A nested worktree under
+# this path is unrecorded. A real simulator's launchd_sim is a child of launchd with
+# cwd /, so in practice an unrecorded simulator is unrecorded.
 # Call e2e_run_record_load first.
 e2e_device_owner() {
   local kind=$1 id=$2 pid
@@ -266,9 +267,20 @@ e2e_pid_owned() {
   return 1
 }
 
-# this-checkout (recorded; release frees it), this-checkout-unrecorded (cwd inside this
-# repo but not recorded — e.g. started before the run record existed, or outside
-# yarn tests:*), or unrecorded (another owner).
+# True when cwd is under this checkout and its git toplevel is this checkout — not a
+# nested worktree (e.g. under .claude/) whose path sits under the parent root.
+e2e_cwd_in_this_checkout() {
+  local cwd=$1 top
+  [[ -n "$cwd" ]] || return 1
+  [[ "$cwd" == "$_E2E_RUN_RECORD_REPO_ROOT" || "$cwd" == "$_E2E_RUN_RECORD_REPO_ROOT"/* ]] || return 1
+  top="$(git -C "$cwd" rev-parse --show-toplevel 2>/dev/null || true)"
+  [[ -n "$top" ]] || return 1
+  [[ "$(cd "$top" && pwd -P)" == "$(cd "$_E2E_RUN_RECORD_REPO_ROOT" && pwd -P)" ]]
+}
+
+# this-checkout (recorded; release frees it), this-checkout-unrecorded (cwd in this
+# checkout's git toplevel but not recorded — e.g. started before the run record existed,
+# or outside yarn tests:*), or unrecorded (another owner, including a nested worktree).
 e2e_pid_owner() {
   local pid=$1 cwd
   if e2e_pid_owned "$pid"; then
@@ -276,7 +288,7 @@ e2e_pid_owner() {
     return 0
   fi
   cwd="$(e2e_pid_cwd "$pid")"
-  if [[ -n "$cwd" && ("$cwd" == "$_E2E_RUN_RECORD_REPO_ROOT" || "$cwd" == "$_E2E_RUN_RECORD_REPO_ROOT"/*) ]]; then
+  if e2e_cwd_in_this_checkout "$cwd"; then
     echo this-checkout-unrecorded
   else
     echo unrecorded
