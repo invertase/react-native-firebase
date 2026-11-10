@@ -117,7 +117,6 @@ describe('serial iOS simulator runtime pin', () => {
       id: '24E299B4-C77B-4426-AC2B-71243825F07C',
       type: 'iPhone 17',
       name: 'iPhone 17',
-      os: 'iOS 27.0',
     });
   });
 
@@ -135,7 +134,7 @@ describe('serial iOS simulator runtime pin', () => {
     expect(detox.devices.simulator.device).toEqual({ type: 'iPhone 17', name: 'iPhone 17' });
   });
 
-  it('Detox passes the UDID and runtime to applesimutils as --byId and --byOS', async () => {
+  it('Detox passes the UDID to applesimutils as --byId without a --byOS filter', async () => {
     const detox = loadDetoxrc('iOS 27.0', 'ios-27-0-udid');
     const SimulatorAllocDriver = require(
       join(
@@ -167,8 +166,8 @@ describe('serial iOS simulator runtime pin', () => {
       byId: 'ios-27-0-udid',
       byName: 'iPhone 17',
       byType: 'iPhone 17',
-      byOS: 'iOS 27.0',
     });
+    expect(applesimutils.list.mock.calls[0][0].byOS).toBeUndefined();
   });
 });
 
