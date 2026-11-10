@@ -762,7 +762,7 @@ describe('Firestore pipelines runtime', function () {
 
   it('serializes FieldPath and Timestamp arguments in pipeline stages', function () {
     const db: any = getFirestore();
-    const timestamp = new Timestamp(12, 34);
+    const timestamp = new Timestamp(12, 34000);
     const fieldPath = new FieldPath('meta', 'createdAt');
 
     const serialized = db
@@ -781,8 +781,9 @@ describe('Firestore pipelines runtime', function () {
     expect(serialized.stages[0]?.options?.condition?.args?.[1]).toMatchObject({
       exprType: 'Constant',
       value: {
+        __kind: 'timestamp',
         seconds: 12,
-        nanoseconds: 34,
+        nanoseconds: 34000,
       },
     });
     expect(serialized.stages[1]?.options?.orderings?.[0]?.expr).toMatchObject({
@@ -797,8 +798,9 @@ describe('Firestore pipelines runtime', function () {
     expect(serialized.stages[3]?.options?.selections?.[0]?.expr?.args?.[1]).toMatchObject({
       exprType: 'Constant',
       value: {
+        __kind: 'timestamp',
         seconds: 12,
-        nanoseconds: 34,
+        nanoseconds: 34000,
       },
     });
   });

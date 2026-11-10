@@ -103,14 +103,22 @@ While pending, token completions must use an **actionable** error that mentions 
 
 | Layer | Value |
 | ----- | ----- |
-| Provider `NSError` domain | `RNFBErrorDomain` (same as `RNFBSharedUtils`) |
-| Provider `NSError` code | `666` (RNFB promise-error convention) |
-| `userInfo[@"code"]` | `provider-not-ready` |
+| Provider `NSError` domain (iOS) | `RNFBErrorDomain` (same as `RNFBSharedUtils`) |
+| Provider `NSError` code (iOS) | `666` (RNFB promise-error convention) |
+| Provider exception (Android) | `ProviderNotReadyException`, same message |
+| `userInfo[@"code"]` (iOS) | `provider-not-ready` |
 | Message | `App Check provider is not ready. Call initializeAppCheck before requesting tokens.` |
 | JS / TurboModule reject `code` | `provider-not-ready` |
 | Full `NativeFirebaseError` | `appCheck/provider-not-ready` |
 
-Map pending in `RNFBAppCheckModule` (`getToken` / `getLimitedUseToken`) so provider errors do not collapse to generic `token-error`. Detect via `userInfo[@"code"] == provider-not-ready` or nil `delegateProvider` before calling the SDK.
+Map pending in the token entry points (`getToken` / `getLimitedUseToken`) on both platforms so provider errors do not collapse to generic `token-error`:
+
+- **Pre-check (before the SDK):** reject `provider-not-ready` when the app has no RNFB provider or its delegate is null. iOS: `RNFBAppCheckRejectIfProviderNotReady` (`RNFBAppCheckHelper.m`). Android: `rejectIfProviderNotReady` in `NativeRNFBTurboAppCheck`, via `ReactNativeFirebaseAppCheckProviderFactory.isProviderReady`.
+- **Completion mapping (reconfigure fails after the check passes):** iOS matches `userInfo[@"code"] == provider-not-ready` along the error chain (`RNFBAppCheckRejectCodeMapper`). Android walks the cause chain for `ProviderNotReadyException` (`tokenErrorCode` / `tokenErrorMessage`).
+
+An app that installs its own native provider factory without calling `initializeAppCheck` gets `provider-not-ready` on both platforms.
+
+Platform difference: the Android `providerFactory` belongs to one `NativeRNFBTurboAppCheck` instance, while iOS uses the process-wide `RNFBAppCheckSharedProviderFactory()`. After a JS reload or module invalidation, Android rejects `provider-not-ready` until `initializeAppCheck` runs again; apps normally re-run it on reload.
 
 **Rejected:** Reusing `FIRAppCheckErrorCodeInvalidConfiguration` (or other `FIRAppCheckErrorDomain` codes) for pending — those mean SDK invalid-config / network / keychain, not “JS has not configured yet,” and would still surface as today’s generic `token-error` path without an explicit module map.
 
