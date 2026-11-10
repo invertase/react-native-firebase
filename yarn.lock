@@ -3014,6 +3014,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/env@npm:~2.5.4":
+  version: 2.5.4
+  resolution: "@expo/env@npm:2.5.4"
+  dependencies:
+    chalk: "npm:^4.0.0"
+    debug: "npm:^4.3.4"
+    getenv: "npm:^2.0.0"
+  checksum: 10/78799754728307ac0933a217c2e8b53693ba189bd0f1551ae5c2ad6c62bfd27d074b925b6d339259a12c2b12bbec19bef58f23863aa3f8f23177de47a1e380f3
+  languageName: node
+  linkType: hard
+
 "@expo/fingerprint@npm:0.16.6":
   version: 0.16.6
   resolution: "@expo/fingerprint@npm:0.16.6"
@@ -3477,6 +3488,22 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/4d76a77336619f4f670722387c61faf61d57b19d82f6c4bff366a4938f85dd192ee9c7038700e5adeb9f5e79a4117dc7da1c9aa1d959d3179f7cbb4a933e09fa
+  languageName: node
+  linkType: hard
+
+"@expo/require-utils@npm:^58.0.5":
+  version: 58.0.5
+  resolution: "@expo/require-utils@npm:58.0.5"
+  dependencies:
+    "@babel/code-frame": "npm:^7.20.0"
+    "@babel/core": "npm:^7.25.2"
+    "@babel/plugin-transform-modules-commonjs": "npm:^7.24.8"
+  peerDependencies:
+    typescript: ^5.0.0 || ^5.0.0-0 || ^6.0.0 || ^7.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/e7f7ee8c29e03078540fd54f64c54c737387891a0fe15e6eff1ee12bd05e21753a65cea74dfc9d1a0abe084d6b2492a62987058b0b0064c1d323ba8e8c9cb478
   languageName: node
   linkType: hard
 
@@ -13955,6 +13982,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-constants@npm:~58.0.15":
+  version: 58.0.15
+  resolution: "expo-constants@npm:58.0.15"
+  dependencies:
+    "@expo/env": "npm:~2.5.4"
+    "@expo/require-utils": "npm:^58.0.5"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10/24d263e1df4c90e28c0b110fd90d54e26884daf56e26df8edf1e9293b231ea99d81f5c2684a182e017676fa426fbf1b6045a35f206a37760d584af390d742643
+  languageName: node
+  linkType: hard
+
 "expo-constants@npm:~58.0.9":
   version: 58.0.9
   resolution: "expo-constants@npm:58.0.9"
@@ -14101,16 +14141,16 @@ __metadata:
   linkType: hard
 
 "expo-linking@npm:~58.0.9":
-  version: 58.0.9
-  resolution: "expo-linking@npm:58.0.9"
+  version: 58.0.16
+  resolution: "expo-linking@npm:58.0.16"
   dependencies:
-    expo-constants: "npm:~58.0.9"
+    expo-constants: "npm:~58.0.15"
     invariant: "npm:^2.2.4"
   peerDependencies:
     expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 10/e0fc75d292b679f430843ff73c2fea99daa735a991a95ab03bb7488639fddce8d81d55e4533ad052bd54a4dd19eabb0a73d22596062a6df9f1e4eac1011cd7f5
+  checksum: 10/95a4a862c51f161d3fc15483926f072554ea5ac4d95bd56d51bc148e96ac30bb8e7691a0e0f2d5add4d94f8fdc88e99fd0decf89ec018ea3230925109a94e3a6
   languageName: node
   linkType: hard
 
