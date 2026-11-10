@@ -69,10 +69,13 @@ suffix="${suffix:-app}"
 
 FIXTURE_DIR="${REPO_ROOT}/test-expo/.fixtures/${suffix}"
 REPO_TAG="$(repo_path_tag "$REPO_ROOT")"
-DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_FIXTURE_DERIVED_DATA-/tmp/test-expo-fixture-derived-data-${REPO_TAG}-${suffix}}" "$REPO_ROOT")" || exit 2
-SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-/tmp/test-expo-spm-packages-${REPO_TAG}}"
-PREBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_PREBUILD_LOG:-/tmp/test-expo-fixture-${REPO_TAG}-${suffix}-prebuild.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_XCODEBUILD_LOG:-/tmp/test-expo-fixture-${REPO_TAG}-${suffix}-xcodebuild.log}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_FIXTURE_DERIVED_DATA-${TMP_ROOT}/test-expo-fixture-derived-data-${REPO_TAG}-${suffix}}" "$REPO_ROOT")" || exit 2
+SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-${TMP_ROOT}/test-expo-spm-packages-${REPO_TAG}}"
+PREBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_PREBUILD_LOG:-${TMP_ROOT}/test-expo-fixture-${REPO_TAG}-${suffix}-prebuild.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_FIXTURE_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-fixture-${REPO_TAG}-${suffix}-xcodebuild.log}"
 SCHEME="rnfbfixture"
 
 rm -rf "$FIXTURE_DIR"

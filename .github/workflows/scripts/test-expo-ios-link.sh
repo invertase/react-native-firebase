@@ -27,10 +27,13 @@ REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 # shellcheck source=lib/derived-data-path.sh
 source "${REPO_ROOT}/.github/workflows/scripts/lib/derived-data-path.sh"
 REPO_TAG="$(repo_path_tag "$REPO_ROOT")"
-DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_DERIVED_DATA-/tmp/test-expo-derived-data-${REPO_TAG}}" "$REPO_ROOT")" || exit 2
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_DERIVED_DATA-${TMP_ROOT}/test-expo-derived-data-${REPO_TAG}}" "$REPO_ROOT")" || exit 2
 # Shared with test-expo-ios-launch-smoke.sh so its Debug build reuses these
 # Swift package checkouts; never wiped with DerivedData.
-SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-/tmp/test-expo-spm-packages-${REPO_TAG}}"
+SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-${TMP_ROOT}/test-expo-spm-packages-${REPO_TAG}}"
 
 cd "${REPO_ROOT}/test-expo"
 
@@ -38,8 +41,8 @@ log() {
   echo "[test-expo-ios-link] $*"
 }
 
-PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-/tmp/test-expo-${REPO_TAG}-prebuild.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-/tmp/test-expo-${REPO_TAG}-xcodebuild.log}"
+PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-${TMP_ROOT}/test-expo-${REPO_TAG}-prebuild.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-${REPO_TAG}-xcodebuild.log}"
 PBXPROJ="ios/testexpo.xcodeproj/project.pbxproj"
 PODS_PBXPROJ="ios/Pods/Pods.xcodeproj/project.pbxproj"
 PODS_XCCONFIG="ios/Pods/Target Support Files/Pods-testexpo/Pods-testexpo.release.xcconfig"

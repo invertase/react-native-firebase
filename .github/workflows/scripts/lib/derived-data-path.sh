@@ -7,7 +7,8 @@
 # and it must not be /, $HOME, the repo root, or an ancestor of either.
 #
 # repo_path_tag <repo-root> prints the first 8 hex characters of the SHA-1 of
-# the physical repo root path, so /tmp defaults differ between worktrees.
+# the physical repo root path, so ${TMPDIR:-/tmp} defaults differ between
+# worktrees.
 
 repo_path_tag() {
   (cd "$1" && pwd -P) | tr -d '\n' | shasum | cut -c1-8
