@@ -294,9 +294,12 @@ instead of duplicating it per pod. This is scoped to `GoogleUtilities`
 products specifically; it does **not** change or fix the `FirebaseCore`/
 `FIRApp` sharing limitation described above, which stays unsupported under
 SPM regardless of how explicitly any product is declared. Add this
-declaration only to podspecs actually shown to privately duplicate a watched
-class by `yarn test-expo:ios:link`'s `#9322` diagnosis, not pre-emptively to
-every RNFB podspec.
+declaration only to podspecs actually shown to privately duplicate a class
+by `yarn test-expo:ios:link`'s duplicate Objective-C class check, not
+pre-emptively to every RNFB podspec. The check lives in
+`.github/workflows/scripts/check-duplicate-objc-classes.sh`; its fail paths are
+covered by `packages/app/__tests__/checkDuplicateObjcClasses.test.js` (stub
+`dyld_info`, fake `.app`).
 
 ## App target FirebaseCore link: package dependency alone is not enough
 
