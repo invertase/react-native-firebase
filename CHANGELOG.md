@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [26.4.2](https://github.com/invertase/react-native-firebase/compare/v26.4.1...v26.4.2) (2026-11-10)
+
+### Bug Fixes
+
+- **app-check:** report provider setup failures and align Android provider readiness with iOS ([#9405](https://github.com/invertase/react-native-firebase/issues/9405)) ([0c56276](https://github.com/invertase/react-native-firebase/commit/0c56276075b2af3d452fe817c68e6bc1efcd81e9))
+- **app-distribution, android:** bump Firebase App Distribution Gradle plugin to 5.3.1 ([13a5f90](https://github.com/invertase/react-native-firebase/commit/13a5f908dbefd24ffd3b42e58b25ed5553d5fc08))
+
 ## [26.4.1](https://github.com/invertase/react-native-firebase/compare/v26.4.0...v26.4.1) (2026-10-23)
 
 ### Bug Fixes
