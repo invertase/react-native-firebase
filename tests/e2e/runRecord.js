@@ -77,10 +77,16 @@ function processArgs(pid) {
 }
 
 function processCwd(pid) {
-  const line = run('lsof', ['-a', '-p', String(pid), '-d', 'cwd', '-Fn'])
-    .split('\n')
-    .find(l => l.startsWith('n'));
-  return line ? line.slice(1) : '';
+  // lsof is flaky under host contention (yarn test:full); retry before treating as unknown.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const line = run('lsof', ['-a', '-p', String(pid), '-d', 'cwd', '-Fn'])
+      .split('\n')
+      .find(l => l.startsWith('n'));
+    if (line) {
+      return line.slice(1);
+    }
+  }
+  return '';
 }
 
 /** Elapsed seconds since the process started (ps etime: [[dd-]hh:]mm:ss), or NaN. */
@@ -119,11 +125,20 @@ function recordPid(pid, label, env = process.env) {
 }
 
 function listProcesses() {
-  return run('ps', ['-axo', 'pid=,args='])
-    .split('\n')
-    .map(line => line.trim().match(/^(\d+)\s+(.*)$/))
-    .filter(Boolean)
-    .map(([, pid, args]) => ({ pid: Number(pid), args }));
+  // Host test stubs may filter every ps line in-process; under load that can exceed the
+  // default 10s exec budget and look like an empty process table. Retry (keep 10s each).
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const out = run('ps', ['-axo', 'pid=,args=']);
+    if (!out.trim()) {
+      continue;
+    }
+    return out
+      .split('\n')
+      .map(line => line.trim().match(/^(\d+)\s+(.*)$/))
+      .filter(Boolean)
+      .map(([, pid, args]) => ({ pid: Number(pid), args }));
+  }
+  return [];
 }
 
 function consoleSerialFromQemuArgs(args) {
