@@ -24290,9 +24290,9 @@ __metadata:
   linkType: hard
 
 "re2js@npm:^2.8.3":
-  version: 2.8.6
-  resolution: "re2js@npm:2.8.6"
-  checksum: 10/ec15087805a41e2701821dd98cd0e5b0ddc48acb615b113cef00ad69e564c2e72b05a18a06f3b642ada69f1fb58aebde2b1c0b61f116f6ca768f8dd03d74e71d
+  version: 2.9.1
+  resolution: "re2js@npm:2.9.1"
+  checksum: 10/52ddfc92187544bf4e13899cca4704d7ebdcdf803a66b45cba93df0d02bd50e109a87fa3deb6f1e7d8fb30a8ac8b665f647eed7e7d4cd40b434c66ffc7ffb5a1
   languageName: node
   linkType: hard
 
