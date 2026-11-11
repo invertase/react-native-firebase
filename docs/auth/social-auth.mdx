@@ -169,14 +169,25 @@ function FacebookSignIn() {
 
 ### Facebook Limited Login (iOS only)
 
+Limited Login needs a new, unpredictable nonce for every login attempt. A fixed or reused nonce lets a captured token be replayed. Hermes has no built-in secure random source, so the sample uses [`react-native-get-random-values`](https://github.com/LinusU/react-native-get-random-values) to provide `crypto.getRandomValues`. Import it once, before any code that generates a nonce (for example at the top of your app entry file).
+
 ```js
-// codeblock-ignore: react-native-fbsdk-next and react-native-sha256 are third-party packages; install them in your app
+// codeblock-ignore: react-native-fbsdk-next, react-native-sha256 and react-native-get-random-values are third-party packages; install them in your app
+// Load the polyfill before anything calls crypto.getRandomValues. Your app entry file is the safest place.
+import 'react-native-get-random-values';
 import { FacebookAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { LoginManager, AuthenticationToken } from 'react-native-fbsdk-next';
 import { sha256 } from 'react-native-sha256';
 
+// Generate a new nonce for every login attempt. Never hardcode or reuse it.
+function generateNonce(byteLength = 32) {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 async function onFacebookLimitedLoginButtonPress() {
-  const nonce = '123456';
+  const nonce = generateNonce();
   const nonceSha256 = await sha256(nonce);
   const result = await LoginManager.logInWithPermissions(
     ['public_profile', 'email'],

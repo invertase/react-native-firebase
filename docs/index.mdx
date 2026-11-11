@@ -29,7 +29,7 @@ Before installing, confirm these version pins. You also need a React Native or E
 | Requirement | Version |
 | --- | --- |
 | React Native | New Architecture enabled. `@react-native-firebase/app` declares the peer range `>=0.60.0-0` (not a tested floor). Tested on `0.88.0-rc.3` (Expo `58.0.0`) |
-| Expo (when using Expo) | `>= 47.0.0` |
+| Expo (when using Expo) | `@react-native-firebase/app` declares the optional peer range `>=47.0.0` (not a tested floor). Tested on Expo `58.0.0` (React Native `0.88.0-rc.3`) |
 | Xcode (iOS builds) | `>= 26.2` |
 | Firebase Apple SDK | `13.1.1` (default pin) |
 | Firebase Android SDK | `35.0.2` (default pin, Firebase Android BoM) |
@@ -45,7 +45,7 @@ Integration with Expo is possible when using a [development build](https://docs.
 
 _NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/workflow/overview/#expo-go-an-optional-tool-for-learning) because React Native Firebase uses native code that is not compiled into Expo Go.
 
-> **Warning:** If you are using `expo-dev-client`, native crashes (such as those triggered by `crash(getCrashlytics())`) will **not** be reported to Firebase Crashlytics during development. This is because `expo-dev-client` provides a custom error overlay that catches and displays errors before they are sent to Firebase. To test native crash reporting, you must remove `expo-dev-client` and run your app in a standard release or debug build without the custom error overlay.
+> **Warning:** A forced native crash (such as `crash(getCrashlytics())`) from an `expo-dev-client` development build usually does not reach Firebase Crashlytics. Crashlytics collection is off in debug builds unless you set `crashlytics_debug_enabled` (see [Enable debug crash logs](/crashlytics/usage#enable-debug-crash-logs)), and on iOS an attached debugger stops the crash before Crashlytics records it (see the [FAQ](/faqs-and-tips)). You do not need to remove `expo-dev-client`. To test crash reporting, build a release variant (for example `npx expo run:ios --configuration Release` or `npx expo run:android --variant release`), trigger the crash, then relaunch the app so Crashlytics can send the report.
 
 To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
@@ -193,9 +193,9 @@ local projects package name which can be found inside of the `namespace` field i
 `manifest` tag within the `/android/app/src/main/AndroidManifest.xml` file within your project for projects using android gradle plugin v7 and below
 
 > The debug signing certificate is optional to use Firebase with your app, but is required for Phone Authentication.
-> To generate a certificate run `cd android && ./gradlew signingReport`. This generates two variant keys.
-> You have to copy **both** 'SHA1' and 'SHA-256' keys that belong to the 'debugAndroidTest' variant key option.
-> Then, you can add those keys to the 'SHA certificate fingerprints' on your app in Firebase console.
+> To list your signing certificates run `cd android && ./gradlew signingReport`. It prints one entry per build variant.
+> Copy **both** the 'SHA1' and 'SHA-256' values from the 'debug' variant and add them to the 'SHA certificate fingerprints' on your app in the Firebase console.
+> For release builds, also add the SHA-1 and SHA-256 of your release key, or of the Google Play App Signing key if Google Play signs your app.
 
 Download the `google-services.json` file and place it inside of your project at the following location: `/android/app/google-services.json`.
 
@@ -248,27 +248,20 @@ To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be co
 Open `/ios/{projectName}/AppDelegate.swift`. Add `import Firebase` with your other imports (for example after `import ReactAppDependencyProvider`), then call `FirebaseApp.configure()` at the start of `application(_:didFinishLaunchingWithOptions:)` **before** the rest of your startup code:
 
 ```swift
-// File: ios/{projectName}/AppDelegate.swift (React Native 0.77+).
-// 1) Add `import Firebase` with your other imports, at file scope above the class.
-// 2) Call FirebaseApp.configure() as the first statement of application(_:didFinishLaunchingWithOptions:) inside your existing AppDelegate class.
-// The class declaration below is an example; your template's superclass, attributes, and other members may differ. Keep your own.
-import UIKit
+// File: ios/{projectName}/AppDelegate.swift (React Native 0.77+). Insertion fragment, not a complete file.
+// 1) Add this import with your other imports (for example after `import ReactAppDependencyProvider`):
 import Firebase
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-  func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
-    FirebaseApp.configure()
-    // Keep your existing React Native / app startup code below this line.
-    return true
-  }
+// 2) In your EXISTING application(_:didFinishLaunchingWithOptions:) method, add FirebaseApp.configure()
+//    as the first line. Keep your template's signature (some templates declare it `override`).
+// Inside your existing AppDelegate class:
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+  FirebaseApp.configure() // <- add this line
+  // ... the rest of your existing method, unchanged: React Native startup code and the existing return ...
 }
 ```
 
-Merge the `FirebaseApp.configure()` call into your existing `application(_:didFinishLaunchingWithOptions:)` method rather than replacing the whole class or method if your `AppDelegate` already performs additional setup.
+Only add those two lines. Do not replace your `AppDelegate` class or the `application(_:didFinishLaunchingWithOptions:)` method: the template code in that method starts React Native.
 
 #### Configure Firebase with iOS credentials (react-native < 0.77)
 
@@ -277,20 +270,19 @@ To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be co
 Open `/ios/{projectName}/AppDelegate.mm` (or `AppDelegate.m` on older React Native). Add `#import <Firebase.h>` after `#import "AppDelegate.h"`, then call `[FIRApp configure]` at the start of `application:didFinishLaunchingWithOptions:` **before** the rest of your startup code:
 
 ```objectivec
-// File: ios/{projectName}/AppDelegate.mm (or AppDelegate.m) for React Native < 0.77.
-// 1) Add #import <Firebase.h> after #import "AppDelegate.h".
-// 2) Call [FIRApp configure] at the top of didFinishLaunchingWithOptions before other startup work.
-#import "AppDelegate.h"
+// File: ios/{projectName}/AppDelegate.mm (or AppDelegate.m) for React Native < 0.77. Insertion fragment, not a complete file.
+// 1) Add this import right after #import "AppDelegate.h":
 #import <Firebase.h>
 
+// 2) In your EXISTING didFinishLaunchingWithOptions method, add [FIRApp configure] as the first line.
+// Inside your existing @implementation AppDelegate:
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  [FIRApp configure];
-  // Keep your existing React Native / app startup code below this line.
-  return YES;
+  [FIRApp configure]; // <- add this line
+  // ... the rest of your existing method, unchanged: React Native startup code and the existing return ...
 }
 ```
 
-Merge the `[FIRApp configure]` call into your existing method rather than replacing the whole method if your `AppDelegate` already performs additional setup.
+Only add those two lines. Do not replace your `AppDelegate` or the `didFinishLaunchingWithOptions` method: the template code in that method starts React Native.
 
 #### Dynamic frameworks in the Podfile (required)
 

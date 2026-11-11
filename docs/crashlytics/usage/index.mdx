@@ -140,7 +140,7 @@ export default function App() {
           })
         }
       />
-      {/* WARNING: crash() forces a native crash when collection is enabled and does nothing when it is disabled. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
+      {/* WARNING: crash() forces a native crash when collection is enabled and does nothing when it is disabled. Debug builds do not send reports unless crashlytics_debug_enabled is set, and an attached debugger stops the crash first, so test with a release build. */}
       <Button title="Test Crash" onPress={() => crash(getCrashlytics())} />
     </View>
   );
@@ -228,7 +228,7 @@ export default function App() {
   return (
     <View>
       <Button title="Toggle Crashlytics" onPress={toggleCrashlytics} />
-      {/* WARNING: crash() forces a native crash when collection is enabled and does nothing when it is disabled. In expo-dev-client the custom error overlay may catch it so Firebase never receives the report. */}
+      {/* WARNING: crash() forces a native crash when collection is enabled and does nothing when it is disabled. Debug builds do not send reports unless crashlytics_debug_enabled is set, and an attached debugger stops the crash first, so test with a release build. */}
       <Button title="Crash" onPress={() => crash(getCrashlytics())} />
       <Text>Crashlytics collection is {enabled ? 'enabled' : 'disabled'}</Text>
     </View>

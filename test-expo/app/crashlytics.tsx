@@ -65,9 +65,9 @@ export default function CrashlyticsScreen() {
         setAttributes and recordError, and crash does nothing.
       </Text>
       <Text style={styles.hint}>
-        expo-dev-client custom error overlay catches native crashes such as those from
-        crash(getCrashlytics()) during development, so they are not reported to Firebase
-        Crashlytics. Testing native crash reporting requires a build without that overlay.
+        On iOS an attached debugger stops native crashes such as crash(getCrashlytics()) before
+        Crashlytics records them. To test native crash reporting, run a release build without a
+        debugger, trigger the crash, then relaunch the app so the report is sent.
       </Text>
 
       <Text style={styles.section}>Instance</Text>
@@ -142,8 +142,8 @@ export default function CrashlyticsScreen() {
       />
       <Text style={styles.warning}>
         WARNING: crash() terminates the app when collection is enabled and does nothing when it is
-        disabled. In expo-dev-client the custom error overlay may catch it so Firebase never
-        receives the report.
+        disabled. In a debug build or with a debugger attached, Firebase may never receive the
+        report.
       </Text>
       <AppButton
         title="crash (can throw / kill process)"
