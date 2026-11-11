@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **app-check:** report provider setup failures and align Android provider readiness with iOS ([#9405](https://github.com/invertase/react-native-firebase/issues/9405)) ([431338d](https://github.com/invertase/react-native-firebase/commit/431338d701bde7e8283e14eebe60208c6d47332c))
+- **app-distribution, android:** bump Firebase App Distribution Gradle plugin to 5.3.1 ([e43eaef](https://github.com/invertase/react-native-firebase/commit/e43eaefc3cb4402262321f757b78e7269c93ce0e))
+- **app, ios:** remove the simulator-slice signature files in the SPM archive workaround ([#9423](https://github.com/invertase/react-native-firebase/issues/9423)) ([7c83af7](https://github.com/invertase/react-native-firebase/commit/7c83af75a7afef5c6e44c31e3ff585c61195cd68))
+- **crashlytics, ios:** name the dSYM input after the executable ([#9411](https://github.com/invertase/react-native-firebase/issues/9411)) ([cac23b8](https://github.com/invertase/react-native-firebase/commit/cac23b8720e5c66bc7cfc5ed8c2a19320ca70866))
+- **e2e:** bound the drain's terminateApp and keep a drained attempt off the next device ([bcde2f4](https://github.com/invertase/react-native-firebase/commit/bcde2f45db097de5a38fe511038638f3a66252f2))
+- **e2e:** do not kill a stalled Jet again as a launch retry ([8630dd1](https://github.com/invertase/react-native-firebase/commit/8630dd15784000b596c237d751d474e4d5533f19))
+- **e2e:** fail fast when another user's process holds the Jet port ([14a1810](https://github.com/invertase/react-native-firebase/commit/14a1810d9ff411aa2daf43033dca49b0a56272f4))
+- **e2e:** join the drain's capped terminateApp before the next attempt ([c9ef2e7](https://github.com/invertase/react-native-firebase/commit/c9ef2e7f1b4a7bd8edb410e80fbbc9af302ba01f))
+- **e2e:** keep a late Jet attempt from killing the next attempt's Jet ([164ea54](https://github.com/invertase/react-native-firebase/commit/164ea54fb3ec2b0a0af7c85e9b23265a989516ef))
+- **e2e:** keep script logs and scratch files under TMPDIR ([dfecc19](https://github.com/invertase/react-native-firebase/commit/dfecc192ce19e3af6e49fb1104b6ccd51a220169))
+- **e2e:** re-apply the selected slot's env for check and release --slot=N ([78e93ec](https://github.com/invertase/react-native-firebase/commit/78e93ec10772a1cb50493d622776547896aca9f0))
+- **e2e:** record every harness reboot and cold-boot only this run's emulator ([67ea61d](https://github.com/invertase/react-native-firebase/commit/67ea61dbd40e6932a18c48bdc695d2411f1a293d))
+- **e2e:** record the macOS Jet process so the default release frees it ([f8e0561](https://github.com/invertase/react-native-firebase/commit/f8e0561c8b0f0afa53d3980e58677741de4631c8))
+- **e2e:** release only resources a run recorded; machine wipe is manual-only ([ea8f86d](https://github.com/invertase/react-native-firebase/commit/ea8f86d6e741d69c6a0393106b749360e1a154d5))
+- **e2e:** stop the Jet a failed attempt is still running before the outer retry ([505e1f4](https://github.com/invertase/react-native-firebase/commit/505e1f4831e0fd3b60b163737612f027780b9102))
+- **firestore, pipelines:** send Timestamp and Date constants as timestamps ([#9416](https://github.com/invertase/react-native-firebase/issues/9416)) ([f53c07f](https://github.com/invertase/react-native-firebase/commit/f53c07f7c5a0ca388837b9a383fa699acd7cec29))
+- **lint:** skip the android git diff check outside a git work tree ([8e34db5](https://github.com/invertase/react-native-firebase/commit/8e34db5a0d6a394fbe8a9ebdaeda1ceff07e3a46))
+- **scripts:** skip ruby:install when host Ruby is too old or bundler cannot run ([0fcbc2e](https://github.com/invertase/react-native-firebase/commit/0fcbc2e3059bf41f6cf27d0e7f56e684659ac2c8))
+- **tests:** skip native build dirs in harness default scan ([a72279d](https://github.com/invertase/react-native-firebase/commit/a72279d36ed1184b5e0440733136de8103670918))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 ### Features
