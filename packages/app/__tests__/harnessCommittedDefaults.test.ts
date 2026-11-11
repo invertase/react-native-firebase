@@ -86,9 +86,20 @@ function extractPushedModules(blockSource: string): string[] {
 
 const TRACKED_TEST_EXTENSIONS = new Set(['.js', '.jsx', '.ts', '.tsx']);
 
+/** Live native build trees under tests/ — skip so overlapping verify/Jest does not walk SPM extracts. */
+const SKIP_SOURCE_DIRS = new Set([
+  'node_modules',
+  'build',
+  'Pods',
+  'DerivedData',
+  '.gradle',
+  'coverage',
+  'dist',
+]);
+
 function collectSourceFiles(rootDir: string, results: string[] = []): string[] {
   for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
-    if (entry.name === 'node_modules') {
+    if (SKIP_SOURCE_DIRS.has(entry.name)) {
       continue;
     }
 

@@ -4,6 +4,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.google.firebase.Timestamp;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -879,6 +880,89 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return true;
   }
 
+  private static final long MIN_TIMESTAMP_SECONDS = -62135596800L;
+  private static final long MAX_TIMESTAMP_SECONDS = 253402300799L;
+  private static final long MAX_TIMESTAMP_NANOSECONDS = 999999999L;
+
+  // JS sends Timestamp and Date constants as { __kind: "timestamp", seconds, nanoseconds }.
+  static Timestamp serializedTimestamp(Map<?, ?> map, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (!"timestamp".equals(map.get("__kind"))) {
+      return null;
+    }
+    Object seconds = map.get("seconds");
+    Object nanoseconds = map.get("nanoseconds");
+    if (!isWholeNumberInRange(seconds, MIN_TIMESTAMP_SECONDS, MAX_TIMESTAMP_SECONDS)
+        || !isWholeNumberInRange(nanoseconds, 0, MAX_TIMESTAMP_NANOSECONDS)) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected "
+              + fieldName
+              + " to be a timestamp with integer seconds between "
+              + MIN_TIMESTAMP_SECONDS
+              + " and "
+              + MAX_TIMESTAMP_SECONDS
+              + " and integer nanoseconds between 0 and "
+              + MAX_TIMESTAMP_NANOSECONDS
+              + ".");
+    }
+    return new Timestamp(((Number) seconds).longValue(), ((Number) nanoseconds).intValue());
+  }
+
+  private static boolean isWholeNumberInRange(Object value, long min, long max) {
+    if (!(value instanceof Number)) {
+      return false;
+    }
+    double number = ((Number) value).doubleValue();
+    return number == Math.rint(number) && number >= min && number <= max;
+  }
+
+  // Values that skip the expression parser (rawStage params) still carry tagged timestamps.
+  @SuppressWarnings("unchecked")
+  static Object reviveSerializedTimestamps(Object value, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    if (value instanceof Map) {
+      Timestamp root = serializedTimestamp((Map<?, ?>) value, fieldName);
+      if (root != null) {
+        return root;
+      }
+    }
+
+    ArrayDeque<Map.Entry<Object, String>> stack = new ArrayDeque<>();
+    stack.push(new java.util.AbstractMap.SimpleEntry<>(value, fieldName));
+    while (!stack.isEmpty()) {
+      Map.Entry<Object, String> frame = stack.pop();
+      Object container = frame.getKey();
+      String containerField = frame.getValue();
+      if (container instanceof Map) {
+        for (Map.Entry<Object, Object> entry : ((Map<Object, Object>) container).entrySet()) {
+          String childField = containerField + "." + entry.getKey();
+          Object child = entry.getValue();
+          Timestamp timestamp =
+              child instanceof Map ? serializedTimestamp((Map<?, ?>) child, childField) : null;
+          if (timestamp != null) {
+            entry.setValue(timestamp);
+          } else if (child instanceof Map || child instanceof List) {
+            stack.push(new java.util.AbstractMap.SimpleEntry<>(child, childField));
+          }
+        }
+      } else if (container instanceof List) {
+        List<Object> list = (List<Object>) container;
+        for (int i = 0; i < list.size(); i++) {
+          String childField = containerField + "[" + i + "]";
+          Object child = list.get(i);
+          Timestamp timestamp =
+              child instanceof Map ? serializedTimestamp((Map<?, ?>) child, childField) : null;
+          if (timestamp != null) {
+            list.set(i, timestamp);
+          } else if (child instanceof Map || child instanceof List) {
+            stack.push(new java.util.AbstractMap.SimpleEntry<>(child, childField));
+          }
+        }
+      }
+    }
+    return value;
+  }
+
   private static boolean isExpressionLike(Map<?, ?> map) {
     Object exprType = map.get("exprType");
     if (exprType instanceof String) {
@@ -1207,6 +1291,12 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               enterFrame.box.value = new ParsedPrimitiveValueNode(value);
               continue;
             }
+          }
+
+          Timestamp timestamp = serializedTimestamp(map, fieldName);
+          if (timestamp != null) {
+            enterFrame.box.value = new ParsedPrimitiveValueNode(timestamp);
+            continue;
           }
 
           if (isExpressionLike(map)) {

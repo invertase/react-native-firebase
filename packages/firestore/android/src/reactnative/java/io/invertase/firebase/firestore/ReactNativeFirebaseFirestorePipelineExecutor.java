@@ -739,7 +739,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     RawStage rawStage = RawStage.ofName(stage.name);
 
     if (stage.params != null) {
-      Object paramsValue = stage.params;
+      Object paramsValue =
+          ReactNativeFirebaseFirestorePipelineParser.reviveSerializedTimestamps(
+              stage.params, "stage.options.params");
       if (paramsValue instanceof List) {
         Object[] args = ((List<?>) paramsValue).toArray();
         rawStage = rawStage.withArguments(args);
@@ -889,6 +891,16 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
           rawStage = rawStage.withOption(key, numberValue.longValue());
         }
         continue;
+      }
+      if (rawValue instanceof Map
+          && ReactNativeFirebaseFirestorePipelineParser.serializedTimestamp(
+                  (Map<?, ?>) rawValue, "stage.options.options." + key)
+              != null) {
+        // The Android SDK has no Timestamp Stage.withOption overload.
+        throw new PipelineValidationException(
+            "pipelineExecute() does not support timestamp raw stage option values on Android: "
+                + key
+                + ".");
       }
       if (rawValue instanceof Map) {
         String fieldPath = nodeBuilder.coerceFieldPath(rawValue, "stage.options.options." + key);

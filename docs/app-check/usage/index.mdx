@@ -159,7 +159,7 @@ Do not call `getToken()` on a `ReactNativeFirebaseAppCheckProvider` instance. It
 
 ## Initialize App Check
 
-`initializeAppCheck(app, options)` returns an `AppCheck` instance **synchronously** (firebase-js-sdk modular parity). On success it returns that instance immediately and starts native `configureProvider` in the background (`void` on the instance Promise; modular does not return a Promise). Pass an explicit `FirebaseApp` from `getApp()`.
+`initializeAppCheck(app, options)` returns an `AppCheck` instance **synchronously** (firebase-js-sdk modular parity). On success it returns that instance immediately and starts native `configureProvider` in the background (`void` on the instance Promise; modular does not return a Promise). Invalid options still throw synchronously. A failure during that background provider setup is reported with `console.warn` (it is not an unhandled rejection you can `await`). Pass an explicit `FirebaseApp` from `getApp()`.
 
 `AppCheckOptions.provider` accepts a `ReactNativeFirebaseAppCheckProvider`, or a `ReactNativeFirebaseAppCheckProviderConfig` object with `providerOptions` (inline convenience config). On native platforms the provider must expose `providerOptions`. Missing `providerOptions` is a **synchronous throw** from the instance `initializeAppCheck` path (`Invalid configuration: no provider or no provider options defined.`) before `configureProvider` runs. That throw propagates through modular `initializeAppCheck`; it is not a background Promise rejection you can `await`. Missing platform-specific provider strings (`android.provider` / `apple.provider` while on that OS) also throw synchronously.
 

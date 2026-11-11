@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **app-distribution, android:** bump Firebase App Distribution Gradle plugin to 5.3.1 ([e43eaef](https://github.com/invertase/react-native-firebase/commit/e43eaefc3cb4402262321f757b78e7269c93ce0e))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 **Note:** Version bump only for package @react-native-firebase/app-distribution

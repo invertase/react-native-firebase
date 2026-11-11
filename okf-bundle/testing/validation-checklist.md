@@ -78,6 +78,9 @@ yarn tests:jest --watchman=false packages/firestore/__tests__/pipelines.test.ts
 
 Optional: `yarn tests:jest-coverage`.
 
+<a id="jest-unhandled-rejections"></a>
+**Unhandled rejections:** on Node 24 an unhandled promise rejection crashes the Jest process (`triggerUncaughtException`), aborting the file so other tests report nothing; a `process.on('unhandledRejection')` listener in a test cannot reliably observe it (Jest sandboxes `process`). Assert the handler is attached instead: spy the method returning the promise, wrap the returned promise's `then` to capture the derived promise, and assert that resolves (pattern: `packages/app-check/__tests__/initializeAppCheck.test.ts`). When proving such tests fail on old code, run them one at a time (`-t`) so each failure is reported.
+
 ## Android JVM unit tests
 
 When `packages/*/android/**` Java bridge/state-machine logic changed (or added under `src/test/java`):
@@ -118,7 +121,7 @@ Produces `coverage/ios-unit/lcov.info` and **merges into** `coverage/ios-native/
 - `packages/app/__tests__/*_test.rb`
 
 ```bash
-yarn ruby:install                                         # root Gemfile; included in root yarn via postinstallDev; skips exit 0 when bundle not on PATH
+yarn ruby:install                                         # root Gemfile; included in root yarn via postinstallDev; skips exit 0 when bundle not on PATH, ruby < 3.3.1, or bundle cannot run
 yarn tests:ios:ruby                                       # yarn lint:ruby (RuboCop) then all *_test.rb + SimpleCov → coverage/ios-ruby/lcov.info
 yarn lint:ruby                                          # RuboCop only (same Gemfile; not part of root yarn lint)
 ```
