@@ -91,7 +91,7 @@ Artifacts upload on every run (`if: always()`).
 | `detox-step-<buildmode>-<iteration>_log` | Detox/Jet step stdout/stderr (`tee detox-step.log`) | `[jet-ws]`, `[rnfb-e2e]`, `[jet-coverage]`, Jest output — primary orchestration log |
 | `flake-summary-<buildmode>-<iteration>` | `.github/workflows/scripts/flake-summary.sh` → `flake-summary.txt` | Pre-digested `rg` hits across detox/sim-app/metro/resource-monitor logs |
 | `resource-monitor-<buildmode>-<iteration>_log` | `.github/workflows/scripts/resource-monitor.sh` → `resource-monitor.log` | Periodic `uptime` + `ps` snapshots (10s default) to correlate WS drops with CPU/memory pressure |
-| `metro-<buildmode>-<iteration>_log` | Wrapper `metro.log` plus packager detail `/tmp/rnfb-metro-*.log` (`scripts/e2e/start-packager.sh`; debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch — wrapper alone is often 1–2 lines; inspect the detail log |
+| `metro-<buildmode>-<iteration>_log` | Wrapper `metro.log` plus packager detail `/tmp/rnfb-metro-*.log` (`scripts/e2e/start-packager.sh`; the workflow pins `RNFB_METRO_LOG` to `/tmp`; debug only) | Metro hung, slow bundle, or unresponsive `/status` during app launch — wrapper alone is often 1–2 lines; inspect the detail log |
 | `simulator-<buildmode>-<iteration>_video` | `simctl recordVideo` → `simulator.mp4` | Visual confirmation (**`workflow_dispatch` / `workflow_call` `record_screens: true` only**) |
 | `screenrecording-<buildmode>-<iteration>` | `screencapture` of the Mac desktop | Includes Device Hub window (**`record_screens: true` only**) |
 | `screenrecording-setup-<buildmode>-<iteration>.mov` | Guidepup setup recording | Very early environment setup (**`record_screens: true` only**) |
@@ -571,8 +571,9 @@ not launch the app and is not equivalent to a signed device or TestFlight test;
 runtime-only failures still require a real launch. The SPM embedding decision
 and its original failure mode are documented in
 [`ios-spm-native-imports.md`](../ios-spm-native-imports.md#runtime-framework-embedding).
-A `"...xcframework-ios.signature" couldn't be copied to "Signatures"` failure
-from this job is a known Xcode Archive bug, not a regression — see
+A `"...xcframework-ios.signature"` (or `-ios-simulator.signature`) couldn't
+be copied to `"Signatures"` failure from this job is a known Xcode Archive
+bug, not a regression — see
 [archive signature-copy collision](../ios-spm-native-imports.md#archive-signature-copy-collision).
 
 ### Operational notes

@@ -26,8 +26,12 @@ rnfb_tart_init_brew
 mkdir -p "$RNFB_TART_MANIFEST_DIR" "$YARN_CACHE_FOLDER" "$RNFB_DETOX_CACHE" \
   "$RNFB_METRO_CACHE" "$RNFB_FIREBASE_EMULATORS" "$RNFB_CCACHE_DIR"
 
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+
 # Xcode pin comes from the Cirrus seed image.
-xcodebuild -version | tee /tmp/xcode-version.txt
+xcodebuild -version | tee "${TMP_ROOT}/xcode-version.txt"
 xcrun simctl list >/dev/null
 
 export HOMEBREW_NO_AUTO_UPDATE=1
@@ -56,9 +60,9 @@ brew install ccache jq wget git
 rnfb_tart_enable_ccache
 
 if ! command -v yeetd >/dev/null 2>&1; then
-  wget -q https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg -O /tmp/yeetd-normal.pkg
-  echo "adb04eb720581a32d94daef3ea61108c74494083a79f00836556a36214f354be  /tmp/yeetd-normal.pkg" | shasum -a 256 -c -
-  sudo installer -pkg /tmp/yeetd-normal.pkg -target /
+  wget -q https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg -O "${TMP_ROOT}/yeetd-normal.pkg"
+  echo "adb04eb720581a32d94daef3ea61108c74494083a79f00836556a36214f354be  ${TMP_ROOT}/yeetd-normal.pkg" | shasum -a 256 -c -
+  sudo installer -pkg "${TMP_ROOT}/yeetd-normal.pkg" -target /
 fi
 rnfb_tart_start_yeetd
 

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **app-distribution, android:** bump Firebase App Distribution Gradle plugin to 5.3.1 ([e43eaef](https://github.com/invertase/react-native-firebase/commit/e43eaefc3cb4402262321f757b78e7269c93ce0e))
+- **crashlytics, ios:** name the dSYM input after the executable ([#9411](https://github.com/invertase/react-native-firebase/issues/9411)) ([cac23b8](https://github.com/invertase/react-native-firebase/commit/cac23b8720e5c66bc7cfc5ed8c2a19320ca70866))
+- **e2e:** bound the drain's terminateApp and keep a drained attempt off the next device ([bcde2f4](https://github.com/invertase/react-native-firebase/commit/bcde2f45db097de5a38fe511038638f3a66252f2))
+- **e2e:** do not kill a stalled Jet again as a launch retry ([8630dd1](https://github.com/invertase/react-native-firebase/commit/8630dd15784000b596c237d751d474e4d5533f19))
+- **e2e:** fail fast when another user's process holds the Jet port ([14a1810](https://github.com/invertase/react-native-firebase/commit/14a1810d9ff411aa2daf43033dca49b0a56272f4))
+- **e2e:** join the drain's capped terminateApp before the next attempt ([c9ef2e7](https://github.com/invertase/react-native-firebase/commit/c9ef2e7f1b4a7bd8edb410e80fbbc9af302ba01f))
+- **e2e:** keep a late Jet attempt from killing the next attempt's Jet ([164ea54](https://github.com/invertase/react-native-firebase/commit/164ea54fb3ec2b0a0af7c85e9b23265a989516ef))
+- **e2e:** record every harness reboot and cold-boot only this run's emulator ([67ea61d](https://github.com/invertase/react-native-firebase/commit/67ea61dbd40e6932a18c48bdc695d2411f1a293d))
+- **e2e:** record the macOS Jet process so the default release frees it ([f8e0561](https://github.com/invertase/react-native-firebase/commit/f8e0561c8b0f0afa53d3980e58677741de4631c8))
+- **e2e:** release only resources a run recorded; machine wipe is manual-only ([ea8f86d](https://github.com/invertase/react-native-firebase/commit/ea8f86d6e741d69c6a0393106b749360e1a154d5))
+- **e2e:** stop the Jet a failed attempt is still running before the outer retry ([505e1f4](https://github.com/invertase/react-native-firebase/commit/505e1f4831e0fd3b60b163737612f027780b9102))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 ### Features

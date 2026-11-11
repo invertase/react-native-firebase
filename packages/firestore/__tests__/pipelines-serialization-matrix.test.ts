@@ -1,6 +1,13 @@
 import { describe, expect, it } from '@jest/globals';
-import { getFirestore } from '../lib';
-import { constant, field, parent, timestampDiff, timestampExtract } from '../lib/pipelines';
+import { getFirestore, Timestamp } from '../lib';
+import {
+  constant,
+  field,
+  greaterThan,
+  parent,
+  timestampDiff,
+  timestampExtract,
+} from '../lib/pipelines';
 import type { ConstantExpression } from '../lib/pipelines/expressions';
 import '../lib/pipelines';
 
@@ -255,6 +262,154 @@ describe('pipelines serialization matrix', function () {
         value: 1.5,
       });
       expect(serialized).not.toHaveProperty('integerLiteral');
+    });
+  });
+
+  describe('Timestamp and Date constants', function () {
+    const db: any = getFirestore();
+    const ts = new Timestamp(1700000000, 123456000);
+    const tsWire = { __kind: 'timestamp', seconds: 1700000000, nanoseconds: 123456000 };
+    const date = new Date(1700000001789);
+    const dateWire = { __kind: 'timestamp', seconds: 1700000001, nanoseconds: 789000000 };
+    const typed = (value: unknown) => constant(value) as ConstantExpression;
+
+    it('serializes constant(Timestamp) as a tagged timestamp', function () {
+      expect(selectExpr(db, typed(ts).as('t'))).toEqual({
+        __kind: 'expression',
+        exprType: 'Constant',
+        value: tsWire,
+      });
+    });
+
+    it('serializes constant(Date) as a tagged timestamp', function () {
+      expect(selectExpr(db, typed(date).as('d'))).toEqual({
+        __kind: 'expression',
+        exprType: 'Constant',
+        value: dateWire,
+      });
+    });
+
+    it('truncates Timestamp nanoseconds to microseconds', function () {
+      expect(selectExpr(db, typed(new Timestamp(5, 123456789)).as('t')).value).toEqual({
+        __kind: 'timestamp',
+        seconds: 5,
+        nanoseconds: 123456000,
+      });
+    });
+
+    it('serializes a Timestamp from another copy of the package', function () {
+      class ForeignTimestamp {
+        constructor(
+          readonly seconds: number,
+          readonly nanoseconds: number,
+        ) {}
+        toMillis(): number {
+          return this.seconds * 1000 + this.nanoseconds / 1e6;
+        }
+        toDate(): Date {
+          return new Date(this.toMillis());
+        }
+      }
+      expect(
+        selectExpr(db, typed(new ForeignTimestamp(1700000000, 123456789)).as('t')).value,
+      ).toEqual(tsWire);
+    });
+
+    it('leaves plain seconds/nanoseconds maps untagged', function () {
+      expect(selectExpr(db, typed({ seconds: 1, nanoseconds: 2 }).as('m')).value).toEqual({
+        seconds: 1,
+        nanoseconds: 2,
+      });
+    });
+
+    it('serializes pre-1970 Dates', function () {
+      expect(selectExpr(db, typed(new Date(-1)).as('d')).value).toEqual({
+        __kind: 'timestamp',
+        seconds: -1,
+        nanoseconds: 999000000,
+      });
+    });
+
+    it('rejects invalid Dates with a clear error', function () {
+      expect(() => selectExpr(db, typed(new Date(Number.NaN)).as('d'))).toThrow(
+        'firebase.firestore().pipeline() expected a valid Date.',
+      );
+    });
+
+    it('rejects out-of-range or non-integer timestamp parts', function () {
+      const foreign = (seconds: number, nanoseconds: number) => ({
+        seconds,
+        nanoseconds,
+        toMillis: () => seconds * 1000,
+        toDate: () => new Date(seconds * 1000),
+      });
+      for (const [seconds, nanoseconds] of [
+        [0, 1e9],
+        [0, -1],
+        [1.5, 0],
+        [253402300800, 0],
+        [-62135596801, 0],
+      ] as const) {
+        expect(() => selectExpr(db, typed(foreign(seconds, nanoseconds)).as('t'))).toThrow(
+          'firebase.firestore().pipeline() expected a Timestamp with integer seconds between -62135596800 and 253402300799',
+        );
+      }
+    });
+
+    it('serialize() leaves user maps that only look tagged untouched (execute rejects them)', function () {
+      const userMap = { __kind: 'timestamp', seconds: 'soon', nanoseconds: null };
+      expect(selectExpr(db, typed(userMap).as('m')).value).toEqual(userMap);
+    });
+
+    it('serializes timestamps in rawStage params and options', function () {
+      const stage = db
+        .pipeline()
+        .collection('events')
+        .rawStage('custom', [ts, { at: date, list: [ts] }], { since: ts })
+        .serialize().stages[0];
+      expect(stage.options.params).toEqual([tsWire, { at: dateWire, list: [tsWire] }]);
+      expect(stage.options.options).toEqual({ since: tsWire });
+    });
+
+    it('serializes timestamps nested in constant maps and arrays', function () {
+      expect(
+        selectExpr(db, typed({ at: ts, history: [date, { when: ts }] }).as('nested')).value,
+      ).toEqual({ at: tsWire, history: [dateWire, { when: tsWire }] });
+      expect(selectExpr(db, typed([ts, date]).as('list')).value).toEqual([tsWire, dateWire]);
+    });
+
+    it('serializes timestamps in where comparisons', function () {
+      const condition = db
+        .pipeline()
+        .collection('events')
+        .where(field('createdAt').equal(constant(ts)))
+        .serialize().stages[0].options.condition;
+      expect(condition).toMatchObject({
+        name: 'equal',
+        args: [
+          { exprType: 'Field', path: 'createdAt' },
+          { exprType: 'Constant', value: tsWire },
+        ],
+      });
+    });
+
+    it('serializes raw Timestamp and Date comparison operands', function () {
+      const condition = db
+        .pipeline()
+        .collection('events')
+        .where(greaterThan(field('createdAt'), date as any))
+        .serialize().stages[0].options.condition;
+      expect(condition.args[1]).toMatchObject({ exprType: 'Constant', value: dateWire });
+    });
+
+    it('serializes timestamps in addFields', function () {
+      const fields = db
+        .pipeline()
+        .collection('events')
+        .addFields(typed(ts).as('t'), typed(date).as('d'))
+        .serialize().stages[0].options.fields;
+      expect(fields[0].expr.value).toEqual(tsWire);
+      expect(fields[1].expr.value).toEqual(dateWire);
     });
   });
 });

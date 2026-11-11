@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **app-check:** report provider setup failures and align Android provider readiness with iOS ([#9405](https://github.com/invertase/react-native-firebase/issues/9405)) ([431338d](https://github.com/invertase/react-native-firebase/commit/431338d701bde7e8283e14eebe60208c6d47332c))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 **Note:** Version bump only for package @react-native-firebase/app-check
