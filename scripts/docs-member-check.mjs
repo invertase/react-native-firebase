@@ -178,19 +178,63 @@ function resolvePackage(configName) {
   return { configName, docsPkg, screenBase, importSpecifiers, taughtPaths };
 }
 
+function propertyNameText(name) {
+  return ts.isIdentifier(name) || ts.isStringLiteralLike(name) ? name.text : undefined;
+}
+
+/**
+ * `name` of every `extraInRN` entry in a compare-types config, read from the
+ * TypeScript AST so brackets or `name:` inside reason strings cannot truncate
+ * or pad the list. Throws when `extraInRN` is not an array literal of objects
+ * with a string-literal `name`, so a config shape change cannot silently
+ * shrink the list. A config without `extraInRN` yields `[]`.
+ */
 function parseExtraInRN(configAbsPath) {
   const text = fs.readFileSync(configAbsPath, 'utf8');
-  const blockMatch = /extraInRN\s*:\s*\[([\s\S]*?)\]\s*,/.exec(text);
-  if (!blockMatch) {
+  const sourceFile = ts.createSourceFile(
+    configAbsPath,
+    text,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+  const lineOf = node =>
+    sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+  const properties = [];
+  const visit = node => {
+    if (ts.isPropertyAssignment(node) && propertyNameText(node.name) === 'extraInRN') {
+      properties.push(node);
+      return;
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+
+  if (properties.length === 0) {
     return [];
   }
-  const names = [];
-  const nameRe = /name\s*:\s*['"]([^'"]+)['"]/g;
-  let m;
-  while ((m = nameRe.exec(blockMatch[1])) !== null) {
-    names.push(m[1]);
+  if (properties.length > 1) {
+    throw new Error(
+      `extraInRN is declared ${properties.length} times (lines ${properties.map(lineOf).join(', ')})`,
+    );
   }
-  return names;
+  const array = properties[0].initializer;
+  if (!ts.isArrayLiteralExpression(array)) {
+    throw new Error(`extraInRN (line ${lineOf(array)}) is not an array literal`);
+  }
+  return array.elements.map(element => {
+    const nameProperty = ts.isObjectLiteralExpression(element)
+      ? element.properties.find(
+          p => ts.isPropertyAssignment(p) && propertyNameText(p.name) === 'name',
+        )
+      : undefined;
+    if (!nameProperty || !ts.isStringLiteralLike(nameProperty.initializer)) {
+      throw new Error(
+        `extraInRN entry at line ${lineOf(element)} is not an object with a string-literal name`,
+      );
+    }
+    return nameProperty.initializer.text;
+  });
 }
 
 function walkFiles(dir, predicate) {
@@ -529,7 +573,17 @@ function main() {
 
   for (const { configName, docsPkg, screenBase, importSpecifiers, taughtPaths } of resolved) {
     const configAbs = path.join(CONFIG_DIR, `${configName}.ts`);
-    const extraNames = parseExtraInRN(configAbs);
+    let extraNames;
+    try {
+      extraNames = parseExtraInRN(configAbs);
+    } catch (e) {
+      failures.push({
+        configName,
+        kind: 'extraInRN-unparseable',
+        detail: `configs/${configName}.ts: ${e.message}`,
+      });
+      continue;
+    }
 
     if (!packageDirs.includes(docsPkg)) {
       failures.push({
