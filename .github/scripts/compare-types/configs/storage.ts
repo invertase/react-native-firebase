@@ -7,10 +7,10 @@
  * fail so that new drift is caught and deliberately acknowledged.
  *
  * Sections:
- *  nameMapping     — exports that exist in both packages but under different names
- *  missingInRN     — firebase-js-sdk exports absent from RN Firebase
- *  extraInRN       — RN Firebase exports not present in the firebase-js-sdk
- *  differentShape  — exports present in both but with differing signatures/members
+ *  nameMapping     - exports that exist in both packages but under different names
+ *  missingInRN     - firebase-js-sdk exports absent from RN Firebase
+ *  extraInRN       - RN Firebase exports not present in the firebase-js-sdk
+ *  differentShape  - exports present in both but with differing signatures/members
  */
 
 import type { PackageConfig } from '../src/types';
@@ -47,16 +47,14 @@ const config: PackageConfig = {
       reason:
         'RN Firebase-specific function for setting the maximum retry time for ' +
         'non-upload/download operations on Android and iOS. The firebase-js-sdk ' +
-        'exposes this as a writable property on the `FirebaseStorage` instance. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (sync JS field + native setter; see PS-S2-gap).',
+        'exposes this as a writable property on the `FirebaseStorage` instance.',
     },
     {
       name: 'setMaxUploadRetryTime',
       reason:
         'RN Firebase-specific function for setting the maximum upload retry time ' +
         'on Android and iOS. The firebase-js-sdk exposes this as a writable property ' +
-        'on the `FirebaseStorage` instance. ' +
-        'Phase S hint: **Promise that could maybe sync-void+queue** (see PS-S2-gap).',
+        'on the `FirebaseStorage` instance.',
     },
     {
       name: 'setMaxDownloadRetryTime',
@@ -154,7 +152,7 @@ const config: PackageConfig = {
     {
       name: 'uploadString',
       reason:
-        'Returns `Task` in RN Firebase instead of `Promise<UploadResult>` — the upload ' +
+        'Returns `Task` in RN Firebase instead of `Promise<UploadResult>`. The upload ' +
         'is resumable via the native task system. The `format` parameter is typed as an ' +
         "explicit string union `'raw' | 'base64' | 'base64url' | 'data_url'` instead of " +
         'the `StringFormat` type alias, which is semantically identical.',
@@ -188,7 +186,7 @@ const config: PackageConfig = {
       reason:
         'RN Firebase types the `on()` `complete` parameter as `CompleteFn | null`, matching ' +
         'observer callback semantics and the `Subscribe` helper. The firebase-js-sdk public ' +
-        '`.d.ts` compare surface shows `Unsubscribe | null` for that parameter — an extraction ' +
+        '`.d.ts` compare surface shows `Unsubscribe | null` for that parameter, an extraction ' +
         'artifact, not the intended complete-handler type.',
     },
   ],
