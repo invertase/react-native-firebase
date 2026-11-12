@@ -23,19 +23,26 @@
 # every generated `RNFB*` CocoaPods target, not just App and Messaging.
 set -euo pipefail
 
-SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$(dirname "$0")/../../.."
-cd test-expo
+REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+# shellcheck source=lib/derived-data-path.sh
+source "${REPO_ROOT}/.github/workflows/scripts/lib/derived-data-path.sh"
+REPO_TAG="$(repo_path_tag "$REPO_ROOT")"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+DERIVED_DATA="$(wipeable_derived_data_path "${RNFB_TEST_EXPO_DERIVED_DATA-${TMP_ROOT}/test-expo-derived-data-${REPO_TAG}}" "$REPO_ROOT")" || exit 2
+# Shared with test-expo-ios-launch-smoke.sh so its Debug build reuses these
+# Swift package checkouts; never wiped with DerivedData.
+SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-${TMP_ROOT}/test-expo-spm-packages-${REPO_TAG}}"
+
+cd "${REPO_ROOT}/test-expo"
 
 log() {
   echo "[test-expo-ios-link] $*"
 }
 
-TMP_ROOT="${TMPDIR:-/tmp}"
-TMP_ROOT="${TMP_ROOT%/}"
-TMP_ROOT="${TMP_ROOT:-/tmp}"
-PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-${TMP_ROOT}/test-expo-prebuild.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-xcodebuild.log}"
+PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-${TMP_ROOT}/test-expo-${REPO_TAG}-prebuild.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-${REPO_TAG}-xcodebuild.log}"
 PBXPROJ="ios/testexpo.xcodeproj/project.pbxproj"
 PODS_PBXPROJ="ios/Pods/Pods.xcodeproj/project.pbxproj"
 PODS_XCCONFIG="ios/Pods/Target Support Files/Pods-testexpo/Pods-testexpo.release.xcconfig"
@@ -309,8 +316,11 @@ export RCT_NO_LAUNCH_PACKAGER=1
 # Release reaches the #9202 duplicate `_FIRFirebaseVersion` graph.
 # Prefer a simulator destination over bare -sdk iphonesimulator so xcodebuild
 # does not default to a foreign arch (x86_64 on Apple Silicon).
+# A reused DerivedData can embed frameworks from an earlier graph, so every
+# build starts empty.
+rm -rf "$DERIVED_DATA"
 HOST_ARCH="$(uname -m)"
-log "xcodebuild build (iOS Simulator, unsigned, Release, arch=${HOST_ARCH}) (log: ${XCODEBUILD_LOG})"
+log "xcodebuild build (iOS Simulator, unsigned, Release, arch=${HOST_ARCH}, DerivedData=${DERIVED_DATA}, SPM packages=${SPM_PACKAGES}) (log: ${XCODEBUILD_LOG})"
 xcodebuild_args=(
   ARCHS="${HOST_ARCH}"
   VALID_ARCHS="${HOST_ARCH}"
@@ -320,6 +330,8 @@ xcodebuild_args=(
   -scheme "$SCHEME"
   -configuration Release
   -destination 'generic/platform=iOS Simulator'
+  -derivedDataPath "$DERIVED_DATA"
+  -clonedSourcePackagesDirPath "$SPM_PACKAGES"
   CODE_SIGNING_ALLOWED=NO
   CODE_SIGNING_REQUIRED=NO
   CODE_SIGN_IDENTITY=""
@@ -362,9 +374,9 @@ fi
 
 log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"
 
-BUILT_PRODUCTS_DIR="$(grep -oE '/[^ ]*/Build/Products/[A-Za-z0-9_.-]+' "$XCODEBUILD_LOG" | head -1 || true)"
-if [[ -z "$BUILT_PRODUCTS_DIR" || ! -d "$BUILT_PRODUCTS_DIR" ]]; then
-  log "ERROR: could not determine BUILT_PRODUCTS_DIR from xcodebuild log"
+BUILT_PRODUCTS_DIR="${DERIVED_DATA}/Build/Products/Release-iphonesimulator"
+if [[ ! -d "$BUILT_PRODUCTS_DIR" ]]; then
+  log "ERROR: built products directory not found at ${BUILT_PRODUCTS_DIR}"
   exit 1
 fi
 APP_DIR="${BUILT_PRODUCTS_DIR}/${SCHEME}.app"
@@ -377,4 +389,5 @@ if [[ ! -d "$APP_DIR" ]]; then
   APP_DIR="$app_candidates"
 fi
 
-"${SCRIPTS_DIR}/check-duplicate-objc-classes.sh" "$APP_DIR"
+bash "${REPO_ROOT}/.github/workflows/scripts/check-duplicate-objc-classes.sh" "$APP_DIR" \
+  --canary-hint "test-expo/package.json must keep @react-native-firebase/analytics alongside messaging so the GoogleUtilities sharing graph is exercised"

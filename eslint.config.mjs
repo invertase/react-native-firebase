@@ -19,6 +19,7 @@ export default defineConfig([
     'test-expo/ios/',
     'test-expo/android/',
     'test-expo/.expo/',
+    'test-expo/.fixtures/',
   ]),
 
   {

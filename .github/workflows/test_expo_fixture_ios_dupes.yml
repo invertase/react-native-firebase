@@ -1,0 +1,185 @@
+name: Test Expo Fixture iOS Duplicate Classes
+
+# Per-module Expo fixtures (GitHub #9408 / #9419): GoogleUtilities classes must
+# have exactly one owner whether messaging, analytics, or both are installed.
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'packages/app/package.json'
+      - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+      - 'packages/app/app.plugin.js'
+      - 'packages/app/ios/**'
+      - 'packages/app/plugin/**'
+      - 'packages/messaging/package.json'
+      - 'packages/messaging/app.plugin.js'
+      - 'packages/messaging/RNFBMessaging.podspec'
+      - 'packages/messaging/ios/**'
+      - 'packages/messaging/plugin/**'
+      - 'packages/analytics/package.json'
+      - 'packages/analytics/app.plugin.js'
+      - 'packages/analytics/RNFBAnalytics.podspec'
+      - 'packages/analytics/ios/**'
+      - 'packages/analytics/plugin/**'
+      - 'packages/auth/package.json'
+      - 'packages/auth/app.plugin.js'
+      - 'packages/auth/RNFBAuth.podspec'
+      - 'packages/auth/ios/**'
+      - 'packages/auth/plugin/**'
+      - 'test-expo/package.json'
+      - 'yarn.lock'
+      - '.github/workflows/test_expo_fixture_ios_dupes.yml'
+      - '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh'
+      - '.github/workflows/scripts/lib/make-expo-fixture.sh'
+      - '.github/workflows/scripts/check-duplicate-objc-classes.sh'
+      - '.github/workflows/scripts/lib/derived-data-path.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
+  push:
+    branches:
+      - main
+      - release-v*
+    paths:
+      - 'packages/app/package.json'
+      - 'packages/app/RNFBApp.podspec'
+      - 'packages/app/firebase_spm.rb'
+      - 'packages/app/firebase_json.rb'
+      - 'packages/app/app.plugin.js'
+      - 'packages/app/ios/**'
+      - 'packages/app/plugin/**'
+      - 'packages/messaging/package.json'
+      - 'packages/messaging/app.plugin.js'
+      - 'packages/messaging/RNFBMessaging.podspec'
+      - 'packages/messaging/ios/**'
+      - 'packages/messaging/plugin/**'
+      - 'packages/analytics/package.json'
+      - 'packages/analytics/app.plugin.js'
+      - 'packages/analytics/RNFBAnalytics.podspec'
+      - 'packages/analytics/ios/**'
+      - 'packages/analytics/plugin/**'
+      - 'packages/auth/package.json'
+      - 'packages/auth/app.plugin.js'
+      - 'packages/auth/RNFBAuth.podspec'
+      - 'packages/auth/ios/**'
+      - 'packages/auth/plugin/**'
+      - 'test-expo/package.json'
+      - 'yarn.lock'
+      - '.github/workflows/test_expo_fixture_ios_dupes.yml'
+      - '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh'
+      - '.github/workflows/scripts/lib/make-expo-fixture.sh'
+      - '.github/workflows/scripts/check-duplicate-objc-classes.sh'
+      - '.github/workflows/scripts/lib/derived-data-path.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-expo-fixture-ios-dupes:
+    name: Expo fixture iOS duplicate classes (${{ matrix.modules }})
+    runs-on: xcode-27
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - slug: messaging-auth
+            modules: messaging,auth
+          - slug: analytics-auth
+            modules: analytics,auth
+          - slug: messaging-analytics-auth
+            modules: messaging,analytics,auth
+    env:
+      XCODE_VERSION: '27.0'
+      RNFB_IOS_SIM_RUNTIME: iOS 27.0
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
+      # Prefer PATH ccache wrappers from ccache-action (create-symlink). Do not set LD/LDPLUSPLUS (Xcode 27 trap).
+      CC: clang
+      CPLUSPLUS: clang++
+    steps:
+      - name: Check matrix slug matches modules
+        env:
+          MATRIX_SLUG: ${{ matrix.slug }}
+          MATRIX_MODULES: ${{ matrix.modules }}
+        run: |
+          expected="${MATRIX_MODULES//,/-}"
+          if [[ "$MATRIX_SLUG" != "$expected" ]]; then
+            echo "matrix.slug '${MATRIX_SLUG}' does not match matrix.modules '${MATRIX_MODULES}' (expected '${expected}')" >&2
+            exit 1
+          fi
+
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
+
+      # Precompute key: hashFiles re-runs on Post-cache and can exceed 120s on dirty trees.
+      - name: Compute Xcode compile cache key
+        id: xcode_cache_key
+        run: echo "key=$(bash .github/workflows/scripts/compute-xcode-ccache-key.sh expo)" >> "$GITHUB_OUTPUT"
+
+      # One sticky cache per module combination; distinct from the test-expo link cache.
+      # https://github.com/hendrikmuhs/ccache-action/releases
+      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-expo-fixture-dupes-ios-v1-xcode27-${{ matrix.slug }}-${{ steps.xcode_cache_key.outputs.key }}
+          append-timestamp: false
+          save: ${{ github.ref == 'refs/heads/main' }}
+          create-symlink: true
+          max-size: 1500M
+
+      - name: Yarn Install
+        run: yarn
+
+      - name: ccache stats (before)
+        run: ccache -s || true
+
+      - name: Expo fixture iOS duplicate classes
+        id: dupes
+        env:
+          FIXTURE_MODULES: ${{ matrix.modules }}
+          # Pinned so the log upload below finds them whatever TMPDIR the runner sets.
+          RNFB_TEST_EXPO_FIXTURE_PREBUILD_LOG: /tmp/test-expo-fixture-prebuild.log
+          RNFB_TEST_EXPO_FIXTURE_XCODEBUILD_LOG: /tmp/test-expo-fixture-xcodebuild.log
+        run: yarn test-expo-fixture:ios:dupes --modules "$FIXTURE_MODULES"
+
+      - name: ccache stats (after)
+        if: always()
+        run: ccache -s || true
+
+      # Paths match the dupes step env (PREBUILD_LOG / XCODEBUILD_LOG).
+      - name: Upload fixture logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        continue-on-error: true
+        if: failure() && steps.dupes.outcome == 'failure'
+        with:
+          name: test-expo-fixture-ios-dupes-logs-${{ matrix.slug }}
+          path: |
+            /tmp/test-expo-fixture-prebuild.log
+            /tmp/test-expo-fixture-xcodebuild.log
+          if-no-files-found: ignore

@@ -72,6 +72,7 @@ describe('temp root (${TMPDIR:-/tmp} without a trailing slash)', function () {
   });
 
   const inlineScripts = [
+    '.github/workflows/scripts/test-expo-fixture-ios-dupes.sh',
     '.github/workflows/scripts/test-expo-ios-launch-smoke.sh',
     '.github/workflows/scripts/test-expo-ios-link.sh',
     '.github/workflows/scripts/test-rn-bare-ios-build.sh',
