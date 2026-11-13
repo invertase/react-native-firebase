@@ -416,6 +416,59 @@ of your app handle data in a way that requires ATT)
 
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
 
+# Disable Ad Id usage on Android
+
+If your app uses Analytics but does not use advertising features, you can opt out of the Advertising ID.
+On Android this takes two settings, because they do different things.
+
+## 1. Stop the SDK from collecting the Advertising ID
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "google_analytics_adid_collection_enabled": false
+  }
+}
+```
+
+This is written to the Android manifest as a `<meta-data>` entry at build time, so it cannot be changed at runtime.
+
+## 2. Remove the `AD_ID` permission from the final manifest
+
+The Firebase Analytics SDK declares `com.google.android.gms.permission.AD_ID` in its own manifest, and the build merges it into your app.
+The `firebase.json` setting above does **not** remove the permission.
+
+Other dependencies in your app can also declare this permission, not just Firebase Analytics, so the removal step below works regardless of which library adds it.
+
+If your Play Console declaration says the app does not use the Advertising ID, Google Play rejects the release:
+
+> This release includes the com.google.android.gms.permission.AD_ID permission but your declaration on Play Console says your app doesn't use advertising ID.
+
+With Expo, block the permission in your app config:
+
+```json
+// app.json (or the same keys in app.config.ts)
+{
+  "expo": {
+    "android": {
+      "blockedPermissions": ["com.google.android.gms.permission.AD_ID"]
+    }
+  }
+}
+```
+
+Without Expo, remove it in `android/app/src/main/AndroidManifest.xml`:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+</manifest>
+```
+
+The manifest changes, so this needs a new native build; it cannot be delivered with an over-the-air update.
+
 # Google Analytics on-device conversion measurement
 
 If you would like to enable Google Analytics on-device conversion measurement APIs on iOS, define the following variable in your Podfile:
