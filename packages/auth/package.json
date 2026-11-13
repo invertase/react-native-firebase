@@ -44,7 +44,7 @@
     "auth"
   ],
   "dependencies": {
-    "@expo/plist": "^0.8.1"
+    "@expo/plist": "^0.10.1"
   },
   "peerDependencies": {
     "@react-native-firebase/app": "27.1.1",
