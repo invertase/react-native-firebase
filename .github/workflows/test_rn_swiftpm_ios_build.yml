@@ -1,0 +1,92 @@
+name: Test RN SwiftPM iOS build
+
+# Path-filtered build of a fresh React Native CLI app in SwiftPM mode (no Podfile,
+# no firebase_spm.rb): `spm add` / `spm sync` run the @react-native-firebase/app
+# autolinking plugin, then Debug compiles for the iOS Simulator.
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - 'packages/app/spm/**'
+      - 'packages/*/spm-autolinking-plugin.js'
+      - 'packages/*/react-native.config.js'
+      - 'packages/*/package.json'
+      - 'packages/*/ios/**'
+      - 'packages/*/*.podspec'
+      - 'packages/app/firebase-schema.json'
+      - 'scripts/e2e/lib/ios-simulator-helpers.sh'
+      - '.github/workflows/test_rn_swiftpm_ios_build.yml'
+      - '.github/workflows/scripts/test-rn-swiftpm-ios-build.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
+      - 'packages/app/__tests__/rnSwiftPmIosBuild.test.js'
+  push:
+    branches:
+      - main
+      - release-v*
+    paths:
+      - 'packages/app/spm/**'
+      - 'packages/*/spm-autolinking-plugin.js'
+      - 'packages/*/react-native.config.js'
+      - 'packages/*/package.json'
+      - 'packages/*/ios/**'
+      - 'packages/*/*.podspec'
+      - 'packages/app/firebase-schema.json'
+      - 'scripts/e2e/lib/ios-simulator-helpers.sh'
+      - '.github/workflows/test_rn_swiftpm_ios_build.yml'
+      - '.github/workflows/scripts/test-rn-swiftpm-ios-build.sh'
+      - '.github/workflows/scripts/configure-apple-ci.sh'
+      - 'packages/app/__tests__/rnSwiftPmIosBuild.test.js'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-rn-swiftpm-ios-build:
+    name: RN SwiftPM-mode iOS build (Debug)
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      XCODE_VERSION: '27.0'
+      RNFB_IOS_SIM_RUNTIME: iOS 27.0
+      RNFB_TEST_RN_SWIFTPM_WORK_DIR: /tmp/test-rn-swiftpm
+    steps:
+      # https://github.com/actions/checkout/releases
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      # https://github.com/maxim-lobanov/setup-xcode/releases
+      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
+        run: bash .github/workflows/scripts/configure-apple-ci.sh
+
+      # Also builds packages/app/spm/build (postinstall runs lerna:prepare).
+      - name: Yarn Install
+        run: yarn
+
+      - name: RN SwiftPM-mode iOS build
+        run: yarn test-rn-swiftpm:ios:build
+
+      - name: Upload SwiftPM build logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        continue-on-error: true
+        if: failure()
+        with:
+          name: rn-swiftpm-ios-build-logs
+          path: |
+            ${{ env.RNFB_TEST_RN_SWIFTPM_WORK_DIR }}/xcodebuild.log
+            ${{ env.RNFB_TEST_RN_SWIFTPM_WORK_DIR }}/RnfbSpm/ios/build/generated/autolinking/
+          if-no-files-found: warn
