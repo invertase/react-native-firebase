@@ -113,6 +113,10 @@ const appVerifier: ApplicationVerifier = {
 
 const popupRedirectResolver: PopupRedirectResolver = {};
 const redirectProvider = { providerId: 'oidc.test' } as AuthProvider;
+const microsoftProvider: AuthProvider = new OAuthProvider('microsoft.com').addScope(
+  'offline_access',
+);
+const microsoftProviderId: string = new OAuthProvider('microsoft.com').providerId;
 const authSettings: AuthSettings = { appVerificationDisabledForTesting: true };
 const persistence: Persistence = { type: 'NONE' };
 const authConfig: Config = {
@@ -213,6 +217,13 @@ console.log(oauthCredential.providerId);
 console.log(oauthCredential.rawNonce);
 console.log(appleCredential.providerId);
 console.log(oauthCredentialFromJSON.accessToken);
+console.log(microsoftProviderId);
+signInWithPopup(getAuth(), new OAuthProvider('microsoft.com'));
+signInWithRedirect(getAuth(), microsoftProvider);
+linkWithPopup({} as User, microsoftProvider);
+linkWithRedirect({} as User, microsoftProvider);
+reauthenticateWithPopup({} as User, microsoftProvider);
+reauthenticateWithRedirect({} as User, microsoftProvider);
 console.log(facebookCredential.accessToken);
 console.log(facebookCredentialFromResult?.accessToken);
 console.log(facebookCredentialFromError?.accessToken);

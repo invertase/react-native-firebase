@@ -68,8 +68,7 @@ function parseOAuthCredentialJSON(json: object | string): ParsedOAuthCredentialJ
 type FirebaseError = AuthError;
 
 export default class OAuthProvider {
-  /** @internal */
-  private providerId: string;
+  readonly providerId: string;
   /** @internal */
   private customParameters: CustomParameters = {};
   /** @internal */
