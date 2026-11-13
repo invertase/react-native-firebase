@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
-import { Timestamp as WebTimestamp } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import {
+  GeoPoint,
+  Timestamp as WebTimestamp,
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import { executeWebSdkPipeline } from '../lib/web/pipelines/pipeline';
 
 jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines', () => {
@@ -21,6 +24,7 @@ jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestore
     mapGet: jest.fn(actual.mapGet as (...args: unknown[]) => unknown),
     variable: jest.fn(actual.variable as (...args: unknown[]) => unknown),
     euclideanDistance: jest.fn(actual.euclideanDistance as (...args: unknown[]) => unknown),
+    geoDistance: jest.fn(actual.geoDistance as (...args: unknown[]) => unknown),
   };
 });
 
@@ -506,6 +510,63 @@ describe('Firestore web pipeline bridge', function () {
     expect(isTypeMock.mock.calls.at(-1)?.[1]).toBe('string');
     expect(mapGetMock.mock.calls.at(-1)?.[1]).toBe('theme');
     expect(euclideanDistanceMock.mock.calls.at(-1)?.[1]).toEqual([1, 0]);
+  });
+
+  it('rebuilds serialized GeoPoint constants as web SDK GeoPoints', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.select = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    const geoDistanceMock = firebaseFirestorePipelines.geoDistance as jest.Mock;
+    geoDistanceMock.mockClear();
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 9, nanoseconds: 0 },
+      results: [],
+    }));
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'places' },
+        stages: [
+          {
+            stage: 'select',
+            options: {
+              selections: [
+                {
+                  alias: 'distance',
+                  as: 'distance',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'geoDistance',
+                    args: [
+                      { __kind: 'expression', exprType: 'Field', path: 'location' },
+                      {
+                        __kind: 'expression',
+                        exprType: 'Constant',
+                        value: { __kind: 'geoPoint', latitude: 40.7, longitude: -74 },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      undefined,
+    );
+
+    const location = geoDistanceMock.mock.calls.at(-1)?.[1];
+    expect(location).toBeInstanceOf(GeoPoint);
+    expect((location as GeoPoint).latitude).toBe(40.7);
+    expect((location as GeoPoint).longitude).toBe(-74);
   });
 
   it('revives serialized timestamps as web SDK Timestamps in every value position', async function () {

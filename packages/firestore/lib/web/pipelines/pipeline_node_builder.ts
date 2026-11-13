@@ -16,7 +16,10 @@
  */
 
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
-import { Timestamp } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import {
+  GeoPoint,
+  Timestamp,
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import type { Firestore } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import { MAX_TIMESTAMP_SECONDS, MIN_TIMESTAMP_SECONDS } from '../../FirestoreTimestamp';
 import type { FirestorePipelineSerializedInternal } from '../../types/internal';
@@ -560,6 +563,15 @@ function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
       }
 
       frame.resolve(currentValue);
+      continue;
+    }
+
+    if (
+      currentValue.__kind === 'geoPoint' &&
+      typeof currentValue.latitude === 'number' &&
+      typeof currentValue.longitude === 'number'
+    ) {
+      frame.resolve(new GeoPoint(currentValue.latitude, currentValue.longitude));
       continue;
     }
 
