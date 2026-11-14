@@ -56,6 +56,29 @@ describe('export-slot-env iOS simulator pin', function () {
   });
 });
 
+describe('e2e_sanitize_serial_env iOS runtime pin', function () {
+  it('keeps RNFB_IOS_SIM_RUNTIME and RNFB_IOS_SIMULATOR_UDID for the serial Detox device while dropping the slot simulator', function () {
+    const slotEnvLib = path.join(repoRoot, 'scripts/e2e/lib/e2e-slot-env.sh');
+    const env = {
+      ...process.env,
+      RNFB_IOS_SIM_RUNTIME: 'iOS 27.0',
+      RNFB_IOS_SIMULATOR_UDID: 'BOOTED-UDID',
+      RNFB_IOS_SIMULATOR: 'RN E2E iOS slot-2',
+    };
+    delete env.RNFB_E2E_SLOT;
+    delete env.RNFB_E2E_HOST_SLOT;
+    const out = execFileSync(
+      'bash',
+      [
+        '-c',
+        `source "${slotEnvLib}" && e2e_sanitize_serial_env && echo "runtime=\${RNFB_IOS_SIM_RUNTIME:-unset} udid=\${RNFB_IOS_SIMULATOR_UDID:-unset} sim=\${RNFB_IOS_SIMULATOR:-unset}"`,
+      ],
+      { encoding: 'utf8', cwd: repoRoot, env },
+    );
+    expect(out).toContain('runtime=iOS 27.0 udid=BOOTED-UDID sim=unset');
+  });
+});
+
 function exportSlotFail(platform, slot, extraEnv = {}) {
   const env = { ...process.env, ...extraEnv };
   delete env.E2E_SLOTTED_MAX;
