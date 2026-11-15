@@ -8,6 +8,9 @@ REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 # shellcheck source=lib/derived-data-path.sh
 source "${REPO_ROOT}/.github/workflows/scripts/lib/derived-data-path.sh"
 REPO_TAG="$(repo_path_tag "$REPO_ROOT")"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
 cd "${REPO_ROOT}/test-expo"
 
 log() {
@@ -50,10 +53,10 @@ XCODE_SCHEME="${RNFB_TEST_EXPO_XCODE_SCHEME:-testexpo}"
 SIM_NAME="${RNFB_TEST_EXPO_IOS27_DEVICE:-iPhone 18 Pro}"
 SIM_RUNTIME="${RNFB_TEST_EXPO_IOS27_RUNTIME:-iOS 27.0}"
 METRO_PORT="${RNFB_TEST_EXPO_METRO_PORT:-8081}"
-METRO_LOG="${RNFB_TEST_EXPO_METRO_LOG:-/tmp/test-expo-launch-smoke-${REPO_TAG}-metro.log}"
-APP_LOG="${RNFB_TEST_EXPO_LAUNCH_LOG:-/tmp/test-expo-launch-smoke-${REPO_TAG}.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG:-/tmp/test-expo-launch-smoke-${REPO_TAG}-xcodebuild.log}"
-SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-/tmp/test-expo-spm-packages-${REPO_TAG}}"
+METRO_LOG="${RNFB_TEST_EXPO_METRO_LOG:-${TMP_ROOT}/test-expo-launch-smoke-${REPO_TAG}-metro.log}"
+APP_LOG="${RNFB_TEST_EXPO_LAUNCH_LOG:-${TMP_ROOT}/test-expo-launch-smoke-${REPO_TAG}.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-launch-smoke-${REPO_TAG}-xcodebuild.log}"
+SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-${TMP_ROOT}/test-expo-spm-packages-${REPO_TAG}}"
 # Cap for key-window + sceneOfRecord poll after launch (replaces fixed sleep 10).
 KEY_WINDOW_WAIT_SEC="${RNFB_TEST_EXPO_KEY_WINDOW_WAIT_SEC:-60}"
 
