@@ -99,11 +99,7 @@ const OUTPUT_PATHS = {
  * NewArch-AD-5: never commit those. NewArch-AD-22: wipe every path codegen writes.
  */
 const TESTING_IOS_PROJECT_DIR = 'ios';
-const TESTING_IOS_APP_DUMPS = [
-  'Package.swift',
-  'ReactCodegen',
-  'ReactAppDependencyProvider',
-];
+const TESTING_IOS_APP_DUMPS = ['Package.swift', 'ReactCodegen', 'ReactAppDependencyProvider'];
 
 const MIGRATED_PACKAGES = Object.keys(OUTPUT_PATHS);
 
@@ -172,6 +168,51 @@ function scrubTestingIosAppDumps() {
   }
 }
 
+/** Stable marker for idempotent JNI deprecation CMake patch (NewArch-AD-24). */
+const JNI_DEPRECATION_CMAKE_MARKER = '# RNFB: JNI deprecated invokeJavaMethod (RN <0.89 compat)';
+
+const REACTNATIVE_COMPILE_OPTIONS_RE = /target_compile_reactnative_options\((\S+)\s+PRIVATE\)/;
+
+/**
+ * RN 0.89+ deprecates cached-method-ID invokeJavaMethod while older RN still
+ * needs it in committed codegen output — downgrade deprecation to non-fatal.
+ * @see okf-bundle/new-architecture/architecture-decisions.md (NewArch-AD-24)
+ */
+export function patchAndroidJniDeprecationCMake(outputAbs) {
+  const cmakeListsPath = path.join(outputAbs, 'jni', 'CMakeLists.txt');
+  if (!fs.existsSync(cmakeListsPath)) {
+    throw new Error(`patchAndroidJniDeprecationCMake: missing ${cmakeListsPath}`);
+  }
+  const original = fs.readFileSync(cmakeListsPath, 'utf8');
+  if (original.includes(JNI_DEPRECATION_CMAKE_MARKER)) {
+    return;
+  }
+  const targetMatch = original.match(REACTNATIVE_COMPILE_OPTIONS_RE);
+  if (!targetMatch) {
+    throw new Error(
+      `patchAndroidJniDeprecationCMake: no target_compile_reactnative_options in ${cmakeListsPath}`,
+    );
+  }
+  const target = targetMatch[1];
+  const patch = [
+    '',
+    JNI_DEPRECATION_CMAKE_MARKER,
+    '# React Native 0.89+ deprecates the cached-method-ID overload used by this',
+    '# checked-in codegen output; older React Native versions still need it.',
+    `target_compile_options(${target} PRIVATE -Wno-error=deprecated-declarations)`,
+    '',
+  ].join('\n');
+
+  const compileOptionsRe = new RegExp(
+    `(target_compile_reactnative_options\\(${target}\\s+PRIVATE\\))\\s*`,
+  );
+  const updated = original.replace(compileOptionsRe, `$1${patch}`);
+  if (updated === original) {
+    throw new Error(`patchAndroidJniDeprecationCMake: failed to append patch in ${cmakeListsPath}`);
+  }
+  fs.writeFileSync(cmakeListsPath, updated);
+}
+
 function runPackagePlatform(packageName, platform) {
   const paths = OUTPUT_PATHS[packageName];
   if (!paths) {
@@ -181,8 +222,7 @@ function runPackagePlatform(packageName, platform) {
     throw new Error(`platform must be android|ios, got ${platform}`);
   }
 
-  const packageDir =
-    packageName === 'testing' ? TESTS_DIR : path.join(PACKAGES_ROOT, packageName);
+  const packageDir = packageName === 'testing' ? TESTS_DIR : path.join(PACKAGES_ROOT, packageName);
   const relativeOutput = paths[platform];
   const outputAbs = path.join(packageDir, relativeOutput);
   // App codegen (`testing`): CLI `--outputPath` is the RN app *base* (iOS project
@@ -194,8 +234,7 @@ function runPackagePlatform(packageName, platform) {
         ? TESTING_IOS_PROJECT_DIR
         : '.'
       : path.relative(TESTS_DIR, outputAbs);
-  const packageFromTests =
-    packageName === 'testing' ? '.' : path.relative(TESTS_DIR, packageDir);
+  const packageFromTests = packageName === 'testing' ? '.' : path.relative(TESTS_DIR, packageDir);
 
   // NewArch-AD-22: wipe every path this invoke writes. For testing iOS that is
   // the derived OUTPUT_PATHS dir *and* dumps at the CLI --outputPath base.
@@ -226,6 +265,9 @@ function runPackagePlatform(packageName, platform) {
     }
   }
   scrubStaleJsiCpp(outputAbs);
+  if (platform === 'android' && packageName !== 'testing') {
+    patchAndroidJniDeprecationCMake(outputAbs);
+  }
 }
 
 function runAll() {
