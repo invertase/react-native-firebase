@@ -11,7 +11,7 @@ previous: /functions/writing-deploying-functions
 - Install Messaging: `npm install --save @react-native-firebase/messaging` or `yarn add @react-native-firebase/messaging`, then rebuild native apps (`cd ios && pod install` on iOS).
 - **iOS:** complete [iOS Messaging Setup](/messaging/usage/ios-setup) (Push Notifications capability, Background Modes with Background fetch + Remote notifications, APNs key linked in Firebase Console) before expecting FCM delivery on a physical device.
 - **Android API 33+:** request `POST_NOTIFICATIONS` (see [Android - Requesting permissions](/messaging/usage#android---requesting-permissions)) before expecting notification UI.
-- Register `setBackgroundMessageHandler` in the app **entry file** (for example `index.js`), **before** `AppRegistry.registerComponent`, not inside a React component. See [Background & Quit state messages](/messaging/usage#background--quit-state-messages).
+- Register `setBackgroundMessageHandler` in the app **entry file** (for example `index.js`), **before** `AppRegistry.registerComponent`, not inside a React component. See [Background & Quit state messages](/messaging/usage#background-quit-state-messages).
 
 Example Expo Router screen: https://github.com/invertase/react-native-firebase/blob/main/test-expo/app/messaging.tsx
 
