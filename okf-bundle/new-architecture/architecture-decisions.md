@@ -407,6 +407,20 @@ ResultT inject ([NewArch-AD-21](#newarch-ad-21--interim-ios-resultt-alias-withou
 
 ---
 
+## NewArch-AD-24 — JNI deprecation CMake patch until min RN ≥ 0.89 — **Accepted**
+
+**Context:** React Native **0.89+** deprecates the `JavaTurboModule::invokeJavaMethod` overload that takes a cached `jmethodID` ([facebook/react-native#59619](https://github.com/facebook/react-native/pull/59619)). RNFB still commits library JNI under each package's `generated/jni/` for TurboModules ([NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted)). Stock codegen continues to emit the legacy call shape so builds keep working on React Native versions **before** 0.89. On 0.89+, `target_compile_reactnative_options` turns deprecation warnings into errors (`-Werror`), breaking all library codegen CMake targets.
+
+**Decision:** After each successful **library** Android wipe-then-regen ([NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted)), [`scripts/codegen-package.mjs`](../../../scripts/codegen-package.mjs) post-processes `jni/CMakeLists.txt` to append `target_compile_options(<react_codegen_* target> PRIVATE -Wno-error=deprecated-declarations)` with a stable `# RNFB:` marker comment. Scope: **16** library packages (not `testing` app codegen). Idempotent on re-run.
+
+**Why not regenerate call sites now:** The replacement `invokeJavaMethod` overload exists only from RN **0.89**; rewriting committed `.cpp` output would break the documented compatibility window for older React Native lines still supported alongside the mobile test app pin.
+
+**Exit criterion:** When RNFB's minimum supported React Native is **≥ 0.89**, run `yarn codegen:all` with a 0.89+ toolchain so upstream templates emit the new overload, commit regenerated JNI, and **remove** this CMake post-process (delete `patchAndroidJniDeprecationCMake` and the marker block from committed `CMakeLists.txt` files).
+
+**Related:** [NewArch-AD-5](#newarch-ad-5--commit-generated-code--accepted), [NewArch-AD-22](#newarch-ad-22--codegen-is-wipe-then-regen-on-the-configured-outputpath--accepted), [agent-command-policy § TurboModule codegen](../testing/agent-command-policy.md#turbomodule-codegen).
+
+---
+
 ## Related docs
 
 | Topic | Document |
