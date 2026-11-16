@@ -20,6 +20,8 @@ cd "$(dirname "$0")/../../.."
 REPO_ROOT="$(pwd)"
 # shellcheck source=../../../scripts/e2e/lib/ios-simulator-helpers.sh
 source "${REPO_ROOT}/scripts/e2e/lib/ios-simulator-helpers.sh"
+# shellcheck source=../../../scripts/e2e/lib/e2e-run-record.sh
+source "${REPO_ROOT}/scripts/e2e/lib/e2e-run-record.sh"
 
 log() {
   echo "[test-rn-bare-ios-launch-smoke] $*"
@@ -42,14 +44,17 @@ WORKSPACE="${RNFB_TEST_RN_BARE_WORKSPACE:-test-rn-bare/ios/testrnbare.xcworkspac
 SCHEME="${RNFB_TEST_RN_BARE_SCHEME:-testrnbare}"
 SIM_NAME="${RNFB_TEST_RN_BARE_IOS27_DEVICE:-iPhone 18 Pro}"
 METRO_PORT="${RNFB_TEST_RN_BARE_METRO_PORT:-8081}"
-METRO_LOG="${RNFB_TEST_RN_BARE_METRO_LOG:-/tmp/test-rn-bare-launch-smoke-metro.log}"
-APP_LOG="${RNFB_TEST_RN_BARE_LAUNCH_LOG:-/tmp/test-rn-bare-launch-smoke.log}"
-XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG:-/tmp/test-rn-bare-launch-smoke-xcodebuild.log}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+METRO_LOG="${RNFB_TEST_RN_BARE_METRO_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-metro.log}"
+APP_LOG="${RNFB_TEST_RN_BARE_LAUNCH_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke.log}"
+XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-xcodebuild.log}"
 PODS_PBXPROJ="test-rn-bare/ios/Pods/Pods.xcodeproj/project.pbxproj"
 LAUNCH_DERIVED_DATA=""
 LOG_LEVEL="default"
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
-  LAUNCH_DERIVED_DATA="${RNFB_TEST_RN_BARE_LAUNCH_DERIVED_DATA:-/tmp/test-rn-bare-launch-derived-data-dynamic-firebase}"
+  LAUNCH_DERIVED_DATA="${RNFB_TEST_RN_BARE_LAUNCH_DERIVED_DATA:-${TMP_ROOT}/test-rn-bare-launch-derived-data-dynamic-firebase}"
   # FirebaseCore's configure marker is a debug-level log.
   LOG_LEVEL="debug"
 fi
@@ -72,10 +77,17 @@ cleanup() {
     wait "$LOG_PID" 2>/dev/null || true
     LOG_PID=""
   fi
-  if [[ -n "$metro_pid" ]]; then
-    kill "$metro_pid" 2>/dev/null || true
+  # Only the Metro this script started (subshell, yarn, node) — never whatever else
+  # listens on the port.
+  local tree
+  tree="$(e2e_pid_tree "$metro_pid")"
+  if [[ -n "$tree" ]]; then
+    # shellcheck disable=SC2086
+    kill $tree 2>/dev/null || true
+    sleep 1
+    # shellcheck disable=SC2086
+    kill -9 $tree 2>/dev/null || true
   fi
-  lsof -ti:"$METRO_PORT" | xargs kill -9 2>/dev/null || true
 }
 
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
@@ -84,7 +96,7 @@ if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   if [[ -z "$LAUNCH_DERIVED_DATA" || "$LAUNCH_DERIVED_DATA" == "/" ]]; then
     fail "refusing to delete launch DerivedData path '${LAUNCH_DERIVED_DATA}'"
   fi
-  # Same rule as the probe build: a surviving /tmp path from another checkout
+  # Same rule as the probe build: a surviving temp path from another checkout
   # is not evidence for this one.
   rm -rf "$LAUNCH_DERIVED_DATA"
   log "removed launch DerivedData at ${LAUNCH_DERIVED_DATA} before xcodebuild"
@@ -93,7 +105,9 @@ fi
 UDID="$(rnfb_ensure_ios_simulator_udid "$SIM_NAME")"
 log "simulator udid=${UDID} name=\"${SIM_NAME}\" runtime=$(rnfb_ios_sim_runtime_label)"
 
-lsof -ti:"$METRO_PORT" | xargs kill -9 2>/dev/null || true
+for holder in $(e2e_port_listener_pids "$METRO_PORT"); do
+  fail "Metro port :${METRO_PORT} is held by $(e2e_pid_describe "$holder") — not started by this smoke, so it is not killed. Stop it, or set RNFB_TEST_RN_BARE_METRO_PORT to a free port."
+done
 : >"$METRO_LOG"
 (
   cd test-rn-bare

@@ -110,13 +110,18 @@ jobs:
 
       - name: test-expo iOS launch smoke
         id: launch-smoke
+        env:
+          # Pinned so the log upload below finds them whatever TMPDIR the runner sets.
+          RNFB_TEST_EXPO_LAUNCH_LOG: /tmp/test-expo-launch-smoke.log
+          RNFB_TEST_EXPO_METRO_LOG: /tmp/test-expo-launch-smoke-metro.log
+          RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG: /tmp/test-expo-launch-smoke-xcodebuild.log
         run: yarn test-expo:ios:launch-smoke
 
       - name: ccache stats (after)
         if: always()
         run: ccache -s || true
 
-      # Paths match defaults in test-expo-ios-launch-smoke.sh (APP_LOG / METRO_LOG / XCODEBUILD_LOG).
+      # Paths match the launch-smoke step env (APP_LOG / METRO_LOG / XCODEBUILD_LOG).
       - name: Upload launch-smoke logs
         # https://github.com/actions/upload-artifact/releases
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

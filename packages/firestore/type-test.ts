@@ -933,6 +933,8 @@ const _cStr: Expression = constant('hello');
 const _cBool: BooleanExpression = constant(true);
 const _cNull: Expression = constant(null);
 const _cUnknown: Expression = constant({ nested: true });
+const _cTimestamp: Expression = constant(new Timestamp(1700000000, 0));
+const _cDate: Expression = constant(new Date());
 void _cNum;
 void _cNumPreferInt;
 void _cNumNoPreferInt;
@@ -940,6 +942,8 @@ void _cStr;
 void _cBool;
 void _cNull;
 void _cUnknown;
+void _cTimestamp;
+void _cDate;
 
 // ----- Comparison: standalone overloads -----
 // greaterThan(Expression, Expression) | greaterThan(Expression, value)

@@ -2,6 +2,12 @@
 # android-emulator-runner executes each script: line via sh -c; keep orchestration here.
 set -uo pipefail
 
+# The cleanup trap kills every adb logcat / headless qemu on the host: CI runner only.
+[[ "${CI:-}" == true ]] || {
+  echo "android-e2e-detox.sh is CI only (its cleanup kills host-wide adb logcat / qemu)" >&2
+  exit 2
+}
+
 TEST_EXIT=0
 ADB="${ANDROID_HOME}/platform-tools/adb"
 

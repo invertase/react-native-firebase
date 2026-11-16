@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # Canonical Metro start for yarn tests:packager:* / tests:macos:packager:*.
-# Honor RCT_METRO_PORT (fallback RNFB_METRO_PORT / 8081). Always kill that port's
-# listeners (SIGTERM then SIGKILL), set TMPDIR=$HOME/.metro/rnfb-${port}.
+# Honor RCT_METRO_PORT (fallback RNFB_METRO_PORT / 8081). Kill that port's listeners
+# recorded by this checkout's runs (SIGTERM then SIGKILL); fail fast when another owner
+# holds the port. Record the new Metro in the run record.
+# TMPDIR=${RNFB_METRO_CACHE_ROOT:-$HOME/.metro}/rnfb-${port}. The Metro log defaults to
+# the caller's ${TMPDIR:-/tmp}/rnfb-metro-${port}.log (RNFB_METRO_LOG overrides), read
+# before TMPDIR is repointed at the cache.
 # Watchman: watch-del this Metro project root unless a sibling Metro already owns
 # it (skip so android∥ios dual tests/ packagers survive); force with
 # RNFB_METRO_FORCE_WATCHMAN_RESET=1. Always watch-project the allowlist. Never
@@ -54,28 +58,53 @@ if [[ "$APP_DIR" == "tests-macos" && "$PORT" != "8081" && -z "${RNFB_MACOS_JET_P
   echo "error: macOS Metro on :${PORT} requires RNFB_MACOS_JET_PORT on the packager process (eval \"\$(yarn tests:e2e:export-slot-env macos <slot>)\" before yarn tests:macos:packager:jet*)" >&2
   exit 2
 fi
-CACHE_DIR="${HOME}/.metro/rnfb-${PORT}"
+CALLER_TMP_ROOT="$(e2e_tmp_root)"
+METRO_LOG="${RNFB_METRO_LOG:-${CALLER_TMP_ROOT}/rnfb-metro-${PORT}.log}"
+METRO_CACHE_ROOT="${RNFB_METRO_CACHE_ROOT:-${HOME}/.metro}"
+METRO_CACHE_ROOT="${METRO_CACHE_ROOT%/}"
+METRO_CACHE_ROOT="${METRO_CACHE_ROOT:-${HOME}/.metro}"
+CACHE_DIR="${METRO_CACHE_ROOT}/rnfb-${PORT}"
 mkdir -p "$CACHE_DIR"
 export TMPDIR="$CACHE_DIR"
 STATUS_WAIT_SEC="${RNFB_METRO_STATUS_WAIT_SEC:-180}"
-METRO_LOG="${RNFB_METRO_LOG:-/tmp/rnfb-metro-${PORT}.log}"
 
+# Echo listener pids on a port that this checkout's runs recorded (run record).
+owned_port_listeners() {
+  local pid
+  e2e_run_record_load
+  for pid in $(e2e_listener_pids "$1"); do
+    e2e_pid_owned "$pid" && echo "$pid"
+  done
+  return 0
+}
+
+# Kill only this checkout's recorded listeners (SIGTERM then SIGKILL); fail fast when
+# another owner still holds the port — never kill it.
 kill_port_listeners() {
   local port=$1
-  local pids
-  pids="$(e2e_listener_pids "$port")"
-  if [[ -z "${pids}" ]]; then
-    return 0
+  local pids pid
+  pids="$(owned_port_listeners "$port")"
+  if [[ -n "${pids}" ]]; then
+    echo "[packager] SIGTERM :${port} pids=$(echo "$pids" | tr '\n' ' ')"
+    # shellcheck disable=SC2086
+    kill $pids 2>/dev/null || true
+    sleep 1
+    pids="$(owned_port_listeners "$port")"
+    if [[ -n "${pids}" ]]; then
+      echo "[packager] SIGKILL :${port} pids=$(echo "$pids" | tr '\n' ' ')"
+      # shellcheck disable=SC2086
+      kill -9 $pids 2>/dev/null || true
+      sleep 1
+    fi
   fi
-  echo "[packager] SIGTERM :${port} pids=$(echo "$pids" | tr '\n' ' ')"
-  # shellcheck disable=SC2086
-  kill $pids 2>/dev/null || true
-  sleep 1
   pids="$(e2e_listener_pids "$port")"
   if [[ -n "${pids}" ]]; then
-    echo "[packager] SIGKILL :${port} pids=$(echo "$pids" | tr '\n' ' ')"
-    # shellcheck disable=SC2086
-    kill -9 $pids 2>/dev/null || true
+    local owner
+    for pid in $pids; do
+      owner="$(e2e_pid_owner "$pid")"
+      echo "error: Metro port :${port} is held by $(e2e_pid_describe "$pid") owner=${owner} — not recorded by this checkout's e2e runs, so it is not killed: $(e2e_foreign_holder_hint "$owner" metro)" >&2
+    done
+    exit 1
   fi
 }
 
@@ -117,6 +146,9 @@ trap '' HUP
 yarn react-native start "$@" >"${METRO_LOG}" 2>&1 &
 METRO_PID=$!
 disown "${METRO_PID}" 2>/dev/null || true
+# Recorded at spawn: a Metro that never becomes ready (timeout below) stays this
+# checkout's, so the next start or release frees it instead of failing fast on it.
+e2e_run_record_pid "$METRO_PID" "metro:${PORT}"
 
 deadline=$((SECONDS + STATUS_WAIT_SEC))
 body=""
@@ -127,7 +159,8 @@ while ((SECONDS < deadline)); do
   fi
   body="$(curl -sf "http://127.0.0.1:${PORT}/status" 2>/dev/null || true)"
   if [[ "$body" == *"packager-status:running"* ]]; then
-    echo "[packager] ready :${PORT} packager-status:running pid=${METRO_PID}"
+    e2e_run_record_owned_port_listeners "$PORT" "metro:${PORT}"
+    echo "[packager] ready :${PORT} packager-status:running pid=${METRO_PID} record=$(e2e_run_record_dir)"
     exit 0
   fi
   sleep 1

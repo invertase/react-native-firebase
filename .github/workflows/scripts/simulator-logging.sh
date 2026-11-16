@@ -22,6 +22,18 @@ restart_simulator_logging() {
   # from sim-app.log without re-enabling the crash reporter daemon.
   local log_predicate='process == "testing" OR (process == "SpringBoard" AND eventMessage CONTAINS "invertase") OR subsystem == "com.apple.dyld" OR eventMessage CONTAINS[c] "dyld"'
 
+  # Single-tenant CI runner / Tart VM: "booted" streams and the host resource monitor
+  # are this run's. On a shared host they may be another owner's, so only the
+  # UDID-specific streams are restarted and no resource monitor is started.
+  local single_tenant=0
+  if [[ "${CI:-}" == "true" || "${RNFB_SIM_UI_RESET:-0}" == "1" ]]; then
+    single_tenant=1
+  fi
+  if [[ "$single_tenant" -eq 0 && -z "$sim_udid" ]]; then
+    echo "[boot-status] phase=log_streams skipped=shared_host_without_udid"
+    return 1
+  fi
+
   if [[ -z "$sim_udid" ]] && ! xcrun simctl list devices booted 2>/dev/null | grep -q Booted; then
     echo "[boot-status] phase=log_streams skipped=no_booted_simulator"
     return 1
@@ -29,13 +41,15 @@ restart_simulator_logging() {
 
   echo "[boot-status] phase=log_streams_restart ts=$(date -u +%Y-%m-%dT%H:%M:%SZ) stdout=${with_stdout} record_screens=${record_screens} dir=${log_dir} udid=${sim_udid:-booted}"
 
-  pkill -f 'simctl spawn booted log stream' 2>/dev/null || true
-  pkill -f 'simctl io booted recordVideo' 2>/dev/null || true
+  if [[ "$single_tenant" -eq 1 ]]; then
+    pkill -f 'simctl spawn booted log stream' 2>/dev/null || true
+    pkill -f 'simctl io booted recordVideo' 2>/dev/null || true
+    pkill -f resource-monitor.sh 2>/dev/null || true
+  fi
   if [[ -n "$sim_udid" ]]; then
     pkill -f "simctl spawn ${sim_udid} log stream" 2>/dev/null || true
     pkill -f "simctl io ${sim_udid} recordVideo" 2>/dev/null || true
   fi
-  pkill -f resource-monitor.sh 2>/dev/null || true
   sleep 1
 
   {
@@ -58,8 +72,12 @@ restart_simulator_logging() {
     nohup sh -c "xcrun simctl spawn '${simctl_target}' log stream --level debug --style compact --predicate '${log_predicate}' >>'${sim_app_log}' 2>&1 &" >/dev/null 2>&1 &
   fi
 
-  chmod +x "${repo_root}/.github/workflows/scripts/resource-monitor.sh"
-  RNFB_RESOURCE_MONITOR_LOG="$resource_log" nohup "${repo_root}/.github/workflows/scripts/resource-monitor.sh" >/dev/null 2>&1 &
+  if [[ "$single_tenant" -eq 1 ]]; then
+    chmod +x "${repo_root}/.github/workflows/scripts/resource-monitor.sh"
+    RNFB_RESOURCE_MONITOR_LOG="$resource_log" nohup "${repo_root}/.github/workflows/scripts/resource-monitor.sh" >/dev/null 2>&1 &
+  else
+    resource_log="disabled (shared host)"
+  fi
 
   echo "[boot-status] phase=log_streams_started sim_app_log=${sim_app_log} video=$([[ "$record_screens" == "1" ]] && echo "${log_dir}/simulator.mp4" || echo disabled) monitor=${resource_log}"
 }

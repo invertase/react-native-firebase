@@ -2,16 +2,16 @@
 # Full test suite orchestrator for react-native-firebase.
 #
 # Usage:
-#   yarn test:full [--slot N] [--clear-whole-host] [--verbose]
+#   yarn test:full [--slot N] [--verbose]
 #
 # Deterministic full gate: always scoped release + check before e2e, and scoped
-# release --devices after (pass or fail). Fast reuse / tight iteration uses the
-# decomposed yarn tests:* loop in OKF running-e2e.md — not this script.
+# release --devices after (pass or fail). Release frees only what this checkout's
+# runs recorded; another owner on this run's ports/devices fails the preflight.
+# Fast reuse / tight iteration uses the decomposed yarn tests:* loop in OKF
+# running-e2e.md — not this script. Never performs a whole-machine wipe.
 #
 # --slot N              Slotted parallel e2e (1× android ∥ 1× ios ∥ 1× macos).
 #                       Omit for serial unslotted e2e (ios → android → macos).
-# --clear-whole-host    Whole-host yarn tests:e2e:release --all-slots --devices
-#                       before and after e2e. Dedicated e2e Mac only — kills every slot.
 # --verbose             Stream step output; default logs to LOGDIR only (LLM-friendly).
 
 set -euo pipefail
@@ -26,7 +26,6 @@ source "${REPO_ROOT}/scripts/e2e/lib/e2e-slot-env.sh"
 source "${REPO_ROOT}/scripts/e2e/lib/e2e-resource-env.sh"
 
 SLOT=""
-CLEAR_WHOLE_HOST=0
 VERBOSE=0
 
 LOG_DIR=""
@@ -40,15 +39,15 @@ declare -a OWNED_PIDS=()
 
 usage() {
   cat <<'EOF'
-Usage: yarn test:full [--slot N] [--clear-whole-host] [--verbose]
+Usage: yarn test:full [--slot N] [--verbose]
 
   --slot N              Slotted parallel e2e (android + ios + macos concurrently).
-  --clear-whole-host    Whole-host release (--all-slots --devices). Dedicated e2e Mac only.
   --verbose             Stream command output (default: log files under LOGDIR).
   -h, --help            Show this help.
 
 Always performs scoped release + check before e2e and scoped release --devices after.
 Serial scope: TestingAVD / iPhone 17 / io.invertase.testing. Slotted: slot-N only.
+Release frees only resources this checkout's runs recorded.
 EOF
 }
 
@@ -63,13 +62,9 @@ parse_args() {
         echo "error: --clear was removed; yarn test:full always performs scoped release before and after e2e" >&2
         exit 2
         ;;
-      --clear-all)
-        echo "error: --clear-all was renamed to --clear-whole-host" >&2
+      --clear-all | --clear-whole-host)
+        echo "error: $1 was removed; yarn test:full only releases what this checkout's runs recorded. A whole-machine wipe is manual-only, at explicit user direction: yarn tests:e2e:release --all-slots --devices" >&2
         exit 2
-        ;;
-      --clear-whole-host)
-        CLEAR_WHOLE_HOST=1
-        shift
         ;;
       --verbose)
         VERBOSE=1
@@ -101,12 +96,10 @@ status_line() {
   local extra=${3:-}
   local slot_label="serial"
   [[ -n "$SLOT" ]] && slot_label="slot-${SLOT}"
-  local scope_label="scoped"
-  [[ "$CLEAR_WHOLE_HOST" -eq 1 ]] && scope_label="whole-host"
   if [[ -n "$extra" ]]; then
-    echo "[run-full-tests] slot=${slot_label} release=${scope_label} [phase ${PHASE}/${PHASE_TOTAL}] ${phase_name} ${state} (${extra})"
+    echo "[run-full-tests] slot=${slot_label} release=scoped [phase ${PHASE}/${PHASE_TOTAL}] ${phase_name} ${state} (${extra})"
   else
-    echo "[run-full-tests] slot=${slot_label} release=${scope_label} [phase ${PHASE}/${PHASE_TOTAL}] ${phase_name} ${state}"
+    echo "[run-full-tests] slot=${slot_label} release=scoped [phase ${PHASE}/${PHASE_TOTAL}] ${phase_name} ${state}"
   fi
   if [[ -n "$META_FILE" ]]; then
     echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) ${phase_name} ${state} ${extra:-}" >>"$META_FILE"
@@ -197,14 +190,16 @@ run_slotted_bg() {
   OWNED_PIDS+=($!)
 }
 
+# Only listeners this checkout's runs recorded (run record); another owner is left alone.
 kill_listen_port() {
   local port=$1
-  local pids
-  pids="$(lsof -nP -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true)"
-  if [[ -n "$pids" ]]; then
-    # shellcheck disable=SC2086
-    kill $pids 2>/dev/null || true
-  fi
+  local pid
+  e2e_run_record_load
+  for pid in $(lsof -nP -iTCP:"$port" -sTCP:LISTEN -t 2>/dev/null || true); do
+    if e2e_pid_owned "$pid"; then
+      kill "$pid" 2>/dev/null || true
+    fi
+  done
 }
 
 slot_metro_port() {
@@ -263,9 +258,7 @@ wait_for_emulator_start_job() {
 }
 
 stop_serial_packager() {
-  ps -ef | grep node | grep react-native | grep cli.js | awk '{print $2}' | xargs kill 2>/dev/null || true
   kill_listen_port 8081
-  killall "io.invertase.testing" 2>/dev/null || true
   kill_listen_port 8090
   wait_for_port_free 8081 serial-metro || true
   wait_for_port_free 8090 serial-jet || true
@@ -280,27 +273,18 @@ cleanup_owned_pids() {
 }
 
 e2e_host_release_and_check() {
-  if [[ "$CLEAR_WHOLE_HOST" -eq 1 ]]; then
-    run_yarn e2e-release tests:e2e:release --all-slots --devices
-    run_yarn e2e-check tests:e2e:check --all-slots --services
-    return 0
-  fi
   if [[ -n "$SLOT" ]]; then
     run_slotted android "$SLOT" e2e-release tests:e2e:release --devices
     run_slotted android "$SLOT" e2e-check tests:e2e:check
   else
-    # Serial --devices is slot-safe: release-e2e-resources only touches TestingAVD,
-    # iPhone 17, io.invertase.testing — NOT TestingAVD-N / slot sims unless --all-slots.
+    # Serial --devices is slot-safe: release-e2e-resources only touches what this
+    # checkout's serial runs recorded — never TestingAVD-N / slot sims or other owners.
     run_yarn e2e-release tests:e2e:release --devices
     run_yarn e2e-check tests:e2e:check
   fi
 }
 
 e2e_host_release_after() {
-  if [[ "$CLEAR_WHOLE_HOST" -eq 1 ]]; then
-    run_yarn e2e-release-after tests:e2e:release --all-slots --devices
-    return 0
-  fi
   if [[ -n "$SLOT" ]]; then
     run_slotted android "$SLOT" e2e-release-after tests:e2e:release --devices
   else
@@ -613,10 +597,7 @@ on_exit() {
   local ec=$?
   cleanup_owned_pids
   if [[ "$ec" -ne 0 ]]; then
-    if [[ "$CLEAR_WHOLE_HOST" -eq 1 ]]; then
-      yarn tests:e2e:release --all-slots --devices \
-        >>"$(log_path_for e2e-release-exit)" 2>&1 || true
-    elif [[ -n "${SLOT:-}" ]]; then
+    if [[ -n "${SLOT:-}" ]]; then
       bash -c 'eval "$(bash '"${EXPORT_SLOT_ENV}"' android '"${SLOT}"')" && yarn tests:e2e:release --devices' \
         >>"$(log_path_for e2e-release-exit)" 2>&1 || true
     else
@@ -630,23 +611,20 @@ main() {
   parse_args "$@"
 
   cd "$REPO_ROOT"
-  LOG_DIR="$(mktemp -d /tmp/rnfb-full-XXXXXX)"
+  LOG_DIR="$(mktemp -d "$(e2e_tmp_root)/rnfb-full-XXXXXX")"
   META_FILE="${LOG_DIR}/00-meta.txt"
   trap on_exit EXIT
 
   {
     echo "LOGDIR=${LOG_DIR}"
     echo "slot=${SLOT:-serial}"
-    echo "clear_whole_host=${CLEAR_WHOLE_HOST}"
     echo "verbose=${VERBOSE}"
     date -u +%Y-%m-%dT%H:%M:%SZ
   } | tee "$META_FILE"
 
   local slot_label="serial"
   [[ -n "$SLOT" ]] && slot_label="slot-${SLOT}"
-  local scope_label="scoped"
-  [[ "$CLEAR_WHOLE_HOST" -eq 1 ]] && scope_label="whole-host"
-  echo "[run-full-tests] LOGDIR=${LOG_DIR} slot=${slot_label} release=${scope_label} verbose=${VERBOSE}"
+  echo "[run-full-tests] LOGDIR=${LOG_DIR} slot=${slot_label} release=scoped verbose=${VERBOSE}"
 
   # Static checks must not inherit stale slotted env from the parent shell.
   eval "$(bash "${CLEAR_SLOT_ENV}")" >/dev/null

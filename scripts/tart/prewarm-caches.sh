@@ -58,7 +58,11 @@ echo "[prewarm] firebase emulators..."
 yarn tests:emulator:start-ci
 
 echo "[prewarm] metro bundle prefetch..."
-nohup yarn tests:packager:jet-ci > /tmp/metro-prewarm.log 2>&1 &
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+RNFB_METRO_CACHE_ROOT="$RNFB_METRO_CACHE" nohup yarn tests:packager:jet-ci \
+  > "${TMP_ROOT}/metro-prewarm.log" 2>&1 &
 until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
   sleep 2
 done

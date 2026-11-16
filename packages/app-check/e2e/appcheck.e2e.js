@@ -157,10 +157,10 @@ describe('appCheck()', function () {
 
     describe('getToken()', function () {
       // AppCheck-AD-8: pending facade must reject as provider-not-ready, not token-error.
-      // Uses secondaryFromNative (never initializeAppCheck'd) so delegateProvider stays nil.
+      // Uses secondaryFromNative (never initializeAppCheck'd) so its delegate provider stays unset.
       // Direct TurboModule reject code is unprefixed; FirebaseModule wraps to appCheck/<code>.
       it('pending provider rejects with provider-not-ready (AppCheck-AD-8)', async function () {
-        if (!Platform.ios) {
+        if (Platform.other) {
           this.skip();
         }
         try {
@@ -277,7 +277,7 @@ describe('appCheck()', function () {
 
     describe('getLimitedUseToken()', function () {
       it('pending provider rejects limited-use with provider-not-ready (AppCheck-AD-8)', async function () {
-        if (!Platform.ios) {
+        if (Platform.other) {
           this.skip();
         }
         try {

@@ -38,7 +38,7 @@ One worktree also has **one** `tests-macos/macos/build` (and iOS/Android build p
 ### 2. Why that forces serialized testing (if not parameterized)
 
 - **One listener per port** — second Metro/Jet/emulator bind → `EADDRINUSE` or a stolen session.
-- **One macOS process name** — `killall` / Jet client collision; stale macOS on a shared Jet port breaks Android.
+- **One macOS process name** — name-based kill / Jet client collision; stale macOS on a shared Jet port breaks Android.
 - **Shared emulator DB** — Firestore `wipe()` and auth/storage state are global per emulator process.
 - **One derived-data / build tree per worktree** — two same-platform runs race native products and coverage files.
 - **One CocoaPods CDN cache per host** — overlapping Apple `pod:install` races trunk spec downloads; serialize `yarn tests:ios:pod:install` / `yarn tests:macos:pod:install` across worktrees. Do not disable Swift explicit modules to paper over that.
@@ -71,7 +71,7 @@ Commands for clear → start → build → test → free: [running e2e § slot l
 | Worktree topology (`1× android ∥ 1× ios ∥ 1× macos` per tree) | **Shipped** | [parallel topology](running-e2e.md#parallel-e2e-topology) |
 | Slot env + serial `yarn tests:*` | **Shipped** — `export-slot-env` then the same commands as [running e2e § Rules](running-e2e.md#rules) | [slot lifecycle](running-e2e.md#slot-lifecycle) |
 | Concurrent macOS via `PRODUCT_NAME` | **Shipped** (e.g. `io.invertase.testing.s0`…`sN`) | [macOS process identity](running-e2e.md#macos-process-identity-concurrency) |
-| Host check/release (`yarn tests:e2e:check` / `release`) | **Shipped** — serial default; slot via env; `--all-slots` explicit; Mellifera maps reservations to `RNFB_*` then calls these yarn targets (no JSON feed) | [host-clear probes](running-e2e.md#host-clear-probes) |
+| Host check/release (`yarn tests:e2e:check` / `release`) | **Shipped** — serial default; slot via env; release frees only what the run recorded and fails fast on other owners; `--all-slots` is a manual machine wipe; Mellifera maps reservations to `RNFB_*` then calls these yarn targets (no JSON feed) | [host-clear probes](running-e2e.md#host-clear-probes), [run record](running-e2e.md#run-record) |
 | Coordinator / lease queue (Mellifera) | **WIP** — co-developed out-of-tree (not part of the contention PR) | Optional local `mellifera/` when present — consumes RNFB slots; does not own the runbook ([§ layers](#rnfb-mellifera-tart-layers)) |
 
 <a id="rnfb-mellifera-tart-layers"></a>
@@ -195,11 +195,11 @@ macOS `:test-cover` must not leave the test app running — a stale process on a
 
 [`tests-macos/.jetrc.js`](../../tests-macos/.jetrc.js) macOS target:
 
-- `before`: kill named app, prefetch Metro bundle (`app=` = bundle id), spawn binary path from `RNFB_MACOS_PRODUCT_NAME`.
-- `after` / exit handlers: `killall` the **same** product name; verify `pgrep` empty.
+- `before`: kill this run's own app pids, fail fast if a same-name app it did not start is still running, prefetch Metro bundle (`app=` = bundle id), spawn binary path from `RNFB_MACOS_PRODUCT_NAME`, and record the spawned pid ([run record](running-e2e.md#run-record)).
+- `after` / exit handlers: SIGTERM then SIGKILL the pids this run spawned; never `killall` by name.
 - App stdio detached (`ignore`) so `| tee` pipes close when Jet exits.
 
-Unscoped `release-e2e-resources.sh` also clears `io.invertase.testing.s0`…`.sN` leftovers.
+`release-e2e-resources.sh` stops only the recorded app pid. Clearing every `io.invertase.testing.s0`…`.sN` leftover is part of the manual `--all-slots` wipe.
 
 ### Concurrent identity (proven — was “future” in older drafts)
 
@@ -543,7 +543,7 @@ Work-queue rows for implementation are ephemeral — not duplicated here per [do
 | RAM / CPU exhaustion (N× emulators + Metros) | Capacity advertisement; document minimum host spec |
 | Cloud API quota (FIS / RC) under parallel worktrees | Harness narrowing; existing retry in `firebase.test.js` |
 | Stale leases after agent crash | TTL + pid check + `cleanup-stale` |
-| Operator confusion (wrong PRODUCT_NAME / slot) | `host-status` shows leased `macos-slot-N` + product name; `--all-slots` recover is explicit |
+| Operator confusion (wrong PRODUCT_NAME / slot) | `host-status` shows leased `macos-slot-N` + product name; check names `owner=unrecorded` holders and a free slot; `--all-slots` recover is manual, at explicit user direction only |
 | Coverage merge complexity | Per-worktree artifacts; merge script optional for local dev |
 | Passing `PRODUCT_NAME=` on xcodebuild CLI | Forbidden — use suffix env only ([running e2e](running-e2e.md#macos-process-identity-concurrency)) |
 | Concurrent Apple `:build` PCM races | Isolate real module-cache dir if reproduced; never `SWIFT_ENABLE_EXPLICIT_MODULES=NO` |

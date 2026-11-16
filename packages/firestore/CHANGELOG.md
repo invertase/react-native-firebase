@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **firestore, pipelines:** send Timestamp and Date constants as timestamps ([#9416](https://github.com/invertase/react-native-firebase/issues/9416)) ([f53c07f](https://github.com/invertase/react-native-firebase/commit/f53c07f7c5a0ca388837b9a383fa699acd7cec29))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 ### Bug Fixes

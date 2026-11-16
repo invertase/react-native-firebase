@@ -503,6 +503,10 @@ ${body}
           path.join(skeleton, 'scripts/e2e/lib/ios-simulator-helpers.sh'),
           'rnfb_ensure_ios_simulator_udid() { echo FAKE-UDID; }\nrnfb_ios_sim_runtime_label() { echo fake-runtime; }\n',
         );
+        fs.copyFileSync(
+          path.join(repoRoot, 'scripts/e2e/lib/e2e-run-record.sh'),
+          path.join(skeleton, 'scripts/e2e/lib/e2e-run-record.sh'),
+        );
         if (pods !== null) {
           fs.mkdirSync(path.join(skeleton, 'test-rn-bare/ios/Pods/Pods.xcodeproj'), {
             recursive: true,
@@ -528,6 +532,7 @@ ${body}
             env: {
               ...process.env,
               PATH: `${binDir}:${process.env.PATH}`,
+              TMPDIR: tmpDir,
               RNFB_TEST_RN_BARE_DYNAMIC_FIREBASE: '1',
               ...env,
             },

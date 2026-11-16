@@ -50,9 +50,33 @@ resolve_physical_cpus() {
   echo $(( logical / 2 > 0 ? logical / 2 : 1 ))
 }
 
-cpus="$(resolve_physical_cpus)"
+# lscpu and /proc/cpuinfo list every host core even under --cpuset-cpus; nproc
+# honours the CPU affinity / cpuset (but also OMP_* limits, so those are unset).
+resolve_online_cpus() {
+  local cpus=""
+
+  if command -v nproc >/dev/null 2>&1; then
+    cpus="$(env -u OMP_NUM_THREADS -u OMP_THREAD_LIMIT nproc 2>/dev/null || true)"
+  fi
+  if ! [[ "$cpus" =~ ^[0-9]+$ ]] && command -v getconf >/dev/null 2>&1; then
+    cpus="$(getconf _NPROCESSORS_ONLN 2>/dev/null || true)"
+  fi
+  if ! [[ "$cpus" =~ ^[0-9]+$ ]] && [[ "$(uname -s)" == Darwin ]]; then
+    cpus="$(sysctl -n hw.logicalcpu 2>/dev/null || true)"
+  fi
+  if [[ "$cpus" =~ ^[0-9]+$ ]] && (( cpus >= 1 )); then
+    echo "$cpus"
+  fi
+}
+
+physical="$(resolve_physical_cpus)"
+online="$(resolve_online_cpus)"
+cpus="$physical"
+if [[ -n "$online" ]] && (( online < cpus )); then
+  cpus="$online"
+fi
 workers=$(( cpus < WORKER_CAP ? cpus : WORKER_CAP ))
 (( workers >= 1 )) || workers=1
 
-echo "[gradlew-with-worker-cap] cpus=$cpus cap=$WORKER_CAP -> --max-workers=$workers" >&2
+echo "[gradlew-with-worker-cap] cpus=$cpus (physical=$physical online=${online:-unknown}) cap=$WORKER_CAP -> --max-workers=$workers" >&2
 exec ./gradlew --max-workers="$workers" "$@"

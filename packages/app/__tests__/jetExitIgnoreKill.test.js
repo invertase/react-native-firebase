@@ -71,8 +71,9 @@ describe('jetExitIgnoreKill (await-exit stall vs exitPromise race)', function ()
     const guardBody = src.slice(guardStart, guardEnd);
     expect(guardBody).toMatch(/jetSession\.killIgnoringExit\(/);
     expect(guardBody).not.toMatch(/killJetForLaunchRetry\(/);
-    expect(src).toMatch(/require\('\.\/jetExitIgnoreKill'\)/);
-    expect(src).toMatch(/async killIgnoringExit\(/);
+    const sessionSrc = fs.readFileSync(path.join(repoRoot, 'tests/e2e/jetSession.js'), 'utf8');
+    expect(sessionSrc).toMatch(/require\('\.\/jetExitIgnoreKill'\)/);
+    expect(sessionSrc).toMatch(/async killIgnoringExit\(/);
     expect(src).toMatch(/stall-kill-jet/);
     expect(src).toMatch(/stall-diagnostics/);
   });

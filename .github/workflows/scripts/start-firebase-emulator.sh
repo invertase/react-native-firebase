@@ -200,33 +200,18 @@ popd >/dev/null
 cleanup_lock
 trap - EXIT INT TERM
 
-EMU_LOG="${RNFB_EMULATOR_LOG:-/tmp/rnfb-emulator-${TAG}-s${SLOT}.log}"
+EMU_LOG="${RNFB_EMULATOR_LOG:-$(e2e_tmp_root)/rnfb-emulator-${TAG}-s${SLOT}.log}"
 READY_TIMEOUT="${RNFB_EMULATOR_READY_TIMEOUT:-300}"
 EMU_PID=""
 
+SUITE_PORTS=("$FS_PORT" "$AUTH_PORT" "$DB_PORT" "$FN_PORT" "$ST_PORT" "$HUB_PORT" "$LOG_PORT"
+  "$WS_PORT" "$EVENTARC_PORT" "$TASKS_PORT")
+
+# Failed start: stop only the suite this script spawned (EMU_PID, its descendants, and
+# listeners owned through it). Another owner may have bound a suite port meanwhile.
 kill_started_suite() {
-  local port pids
-  if [[ -n "${EMU_PID:-}" ]] && kill -0 "${EMU_PID}" 2>/dev/null; then
-    kill "${EMU_PID}" 2>/dev/null || true
-    sleep 1
-    if kill -0 "${EMU_PID}" 2>/dev/null; then
-      kill -9 "${EMU_PID}" 2>/dev/null || true
-    fi
-  fi
-  for port in "$FS_PORT" "$AUTH_PORT" "$DB_PORT" "$FN_PORT" "$ST_PORT" "$HUB_PORT" "$LOG_PORT" \
-    "$WS_PORT" "$EVENTARC_PORT" "$TASKS_PORT"; do
-    pids="$(e2e_listener_pids "$port" | tr '\n' ' ')"
-    if [[ -n "${pids// /}" ]]; then
-      # shellcheck disable=SC2086
-      kill ${pids} 2>/dev/null || true
-      sleep 0.5
-      pids="$(e2e_listener_pids "$port" | tr '\n' ' ')"
-      if [[ -n "${pids// /}" ]]; then
-        # shellcheck disable=SC2086
-        kill -9 ${pids} 2>/dev/null || true
-      fi
-    fi
-  done
+  [[ -n "${EMU_PID:-}" ]] || return 0
+  e2e_kill_started_tree "$EMU_PID" "${SUITE_PORTS[@]}"
   wait "${EMU_PID}" 2>/dev/null || true
 }
 
@@ -244,6 +229,7 @@ echo "[emulator-${TAG}] starting background suite log=${EMU_LOG}"
 "${EMU_START[@]}" >"${EMU_LOG}" 2>&1 &
 EMU_PID=$!
 disown "${EMU_PID}" 2>/dev/null || true
+e2e_run_record_pid "$EMU_PID" "emulator-suite:${TAG}"
 
 ready_deadline=$((SECONDS + READY_TIMEOUT))
 while ! e2e_port_listening "$FN_PORT"; do
@@ -260,5 +246,8 @@ while ! e2e_port_listening "$FN_PORT"; do
   sleep 1
 done
 
-echo "[emulator-${TAG}] ready functions=:${FN_PORT} pid=${EMU_PID} log=${EMU_LOG}"
+for port in "${SUITE_PORTS[@]}"; do
+  e2e_run_record_owned_port_listeners "$port" "emulator-suite:${TAG}"
+done
+echo "[emulator-${TAG}] ready functions=:${FN_PORT} pid=${EMU_PID} log=${EMU_LOG} record=$(e2e_run_record_dir)"
 exit 0

@@ -2189,9 +2189,41 @@ class FirebaseSpmTest < Minitest::Test
     phase = target.shell_script_build_phases.find { |p| p.name == RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME }
     refute_nil phase
     assert_equal '/bin/sh', phase.shell_path
+    lines = phase.shell_script.lines.map(&:chomp)
     RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.each do |artifact_name|
-      assert_includes phase.shell_script, "#{artifact_name}.xcframework-ios.signature"
+      assert_includes lines, "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{artifact_name}.xcframework-ios.signature"
+      assert_includes lines,
+                      "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{artifact_name}.xcframework-ios-simulator.signature"
     end
+    assert_equal RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.length * 2, lines.length
+    refute_includes phase.shell_script, '*'
+    assert phase.shell_script.end_with?("\n")
+    assert_equal 1, user_project.save_count
+  end
+
+  def test_signature_collision_fix_rewrites_phase_with_device_only_script_from_older_release
+    load_firebase_spm
+    RNFirebaseSPM.activate!('12.10.0')
+
+    target = MockTarget.new(['[CP] Embed Pods Frameworks', RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME])
+    old_phase = target.shell_script_build_phases.last
+    old_lines = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map do |name|
+      "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-ios.signature"
+    end
+    old_phase.shell_script = "#{old_lines.join("\n")}\n"
+    old_phase.shell_path = '/bin/sh'
+    old_phase.always_out_of_date = '1'
+    user_project = MockUserProject.new([target])
+    installer = MockInstaller.new([MockAggregateTarget.new(user_project)])
+
+    rnfirebase_fix_spm_archive_signature_collision(installer)
+
+    matching = target.shell_script_build_phases.select { |p| p.name == RNFIREBASE_SPM_SIGNATURE_FIX_PHASE_NAME }
+    assert_equal [old_phase], matching
+    expected_lines = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.product(%w[ios ios-simulator]).map do |name, slice|
+      "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-#{slice}.signature"
+    end
+    assert_equal "#{expected_lines.join("\n")}\n", old_phase.shell_script
     assert_equal 1, user_project.save_count
   end
 
@@ -3338,6 +3370,8 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, Pod::UI.warnings.length
     assert_includes Pod::UI.warnings[0], 'Couldn\'t add the Firebase/Google SPM binary'
     assert_includes Pod::UI.warnings[0], 'sig boom'
+    assert_includes Pod::UI.warnings[0], '<TheNameFromTheErrorMessage>.xcframework-ios.signature'
+    assert_includes Pod::UI.warnings[0], '<TheNameFromTheErrorMessage>.xcframework-ios-simulator.signature'
   end
 
   def test_hook_warns_when_outer_hook_install_raises

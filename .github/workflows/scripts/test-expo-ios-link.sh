@@ -9,7 +9,7 @@
 # This is a *different* bug from two other RNCore issues tracked elsewhere
 # in this repo -- do not "fix" this script by touching their owning docs:
 #   - compile-time / RNFB podspecs / non-modular includes:
-#     okf-bundle/ios-rncore-podspec.md (GitHub #9200 / CPRN-237)
+#     okf-bundle/ios-rncore-podspec.md (GitHub #9200)
 #   - link-time / tests/ only / third-party pods (react-native-device-info,
 #     @invertase/react-native-apple-authentication):
 #     okf-bundle/testing/test-app-dependency-pins.md (tests/ios/Podfile's
@@ -23,6 +23,7 @@
 # every generated `RNFB*` CocoaPods target, not just App and Messaging.
 set -euo pipefail
 
+SCRIPTS_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$(dirname "$0")/../../.."
 cd test-expo
 
@@ -30,8 +31,11 @@ log() {
   echo "[test-expo-ios-link] $*"
 }
 
-PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-/tmp/test-expo-prebuild.log}"
-XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-/tmp/test-expo-xcodebuild.log}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+PREBUILD_LOG="${RNFB_TEST_EXPO_PREBUILD_LOG:-${TMP_ROOT}/test-expo-prebuild.log}"
+XCODEBUILD_LOG="${RNFB_TEST_EXPO_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-xcodebuild.log}"
 PBXPROJ="ios/testexpo.xcodeproj/project.pbxproj"
 PODS_PBXPROJ="ios/Pods/Pods.xcodeproj/project.pbxproj"
 PODS_XCCONFIG="ios/Pods/Target Support Files/Pods-testexpo/Pods-testexpo.release.xcconfig"
@@ -358,81 +362,19 @@ fi
 
 log "PASS: Expo documented path links RNFBApp/RNFBMessaging as frameworks without duplicate Firebase symbols"
 
-# #9322: without an explicit top-level spm_dependency declaration on
-# RNFBAnalytics.podspec / RNFBMessaging.podspec (see the comments there for
-# the full writeup, including what's confirmed vs. still an open question),
-# GoogleUtilities classes (GULNetwork, GULReachabilityChecker, etc.) end up
-# compiled privately into both RNFBAnalytics.framework and
-# RNFBMessaging.framework instead of one shared dynamic framework, and
-# collide at runtime once both are loaded in-process.
-#
-# Requires @react-native-firebase/analytics alongside messaging in
-# test-expo/package.json to actually exercise both sides of the graph.
-log "--- #9322 GoogleUtilities dedupe diagnosis ---"
 BUILT_PRODUCTS_DIR="$(grep -oE '/[^ ]*/Build/Products/[A-Za-z0-9_.-]+' "$XCODEBUILD_LOG" | head -1 || true)"
 if [[ -z "$BUILT_PRODUCTS_DIR" || ! -d "$BUILT_PRODUCTS_DIR" ]]; then
-  log "ERROR: could not determine BUILT_PRODUCTS_DIR from xcodebuild log for #9322 check"
+  log "ERROR: could not determine BUILT_PRODUCTS_DIR from xcodebuild log"
   exit 1
 fi
-
-nine322_classes=(
-  GULNetwork
-  GULMutableDictionary
-  GULNetworkURLSession
-  GULNetworkURLSessionWeakHolder
-  GULSessionDeallocTracker
-  GULReachabilityChecker
-  GULSwizzler
-  GoogleUtilities_GoogleUtilities_Network_SWIFTPM_MODULE_BUNDLER_FINDER
-  GoogleUtilities_GoogleUtilities_Reachability_SWIFTPM_MODULE_BUNDLER_FINDER
-)
-
-nine322_work_dir="$(mktemp -d)"
-trap 'rm -rf "$nine322_work_dir"' EXIT
-
-while IFS= read -r fw_dir; do
-  fw_name="$(basename "$fw_dir" .framework)"
-  bin="$fw_dir/$fw_name"
-  [[ -f "$bin" ]] || continue
-  fw_syms="$(nm -gU "$bin" 2>/dev/null || true)"
-  [[ -z "$fw_syms" ]] && continue
-  for class_name in "${nine322_classes[@]}"; do
-    if grep -qE '_OBJC_CLASS_\$_'"${class_name}"'$' <<<"$fw_syms"; then
-      echo "$fw_name" >>"${nine322_work_dir}/${class_name}.txt"
-    fi
-  done
-done < <(find "$BUILT_PRODUCTS_DIR" -type d -name "*.framework" ! -path "*/*.app/*" 2>/dev/null)
-
-nine322_failed=0
-for class_name in "${nine322_classes[@]}"; do
-  owners_file="${nine322_work_dir}/${class_name}.txt"
-  if [[ ! -f "$owners_file" ]]; then
-    log "ERROR: #9322 -- ${class_name} not defined in any built framework"
-    nine322_failed=1
-    continue
+APP_DIR="${BUILT_PRODUCTS_DIR}/${SCHEME}.app"
+if [[ ! -d "$APP_DIR" ]]; then
+  app_candidates="$(find "$BUILT_PRODUCTS_DIR" -maxdepth 1 -type d -name '*.app')"
+  if [[ -z "$app_candidates" || "$(wc -l <<<"$app_candidates" | tr -d ' ')" -ne 1 ]]; then
+    log "ERROR: expected exactly one built .app in ${BUILT_PRODUCTS_DIR}, found: ${app_candidates:-none}"
+    exit 1
   fi
-  owner_count="$(wc -l <"$owners_file" | tr -d ' ')"
-  owners="$(tr '\n' ' ' <"$owners_file")"
-  if [[ "$owner_count" -ne 1 ]]; then
-    log "ERROR: #9322 -- expected exactly 1 framework defining ${class_name}, found ${owner_count}: ${owners}"
-    nine322_failed=1
-    continue
-  fi
-  case "$owners" in
-    RNFB*)
-      log "ERROR: #9322 -- ${class_name} is privately duplicated into ${owners} instead of a shared framework"
-      nine322_failed=1
-      ;;
-    *)
-      log "ok: ${class_name} shared in ${owners}"
-      ;;
-  esac
-done
-log "--- end #9322 GoogleUtilities dedupe diagnosis ---"
-
-if [[ "$nine322_failed" -ne 0 ]]; then
-  log "ERROR: #9322 GoogleUtilities duplicate-class regression detected"
-  exit 1
+  APP_DIR="$app_candidates"
 fi
 
-log "PASS: no RNFB* framework privately duplicates a shared GoogleUtilities class (#9322)"
+"${SCRIPTS_DIR}/check-duplicate-objc-classes.sh" "$APP_DIR"

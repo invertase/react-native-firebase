@@ -17,8 +17,9 @@
 
 import { isDate, isNumber, isObject } from '@react-native-firebase/app/dist/module/common';
 
-// Earliest date supported by Firestore timestamps (0001-01-01T00:00:00Z).
-const MIN_SECONDS = -62135596800;
+// Range supported by Firestore timestamps (0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z).
+export const MIN_TIMESTAMP_SECONDS = -62135596800;
+export const MAX_TIMESTAMP_SECONDS = 253402300799;
 
 export class Timestamp {
   static now(): Timestamp {
@@ -61,11 +62,11 @@ export class Timestamp {
       throw new Error(`firebase.firestore.Timestamp 'nanoseconds' out of range: ${nanoseconds}`);
     }
 
-    if (seconds < MIN_SECONDS) {
+    if (seconds < MIN_TIMESTAMP_SECONDS) {
       throw new Error(`firebase.firestore.Timestamp 'seconds' out of range: ${seconds}`);
     }
 
-    if (seconds >= 253402300800) {
+    if (seconds >= MAX_TIMESTAMP_SECONDS + 1) {
       throw new Error(`firebase.firestore.Timestamp 'seconds' out of range: ${seconds}`);
     }
 
@@ -153,7 +154,7 @@ export class Timestamp {
     // ordering that matches the expected ordering. The <seconds> translation is done to avoid
     // having a leading negative sign (i.e. a leading '-' character) in its string representation,
     // which would affect its lexiographical ordering.
-    const adjustedSeconds = this.seconds - MIN_SECONDS;
+    const adjustedSeconds = this.seconds - MIN_TIMESTAMP_SECONDS;
     const formattedSeconds = String(adjustedSeconds).padStart(12, '0');
     const formattedNanoseconds = String(this.nanoseconds).padStart(9, '0');
     return `${formattedSeconds}.${formattedNanoseconds}`;

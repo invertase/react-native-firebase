@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 
 import { AppButton } from '../../src/AppButton';
 import { ScreenChrome } from '../../src/ScreenChrome';
 import { TextField } from '../../src/TextField';
 import { getAuthErrorMessage } from '../../src/authErrorMessage';
+import { ensureAuthEmulator } from './authEmulator';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -12,10 +13,15 @@ export default function SignInScreen() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    ensureAuthEmulator();
+  }, []);
+
   async function handleSignIn() {
     setResult(null);
     setError(null);
     try {
+      ensureAuthEmulator();
       const credential = await signInWithEmailAndPassword(getAuth(), email, password);
       setResult(`Signed in as ${credential.user.email}`);
     } catch (e) {

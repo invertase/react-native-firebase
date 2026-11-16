@@ -563,6 +563,8 @@ GoogleService-Info.plist
 tests/harness.overrides.js
 tests/e2e-slots.env.json
 .github/workflows/scripts/.e2e-emulator-*.json
+# e2e run record (scripts/e2e/lib/e2e-run-record.sh): what this checkout's runs started
+.e2e-run/
 
 # RNFB TurboModule codegen — misplaced iOS provider stubs under Android output paths
 # (NewArch-AD-5: okf-bundle/new-architecture/architecture-decisions.md — commit generated
@@ -622,6 +624,11 @@ mocks-lookup.ts
 .claude/
 .codex/
 Package.Resolved
+
+# Docs snippet type-check harness (yarn docs:tsc:check) — generated
+# every run, never committed. See scripts/docs-snippets-tsc.mjs.
+.docs-snippets-tsc/
+tsconfig.docs-snippets.generated.json
 
 # Generated Expo prebuild / pods / local modules (test-expo fixture sources stay tracked)
 test-expo/ios/

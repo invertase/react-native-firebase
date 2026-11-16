@@ -39,9 +39,12 @@ else
   BUILD_MODE="normal"
 fi
 
-POD_INSTALL_LOG="${RNFB_TEST_RN_BARE_POD_LOG:-/tmp/test-rn-bare-pod-install-${BUILD_MODE}.log}"
-XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_XCODEBUILD_LOG:-/tmp/test-rn-bare-xcodebuild-${BUILD_MODE}.log}"
-DERIVED_DATA="${RNFB_TEST_RN_BARE_DERIVED_DATA:-/tmp/test-rn-bare-derived-data-${BUILD_MODE}}"
+TMP_ROOT="${TMPDIR:-/tmp}"
+TMP_ROOT="${TMP_ROOT%/}"
+TMP_ROOT="${TMP_ROOT:-/tmp}"
+POD_INSTALL_LOG="${RNFB_TEST_RN_BARE_POD_LOG:-${TMP_ROOT}/test-rn-bare-pod-install-${BUILD_MODE}.log}"
+XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_XCODEBUILD_LOG:-${TMP_ROOT}/test-rn-bare-xcodebuild-${BUILD_MODE}.log}"
+DERIVED_DATA="${RNFB_TEST_RN_BARE_DERIVED_DATA:-${TMP_ROOT}/test-rn-bare-derived-data-${BUILD_MODE}}"
 PODFILE="test-rn-bare/ios/Podfile"
 PBXPROJ="test-rn-bare/ios/testrnbare.xcodeproj/project.pbxproj"
 PODS_PBXPROJ="test-rn-bare/ios/Pods/Pods.xcodeproj/project.pbxproj"
@@ -232,7 +235,7 @@ assert_generated_graph
 export SKIP_BUNDLING=1
 export RCT_NO_LAUNCH_PACKAGER=1
 
-# A stable /tmp DerivedData path survives worktree changes. CI typechecks the
+# A stable temp DerivedData path survives worktree changes. CI typechecks the
 # client against the RNFBFirebase module produced in the same run, so a warm
 # module from an earlier checkout is not evidence. Normal builds keep their
 # DerivedData. The override path is cleared too.
@@ -241,7 +244,7 @@ if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
     fail "refusing to delete DerivedData path '${DERIVED_DATA}'"
   fi
   rm -rf "$DERIVED_DATA"
-  log "removed DerivedData at ${DERIVED_DATA} before xcodebuild: a stable /tmp path survives worktree changes, and CI compiles the client against the module from the same run"
+  log "removed DerivedData at ${DERIVED_DATA} before xcodebuild: a stable temp path survives worktree changes, and CI compiles the client against the module from the same run"
 fi
 
 HOST_ARCH="$(uname -m)"

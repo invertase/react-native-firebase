@@ -24,7 +24,7 @@
 #import <React/RCTUtils.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "RNFBMessaging+AppDelegate.h"
+#import "RNFBMessaging+AppDelegatePrivate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
 #import "RNFBMessagingHelper.h"

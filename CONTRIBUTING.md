@@ -79,6 +79,7 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
   ```
 
   - If a method works on both platforms then there's no need to annotate it
+
 - Name your native code methods the same as the JS method name
   - e.g. the Android (`@ReactMethod`) implementation of `signInWithEmailAndPassword()` is named `signInWithEmailAndPassword`
 
@@ -115,6 +116,16 @@ bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify
 ```
 
 > Note that this project is a mono-repo, so you only need to install NPM dependencies once at the root of the project with `yarn`.
+
+Root `yarn` also installs the root Gemfile gems through `yarn ruby:install`. Read the Ruby requirement below before you run it on a Mac.
+
+<a id="ruby-for-ios-and-macos-work"></a>
+
+### Ruby for iOS and macOS work
+
+The root Gemfile gems (CocoaPods, RuboCop, SimpleCov) need **Ruby 3.3.1 or newer** with Bundler. Ruby 3.3.0 cannot load the locked SimpleCov. The Ruby that ships with macOS (`/usr/bin/ruby`, 2.6) is too old, and its `/usr/bin/bundle` cannot load the lockfile's Bundler. Put a current Ruby first on `PATH`, for example Homebrew's (`brew install ruby`, then add `$(brew --prefix ruby)/bin` to `PATH`) or one managed by rbenv or asdf. Then run `yarn ruby:install`.
+
+When `bundle` is missing, the `ruby` on `PATH` is too old, or `bundle` cannot run, root `yarn` still succeeds: `yarn ruby:install` prints one `ruby:install:` line saying why and skips the gems. JavaScript, Jest, Android and `yarn lint` work without them. iOS and macOS CocoaPods installs (`yarn tests:ios:pod:install`, `yarn tests:macos:pod:install`) and `yarn tests:ios:ruby` need them.
 
 ## Testing Code
 

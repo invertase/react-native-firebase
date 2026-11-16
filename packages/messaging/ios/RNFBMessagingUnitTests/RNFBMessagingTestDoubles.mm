@@ -25,7 +25,7 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 
-#import "RNFBMessaging+AppDelegate.h"
+#import "RNFBMessaging+AppDelegatePrivate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
 #import "RNFBMessagingSerializer.h"

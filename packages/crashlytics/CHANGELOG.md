@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
+
+### Bug Fixes
+
+- **crashlytics, ios:** name the dSYM input after the executable ([#9411](https://github.com/invertase/react-native-firebase/issues/9411)) ([cac23b8](https://github.com/invertase/react-native-firebase/commit/cac23b8720e5c66bc7cfc5ed8c2a19320ca70866))
+
 ## [27.1.0](https://github.com/invertase/react-native-firebase/compare/v27.0.0...v27.1.0) (2026-10-23)
 
 ### Bug Fixes

@@ -25,7 +25,7 @@ gem 'simplecov', '~> 1.3'
 gem 'simplecov-lcov', '~> 0.9'
 
 # Lint for packages/app Ruby helpers + __tests__ (yarn lint:ruby / tests:ios:ruby).
-gem 'rubocop', '~> 1.91'
+gem 'rubocop', '~> 1.92'
 
 # CocoaPods still calls JSON.parse(..., quirks_mode: true) when loading generated
 # podspec JSON (react-native-macos codegen during `yarn tests:macos:pod:install`).
