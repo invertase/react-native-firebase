@@ -38,6 +38,7 @@ const {
 const { shouldSkipAndroidSettleAndLoad } = require('./androidReadyPolicy');
 const {
   launchAppTimeoutMs,
+  launchAppReleaseTimeoutMs,
   launchAppMaxAttempts,
   androidAdbSerialAppearTimeoutMs,
   jetAwaitExitStallTimeoutMs,
@@ -62,7 +63,11 @@ const {
   recordTcpPortListeners,
 } = require('./portOwnership');
 const { failIfForeignListener } = require('./foreignListener');
-const { simulatorRebootEnv } = require('./simulatorBootEnv');
+const {
+  bootStepPreparedSimulator,
+  bootedSimulatorMismatch,
+  simulatorRebootEnv,
+} = require('./simulatorBootEnv');
 const { bootAndRecord } = require('./deviceBoot');
 const { ownQemuPids, ownQemuRunning, stopQemuPids } = require('./androidColdBoot');
 
@@ -180,10 +185,7 @@ function metroPortForHost() {
 }
 
 const LAUNCH_APP_TIMEOUT_MS = launchAppTimeoutMs();
-const LAUNCH_APP_RELEASE_TIMEOUT_MS = parseInt(
-  process.env.RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS || '120000',
-  10,
-);
+const LAUNCH_APP_RELEASE_TIMEOUT_MS = launchAppReleaseTimeoutMs();
 const LAUNCH_APP_MAX_ATTEMPTS = launchAppMaxAttempts();
 const SLOW_TERMINATE_MS = parseInt(process.env.RNFB_SLOW_TERMINATE_MS || '10000', 10);
 const REBOOT_IOS_SIMULATOR_TIMEOUT_MS = parseInt(
@@ -1494,6 +1496,25 @@ async function killJetForLaunchRetry(jetProcess, reason = 'launch-retry') {
   });
 }
 
+// Detox init (behavior.init.reinstallApp, on unless --reuse) has just uninstalled and
+// reinstalled the app, so on CI's boot-prepared simulator the run's first launch skips a
+// second reinstall inside its launch timeout. CI never passes --reuse. Later launches keep
+// the existing delete rules.
+let firstLaunchOnBootPreparedSimulatorTaken = false;
+
+function takeFirstLaunchOnBootPreparedSimulator() {
+  if (firstLaunchOnBootPreparedSimulatorTaken) {
+    return false;
+  }
+  firstLaunchOnBootPreparedSimulatorTaken = true;
+  const deviceId = detox.device?.id ?? device?.id;
+  if (detoxPlatformKey() !== 'ios' || !bootStepPreparedSimulator(deviceId)) {
+    return false;
+  }
+  console.log(`[rnfb-e2e] launchApp skipping the first-launch reinstall on ${deviceId}`);
+  return true;
+}
+
 async function launchAppWithRetry(
   launchArgs,
   { testsDir, onBeforeRelaunch, throwIfAbandoned } = {},
@@ -1538,7 +1559,9 @@ async function launchAppWithRetry(
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
-      const deleteApp = launchAttempt === 1 || deleteAppAfterColdBoot;
+      const reuseBootInstall =
+        launchAttempt === 1 && !deleteAppAfterColdBoot && takeFirstLaunchOnBootPreparedSimulator();
+      const deleteApp = (launchAttempt === 1 || deleteAppAfterColdBoot) && !reuseBootInstall;
       deleteAppAfterColdBoot = false;
       await launchAppWithTimeout(launchArgs, {
         deleteApp,
@@ -1718,6 +1741,13 @@ describe('Jet Tests', function () {
     const testsDir = path.resolve(__dirname, '..');
 
     cacheUsesLiveMetro();
+
+    if (platform === 'ios') {
+      const mismatch = bootedSimulatorMismatch(deviceId);
+      if (mismatch) {
+        throw new Error(mismatch);
+      }
+    }
 
     // The device instance this run works with, so release --devices can stop exactly it
     // (coldBootAndroidEmulator / rebootIosSimulator re-record after every reboot).
