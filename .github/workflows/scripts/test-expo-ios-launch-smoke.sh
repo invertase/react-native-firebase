@@ -7,6 +7,8 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 # shellcheck source=lib/derived-data-path.sh
 source "${REPO_ROOT}/.github/workflows/scripts/lib/derived-data-path.sh"
+# shellcheck source=../../../scripts/e2e/lib/e2e-run-record.sh
+source "${REPO_ROOT}/scripts/e2e/lib/e2e-run-record.sh"
 REPO_TAG="$(repo_path_tag "$REPO_ROOT")"
 TMP_ROOT="${TMPDIR:-/tmp}"
 TMP_ROOT="${TMP_ROOT%/}"
