@@ -22,6 +22,8 @@ WORK_DIR="${RNFB_TEST_RN_SWIFTPM_WORK_DIR:-/tmp/test-rn-swiftpm}"
 DERIVED_DATA="${RNFB_TEST_RN_SWIFTPM_DERIVED_DATA:-${WORK_DIR}/DerivedData}"
 APP_DIR="${WORK_DIR}/${APP_NAME}"
 XCODEBUILD_LOG="${WORK_DIR}/xcodebuild.log"
+TARBALL_DIR="${WORK_DIR}/tarballs"
+NPM_INSTALL_LOG="${WORK_DIR}/npm-install.log"
 PACKAGE_SWIFT_REL="ios/build/generated/autolinking/ReactNativeFirebase/Package.swift"
 PBXPROJ_REL="ios/${APP_NAME}.xcodeproj/project.pbxproj"
 REQUIRED_SCRIPT_PHASES=("[RNFB] Core Configuration" "[RNFB] Crashlytics Configuration")
@@ -40,9 +42,9 @@ fail() {
 
 # Every package that declares swiftpmConfig.autolinkingPlugin, so a new iOS
 # package is covered without editing this script.
-package_specs=()
+package_dirs=()
 while IFS= read -r package_dir; do
-  package_specs+=("file:${package_dir}")
+  package_dirs+=("$package_dir")
 done < <(
   node -e '
     const fs = require("fs");
@@ -57,8 +59,8 @@ done < <(
     }
   ' "$REPO_ROOT"
 )
-[[ ${#package_specs[@]} -gt 0 ]] || fail "no package under ${REPO_ROOT}/packages declares swiftpmConfig.autolinkingPlugin"
-log "RNFB packages with a SwiftPM autolinking plugin: ${#package_specs[@]}"
+[[ ${#package_dirs[@]} -gt 0 ]] || fail "no package under ${REPO_ROOT}/packages declares swiftpmConfig.autolinkingPlugin"
+log "RNFB packages with a SwiftPM autolinking plugin: ${#package_dirs[@]}"
 
 mkdir -p "$WORK_DIR"
 rm -rf "$APP_DIR"
@@ -76,11 +78,20 @@ log "creating React Native ${RN_VERSION} app at ${APP_DIR}"
 
 cd "$APP_DIR"
 
-# --install-links packs each package like a registry install (no symlink into
-# the monorepo). --ignore-scripts: package prepare scripts need the monorepo's
-# dev dependencies and fail inside the app; the checkout is already prepared.
-log "installing RNFB packages from ${REPO_ROOT}"
-npm install --install-links --ignore-scripts "${package_specs[@]}"
+# Install tarballs, like a registry install. A directory install (even with
+# --install-links --ignore-scripts) runs each package's prepare script, in
+# parallel, and a package can then compile before @react-native-firebase/app is
+# built. The checkout is already prepared, so pack it as it is.
+log "packing RNFB packages from ${REPO_ROOT}"
+rm -rf "$TARBALL_DIR"
+mkdir -p "$TARBALL_DIR"
+npm pack --ignore-scripts --pack-destination "$TARBALL_DIR" "${package_dirs[@]}"
+tarballs=("$TARBALL_DIR"/*.tgz)
+
+log "installing RNFB tarballs (log: ${NPM_INSTALL_LOG})"
+npm install --ignore-scripts "${tarballs[@]}" 2>&1 | tee "$NPM_INSTALL_LOG"
+! grep -q "Cleaning up previous build" "$NPM_INSTALL_LOG" ||
+  fail "npm install rebuilt a package ('Cleaning up previous build'); a prepare script ran. Full log: ${NPM_INSTALL_LOG}"
 
 log "converting to SwiftPM mode"
 npx react-native spm add --yes --deintegrate
@@ -125,4 +136,4 @@ if [[ "$xcodebuild_status" -ne 0 ]]; then
   fail "xcodebuild failed (exit ${xcodebuild_status}): ${first_error:-no error line}. Full log: ${XCODEBUILD_LOG}"
 fi
 
-log "PASS: React Native ${RN_VERSION} SwiftPM-mode app with ${#package_specs[@]} RNFB packages builds (Debug, iOS Simulator)"
+log "PASS: React Native ${RN_VERSION} SwiftPM-mode app with ${#package_dirs[@]} RNFB packages builds (Debug, iOS Simulator)"

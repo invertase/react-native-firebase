@@ -87,6 +87,7 @@ jobs:
         with:
           name: rn-swiftpm-ios-build-logs
           path: |
+            ${{ env.RNFB_TEST_RN_SWIFTPM_WORK_DIR }}/npm-install.log
             ${{ env.RNFB_TEST_RN_SWIFTPM_WORK_DIR }}/xcodebuild.log
             ${{ env.RNFB_TEST_RN_SWIFTPM_WORK_DIR }}/RnfbSpm/ios/build/generated/autolinking/
           if-no-files-found: warn

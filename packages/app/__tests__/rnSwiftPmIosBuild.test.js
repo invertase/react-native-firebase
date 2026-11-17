@@ -46,6 +46,18 @@ exit 97
 const NPM_STUB = `#!/bin/bash
 echo "npm $*" >> "$STUB_LOG"
 echo "cwd=$PWD" >> "$STUB_LOG"
+if [[ "$1" == "pack" ]]; then
+  shift
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --pack-destination) dest="$2"; shift 2 ;;
+      --*) shift ;;
+      *) : > "$dest/$(basename "$1").tgz"; shift ;;
+    esac
+  done
+elif [[ "$1" == "install" && -n "$STUB_NPM_INSTALL_OUTPUT" ]]; then
+  echo "$STUB_NPM_INSTALL_OUTPUT"
+fi
 `;
 
 const XCODEBUILD_STUB = `#!/bin/bash
@@ -137,11 +149,16 @@ describe('test-rn-swiftpm-ios-build.sh', function () {
     expect(result.status).toBe(0);
 
     const appDir = path.join(workDir, 'RnfbSpm');
+    const tarballDir = path.join(workDir, 'tarballs');
+    const packages = ['app', 'auth', 'crashlytics'];
     const calls = stubCalls().filter(line => !line.startsWith('cwd='));
     expect(calls).toEqual([
       expect.stringMatching(/^npx --yes @react-native-community\/cli@20\.2\.0 init RnfbSpm /),
-      `npm install --install-links --ignore-scripts ${['app', 'auth', 'crashlytics']
-        .map(name => `file:${path.join(fakeRepo, 'packages', name)}`)
+      `npm pack --ignore-scripts --pack-destination ${tarballDir} ${packages
+        .map(name => path.join(fakeRepo, 'packages', name))
+        .join(' ')}`,
+      `npm install --ignore-scripts ${packages
+        .map(name => path.join(tarballDir, `${name}.tgz`))
         .join(' ')}`,
       'npx react-native spm add --yes --deintegrate',
       'npx react-native spm sync',
@@ -193,6 +210,26 @@ describe('test-rn-swiftpm-ios-build.sh', function () {
     expect(result.output).toContain('packages/app/spm/build/index.js');
     expect(result.output).toContain('yarn lerna:prepare');
     expect(stubCalls()).toEqual([]);
+  });
+
+  it('fails before the SwiftPM conversion when the install rebuilt a package', function () {
+    const result = run({
+      STUB_NPM_INSTALL_OUTPUT: 'Cleaning up previous build at /x/packages/crashlytics/dist',
+    });
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('Cleaning up previous build');
+    expect(result.output).toContain(path.join(workDir, 'npm-install.log'));
+    expect(stubCalls().some(line => line.includes('react-native spm'))).toBe(false);
+  });
+
+  it('packs into an empty tarball folder on every run', function () {
+    const stale = path.join(workDir, 'tarballs', 'stale.tgz');
+    fs.mkdirSync(path.dirname(stale), { recursive: true });
+    fs.writeFileSync(stale, '');
+    const result = run();
+    expect(result.status).toBe(0);
+    const install = stubCalls().find(line => line.startsWith('npm install'));
+    expect(install).not.toContain('stale.tgz');
   });
 
   it('fails when the sync writes no ReactNativeFirebase Package.swift', function () {
