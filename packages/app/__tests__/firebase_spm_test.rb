@@ -835,6 +835,76 @@ class FirebaseSpmTest < Minitest::Test
     assert_includes source, 'rnfirebase_declare_shared_google_utilities(s, __dir__)'
   end
 
+  # ── AppCheckCore declarers (RNFBAppCheck + RNFBApp) ──
+
+  def test_declares_app_check_core_when_spm_active
+    calls = capture_spm_calls
+    load_firebase_spm
+    spec = MockSpec.new(name: 'RNFBAppCheck')
+
+    assert rnfirebase_declare_app_check_core(spec)
+
+    assert_equal 1, calls.length
+    assert_same spec, calls[0][:spec]
+    assert_equal 'https://github.com/google/app-check.git', calls[0][:url]
+    assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }, calls[0][:requirement])
+    assert_equal %w[AppCheckCore AppCheckRecaptchaProvider], calls[0][:products]
+  end
+
+  def test_skips_app_check_core_when_spm_disabled
+    calls = capture_spm_calls
+    load_firebase_spm
+    $RNFirebaseDisableSPM = true
+
+    refute rnfirebase_declare_app_check_core(MockSpec.new)
+    assert_empty calls
+  end
+
+  def test_skips_app_check_core_without_spm_dependency
+    load_firebase_spm
+
+    refute rnfirebase_declare_app_check_core(MockSpec.new)
+  end
+
+  def test_rnfbapp_declares_app_check_core_only_with_app_check_installed
+    calls = capture_spm_calls
+    load_firebase_spm
+
+    with_rnfb_layout('messaging', 'auth') do |app_dir|
+      refute rnfirebase_declare_shared_app_check_core(MockSpec.new, app_dir)
+    end
+    with_rnfb_layout do |app_dir|
+      FileUtils.mkdir_p(File.join(app_dir, '..', 'app-check'))
+      refute rnfirebase_declare_shared_app_check_core(MockSpec.new, app_dir)
+    end
+    assert_empty calls
+
+    with_rnfb_layout('app-check') do |app_dir|
+      assert rnfirebase_declare_shared_app_check_core(MockSpec.new, app_dir)
+    end
+    assert_equal 1, calls.length
+    assert_equal %w[AppCheckCore AppCheckRecaptchaProvider], calls[0][:products]
+  end
+
+  def test_rnfbapp_skips_app_check_core_when_spm_disabled
+    calls = capture_spm_calls
+    load_firebase_spm
+    $RNFirebaseDisableSPM = true
+
+    with_rnfb_layout('app-check') do |app_dir|
+      refute rnfirebase_declare_shared_app_check_core(MockSpec.new, app_dir)
+    end
+    assert_empty calls
+  end
+
+  def test_podspecs_call_app_check_core_declarers
+    app = File.read(File.join(__dir__, '..', 'RNFBApp.podspec'))
+    app_check = File.read(File.join(__dir__, '..', '..', 'app-check', 'RNFBAppCheck.podspec'))
+
+    assert_includes app, 'rnfirebase_declare_shared_app_check_core(s, __dir__)'
+    assert_includes app_check, 'rnfirebase_declare_app_check_core(s)'
+  end
+
   # ── URL from package.json ──
 
   def test_reads_spm_url_from_package_json

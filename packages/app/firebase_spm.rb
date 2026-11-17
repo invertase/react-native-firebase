@@ -324,6 +324,30 @@ def rnfirebase_declare_shared_google_utilities(spec, app_dir) # rubocop:disable 
   true
 end
 
+# AppCheckRecaptchaProvider depends on the AppCheckCore target, so both
+# products need two declarers (RNFBAppCheck, RNFBApp) for RNFBAppCheck to link
+# the shared frameworks. Firebase 13 requires app-check 12.x.
+RNFIREBASE_APP_CHECK_CORE_SPM = {
+  url: 'https://github.com/google/app-check.git',
+  requirement: { kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' },
+  products: %w[AppCheckCore AppCheckRecaptchaProvider]
+}.freeze
+
+def rnfirebase_declare_app_check_core(spec) # rubocop:disable Naming/PredicateMethod
+  return false unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
+
+  spm_dependency(spec, **RNFIREBASE_APP_CHECK_CORE_SPM)
+  true
+end
+
+# RNFBApp's half of the pair: only when App Check is installed, using the same
+# sibling lookup (and pnpm gap) as the GoogleUtilities declarer above.
+def rnfirebase_declare_shared_app_check_core(spec, app_dir)
+  return false unless File.exist?(File.join(app_dir, '..', 'app-check', 'package.json'))
+
+  rnfirebase_declare_app_check_core(spec)
+end
+
 # Xcodeproj assigns a fresh random UUID on every `project.new`. The dynamic
 # probe removes the app target's FirebaseCore package reference, product
 # dependency, and PBXBuildFile, and a later normal install creates them

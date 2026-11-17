@@ -65,6 +65,9 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   firebase_dependency(s, firebase_sdk_version, ['FirebaseAppCheck'], 'Firebase/AppCheck')
+  # Declared directly so RNFBAppCheck links the shared AppCheckCore framework
+  # instead of a private copy; RNFBApp is the second declarer (#9419).
+  rnfirebase_declare_app_check_core(s)
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

@@ -351,6 +351,48 @@ An app-only fixture (`--modules ""`) is not a clean zero baseline:
 `FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
 there.
 
+### AppCheckCore: share it when another SPM package also uses it
+
+`RNFBAppCheck.podspec` only needs `FirebaseAppCheck`, which pulls in
+`AppCheckCore` and `AppCheckRecaptchaProvider` from `google/app-check`. In an
+RNFB-only graph nothing else uses them and there is no duplicate. When
+another SPM package also uses `AppCheckCore` (GoogleSignIn-iOS 10.1.0 does,
+for example through `@react-native-google-signin/google-signin` with
+`iosDependencyManager: 'spm'`), Xcode builds a shared
+`AppCheckCore_…_PackageProduct` framework for it but still links a private
+copy into `RNFBAppCheck`: 32 `GAC*` / AppCheckCore Swift classes load twice
+(GitHub [#9419](https://github.com/invertase/react-native-firebase/issues/9419)).
+
+The private copy comes in through `AppCheckRecaptchaProvider`, whose target
+depends on the `AppCheckCore` *target* in the same package. Xcode merges
+`AppCheckRecaptchaProvider.o` into `RNFBAppCheck` and `AppCheckCore.o` with
+it, so declaring `AppCheckCore` alone changes nothing. The fix declares both
+products (`rnfirebase_declare_app_check_core` in
+`packages/app/firebase_spm.rb`, `upToNextMajorVersion` from `12.0.0`, the
+range Firebase 13 requires) from `RNFBAppCheck.podspec` and, through
+`rnfirebase_declare_shared_app_check_core`, from `RNFBApp.podspec` when
+`@react-native-firebase/app-check` is installed (same sibling lookup, pnpm
+gap and installed-but-not-autolinked gap as the GoogleUtilities declarer).
+Both declarers are needed, as for GoogleUtilities.
+
+Measured on a generated `app-check,auth` Expo fixture plus
+`@react-native-google-signin/google-signin` 17.0.0 in SPM mode (Firebase iOS
+SDK 13.1.1, app-check 12.1.0, Release simulator build, empty DerivedData).
+The fixture runner cannot add non-RNFB packages, so this was a one-off build,
+with `EXPO_USE_PRECOMPILED_MODULES=0`, because in precompiled mode Expo
+builds pods that depend on `React-Core`, `RNGoogleSignin` included, as static
+libraries (`expo-modules-autolinking` `scripts/ios/precompiled_modules.rb`).
+CI does not build this graph, so nothing enforces the 0 below; rerun it by
+hand when changing these declarations.
+
+| Declarations | Duplicate classes |
+| --- | --- |
+| none (before) | 32, `RNFBAppCheck` vs `AppCheckCore_…_PackageProduct` |
+| `AppCheckCore` + `AppCheckRecaptchaProvider` from `RNFBAppCheck` only | 32 |
+| `AppCheckCore` only, from `RNFBAppCheck` and `RNFBApp` | 32 |
+| both products from `RNFBAppCheck` and `RNFBApp` | 0 (one shared `AppCheckCore.framework`) |
+| `app-check,auth` without GoogleSignIn (`yarn test-expo-fixture:ios:dupes`, precompiled modules on) | 0 with the fix; the app embeds `AppCheckCore.framework` and an `AppCheckRecaptchaProvider_…_PackageProduct` framework instead of linking them into `RNFBAppCheck` |
+
 ## App target FirebaseCore link: package dependency alone is not enough
 
 `rnfirebase_add_spm_core_to_app_target` exists for the case in the table above
