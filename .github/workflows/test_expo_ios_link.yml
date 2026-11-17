@@ -21,6 +21,8 @@ on:
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
       - '.github/workflows/scripts/test-expo-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/check-duplicate-objc-classes.sh'
+      - '.github/workflows/scripts/lib/derived-data-path.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
   push:
     branches:
@@ -40,6 +42,8 @@ on:
       - '.github/workflows/test_expo_ios_link.yml'
       - '.github/workflows/scripts/test-expo-ios-link.sh'
       - '.github/workflows/scripts/test-expo-ios-launch-smoke.sh'
+      - '.github/workflows/scripts/check-duplicate-objc-classes.sh'
+      - '.github/workflows/scripts/lib/derived-data-path.sh'
       - '.github/workflows/scripts/configure-apple-ci.sh'
 
 permissions:
@@ -130,7 +134,5 @@ jobs:
         with:
           name: test-expo-ios-launch-smoke-logs
           path: |
-            /tmp/test-expo-launch-smoke.log
-            /tmp/test-expo-launch-smoke-metro.log
-            /tmp/test-expo-launch-smoke-xcodebuild.log
+            /tmp/test-expo-launch-smoke-*.log
           if-no-files-found: ignore

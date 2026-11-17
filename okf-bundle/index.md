@@ -13,7 +13,7 @@ okf_version: '0.1'
 
 # Testing
 
-- [Agent command policy](/testing/agent-command-policy.md) — allowlisted shell commands for agents (install, prepare, validation, e2e, Expo example typecheck + documented-path iOS **link**, RN CLI prebuilt RNCore iOS **build**; not Detox)
+- [Agent command policy](/testing/agent-command-policy.md) — allowlisted shell commands for agents (install, prepare, validation, e2e, Expo example typecheck + documented-path iOS **link** + per-module duplicate ObjC class check (`yarn test-expo-fixture:ios:dupes`), RN CLI prebuilt RNCore iOS **build**; not Detox)
 - [Change authoring workflow](/testing/change-authoring-workflow.md) — verified product change loop (unit-focused → `documentation?` → area-focused `independent-review` → commit); [§ validation evidence (blocking)](testing/change-authoring-workflow.md#validation-evidence-blocking); [coverage evidence package](testing/coverage-design.md#coverage-evidence-package)
 - [Iteration vocabulary](/testing/iteration-vocabulary.md) — work type, tier, and queue field identifiers
 - [Running e2e tests](/testing/running-e2e.md) — canonical e2e commands, narrowing, environment, diagnosis; [§ test-app native modules](testing/running-e2e.md#test-app-native-modules); [§ slot lifecycle](testing/running-e2e.md#slot-lifecycle)
