@@ -39,7 +39,7 @@ If you receive an `app:mergeDexDebug` error after adding Cloud Firestore, multid
 | **Platforms** | Android, iOS (native Firebase SDK); macOS via firebase-js-sdk web interop |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** IndexedDB persistence and `memoryLocalCache` / `persistentLocalCache` are **web only**. Native persistence is controlled by the iOS/Android Firestore SDK through `initializeFirestore` settings (for example `persistence` and `cacheSizeBytes`). React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `clearPersistence`, and `Filter`, plus type aliases `FirebaseApp`, `FirebaseSignInProvider`, `FirebaseIdToken`, and `LiteTransaction`. Each is explained in the section that uses it.
+**Platform notes:** On iOS and Android, the web-only `localCache` values (`memoryLocalCache`, `persistentLocalCache`, IndexedDB factories) are **not supported**, and persistence is controlled by the native Firestore SDK through `initializeFirestore` settings (for example `persistence` and `cacheSizeBytes`). On macOS, settings are passed to the firebase-js-sdk Firestore Lite `initializeFirestore`, which has no local cache or persistence. `initializeFirestore` returns `Firestore` synchronously, applies settings in the background, and reports settings errors with `console.warn` (see [Settings](#settings)). React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `clearPersistence`, and `Filter`, plus type aliases `FirebaseApp`, `FirebaseSignInProvider`, `FirebaseIdToken`, and `LiteTransaction`. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -234,7 +234,7 @@ const unsubscribe = onSnapshot(collection(db, 'Users'), onResult, onError);
 unsubscribe();
 ```
 
-Always pass an error callback. When you pass a single function, React Native Firebase calls it as `callback(snapshot, error)` and the first argument is `null` when the listener fails (for example `firestore/permission-denied`), so code that reads `snapshot.data()` directly throws a `TypeError` instead of reporting the real error. With an error callback (or an observer object such as `{ next, error }`), the success callback only receives snapshots. The error passed to the error callback also has a `code` property such as `firestore/permission-denied` (see [Handling errors](#handling-errors)). The optional completion callback and the `complete` observer field are accepted for web SDK signature parity and are never called, because listeners do not complete.
+Always pass an error callback. Listener errors (for example `firestore/permission-denied`) are delivered only to the error callback (or `observer.error` on an observer object such as `{ next, error }`), and the success callback only receives snapshots, so a lone success callback is never called with an error. When no error handler is given, the error is logged with `console.error`; unlike firebase-js-sdk, `setLogLevel('silent')` does not suppress this log. The error passed to the error callback also has a `code` property such as `firestore/permission-denied` (see [Handling errors](#handling-errors)). The optional completion callback and the `complete` observer field are accepted for web SDK signature parity and are never called, because listeners do not complete.
 
 `onSnapshot` also returns a function, allowing you to unsubscribe from events. This can be used within any
 `useEffect` hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
@@ -1339,7 +1339,7 @@ follow the Firebase Firestore documentation on [security](https://firebase.googl
 
 ## Settings
 
-`initializeFirestore(app, settings, databaseId?)` returns a `Firestore` instance synchronously and applies `settings` through the native bridge in the background. The native layer stores the values and reads them when it creates the native Firestore instance, so call `initializeFirestore` once at startup, before the first read, write, or listener for that app and database. Calling it after Firestore has started does not throw, but the new settings do not apply to the running native instance.
+`initializeFirestore(app, settings, databaseId?)` returns a `Firestore` instance synchronously and applies `settings` in the background (through the native bridge on Android and iOS, or the firebase-js-sdk web interop on macOS). The native layer stores the values and reads them when it creates the native Firestore instance, so call `initializeFirestore` once at startup, before the first read, write, or listener for that app and database. Calling it after Firestore has started does not throw, but the new settings do not apply to the running native instance.
 
 {/* prettier-ignore */}
 | Setting | Type | Notes |
@@ -1351,7 +1351,7 @@ follow the Firebase Firestore documentation on [security](https://firebase.googl
 | `ignoreUndefinedProperties` | `boolean` | Defaults to `false`. When `true`, keys whose value is `undefined` are skipped on write instead of failing |
 | `serverTimestampBehavior` | `'estimate'`, `'previous'`, `'none'` | Default for `snapshot.data()` when a document has a pending `serverTimestamp()` write. `'none'` (null) is used when unset |
 
-The web-only keys `localCache`, `experimentalForceLongPolling`, `experimentalAutoDetectLongPolling`, and `experimentalLongPollingOptions` are accepted so web code type-checks, but they are not applied on Android and iOS. Persistence is controlled with `persistence` and `cacheSizeBytes` instead, and `memoryLocalCache()` / `persistentLocalCache()` are not available. Any other key, or a wrong value (for example `persistence: 'yes'`), produces a descriptive error. `initializeFirestore` does not return the promise that carries that error, so you cannot catch it with `try`/`catch`: it surfaces as an unhandled promise rejection and the settings are not applied. A non-boolean `ssl` is the exception and throws from `initializeFirestore` itself. Validate settings before you pass them.
+The web-only keys `localCache`, `experimentalForceLongPolling`, `experimentalAutoDetectLongPolling`, and `experimentalLongPollingOptions` are accepted so web code type-checks, but they are not applied on Android and iOS. Persistence is controlled with `persistence` and `cacheSizeBytes` instead, and `memoryLocalCache()` / `persistentLocalCache()` are not available. Any other key, or a wrong value (for example `persistence: 'yes'` or a non-boolean `ssl`), is reported with a descriptive `console.warn` and the settings are not applied. `initializeFirestore` does not throw or return a promise for that error, so you cannot catch it with `try`/`catch`. Validate settings before you pass them.
 
 ```js
 import { getApp } from '@react-native-firebase/app';

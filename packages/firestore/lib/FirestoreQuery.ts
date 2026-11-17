@@ -362,10 +362,6 @@ export class Query<
     throwIfLiteSdkSnapshotListenerUnsupported();
 
     let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: ListenSource };
-    let callback: (
-      snapshot: QuerySnapshot<AppModelType, DbModelType> | null,
-      error: Error | null,
-    ) => void;
     let onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
     let onError: (error: Error) => void;
 
@@ -374,21 +370,10 @@ export class Query<
     try {
       const options = parseSnapshotArgs(args);
       snapshotListenOptions = options.snapshotListenOptions;
-      callback = options.callback;
       onNext = options.onNext;
       onError = options.onError;
     } catch (e) {
       throw new Error(`firebase.firestore().collection().onSnapshot(*) ${(e as Error).message}`);
-    }
-
-    function handleSuccess(querySnapshot: QuerySnapshot<AppModelType, DbModelType>): void {
-      callback(querySnapshot, null);
-      onNext(querySnapshot);
-    }
-
-    function handleError(error: Error): void {
-      callback(null, error);
-      onError(error);
     }
 
     const listenerId = _id++;
@@ -401,12 +386,12 @@ export class Query<
           snapshot?: QuerySnapshotNativeData;
         };
         if (body.error) {
-          handleError(NativeError.fromEvent(body.error, 'firestore'));
+          onError(NativeError.fromEvent(body.error, 'firestore'));
         } else {
           const snapshot = body.snapshot;
           if (!snapshot) return;
           const querySnapshot = new QuerySnapshot(this._firestore, this, snapshot, this._converter);
-          handleSuccess(querySnapshot);
+          onNext(querySnapshot);
         }
       },
     );

@@ -158,9 +158,14 @@ export interface ParseSnapshotArgsResult {
     includeMetadataChanges?: boolean;
     source?: ListenSource;
   };
-  callback: (snapshot: unknown, error: Error | null) => void;
   onNext: (snapshot: unknown) => void;
   onError: (error: Error) => void;
+}
+
+// Not silenced by `setLogLevel('silent')`, which only reaches the underlying SDK.
+function logUncaughtSnapshotListenerError(error: Error): void {
+  // eslint-disable-next-line no-console
+  console.error('Uncaught Error in snapshot listener:', error.toString());
 }
 
 export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
@@ -173,16 +178,13 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
     includeMetadataChanges?: boolean;
     source?: ListenSource;
   } = {};
-  let callback: (snapshot: unknown, error: Error | null) => void = NOOP;
-  let onError: (error: Error) => void = NOOP;
+  let onError: (error: Error) => void = logUncaughtSnapshotListenerError;
   let onNext: (snapshot: unknown) => void = NOOP;
 
   if (isFunction(args[0])) {
+    onNext = args[0] as (snapshot: unknown) => void;
     if (isFunction(args[1])) {
-      onNext = args[0] as (snapshot: unknown) => void;
       onError = args[1] as (error: Error) => void;
-    } else {
-      callback = args[0] as (snapshot: unknown, error: Error | null) => void;
     }
   }
 
@@ -203,11 +205,9 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
       opts.includeMetadataChanges == null ? false : opts.includeMetadataChanges;
     snapshotListenOptions.source = opts.source == null ? 'default' : opts.source;
     if (isFunction(args[1])) {
+      onNext = args[1] as (snapshot: unknown) => void;
       if (isFunction(args[2])) {
-        onNext = args[1] as (snapshot: unknown) => void;
         onError = args[2] as (error: Error) => void;
-      } else {
-        callback = args[1] as (snapshot: unknown, error: Error | null) => void;
       }
     } else if (isPartialObserver(args[1])) {
       const observer = args[1] as PartialSnapshotObserverInternal;
@@ -241,7 +241,7 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
     throw new Error("'observer.error' or 'onError' expected a function.");
   }
 
-  return { snapshotListenOptions, callback, onNext, onError };
+  return { snapshotListenOptions, onNext, onError };
 }
 
 export function throwIfLiteSdkSnapshotListenerUnsupported(): void {

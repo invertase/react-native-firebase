@@ -5,6 +5,7 @@ const {
   loginTimeoutMs,
   debugSynchronizationMs,
   launchAppTimeoutMs,
+  launchAppReleaseTimeoutMs,
   launchAppMaxAttempts,
   androidAdbSerialAppearTimeoutMs,
   androidAdbInstallTimeoutMs,
@@ -39,6 +40,7 @@ describe('detoxLatencyPolicy (UNI-9way-latency)', function () {
     delete process.env.RNFB_DETOX_LOGIN_TIMEOUT_MS;
     delete process.env.RNFB_DETOX_DEBUG_SYNCHRONIZATION_MS;
     delete process.env.RNFB_LAUNCH_APP_TIMEOUT_MS;
+    delete process.env.RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS;
     delete process.env.RNFB_LAUNCH_APP_MAX_ATTEMPTS;
     delete process.env.RNFB_ANDROID_ADB_SERIAL_APPEAR_TIMEOUT_MS;
     delete process.env.RNFB_ANDROID_ADB_INSTALL_TIMEOUT_MS;
@@ -47,6 +49,7 @@ describe('detoxLatencyPolicy (UNI-9way-latency)', function () {
     expect(loginTimeoutMs()).toBe(15000);
     expect(debugSynchronizationMs()).toBe(30000);
     expect(launchAppTimeoutMs()).toBe(300000);
+    expect(launchAppReleaseTimeoutMs()).toBe(300000);
     expect(launchAppMaxAttempts()).toBe(4);
     expect(androidAdbSerialAppearTimeoutMs()).toBe(90000);
     expect(androidAdbInstallTimeoutMs()).toBe(300000);
@@ -69,6 +72,7 @@ describe('detoxLatencyPolicy (UNI-9way-latency)', function () {
     expect(firebase).toMatch(/require\('\.\/detoxLatencyPolicy'\)/);
     expect(firebase).toMatch(/launchAppMaxAttempts\(\)/);
     expect(firebase).toMatch(/launchAppTimeoutMs\(\)/);
+    expect(firebase).toMatch(/LAUNCH_APP_RELEASE_TIMEOUT_MS = launchAppReleaseTimeoutMs\(\)/);
     expect(firebase).toMatch(/awaitJetExitWithStallGuard/);
     expect(firebase).toMatch(/stall-diagnostics/);
     expect(firebase).toMatch(/console\.error\(err\.message\)/);

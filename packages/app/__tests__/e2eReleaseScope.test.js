@@ -139,7 +139,9 @@ describe('check and release --slot=N re-apply the slot env', function () {
   it('release --slot=2 with no slot env uses the slot-2 identity and rechecks slot 2', function () {
     const r = run(release, ['--slot=2', '--devices']);
     expect(r.status).toBe(0);
-    expect(r.out).toMatch(/identity: slot-2 .*scope=recorded only/);
+    expect(r.out).toMatch(
+      /identity: slot-2 .*scope=recorded \(\+ identity-AVD this-checkout-unrecorded\)/,
+    );
     expect(r.out).toContain(SLOT2_ANDROID);
     expect(r.out).not.toContain('serial=emulator-5554');
     expect(r.kills).toEqual([]);

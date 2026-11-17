@@ -37,6 +37,11 @@ function launchAppTimeoutMs() {
   return intEnv('RNFB_LAUNCH_APP_TIMEOUT_MS', 300000);
 }
 
+/** Release (no live Metro) launchApp budget; same latency class as the debug launch. */
+function launchAppReleaseTimeoutMs() {
+  return intEnv('RNFB_LAUNCH_APP_RELEASE_TIMEOUT_MS', 300000);
+}
+
 function launchAppMaxAttempts() {
   return intEnv('RNFB_LAUNCH_APP_MAX_ATTEMPTS', 4);
 }
@@ -64,6 +69,7 @@ module.exports = {
   loginTimeoutMs,
   debugSynchronizationMs,
   launchAppTimeoutMs,
+  launchAppReleaseTimeoutMs,
   launchAppMaxAttempts,
   androidAdbSerialAppearTimeoutMs,
   androidAdbInstallTimeoutMs,
