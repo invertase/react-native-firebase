@@ -274,6 +274,12 @@ Local e2e (`yarn tests:*:test-cover`), the packager, emulator start, native buil
 
 `yarn test-expo:ios:link` prebuilds from the existing `packages/*/plugin/build` and does not rebuild config plugins, so after a `packages/*/plugin/src` edit it can exit 0 on the stale build. Run `yarn lerna:prepare` first, then confirm the generated native file (e.g. `test-expo/ios/testexpo/AppDelegate.swift`) contains the plugin change.
 
+### Expo sources live only under `test-expo/node_modules`
+
+<a id="test-expo-node-modules-expo-sources"></a>
+
+Root `node_modules` has no `expo`, `@expo/config-plugins` or `expo-build-properties`. When checking config-plugin behaviour (mod-compiler ordering, `SceneEventForwarder`, `expo-build-properties` mods), read those sources under `test-expo/node_modules/` with read-only file tools. Do not use `node -e` / `node -p` to resolve or inspect them; neither is on the allowlist.
+
 ### TurboModule codegen
 
 <a id="turbomodule-codegen"></a>
