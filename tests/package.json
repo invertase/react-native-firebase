@@ -54,7 +54,7 @@
     "qrcode-generator": "^2.0.4",
     "react": "19.3.0",
     "react-native": "0.88.0-rc.3",
-    "react-native-coverage": "0.2.0",
+    "react-native-coverage": "0.2.2",
     "react-native-device-info": "^15.0.2",
     "util": "^0.12.5"
   },
