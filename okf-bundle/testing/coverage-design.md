@@ -117,7 +117,7 @@ For native-bridge features, **platform parity precedes coverage expansion**: iOS
 
 After `tests:<platform>:test-cover`:
 
-* **JS:** `npx jest <path> --coverage --collectCoverageFrom='packages/<pkg>/lib/**/*.ts' --coverageReporters=text`
+* **JS:** `yarn tests:jest --watchman=false <paths> --coverage --coverageReporters=text '--collectCoverageFrom=packages/{<pkg>,<pkg2>}/lib/**/*.ts'` — paths before the glob ([validation checklist § focused coverage](validation-checklist.md#jest-collect-coverage-from-order))
 * **iOS Ruby:** `yarn tests:ios:ruby` → `coverage/ios-ruby/lcov.info` (`SF:` / `DA:` lines); HTML under `coverage/ios-ruby/` — [§ iOS Ruby SimpleCov](#ios-ruby-simplecov)
 * **iOS native:** `yarn tests:ios:unit` → `coverage/ios-unit/lcov.info` (merged into `coverage/ios-native/lcov.info`). After e2e: `yarn tests:ios:test:process-coverage` → e2e LLVM export **then merge unit LCOV** → `coverage/ios-native/lcov.info` (`DA:` lines). **Deletes processed `.profraw`** — re-run e2e before re-processing. Non-zero exit from the trailing NYC JS report does not mean native LCOV is missing — [§ E2e iOS native](#e2e-ios-native-llvm).
 * **Android native:** `yarn tests:android:unit` (produces module `*.exec`) then e2e + `yarn tests:android:post-e2e-coverage` → merged **`jacocoTestReport`** XML per `sourcefile`. **Deletes processed `emulator_coverage.ec`** after a successful report — re-run e2e before re-processing. Unit-only: `yarn tests:android:test:jacoco-report` (same merged task; needs fresh `*.exec` and any available `*.ec`).
