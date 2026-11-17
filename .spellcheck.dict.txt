@@ -280,6 +280,7 @@ Subcollection
 subpath
 substring
 SVG
+SwiftUI
 switchOn
 TestFlight
 TestLab
