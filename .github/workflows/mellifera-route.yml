@@ -1,0 +1,45 @@
+name: Mellifera route
+on:
+  workflow_call:
+    inputs:
+      class:
+        description: macos or other
+        required: true
+        type: string
+      default-runs-on:
+        description: Hosted label string or JSON array
+        required: true
+        type: string
+      overflow-runs-on:
+        description: Set only for linux-nested-virt-self-hosted
+        required: false
+        type: string
+        default: ''
+    outputs:
+      runs-on:
+        description: JSON for fromJSON()
+        value: ${{ jobs.route.outputs.runs-on }}
+      summary:
+        description: One-line route decision
+        value: ${{ jobs.route.outputs.summary }}
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      runs-on: ${{ steps.sel.outputs.runs-on }}
+      summary: ${{ steps.sel.outputs.summary }}
+    env:
+      RUNNER_SELECT_MODE: ${{ vars.RUNNER_SELECT_MODE }}
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
+      MELLIFERA_PLACEMENT_CA: ${{ vars.MELLIFERA_PLACEMENT_CA }}
+      MELLIFERA_PLACEMENT_URL: ${{ vars.MELLIFERA_PLACEMENT_URL }}
+      MELLIFERA_PLACEMENT_URL_MACOS: ${{ vars.MELLIFERA_PLACEMENT_URL_MACOS || (vars.MELLIFERA_PLACEMENT_ORIGIN && format('{0}/v1/gha/placement?repo={1}&label=macos-self-hosted', vars.MELLIFERA_PLACEMENT_ORIGIN, github.repository)) || '' }}
+      MELLIFERA_PLACEMENT_URL_LINUX: ${{ vars.MELLIFERA_PLACEMENT_URL_LINUX || (vars.MELLIFERA_PLACEMENT_ORIGIN && format('{0}/v1/gha/placement?repo={1}&label=linux-self-hosted', vars.MELLIFERA_PLACEMENT_ORIGIN, github.repository)) || '' }}
+      MELLIFERA_PLACEMENT_URL_LINUX_NESTED: ${{ vars.MELLIFERA_PLACEMENT_URL_LINUX_NESTED || (vars.MELLIFERA_PLACEMENT_ORIGIN && format('{0}/v1/gha/placement?repo={1}&label=linux-nested-virt-self-hosted', vars.MELLIFERA_PLACEMENT_ORIGIN, github.repository)) || '' }}
+    steps:
+      - id: sel
+        uses: $/.github/actions/runner-select
+        with:
+          class: ${{ inputs.class }}
+          default-runs-on: ${{ inputs.default-runs-on }}
+          overflow-runs-on: ${{ inputs.overflow-runs-on }}

@@ -46,6 +46,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-ios:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
   # We want to generate our matrix dynamically
   # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
   matrix_prep:
@@ -102,8 +108,8 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   ios:
     name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
-    runs-on: xcode-27
-    needs: matrix_prep
+    runs-on: ${{ fromJSON(needs.route-ios.outputs.runs-on) }}
+    needs: [matrix_prep, route-ios]
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 107
     env:
@@ -613,9 +619,16 @@ jobs:
   # identity/provisioning profile needed) and verifies the resulting app
   # bundle is actually loadable. See .github/workflows/scripts/verify-ios-release-archive.sh
   # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
+  route-ios-archive:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
   ios-release-archive:
     name: iOS Release Archive
-    runs-on: xcode-27
+    runs-on: ${{ fromJSON(needs.route-ios-archive.outputs.runs-on) }}
+    needs: route-ios-archive
     timeout-minutes: 45
     env:
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
