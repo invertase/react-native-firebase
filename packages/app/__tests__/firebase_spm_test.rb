@@ -739,6 +739,10 @@ class FirebaseSpmTest < Minitest::Test
     end
   end
 
+  def spm_dep_pin(name)
+    JSON.parse(File.read(File.join(__dir__, '..', 'package.json'))).dig('sdkVersions', 'ios', 'spmDeps', name)
+  end
+
   def capture_spm_calls
     calls = []
     Object.define_method(:spm_dependency) { |spec, **kwargs| calls << { spec: spec, **kwargs } }
@@ -775,7 +779,8 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, calls.length
     assert_same spec, calls[0][:spec]
     assert_equal 'https://github.com/google/GoogleUtilities.git', calls[0][:url]
-    assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' }, calls[0][:requirement])
+    expected = { kind: 'upToNextMajorVersion', minimumVersion: spm_dep_pin('googleUtilities') }
+    assert_equal expected, calls[0][:requirement]
     assert_equal %w[GULNetwork GULReachability GULMethodSwizzler], calls[0][:products]
   end
 
@@ -810,22 +815,11 @@ class FirebaseSpmTest < Minitest::Test
     end
   end
 
-  def test_shared_google_utilities_matches_messaging_and_analytics_podspecs
-    calls = capture_spm_calls
-    load_firebase_spm
-    with_rnfb_layout('messaging') do |app_dir|
-      rnfirebase_declare_shared_google_utilities(MockSpec.new, app_dir)
-    end
-    declared = calls[0]
-
+  def test_messaging_and_analytics_podspecs_use_shared_google_utilities_spec
     %w[messaging/RNFBMessaging analytics/RNFBAnalytics].each do |podspec|
       source = File.read(File.join(__dir__, '..', '..', "#{podspec}.podspec"))
-      block = source[/spm_dependency\(s,.*?GoogleUtilities.*?\]\s*\)/m]
-      refute_nil block, "#{podspec}.podspec no longer declares GoogleUtilities"
-      assert_includes block, "url: '#{declared[:url]}'"
-      assert_includes block, "kind: '#{declared[:requirement][:kind]}'"
-      assert_includes block, "minimumVersion: '#{declared[:requirement][:minimumVersion]}'"
-      assert_equal declared[:products], block[/products:\s*\[(.*?)\]/m, 1].scan(/'([^']+)'/).flatten
+      assert_includes source, 'spm_dependency(s, **rnfirebase_google_utilities_spm)'
+      refute_includes source, 'GoogleUtilities.git', "#{podspec}.podspec declares GoogleUtilities inline"
     end
   end
 
@@ -847,7 +841,7 @@ class FirebaseSpmTest < Minitest::Test
     assert_equal 1, calls.length
     assert_same spec, calls[0][:spec]
     assert_equal 'https://github.com/google/app-check.git', calls[0][:url]
-    assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: '12.0.0' }, calls[0][:requirement])
+    assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: spm_dep_pin('appCheck') }, calls[0][:requirement])
     assert_equal %w[AppCheckCore AppCheckRecaptchaProvider], calls[0][:products]
   end
 
@@ -911,6 +905,27 @@ class FirebaseSpmTest < Minitest::Test
     load_firebase_spm
 
     assert_equal 'https://github.com/firebase/firebase-ios-sdk.git', RNFirebaseSPM.url
+  end
+
+  def test_reads_spm_dep_minimums_from_package_json
+    load_firebase_spm
+
+    %w[appCheck googleUtilities].each do |name|
+      assert_match(/\A\d+\.\d+\.\d+\z/, spm_dep_pin(name))
+      assert_equal spm_dep_pin(name), RNFirebaseSPM.dep_minimum(name)
+    end
+  end
+
+  def test_dep_minimum_raises_when_spm_dep_missing
+    load_firebase_spm
+    RNFirebaseSPM.instance_variable_set(:@ios_sdk_versions, { 'spmDeps' => { 'appCheck' => ' ' } })
+
+    %w[appCheck googleUtilities].each do |name|
+      error = assert_raises(Pod::Informative) { RNFirebaseSPM.dep_minimum(name) }
+      assert_includes error.message, "sdkVersions.ios.spmDeps.#{name}"
+    end
+  ensure
+    RNFirebaseSPM.instance_variable_set(:@ios_sdk_versions, nil)
   end
 
   def test_local_umbrella_package_exact_version_matches_package_json_sdk_pin

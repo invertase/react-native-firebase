@@ -83,14 +83,7 @@ Pod::Spec.new do |s|
   # duplicating GULNetwork/GULReachabilityChecker/GULSwizzler into
   # RNFBMessaging.framework too.
   if defined?(spm_dependency) && !rnfirebase_spm_disabled?
-    # 8.1.3 floor matches the GoogleUtilities version firebase-ios-sdk 12.x
-    # resolves transitively; bump this alongside firebase_sdk_version if
-    # firebase-ios-sdk ever moves to GoogleUtilities 9.x.
-    spm_dependency(s,
-      url: 'https://github.com/google/GoogleUtilities.git',
-      requirement: { kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' },
-      products: ['GULNetwork', 'GULReachability', 'GULMethodSwizzler']
-    )
+    spm_dependency(s, **rnfirebase_google_utilities_spm)
   end
 
   if defined?($RNFirebaseAsStaticFramework)
