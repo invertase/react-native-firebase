@@ -102,10 +102,44 @@ describe('get()', function () {
     }
   });
 
-  // Android only: there get() is Query.get(), which can cancel the app's keepSynced at the location
-  // it reads. These run get() next to keepSynced through each path of the native tracking; whether
+  it('waits for the connection when offline instead of rejecting', async function () {
+    // iOS getData fails after a 3s connect timeout; the native get rejects that as database/unknown
+    // and get() retries as once(), which waits for the connection. Android's Query.get() waits
+    // natively, but goOffline() does not hold the connection down in the Android emulator harness.
+    if (!Platform.ios) {
+      this.skip();
+    }
+    const { getDatabase, ref, get, goOffline, goOnline } = databaseModular;
+
+    const db = getDatabase();
+    const dbRef = ref(db, `${TEST_PATH}/types/string`);
+    goOffline(db);
+    try {
+      let settled = false;
+      const read = get(dbRef).then(
+        snapshot => {
+          settled = true;
+          return snapshot;
+        },
+        error => {
+          settled = true;
+          throw error;
+        },
+      );
+      await Utils.sleep(6000);
+      settled.should.be.false();
+      goOnline(db);
+      (await read).val().should.eql(CONTENT.TYPES.string);
+    } finally {
+      goOnline(db);
+    }
+  });
+
+  // On Android get() is Query.get(), which can cancel the app's keepSynced at the location it
+  // reads. These run get() next to keepSynced through each path of the native tracking; whether
   // keepSynced survived isn't visible from JS, so RNFBDatabaseKeepSyncedRegistryTest covers that.
-  // iOS reads with once(), and keepSynced is unsupported on other platforms.
+  // On iOS getData leaves keepSynced registrations alone (FSyncTree keepQuery:synced: owns them).
+  // keepSynced is unsupported on other platforms.
   describe('with keepSynced', function () {
     const KEEP_SYNCED_PATH = `${TEST_PATH}/keepSynced`;
 
@@ -121,7 +155,7 @@ describe('get()', function () {
     }
 
     it('reads a location that is kept synced', async function () {
-      if (!Platform.android) {
+      if (Platform.other) {
         this.skip();
       }
       const { getDatabase, ref, get, set, keepSynced } = databaseModular;
@@ -139,7 +173,7 @@ describe('get()', function () {
     });
 
     it('reads a location while keepSynced is turned on for it', async function () {
-      if (!Platform.android) {
+      if (Platform.other) {
         this.skip();
       }
       const { getDatabase, ref, get, set, keepSynced } = databaseModular;
@@ -159,7 +193,7 @@ describe('get()', function () {
     });
 
     it('reads a location with a query there kept synced', async function () {
-      if (!Platform.android) {
+      if (Platform.other) {
         this.skip();
       }
       const { getDatabase, ref, get, set, keepSynced, query, limitToLast } = databaseModular;
