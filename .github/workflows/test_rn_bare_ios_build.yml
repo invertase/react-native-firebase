@@ -21,6 +21,7 @@ on:
       - '.github/workflows/test_rn_bare_ios_build.yml'
       - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
       - '.github/workflows/scripts/check-ios-probe-sdk-pin.js'
+      - '.github/workflows/scripts/check-ios-spm-deps.js'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - '.github/workflows/scripts/lib/rn-bare-probe-assertions.sh'
       - '.github/workflows/scripts/lib/rn-bare-probe-launch-assertions.sh'
@@ -29,6 +30,7 @@ on:
       - '.github/workflows/scripts/compute-xcode-ccache-key.sh'
       - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
       - 'packages/app/__tests__/iosProbeSdkPin.test.js'
+      - 'packages/app/__tests__/iosSpmDeps.test.js'
       - 'packages/app/__tests__/iosProbeSingleCopyAssertions.test.js'
       - 'packages/app/__tests__/iosProbeLaunchSmoke.test.js'
   push:
@@ -48,6 +50,7 @@ on:
       - '.github/workflows/test_rn_bare_ios_build.yml'
       - '.github/workflows/scripts/check_rnfb_app_ios_objc_imports.rb'
       - '.github/workflows/scripts/check-ios-probe-sdk-pin.js'
+      - '.github/workflows/scripts/check-ios-spm-deps.js'
       - '.github/workflows/scripts/test-rn-bare-ios-build.sh'
       - '.github/workflows/scripts/lib/rn-bare-probe-assertions.sh'
       - '.github/workflows/scripts/lib/rn-bare-probe-launch-assertions.sh'
@@ -56,6 +59,7 @@ on:
       - '.github/workflows/scripts/compute-xcode-ccache-key.sh'
       - 'packages/app/__tests__/rnfb_app_ios_objc_import_guard_test.rb'
       - 'packages/app/__tests__/iosProbeSdkPin.test.js'
+      - 'packages/app/__tests__/iosSpmDeps.test.js'
       - 'packages/app/__tests__/iosProbeSingleCopyAssertions.test.js'
       - 'packages/app/__tests__/iosProbeLaunchSmoke.test.js'
 
@@ -171,6 +175,9 @@ jobs:
 
       - name: Check probe SDK pin matches app SDK version
         run: node .github/workflows/scripts/check-ios-probe-sdk-pin.js
+
+      - name: Check SPM dependency ranges overlap firebase-ios-sdk Package.swift
+        run: node .github/workflows/scripts/check-ios-spm-deps.js
 
       # https://github.com/maxim-lobanov/setup-xcode/releases
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0

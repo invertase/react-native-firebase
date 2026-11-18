@@ -3,7 +3,7 @@ type: Reference
 title: iOS SPM native integration decisions
 description: Why RNFB uses dual imports, Objective-C helpers for Swift Firebase products, and an app framework-embedding phase.
 tags: [ios, spm, cocoapods, imports, firebase, cxx-modules]
-timestamp: 2026-09-11T00:00:00Z
+timestamp: 2026-11-18T00:00:00Z
 ---
 
 # iOS SPM native integration decisions
@@ -316,8 +316,15 @@ declarers build the call from `rnfirebase_google_utilities_spm`;
 bounds for the packages RNFB declares next to Firebase (`googleUtilities`,
 `appCheck`). Each `upToNextMajorVersion` range must overlap the range
 `firebase-ios-sdk`'s `Package.swift` requires at `sdkVersions.ios.firebase`,
-or SPM resolution fails. Recheck both bounds when `firebase-ios-sdk` moves
-either package to a new major version.
+or SPM resolution fails. `scripts/update-firebase-sdk-versions.sh --apply`
+reads that `Package.swift` at the new tag before writing any file and, when
+the iOS SDK version changes, sets both bounds to Firebase's lower bounds. A
+bound raised above Firebase's on purpose is reset by the next iOS SDK bump.
+`.github/workflows/scripts/check-ios-spm-deps.js` (run by
+`test_rn_bare_ios_build.yml`, tests in
+`packages/app/__tests__/iosSpmDeps.test.js`) fetches the same file at
+`sdkVersions.ios.firebase` and fails when either RNFB range does not overlap
+Firebase's.
 
 Known gaps:
 
