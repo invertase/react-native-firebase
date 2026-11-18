@@ -108,6 +108,7 @@ dependencies {
   implementation "com.google.firebase:firebase-appcheck-debug"
 
   testImplementation "junit:junit:4.13.2"
+  testImplementation "org.mockito:mockito-core:5.14.2"
 }
 
 ReactNative.shared.applyPackageVersion()

@@ -31,7 +31,7 @@
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTConvert.h>
 
-#import "RNFBMessaging+AppDelegate.h"
+#import "RNFBMessaging+AppDelegatePrivate.h"
 #import "RNFBMessagingSerializer.h"
 
 @implementation RNFBMessagingAppDelegate

@@ -31,10 +31,14 @@ Pod::Spec.new do |s|
   s.swift_version       = '5.10'
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.public_header_files = [
+    'ios/RNFBMessaging/RNFBMessaging+AppDelegate.h',
     'ios/RNFBMessaging/RNFBMessagingModule.h',
   ]
   s.private_header_files = [
-    'ios/RNFBMessaging/RNFBMessaging+*.h',
+    'ios/RNFBMessaging/RNFBMessaging+AppDelegatePrivate.h',
+    'ios/RNFBMessaging/RNFBMessaging+FIRMessagingDelegate.h',
+    'ios/RNFBMessaging/RNFBMessaging+NSNotificationCenter.h',
+    'ios/RNFBMessaging/RNFBMessaging+UNUserNotificationCenter.h',
     'ios/RNFBMessaging/RNFBMessagingHelper.h',
     'ios/RNFBMessaging/RNFBMessagingSerializer.h',
     'ios/generated/**/*.h',

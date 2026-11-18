@@ -19,6 +19,7 @@ APIs.
 APNs
 AppAttest
 AppCheck
+AppDelegate
 AppDelegate.m
 aps-environment
 args
@@ -174,10 +175,8 @@ MDX
 microtask
 Minitest
 mlkit
-MLKit
 mono-repo
 multidex
-Multidex
 multiline
 namespace
 namespaced
@@ -196,6 +195,7 @@ NPM
 nullable
 OAuth
 onboarding
+OneSignal
 onwards
 OpenID
 parsers

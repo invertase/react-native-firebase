@@ -153,6 +153,10 @@ fi
 
 SIM_UDID="$(rnfb_ensure_ios_simulator_udid "$SIM")"
 export RNFB_IOS_SIMULATOR_UDID="$SIM_UDID"
+# Later workflow steps (Detox) allocate by this UDID; a plain export ends with this step.
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  echo "RNFB_IOS_SIMULATOR_UDID=${SIM_UDID}" >>"$GITHUB_ENV"
+fi
 log_boot_status "phase=resolve_udid udid=${SIM_UDID} runtime=$(rnfb_ios_sim_runtime_label)"
 
 kill_resolved_simulator "$SIM_UDID" "$SIM"

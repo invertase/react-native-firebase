@@ -1,134 +1,98 @@
 ---
 title: Performance Monitoring with KY
-description: Monitor HTTP request performance with Firebase Performance Monitoring and KY.
+description: Wrap the fetch function that KY calls so every request attempt is measured with Firebase Performance Monitoring's httpMetric().
 previous: /perf/axios-integration
 next: /phone-number-verification/usage
 ---
 
+## Prerequisites
+
+- `@react-native-firebase/app` and `@react-native-firebase/perf` installed per [Performance Monitoring usage](/perf/usage) (native config, rebuild, and Android Performance Monitoring Gradle plugin or Expo config plugin).
+- [KY](https://github.com/sindresorhus/ky) installed in your app (`npm install ky` or `yarn add ky`).
+
 # KY
 
 The [KY library](https://github.com/sindresorhus/ky) is a tiny wrapper over fetch providing a simpler API and some useful shortcuts.
-KY provides functionality allowing all requests & responses to be intercepted, exposing
-metadata which can be passed onto the Performance Monitoring library.
+KY accepts a `fetch` option, a function it calls for every request attempt, which makes it a good place to measure requests with the Performance Monitoring library.
 
-## Before Request Hook
+`httpMetric` constructs an `HttpMetric` for the request URL and HTTP method. `HttpMethod` is the string union of allowed verbs. See [HTTP Request Tracing](/perf/usage#http-request-tracing) for the full metric helpers.
 
-Before HTTP requests are sent out of the React Native environment, a number of functions can be called to modify or do things based on the current request.
-We can use this `beforeRequest` hook to create our HTTP metric.
+The behavior described on this page was verified against KY 2.1.0. KY 2 passes a single state object to each hook, for example `({ request, options, response, retryCount })`, instead of positional arguments.
+
+## Wrap the fetch function
+
+KY calls the function you pass as `fetch` with a `Request` and the request options, once per attempt, so retries are measured as separate requests. The wrapper below creates the metric before it calls the real `fetch`, fills in the response details when a response arrives, and stops the metric in a `finally` block so a network error does not leave it running.
 
 ```js
 import { getPerformance, httpMetric } from '@react-native-firebase/perf';
-import ky from 'ky';
 
 const getContentLength = headers => {
-  const length = getHeader('Content-Length', headers);
+  const length = headers.get('Content-Length');
   return length ? Number(length) : null;
 };
 
-const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
+const startMetric = request => {
+  try {
+    // httpMetric only accepts upper-case verbs from HttpMethod and throws otherwise.
+    const metric = httpMetric(getPerformance(), request.url, request.method.toUpperCase());
+    metric.putAttribute('client', 'ky');
+    metric.start();
+    return metric;
+  } catch {
+    // Send the request without a metric when one cannot be created, for example for a custom verb.
+    return null;
+  }
+};
 
-const api = ky.create({
-  hooks: {
-    beforeRequest: [
-      async (request, options) => {
-        const { url, method } = request;
-        options.metric = httpMetric(getPerformance(), url, method);
-
-        // add any extra metric attributes, if required
-        // options.metric.putAttribute('userId', '12345678');
-        // options.metric.setRequestPayloadSize(1234)
-
-        options.metric.start();
-      },
-    ],
-  },
-});
-
-export default api;
+export default function instrumentKy(ky) {
+  return ky.create({
+    fetch: async (request, init) => {
+      const metric = startMetric(request);
+      try {
+        const response = await fetch(request, init);
+        if (metric) {
+          metric.setHttpResponseCode(response.status);
+          metric.setResponseContentType(response.headers.get('Content-Type'));
+          metric.setResponsePayloadSize(getContentLength(response.headers));
+        }
+        return response;
+      } finally {
+        if (metric) {
+          metric.stop();
+        }
+      }
+    },
+  });
+}
 ```
 
-This callback attaches the HTTP metric returned onto the request metadata, which can later be used on an
-incoming response.
+The metric is stopped for every outcome. A response with an error status, such as 404 or 500, still reaches the wrapper as a normal response, so its status code is recorded before KY decides whether to throw an `HTTPError` or retry. A request that fails without a response, for example a network error, is stopped without a response code.
 
-## After Request Hook
+`setRequestPayloadSize` is optional. Call it before `stop()` when you know the size of the request body.
 
-Similar to the before request hook, we can also hook into all responses from HTTP calls.
+## Use the instrumented client
 
 ```js
+// codeblock-ignore: requires the ky package and the instrumentKy helper from the previous example
 import ky from 'ky';
+import instrumentKy from './instrumentKy';
 
-const getContentLength = headers => {
-  const length = getHeader('Content-Length', headers);
-  return length ? Number(length) : null;
-};
+const api = instrumentKy(ky);
 
-const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
-
-const api = ky.create({
-  hooks: {
-    afterResponse: [
-      async (request, options, response) => {
-        const { status, headers } = response;
-        const { metric } = options;
-        metric.setHttpResponseCode(status);
-        metric.setResponseContentType(getHeader('Content-Type', headers));
-        metric.setResponsePayloadSize(getContentLength(headers));
-        metric.stop();
-      },
-    ],
-  },
-});
-
-export default api;
+export async function loadUsers() {
+  return api.get('https://example.com/api/users').json();
+}
 ```
 
-All outbound requests sent from KY will appear in your Firebase console, detailing information such as
+All outbound requests sent from the instrumented client will appear in your Firebase console, detailing information such as
 how long the request took, response codes & more. Such data can give you greater insight into the performance of your application via any external APIs you may be using.
 
-## Full Example
+## Why not use hooks
 
-A working example is provided below. Please adjust and extend according to your use case.
+A metric has to be created before a request and finished after it, so the `beforeRequest` and `afterResponse` hooks look like a natural fit. In KY 2.1.0 they cannot reliably share a metric:
 
-```js
-import { getPerformance, httpMetric } from '@react-native-firebase/perf';
-import ky from 'ky';
+- With retries enabled (the default is 2 retries), KY keeps a clone of the request for later attempts, so the `request` passed to `beforeRequest` is not the same object as the `request` passed to `afterResponse`.
+- `options` is a frozen snapshot, so you cannot attach a metric to it from `beforeRequest`.
+- `beforeRequest` runs once per call, while `afterResponse` runs for each attempt that receives a response.
 
-const getContentLength = headers => {
-  const length = getHeader('Content-Length', headers);
-  return length ? Number(length) : null;
-};
-
-const getHeader = (header, headers) => headers.get(header) || headers.get(header.toLowerCase());
-
-const api = ky.create({
-  // prevent circular dependency warning
-  fetch: fetch,
-  hooks: {
-    beforeRequest: [
-      async (request, options) => {
-        const { url, method } = request;
-        options.metric = httpMetric(getPerformance(), url, method);
-
-        // add any extra metric attributes, if required
-        // options.metric.putAttribute('userId', '12345678');
-        // options.metric.setRequestPayloadSize(1234)
-
-        options.metric.start();
-      },
-    ],
-
-    afterResponse: [
-      async (request, options, response) => {
-        const { status, headers } = response;
-        const { metric } = options;
-        metric.setHttpResponseCode(status);
-        metric.setResponseContentType(getHeader('Content-Type', headers));
-        metric.setResponsePayloadSize(getContentLength(headers));
-        metric.stop();
-      },
-    ],
-  },
-});
-
-export default api;
-```
+Keeping the metric in a local variable inside the `fetch` wrapper avoids all three.

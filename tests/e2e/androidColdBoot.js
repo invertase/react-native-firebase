@@ -15,15 +15,25 @@ const { qemuCmdlineMatchesAvd } = require('./androidAdbRange');
 
 function ownQemuPids(port, avd, { env = process.env, processes = listProcesses() } = {}) {
   const serial = `emulator-${port}`;
-  const recorded = new Set(recordedLiveAndroidQemuPids(avd, env));
-  return processes
+  const recorded = recordedLiveAndroidQemuPids(avd, env);
+  const recordedSet = new Set(recorded);
+  const fromPs = processes
     .filter(p => /qemu-system/.test(p.args) && qemuCmdlineMatchesAvd(p.args, avd))
     .filter(
       p =>
-        recorded.has(p.pid) ||
+        recordedSet.has(p.pid) ||
         (consoleSerialFromQemuArgs(p.args) === serial && pidOwner(p.pid, env) !== 'unrecorded'),
     )
     .map(p => p.pid);
+  // listProcesses can miss a still-live recorded instance (ps filter/timeout races);
+  // start-time match already proves identity, so include those pids when still alive.
+  const out = new Set(fromPs);
+  for (const pid of recorded) {
+    if (pidAlive(pid)) {
+      out.add(pid);
+    }
+  }
+  return [...out];
 }
 
 function pidAlive(pid) {

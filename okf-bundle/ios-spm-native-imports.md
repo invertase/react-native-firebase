@@ -293,10 +293,63 @@ one shared dynamic framework per product and link every consumer against it,
 instead of duplicating it per pod. This is scoped to `GoogleUtilities`
 products specifically; it does **not** change or fix the `FirebaseCore`/
 `FIRApp` sharing limitation described above, which stays unsupported under
-SPM regardless of how explicitly any product is declared. Add this
-declaration only to podspecs actually shown to privately duplicate a watched
-class by `yarn test-expo:ios:link`'s `#9322` diagnosis, not pre-emptively to
-every RNFB podspec.
+SPM regardless of how explicitly any product is declared.
+
+One declarer is not enough. With only `RNFBMessaging` or only
+`RNFBAnalytics` in the graph, Xcode still compiles the three products
+privately into that pod's framework. `RNFBApp.podspec` is therefore the
+second declarer: `rnfirebase_declare_shared_google_utilities` in
+`packages/app/firebase_spm.rb` makes the same `spm_dependency` call
+(same URL, `upToNextMajorVersion` from `8.1.3`, same three products) when
+SPM is active (`spm_dependency` defined and `rnfirebase_spm_disabled?`
+false) **and** `@react-native-firebase/messaging` or
+`@react-native-firebase/analytics` is installed. Installed means a
+`package.json` in the sibling directory of the `app` package
+(`<app>/../messaging`, `<app>/../analytics`): the monorepo `packages/`
+layout and a consumer `node_modules/@react-native-firebase/` layout both
+match. Without either sibling, RNFBApp declares nothing extra. Keep the
+three declarations identical; `firebase_spm_test.rb` compares them.
+
+Known gaps:
+
+- **pnpm isolated layout.** `node_modules/@react-native-firebase/app`
+  resolves into the pnpm store, which has no `messaging` / `analytics`
+  sibling, so RNFBApp does not declare and a single-module graph keeps the
+  duplicates (same as before the second declarer).
+- **Installed is not autolinked.** A sibling package that is installed but
+  excluded from autolinking still makes RNFBApp declare the products. RNFBApp
+  then links GoogleUtilities frameworks the app may not otherwise need.
+
+Do not add this declaration to other RNFB podspecs unless the duplicate
+Objective-C class check shows that podspec privately duplicating a class.
+
+The check is one shared script
+(`.github/workflows/scripts/check-duplicate-objc-classes.sh`), run by both
+`yarn test-expo:ios:link` (all-modules `test-expo` graph) and
+`yarn test-expo-fixture:ios:dupes --modules …` (generated per-module Expo
+fixture; [registry row](testing/agent-command-policy.md#canonical-registry)).
+Its fail paths and `--expect-duplicates` / `--report-only` modes are covered
+by `packages/app/__tests__/checkDuplicateObjcClasses.test.js` (stub
+`dyld_info` via `RNFB_DYLD_INFO`, fake `.app`).
+Fixture graphs that isolate the GoogleUtilities duplication (counts at the
+current Firebase iOS SDK / GoogleUtilities pin). All three run in CI
+(`test_expo_fixture_ios_dupes.yml`) and must report 0:
+
+| `--modules` | Without the RNFBApp declarer | With it |
+| --- | --- | --- |
+| `auth` plus exactly one of `messaging` / `analytics` | 8, between that module's `RNFB*` framework and `GULAppDelegateSwizzler_…_PackageProduct` | 0 |
+| `messaging,analytics,auth` | 0 | 0 |
+
+The fixture resolves `@react-native-firebase/*` to the monorepo `packages/`
+directories, where `messaging` and `analytics` always exist, so fixture runs
+only exercise the "sibling installed" branch. The same holds for every
+monorepo fixture (`test-expo/`, and `test-rn-bare/` including its dynamic
+Firebase probe): RNFBApp always declares the three products there. The
+"not installed" branch is covered by `firebase_spm_test.rb`.
+
+An app-only fixture (`--modules ""`) is not a clean zero baseline:
+`FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
+there.
 
 ## App target FirebaseCore link: package dependency alone is not enough
 
@@ -448,12 +501,17 @@ Linear CPRN-295.
 
 ## Archive signature-copy collision
 
-Real `xcodebuild archive` builds (not simulator builds) can fail with:
+`xcodebuild archive` builds can fail with:
 
 ```text
 "GoogleAppMeasurementIdentitySupport.xcframework-ios.signature" couldn't be
 copied to "Signatures" because an item with the same name already exists.
 ```
+
+The staged file is named after the archived slice: `-ios.signature` for a
+device archive, `-ios-simulator.signature` for a simulator-destination archive
+(`-destination "generic/platform=iOS Simulator"`, as some CI build-for-simulator
+steps use). Plain simulator `build` actions do not hit it.
 
 This is a long-standing Xcode Archive bug (present since Xcode 15, still
 reproducing on Xcode 26), not specific to react-native-firebase: a Swift
@@ -489,9 +547,13 @@ xcframework name reachable in the resolved SPM package graph
 `-resolvePackageDependencies` run, not guessed) and adds
 `[RNFB] Remove duplicate Firebase/Google SPM binary xcframework signature
 files` to application targets that already have `[CP] Embed Pods Frameworks`.
-The phase deletes each named artifact's stale `.signature` file from
-`$(CONFIGURATION_BUILD_DIR)` before Xcode's Archive action tries to copy it,
-so only one copy is ever staged.
+The phase deletes each named artifact's stale `-ios.signature` and
+`-ios-simulator.signature` files from `$(CONFIGURATION_BUILD_DIR)` before
+Xcode's Archive action tries to copy them, so only one copy is ever staged
+for device and simulator archives. The phase content is rewritten in place on
+each `pod install`, so existing projects pick up slice-list changes there.
+The slice list is deliberately iOS-only (device and simulator, the slices seen
+in reported failures); extend it only when a failure names another slice.
 
 Deliberately scoped to this known artifact-name list rather than a bare
 `*.signature` glob — broad enough to cover this whole binary family without

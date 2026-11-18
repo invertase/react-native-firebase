@@ -64,6 +64,8 @@ RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES = %w[
   openssl_grpc
 ].freeze
 
+RNFIREBASE_SPM_SIGNATURE_FIX_SLICES = %w[ios ios-simulator].freeze
+
 # Encapsulates the SPM-related state that has to survive across CocoaPods'
 # per-podspec evaluation (where `firebase_dependency` runs -- see `activate!`
 # below) and the later, single `post_install` phase (where every
@@ -294,6 +296,32 @@ end
 # through unchanged.
 def rnfirebase_spm_package_requirement(version)
   { kind: 'exactVersion', version: version }
+end
+
+RNFIREBASE_GUL_SHARING_SIBLINGS = %w[messaging analytics].freeze
+
+# RNFBMessaging and RNFBAnalytics declare these GoogleUtilities products
+# directly. With only one of them in the graph Xcode still compiles the
+# classes privately into that pod's framework; a second declarer (RNFBApp)
+# makes Xcode build one shared framework per product instead.
+def rnfirebase_gul_sharing_sibling_installed?(app_dir)
+  RNFIREBASE_GUL_SHARING_SIBLINGS.any? do |name|
+    File.exist?(File.join(app_dir, '..', name, 'package.json'))
+  end
+end
+
+# Sibling lookup only sees the npm/yarn layout. pnpm's isolated layout has no
+# `@react-native-firebase/messaging` next to `app`, so it falls back to no
+# declaration. A sibling that is installed but not autolinked still declares.
+def rnfirebase_declare_shared_google_utilities(spec, app_dir) # rubocop:disable Naming/PredicateMethod
+  return false unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
+  return false unless rnfirebase_gul_sharing_sibling_installed?(app_dir)
+
+  spm_dependency(spec,
+                 url: 'https://github.com/google/GoogleUtilities.git',
+                 requirement: { kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' },
+                 products: %w[GULNetwork GULReachability GULMethodSwizzler])
+  true
 end
 
 # Xcodeproj assigns a fresh random UUID on every `project.new`. The dynamic
@@ -808,10 +836,12 @@ def rnfirebase_run_spm_user_project_hooks(installer)
     if defined?(Pod::UI)
       Pod::UI.warn '[react-native-firebase] Couldn\'t add the Firebase/Google SPM binary ' \
                    "xcframework signature workaround automatically (#{e.class}: #{e.message}). If your " \
-                   'Release archive fails with `"...xcframework-ios.signature" couldn\'t be copied to ' \
-                   '"Signatures" because an item with the same name already exists`, add a Run Script ' \
-                   'build phase to your app target that runs `rm -f ' \
-                   '"\\${CONFIGURATION_BUILD_DIR}"/<TheNameFromTheErrorMessage>.xcframework-ios.signature`.'
+                   'archive fails with `"...xcframework-ios.signature" couldn\'t be copied to "Signatures" ' \
+                   'because an item with the same name already exists` (or the same error for ' \
+                   '`...xcframework-ios-simulator.signature` on a simulator archive), ' \
+                   'add a Run Script build phase to your app target that runs `rm -f ' \
+                   '"\\${CONFIGURATION_BUILD_DIR}"/<TheNameFromTheErrorMessage>.xcframework-ios.signature ' \
+                   '"\\${CONFIGURATION_BUILD_DIR}"/<TheNameFromTheErrorMessage>.xcframework-ios-simulator.signature`.'
     end
   end
   begin
@@ -1296,6 +1326,10 @@ end
 #   be copied to "Signatures" because an item with the same name already
 #   exists.
 #
+# The staged file is named after the archived slice: `-ios.signature` for a
+# device archive, `-ios-simulator.signature` for a simulator-destination
+# archive, so both are removed.
+#
 # This isn't specific to react-native-firebase -- the same class of bug, with
 # the same fix, has been reported for other CocoaPods+SPM binary xcframeworks
 # (Mapbox: CocoaPods/CocoaPods#12022; MapLibre: maplibre-react-native#1489;
@@ -1333,8 +1367,10 @@ def rnfirebase_fix_spm_archive_signature_collision(installer)
       next unless target.respond_to?(:shell_script_build_phases)
       next unless target.shell_script_build_phases.any? { |phase| phase.name == '[CP] Embed Pods Frameworks' }
 
-      rm_lines = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.map do |name|
-        "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-ios.signature"
+      rm_lines = RNFIREBASE_SPM_SIGNATURE_FIX_ARTIFACT_NAMES.flat_map do |name|
+        RNFIREBASE_SPM_SIGNATURE_FIX_SLICES.map do |slice|
+          "rm -f \"${CONFIGURATION_BUILD_DIR}\"/#{name}.xcframework-#{slice}.signature"
+        end
       end
       # Trailing newline required for Xcode Run Script phase content.
       shell_script = "#{rm_lines.join("\n")}\n"

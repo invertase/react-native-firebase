@@ -413,7 +413,9 @@ export class FirebaseFirestoreModule extends FirebaseModule<'NativeRNFBTurboFire
     }
 
     if (!isUndefined(settings.ssl) && !isBoolean(settings.ssl)) {
-      throw new Error("firebase.firestore().settings(*) 'settings.ssl' must be a boolean value.");
+      return Promise.reject(
+        new Error("firebase.firestore().settings(*) 'settings.ssl' must be a boolean value."),
+      );
     }
 
     if (

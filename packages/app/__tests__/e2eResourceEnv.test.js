@@ -752,7 +752,7 @@ exit 1
     }
   });
 
-  it('check: names the manual --devices release for this checkout’s unrecorded strays; a recorded child is BUSY', async function () {
+  it('check: identity-AVD this-checkout-unrecorded FreePortFinder is BUSY; other-identity stays INFO; recorded child is BUSY', async function () {
     const fs = require('fs');
     const os = require('os');
     const { spawn } = require('child_process');
@@ -835,9 +835,14 @@ exit 1
       }
       expect(out).toMatch(
         new RegExp(
-          `INFO\\s+android stray emulator serial emulator-16232 owner=this-checkout-unrecorded qemu pid=${ownAvd.pid} cwd=${repoRoot} avd=TestingAVD — .*in this shell's slot env run: yarn tests:e2e:release --include-unrecorded --devices --only android-emulator$`,
-          'm',
+          `BUSY\\s+android emulator emulator-16232 avd=TestingAVD qemu pid=${ownAvd.pid} cwd=${repoRoot} owner=this-checkout-unrecorded — no run recorded it \\(e\\.g\\. cold-boot respawn\\); free with yarn tests:e2e:release --devices`,
         ),
+      );
+      expect(out).not.toMatch(/stray emulator serial emulator-16232/);
+      // Identity-AVD BUSY names default --devices; must not push --include-unrecorded.
+      expect(out).not.toMatch(/emulator-16232[^\n]*include-unrecorded/);
+      expect(out).not.toMatch(
+        /owner=this-checkout-unrecorded:.*--include-unrecorded --only [\w,-]*android-emulator/,
       );
       expect(out).toMatch(
         /INFO\s+android stray emulator serial emulator-16234 owner=this-checkout-unrecorded .*avd=TestingAVD-3 — .*run yarn tests:e2e:release --include-unrecorded --devices --only android-emulator in the slot env of the identity whose AVD it runs/,
