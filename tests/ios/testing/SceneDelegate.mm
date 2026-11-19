@@ -18,6 +18,7 @@
 
 #import "AppDelegate.h"
 #import "RNFBMessagingModule.h"
+#import <FirebaseAnalytics/FirebaseAnalytics.h>
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
@@ -62,15 +63,26 @@ static NSString *RNFBTestingMetroHostPort(void)
                                                  inWindow:self.window
                                         initialProperties:initialProps
                                         connectionOptions:connectionOptions];
+
+  for (UIOpenURLContext *context in connectionOptions.URLContexts) {
+    [FIRAnalytics handleOpenURL:context.URL];
+  }
+  for (NSUserActivity *userActivity in connectionOptions.userActivities) {
+    [FIRAnalytics handleUserActivity:userActivity];
+  }
 }
 
 - (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
 {
+  for (UIOpenURLContext *context in URLContexts) {
+    [FIRAnalytics handleOpenURL:context.URL];
+  }
   [RCTLinkingManager scene:scene openURLContexts:URLContexts];
 }
 
 - (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity
 {
+  [FIRAnalytics handleUserActivity:userActivity];
   [RCTLinkingManager scene:scene continueUserActivity:userActivity];
 }
 
