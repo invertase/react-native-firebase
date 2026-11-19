@@ -50,6 +50,8 @@ TMP_ROOT="${TMP_ROOT:-/tmp}"
 METRO_LOG="${RNFB_TEST_RN_BARE_METRO_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-metro.log}"
 APP_LOG="${RNFB_TEST_RN_BARE_LAUNCH_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke.log}"
 XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-xcodebuild.log}"
+# Cap for key-window + sceneOfRecord poll after launch (replaces fixed sleep 10).
+KEY_WINDOW_WAIT_SEC="${RNFB_TEST_RN_BARE_KEY_WINDOW_WAIT_SEC:-60}"
 PODS_PBXPROJ="test-rn-bare/ios/Pods/Pods.xcodeproj/project.pbxproj"
 LAUNCH_DERIVED_DATA=""
 LOG_LEVEL="default"
@@ -214,7 +216,32 @@ else
   xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null
 fi
 
-sleep 10
+# Poll for key-window + sceneOfRecord instead of a fixed sleep 10 — cold sims
+# often need longer; warm ones finish early.
+SCENE_OF_RECORD="sceneOfRecord: sceneID: sceneID:${BUNDLE_ID}-default"
+key_window_seen=0
+scene_seen=0
+poll_deadline=$((SECONDS + KEY_WINDOW_WAIT_SEC))
+while (( SECONDS < poll_deadline )); do
+  if grep -Fq 'Window did become application key' "$APP_LOG"; then
+    key_window_seen=1
+  fi
+  if grep -Fq "$SCENE_OF_RECORD" "$APP_LOG"; then
+    scene_seen=1
+  fi
+  if [[ "$key_window_seen" -eq 1 && "$scene_seen" -eq 1 ]]; then
+    break
+  fi
+  scene_ips_early="$(
+    grep -Ei 'UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption|NoSceneLifecycleAdoption' "$APP_LOG" \
+      | grep -Ev '^Filtering the log data using' \
+      || true
+  )"
+  if [[ -n "$scene_ips_early" ]]; then
+    break
+  fi
+  sleep 0.5
+done
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   # Map the images while the app is still running. Asserted below.
   rnfb_probe_launch_capture_loaded_images "$APP_PID"
