@@ -46,7 +46,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  route-ios:
+  # One placement read per consuming job. debug and release each take a hosted
+  # slot or a donor slot, so each has its own route. Extra schedule or
+  # workflow_dispatch iterations of the same build mode still share that mode's route.
+  route-ios-debug:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
+  route-ios-release:
     uses: ./.github/workflows/mellifera-route.yml
     secrets: inherit
     with:
@@ -108,8 +117,8 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   ios:
     name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
-    runs-on: ${{ fromJSON(needs.route-ios.outputs.runs-on) }}
-    needs: [matrix_prep, route-ios]
+    runs-on: ${{ fromJSON(matrix.buildmode == 'debug' && needs.route-ios-debug.outputs.runs-on || needs.route-ios-release.outputs.runs-on) }}
+    needs: [matrix_prep, route-ios-debug, route-ios-release]
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 107
     env:
