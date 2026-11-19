@@ -2,6 +2,8 @@ name: Test Expo Fixture iOS Duplicate Classes
 
 # Per-module Expo fixtures (GitHub #9408 / #9419): GoogleUtilities classes must
 # have exactly one owner whether messaging, analytics, or both are installed.
+# Stays on the GitHub xcode-27 image. The check needs Xcode 27 and the iOS 27
+# simulator runtime; a Mellifera macos-self-hosted donor is not that image.
 
 on:
   pull_request:

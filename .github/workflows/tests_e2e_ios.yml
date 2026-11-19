@@ -46,21 +46,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # One placement read per consuming job. debug and release each take a hosted
-  # slot or a donor slot, so each has its own route. Extra schedule or
-  # workflow_dispatch iterations of the same build mode still share that mode's route.
-  route-ios-debug:
-    uses: ./.github/workflows/mellifera-route.yml
+  # One placement read per matrix cell. The route job waits for matrix_prep
+  # and records a hold for each buildmode and iteration.
+  route-ios:
+    needs: matrix_prep
+    uses: ./.github/workflows/mellifera-route-matrix.yml
     secrets: inherit
     with:
       class: macos
       default-runs-on: xcode-27
-  route-ios-release:
-    uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
-    with:
-      class: macos
-      default-runs-on: xcode-27
+      matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      key-fields: buildmode,iteration
   # We want to generate our matrix dynamically
   # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
   matrix_prep:
@@ -117,8 +113,8 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   ios:
     name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
-    runs-on: ${{ fromJSON(matrix.buildmode == 'debug' && needs.route-ios-debug.outputs.runs-on || needs.route-ios-release.outputs.runs-on) }}
-    needs: [matrix_prep, route-ios-debug, route-ios-release]
+    runs-on: ${{ fromJSON(needs.route-ios.outputs.choices)[format('{0}-{1}', matrix.buildmode, matrix.iteration)] || fromJSON(needs.route-ios.outputs.fallback) }}
+    needs: [matrix_prep, route-ios]
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 107
     env:

@@ -37,11 +37,14 @@ concurrency:
 
 jobs:
   route-macos:
-    uses: ./.github/workflows/mellifera-route.yml
+    needs: matrix_prep
+    uses: ./.github/workflows/mellifera-route-matrix.yml
     secrets: inherit
     with:
       class: macos
       default-runs-on: xcode-27
+      matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      key-fields: iteration
   # We want to generate our matrix dynamically
   # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
   matrix_prep:
@@ -93,7 +96,7 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   other:
     name: Other (${{ matrix.iteration }})
-    runs-on: ${{ fromJSON(needs.route-macos.outputs.runs-on) }}
+    runs-on: ${{ fromJSON(needs.route-macos.outputs.choices)[format('{0}', matrix.iteration)] || fromJSON(needs.route-macos.outputs.fallback) }}
     needs: [matrix_prep, route-macos]
     timeout-minutes: 100
     env:
