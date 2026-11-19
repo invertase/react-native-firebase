@@ -1030,16 +1030,29 @@ describe('FirestorePipeline', function () {
         );
       });
 
-      it('rejects malformed where and malformed union payloads at validation boundary', async function () {
+      it('rejects malformed union payloads at validation boundary', async function () {
         const { execute } = firestorePipelinesModular;
-        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const { getFirestore, collection } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
-        const coll = collection(
-          db,
-          `${COLLECTION}/${Utils.randString(12, '#aA')}/native-where-union`,
-        );
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/native-union`);
 
-        await setDoc(doc(coll, 'base'), { tag: 'a', value: 1 });
+        const badUnion = db.pipeline().collection(coll);
+        badUnion._stages.push({ stage: 'union', options: { other: {} } });
+        await expectAsyncError(
+          () => execute(badUnion),
+          'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
+        );
+      });
+
+      it('rejects a non-array IN where value in the web pipeline bridge', async function () {
+        // Native platforms forward this condition to the backend, which accepts it.
+        if (!Platform.other) {
+          return;
+        }
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/web-scalar-in`);
 
         await expectAsyncError(
           () =>
@@ -1050,16 +1063,6 @@ describe('FirestorePipeline', function () {
                 .where({ condition: { operator: 'IN', fieldPath: 'tag', value: 'not-an-array' } }),
             ),
           'invalid argument',
-        );
-
-        const badUnion = db.pipeline().collection(coll);
-        badUnion._stages.push({ stage: 'union', options: { other: {} } });
-        await expectAsyncError(
-          () => execute(badUnion),
-          [
-            'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
-            'pipelineExecute() expected pipeline.source to be an object.',
-          ],
         );
       });
     });
