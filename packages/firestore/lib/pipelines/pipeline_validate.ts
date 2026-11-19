@@ -150,7 +150,22 @@ function validateStage(stage: unknown, stagePath: string, optionsPath: string): 
         );
       }
       return stage.options.other;
-    case 'where':
+    case 'where': {
+      const condition = stage.options.condition;
+      if (isRecord(condition) && typeof condition.operator === 'string') {
+        const operator = condition.operator.toUpperCase();
+        if (
+          (operator === 'IN' ||
+            operator === 'NOT_IN' ||
+            operator === 'ARRAY_CONTAINS_ANY' ||
+            operator === 'ARRAY_CONTAINS_ALL') &&
+          !Array.isArray(condition.value)
+        ) {
+          throw new Error('invalid argument');
+        }
+      }
+      return undefined;
+    }
     case 'limit':
     case 'offset':
     case 'findNearest':

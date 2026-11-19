@@ -246,6 +246,65 @@ describe('validateSerializedPipeline — failure branches', function () {
       ).toThrow('stage.options.other.stages[0].options.selections to contain at least one value.');
     });
 
+    it('rejects non-array values for array where operators', function () {
+      const nonArrayByOperator: Array<[string, unknown]> = [
+        ['IN', 'not-an-array'],
+        ['NOT_IN', 1],
+        ['ARRAY_CONTAINS_ANY', { tag: 'a' }],
+        ['ARRAY_CONTAINS_ALL', null],
+      ];
+      for (const [operator, value] of nonArrayByOperator) {
+        expect(() =>
+          validateSerializedPipeline(
+            pipelineWithStage({
+              stage: 'where',
+              options: { condition: { operator, fieldPath: 'tag', value } },
+            }),
+          ),
+        ).toThrow(/^invalid argument$/);
+      }
+
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'where',
+            options: {
+              condition: { operator: 'in', fieldPath: 'tag', value: 'not-an-array' },
+            },
+          }),
+        ),
+      ).toThrow(/^invalid argument$/);
+
+      for (const operator of ['IN', 'NOT_IN', 'ARRAY_CONTAINS_ANY', 'ARRAY_CONTAINS_ALL']) {
+        expect(() =>
+          validateSerializedPipeline(
+            pipelineWithStage({
+              stage: 'where',
+              options: { condition: { operator, fieldPath: 'tag', value: ['a'] } },
+            }),
+          ),
+        ).not.toThrow();
+      }
+
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'where',
+            options: { condition: { operator: 'IN', fieldPath: 'tag', value: [] } },
+          }),
+        ),
+      ).not.toThrow();
+
+      expect(() =>
+        validateSerializedPipeline(
+          pipelineWithStage({
+            stage: 'where',
+            options: { condition: { operator: 'EQUAL', fieldPath: 'tag', value: 'a' } },
+          }),
+        ),
+      ).not.toThrow();
+    });
+
     it('accepts option-less stages and rejects unknown stages', function () {
       for (const stage of [
         'where',
