@@ -82,6 +82,9 @@ jobs:
     env:
       XCODE_VERSION: '27.0'
       RNFB_IOS_SIM_RUNTIME: iOS 27.0
+      RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG: /tmp/test-rn-bare-launch-smoke-xcodebuild.log
+      RNFB_TEST_RN_BARE_LAUNCH_LOG: /tmp/test-rn-bare-launch-smoke.log
+      RNFB_TEST_RN_BARE_METRO_LOG: /tmp/test-rn-bare-launch-smoke-metro.log
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
       CCACHE_FILECLONE: true
       CCACHE_DEPEND: true
@@ -135,6 +138,21 @@ jobs:
 
       - name: test-rn-bare iOS launch smoke
         run: yarn test-rn-bare:ios:launch-smoke
+
+      # Paths match job env above (launch / metro / xcodebuild logs + optional *.retro.txt).
+      - name: Upload launch-smoke logs
+        # https://github.com/actions/upload-artifact/releases
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        continue-on-error: true
+        if: failure()
+        with:
+          name: rn-bare-launch-smoke-logs
+          path: |
+            /tmp/test-rn-bare-launch-smoke.log
+            /tmp/test-rn-bare-launch-smoke.log.retro.txt
+            /tmp/test-rn-bare-launch-smoke-metro.log
+            /tmp/test-rn-bare-launch-smoke-xcodebuild.log
+          if-no-files-found: warn
 
       - name: ccache stats (after)
         if: always()
