@@ -2,8 +2,8 @@ name: Test Expo Fixture iOS Duplicate Classes
 
 # Per-module Expo fixtures (GitHub #9408 / #9419): GoogleUtilities classes must
 # have exactly one owner whether messaging, analytics, or both are installed.
-# Stays on the GitHub xcode-27 image. The check needs Xcode 27 and the iOS 27
-# simulator runtime; a Mellifera macos-self-hosted donor is not that image.
+# Each cell gets its own placement read. The job needs Xcode 27 and the iOS 27
+# simulator runtime. The macos-self-hosted image is that Xcode 27 class.
 
 on:
   pull_request:
@@ -85,9 +85,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-expo-dupes:
+    uses: ./.github/workflows/mellifera-route-matrix.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
+      matrix: '{"modules":["messaging,auth","analytics,auth","messaging,analytics,auth"]}'
+      key-fields: modules
   test-expo-fixture-ios-dupes:
     name: Expo fixture iOS duplicate classes (${{ matrix.modules }})
-    runs-on: xcode-27
+    runs-on: ${{ fromJSON(needs.route-expo-dupes.outputs.choices)[matrix.modules] || fromJSON(needs.route-expo-dupes.outputs.fallback) }}
+    needs: route-expo-dupes
     timeout-minutes: 90
     strategy:
       fail-fast: false
