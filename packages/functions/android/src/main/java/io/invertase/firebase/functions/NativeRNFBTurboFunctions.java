@@ -28,14 +28,12 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableOptions;
 import com.google.firebase.functions.HttpsCallableReference;
 import com.google.firebase.functions.StreamResponse;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.TaskExecutorService;
-import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -358,68 +356,12 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   }
 
   private WritableMap createErrorMap(Throwable throwable) {
-    Object details = null;
-    String code = "UNKNOWN";
-    String message = throwable.getMessage() != null ? throwable.getMessage() : throwable.toString();
-
-    // Check if the throwable contains a FirebaseFunctionsException
-    if (throwable.getCause() != null
-        && throwable.getCause() instanceof FirebaseFunctionsException functionsException) {
-      details = functionsException.getDetails();
-      code = functionsException.getCode().name();
-      message = functionsException.getMessage();
-
-      // For streaming callables, check if details contains a "status" & "message" field with the
-      // correct values
-      if (details instanceof java.util.Map) {
-        @SuppressWarnings("unchecked")
-        java.util.Map<String, Object> detailsMap = (java.util.Map<String, Object>) details;
-        if (detailsMap.containsKey("status") && detailsMap.get("status") instanceof String) {
-          code = (String) detailsMap.get("status");
-        }
-        if (detailsMap.containsKey("message") && detailsMap.get("message") instanceof String) {
-          message = (String) detailsMap.get("message");
-        }
-      }
-
-      String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
-      boolean isTimeout = code.contains(timeout);
-
-      if (functionsException.getCause() instanceof IOException && !isTimeout) {
-        code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-        message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-      }
-    } else if (throwable instanceof FirebaseFunctionsException functionsException) {
-      details = functionsException.getDetails();
-      code = functionsException.getCode().name();
-      message = functionsException.getMessage();
-
-      // For streaming callables, check if details contains a "status" & "message" field with the
-      // correct values
-      if (details instanceof java.util.Map) {
-        @SuppressWarnings("unchecked")
-        java.util.Map<String, Object> detailsMap = (java.util.Map<String, Object>) details;
-        if (detailsMap.containsKey("status") && detailsMap.get("status") instanceof String) {
-          code = (String) detailsMap.get("status");
-        }
-        if (detailsMap.containsKey("message") && detailsMap.get("message") instanceof String) {
-          message = (String) detailsMap.get("message");
-        }
-      }
-
-      String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
-      boolean isTimeout = code.contains(timeout);
-
-      if (functionsException.getCause() instanceof IOException && !isTimeout) {
-        code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-        message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-      }
-    }
+    RNFBFunctionsError error = RNFBFunctionsError.from(throwable);
 
     WritableMap errorMap = Arguments.createMap();
-    errorMap.putString(CODE_KEY, code);
-    errorMap.putString(MSG_KEY, message);
-    RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, errorMap);
+    errorMap.putString(CODE_KEY, error.code);
+    errorMap.putString(MSG_KEY, error.message);
+    RCTConvertFirebase.mapPutValue(DETAILS_KEY, error.details, errorMap);
 
     return errorMap;
   }

@@ -3,6 +3,8 @@
 # rubocop:disable Metrics, Style/Documentation, Style/OneClassPerFile, Style/GlobalVars, Naming/MethodName
 require 'minitest/autorun'
 require 'json'
+require 'tmpdir'
+require 'fileutils'
 
 # Mock Pod::Specification to capture dependency calls
 class MockSpec
@@ -721,6 +723,116 @@ class FirebaseSpmTest < Minitest::Test
 
     assert_equal 0, spec.dependencies.length
     assert_equal 1, spm_calls.length
+  end
+
+  # ── RNFBApp second GoogleUtilities declarer ──
+
+  def with_rnfb_layout(*siblings)
+    Dir.mktmpdir do |root|
+      app_dir = File.join(root, 'app')
+      FileUtils.mkdir_p(app_dir)
+      siblings.each do |name|
+        FileUtils.mkdir_p(File.join(root, name))
+        File.write(File.join(root, name, 'package.json'), '{}')
+      end
+      yield app_dir
+    end
+  end
+
+  def capture_spm_calls
+    calls = []
+    Object.define_method(:spm_dependency) { |spec, **kwargs| calls << { spec: spec, **kwargs } }
+    calls
+  end
+
+  def test_gul_sibling_detection_matches_messaging_or_analytics_only
+    load_firebase_spm
+
+    with_rnfb_layout { |app_dir| refute rnfirebase_gul_sharing_sibling_installed?(app_dir) }
+    with_rnfb_layout('auth') { |app_dir| refute rnfirebase_gul_sharing_sibling_installed?(app_dir) }
+    with_rnfb_layout('messaging') { |app_dir| assert rnfirebase_gul_sharing_sibling_installed?(app_dir) }
+    with_rnfb_layout('analytics') { |app_dir| assert rnfirebase_gul_sharing_sibling_installed?(app_dir) }
+  end
+
+  def test_gul_sibling_detection_ignores_directory_without_package_json
+    load_firebase_spm
+
+    with_rnfb_layout do |app_dir|
+      FileUtils.mkdir_p(File.join(app_dir, '..', 'messaging'))
+      refute rnfirebase_gul_sharing_sibling_installed?(app_dir)
+    end
+  end
+
+  def test_declares_shared_google_utilities_when_sibling_installed_and_spm_active
+    calls = capture_spm_calls
+    load_firebase_spm
+    spec = MockSpec.new
+
+    with_rnfb_layout('messaging', 'analytics') do |app_dir|
+      assert rnfirebase_declare_shared_google_utilities(spec, app_dir)
+    end
+
+    assert_equal 1, calls.length
+    assert_same spec, calls[0][:spec]
+    assert_equal 'https://github.com/google/GoogleUtilities.git', calls[0][:url]
+    assert_equal({ kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' }, calls[0][:requirement])
+    assert_equal %w[GULNetwork GULReachability GULMethodSwizzler], calls[0][:products]
+  end
+
+  def test_skips_shared_google_utilities_without_sibling
+    calls = capture_spm_calls
+    load_firebase_spm
+
+    with_rnfb_layout('auth') do |app_dir|
+      refute rnfirebase_declare_shared_google_utilities(MockSpec.new, app_dir)
+    end
+
+    assert_empty calls
+  end
+
+  def test_skips_shared_google_utilities_when_spm_disabled
+    calls = capture_spm_calls
+    load_firebase_spm
+    $RNFirebaseDisableSPM = true
+
+    with_rnfb_layout('messaging') do |app_dir|
+      refute rnfirebase_declare_shared_google_utilities(MockSpec.new, app_dir)
+    end
+
+    assert_empty calls
+  end
+
+  def test_skips_shared_google_utilities_without_spm_dependency
+    load_firebase_spm
+
+    with_rnfb_layout('analytics') do |app_dir|
+      refute rnfirebase_declare_shared_google_utilities(MockSpec.new, app_dir)
+    end
+  end
+
+  def test_shared_google_utilities_matches_messaging_and_analytics_podspecs
+    calls = capture_spm_calls
+    load_firebase_spm
+    with_rnfb_layout('messaging') do |app_dir|
+      rnfirebase_declare_shared_google_utilities(MockSpec.new, app_dir)
+    end
+    declared = calls[0]
+
+    %w[messaging/RNFBMessaging analytics/RNFBAnalytics].each do |podspec|
+      source = File.read(File.join(__dir__, '..', '..', "#{podspec}.podspec"))
+      block = source[/spm_dependency\(s,.*?GoogleUtilities.*?\]\s*\)/m]
+      refute_nil block, "#{podspec}.podspec no longer declares GoogleUtilities"
+      assert_includes block, "url: '#{declared[:url]}'"
+      assert_includes block, "kind: '#{declared[:requirement][:kind]}'"
+      assert_includes block, "minimumVersion: '#{declared[:requirement][:minimumVersion]}'"
+      assert_equal declared[:products], block[/products:\s*\[(.*?)\]/m, 1].scan(/'([^']+)'/).flatten
+    end
+  end
+
+  def test_rnfbapp_podspec_calls_shared_google_utilities_declarer
+    source = File.read(File.join(__dir__, '..', 'RNFBApp.podspec'))
+
+    assert_includes source, 'rnfirebase_declare_shared_google_utilities(s, __dir__)'
   end
 
   # ── URL from package.json ──

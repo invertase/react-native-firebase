@@ -6,6 +6,7 @@ tests/app.playground.js
 tests/app.smartreply.js
 tests/app.admob.js
 test-expo/ios/**
+test-expo/.fixtures/**
 test-expo/android/**
 test-expo/.expo/**
 
