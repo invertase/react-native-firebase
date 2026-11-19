@@ -49,12 +49,15 @@ TMP_ROOT="${TMP_ROOT%/}"
 TMP_ROOT="${TMP_ROOT:-/tmp}"
 METRO_LOG="${RNFB_TEST_RN_BARE_METRO_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-metro.log}"
 APP_LOG="${RNFB_TEST_RN_BARE_LAUNCH_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke.log}"
+# Same stem as APP_LOG so a TMP/env override and the CI artifact path stay aligned.
+SCREENSHOT="${APP_LOG%.log}.png"
 XCODEBUILD_LOG="${RNFB_TEST_RN_BARE_LAUNCH_XCODEBUILD_LOG:-${TMP_ROOT}/test-rn-bare-launch-smoke-xcodebuild.log}"
 # Cap for key-window + sceneOfRecord poll after launch (replaces fixed sleep 10).
 KEY_WINDOW_WAIT_SEC="${RNFB_TEST_RN_BARE_KEY_WINDOW_WAIT_SEC:-60}"
 PODS_PBXPROJ="test-rn-bare/ios/Pods/Pods.xcodeproj/project.pbxproj"
 LAUNCH_DERIVED_DATA=""
-LOG_LEVEL="default"
+# React warning-level os_log (com.facebook.react.log / javascript) is OS_LOG_TYPE_INFO.
+LOG_LEVEL="info"
 if [[ "$PROBE_DYNAMIC_FIREBASE" == "1" ]]; then
   LAUNCH_DERIVED_DATA="${RNFB_TEST_RN_BARE_LAUNCH_DERIVED_DATA:-${TMP_ROOT}/test-rn-bare-launch-derived-data-dynamic-firebase}"
   # FirebaseCore's configure marker is a debug-level log.
@@ -113,7 +116,7 @@ done
 : >"$METRO_LOG"
 (
   cd test-rn-bare
-  RCT_METRO_PORT="$METRO_PORT" CI=1 yarn start --port "$METRO_PORT" >>"$METRO_LOG" 2>&1
+  RCT_METRO_PORT="$METRO_PORT" CI=1 yarn start --port "$METRO_PORT" --client-logs >>"$METRO_LOG" 2>&1
 ) &
 METRO_PID=$!
 trap 'cleanup "$UDID" "$METRO_PID"' EXIT
@@ -259,6 +262,12 @@ if [[ -n "$scene_ips" ]]; then
   fail "scene lifecycle runtime issue detected — see ${APP_LOG}"
 fi
 if ! grep -Fq 'Window did become application key' "$APP_LOG"; then
+  # Before the EXIT trap terminates the app. A failed screenshot must not replace this error.
+  if ! xcrun simctl io "$UDID" screenshot "$SCREENSHOT"; then
+    log "WARN: screenshot failed (${SCREENSHOT})"
+  else
+    log "screenshot ${SCREENSHOT}"
+  fi
   firebase_hint="$(
     grep -Ei 'Firebase|FIRApp|GOOGLE_APP_ID|FirebaseApp\.configure|Configuration fails|terminated due to signal|abort\(\)' "$APP_LOG" \
       | grep -Ev '^Filtering the log data using' \

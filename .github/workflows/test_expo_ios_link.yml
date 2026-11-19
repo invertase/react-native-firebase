@@ -141,5 +141,6 @@ jobs:
         with:
           name: test-expo-ios-launch-smoke-logs
           path: |
+            /tmp/test-expo-launch-smoke.png
             /tmp/test-expo-launch-smoke-*.log
           if-no-files-found: ignore

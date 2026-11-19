@@ -377,7 +377,7 @@ jobs:
           # Pinned so the Metro log upload below finds it whatever TMPDIR the runner sets.
           RNFB_METRO_LOG: /tmp/rnfb-metro-8081.log
         run: |
-          nohup yarn tests:packager:jet-ci > metro.log 2>&1 &
+          nohup yarn tests:packager:jet-ci --client-logs > metro.log 2>&1 &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
