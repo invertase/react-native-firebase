@@ -173,7 +173,7 @@ jobs:
         run: echo "key=$(bash .github/workflows/scripts/compute-xcode-ccache-key.sh e2e-macos)" >> "$GITHUB_OUTPUT"
 
       # https://github.com/hendrikmuhs/ccache-action/releases
-      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+      - uses: hendrikmuhs/ccache-action@dbeefd73e8e2ffc1bbc412570072735eb4db3607 # v1.2.25
         name: Xcode Compile Cache
         with:
           # Sticky content-hash key (append-timestamp: false). Native sources live under packages/*/ios (no packages/*/macos tree).
