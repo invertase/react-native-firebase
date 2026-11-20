@@ -468,6 +468,12 @@ describe('Auth', function () {
         expect(OAuthProvider.credentialFromError({} as any)).toBeNull();
       });
 
+      it('OAuthProvider exposes providerId so it can be passed as an AuthProvider', function () {
+        const provider = new OAuthProvider('microsoft.com');
+        expect(provider.providerId).toBe('microsoft.com');
+        expect(provider.PROVIDER_ID).toBe('microsoft.com');
+      });
+
       it('PhoneAuthProvider credentialFromResult and credentialFromError return null', function () {
         expect(PhoneAuthProvider.credentialFromResult({} as any)).toBeNull();
         expect(PhoneAuthProvider.credentialFromError({} as any)).toBeNull();
