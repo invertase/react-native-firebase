@@ -1,0 +1,86 @@
+name: Mellifera route matrix
+
+# One placement read per matrix cell. GitHub keeps a single output from a
+# matrix of reusable workflows, so this job runs the read once per cell and
+# returns a map the consuming matrix indexes.
+on:
+  workflow_call:
+    inputs:
+      class:
+        description: macos or other
+        required: true
+        type: string
+      default-runs-on:
+        description: Hosted label string or JSON array
+        required: true
+        type: string
+      overflow-runs-on:
+        description: Set only for linux-nested-virt-self-hosted
+        required: false
+        type: string
+        default: ''
+      matrix:
+        description: strategy.matrix JSON from matrix_prep
+        required: true
+        type: string
+      key-fields:
+        description: Comma-separated matrix fields, joined with '-' as the choice key
+        required: true
+        type: string
+    outputs:
+      choices:
+        description: JSON object of cell key to runs-on JSON
+        value: ${{ jobs.route.outputs.choices }}
+      fallback:
+        description: JSON hosted label used when a cell read fails
+        value: ${{ jobs.route.outputs.fallback }}
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    outputs:
+      choices: ${{ steps.out.outputs.choices || steps.rescue.outputs.choices }}
+      fallback: ${{ steps.out.outputs.fallback || steps.rescue.outputs.fallback }}
+    env:
+      RUNNER_SELECT_MODE: ${{ vars.RUNNER_SELECT_MODE }}
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
+      MELLIFERA_PLACEMENT_CA: ${{ vars.MELLIFERA_PLACEMENT_CA }}
+      MELLIFERA_PLACEMENT_URL: ${{ vars.MELLIFERA_PLACEMENT_URL }}
+      MELLIFERA_PLACEMENT_URL_MACOS: ${{ vars.MELLIFERA_PLACEMENT_URL_MACOS || (vars.MELLIFERA_PLACEMENT_ORIGIN && format('{0}/v1/gha/placement?repo={1}&label=macos-self-hosted', vars.MELLIFERA_PLACEMENT_ORIGIN, github.repository)) || '' }}
+      MELLIFERA_PLACEMENT_URL_LINUX: ${{ vars.MELLIFERA_PLACEMENT_URL_LINUX || (vars.MELLIFERA_PLACEMENT_ORIGIN && format('{0}/v1/gha/placement?repo={1}&label=linux-self-hosted', vars.MELLIFERA_PLACEMENT_ORIGIN, github.repository)) || '' }}
+      MELLIFERA_PLACEMENT_URL_LINUX_NESTED: ${{ vars.MELLIFERA_PLACEMENT_URL_LINUX_NESTED || (vars.MELLIFERA_PLACEMENT_ORIGIN && format('{0}/v1/gha/placement?repo={1}&label=linux-nested-virt-self-hosted', vars.MELLIFERA_PLACEMENT_ORIGIN, github.repository)) || '' }}
+    steps:
+      - name: Checkout runner-select
+        # https://github.com/actions/checkout/releases
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions/runner-select
+          persist-credentials: false
+      - id: out
+        continue-on-error: true
+        env:
+          MATRIX_JSON: ${{ inputs.matrix }}
+          KEY_FIELDS: ${{ inputs.key-fields }}
+          INPUT_CLASS: ${{ inputs.class }}
+          INPUT_DEFAULT_RUNS_ON: ${{ inputs.default-runs-on }}
+          INPUT_OVERFLOW_RUNS_ON: ${{ inputs.overflow-runs-on }}
+        run: bash .github/actions/runner-select/route-matrix.sh
+      - id: rescue
+        if: steps.out.outcome != 'success' || steps.out.outputs.choices == ''
+        env:
+          DEFAULT_RUNS_ON: ${{ inputs.default-runs-on }}
+        run: |
+          set -euo pipefail
+          if printf '%s' "$DEFAULT_RUNS_ON" | jq -e . >/dev/null 2>&1; then
+            parsed="$(printf '%s' "$DEFAULT_RUNS_ON" | jq -c .)"
+          else
+            parsed="$(jq -nc --arg s "$DEFAULT_RUNS_ON" '$s')"
+          fi
+          {
+            echo 'choices<<EOF'
+            echo '{}'
+            echo EOF
+            echo 'fallback<<EOF'
+            echo "$parsed"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+          echo "runner-select: branch=default reason=route-fallback" >&2
