@@ -60,7 +60,7 @@
   XCTAssertTrue([delegate respondsToSelector:@selector(window)]);
 }
 
-- (void)testProductionObserverGuardsWindowSelectorAtBothSites {
+- (void)testProductionObserverGuardsWindowSelectorInRootViewSync {
   NSString *source = [self notificationCenterSource];
   NSUInteger count = 0;
   NSRange search = NSMakeRange(0, source.length);
@@ -74,7 +74,8 @@
     NSUInteger next = found.location + found.length;
     search = NSMakeRange(next, source.length - next);
   }
-  XCTAssertEqual(count, 2u);
+  // both former lookup sites now go through syncRootViewHeadlessProperty
+  XCTAssertEqual(count, 1u);
 }
 
 @end
