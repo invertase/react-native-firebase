@@ -16,7 +16,6 @@
 
 import FirebaseFirestore
 import Foundation
-import FirebaseFirestore
 
 struct RNFBFirestoreParsedPipelineRequest {
   let source: RNFBFirestoreParsedPipelineSource
