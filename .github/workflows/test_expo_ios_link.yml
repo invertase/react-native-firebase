@@ -55,9 +55,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-macos:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
   test-expo-ios-link:
     name: test-expo iOS link + launch smoke
-    runs-on: xcode-27
+    runs-on: ${{ fromJSON(needs.route-macos.outputs.runs-on) }}
+    needs: route-macos
     timeout-minutes: 90
     env:
       XCODE_VERSION: '27.0'
@@ -134,5 +141,6 @@ jobs:
         with:
           name: test-expo-ios-launch-smoke-logs
           path: |
+            /tmp/test-expo-launch-smoke.png
             /tmp/test-expo-launch-smoke-*.log
           if-no-files-found: ignore
