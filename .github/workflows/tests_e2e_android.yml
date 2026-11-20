@@ -123,6 +123,8 @@ jobs:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: ${{ matrix.arch }}
     steps:
       - name: Free Disk Space (Ubuntu)
+        # Hosted runners only: self-hosted overflow runners have ample disk and no docker CLI.
+        if: runner.environment == 'github-hosted'
         # https://github.com/AdityaGarg8/remove-unwanted-software/releases
         uses: AdityaGarg8/remove-unwanted-software@36765610732de8ee2e81a5c6c231506e2b5cabcf # v5.1
         with:
