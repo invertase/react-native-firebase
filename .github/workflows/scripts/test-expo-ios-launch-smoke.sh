@@ -57,6 +57,8 @@ SIM_RUNTIME="${RNFB_TEST_EXPO_IOS27_RUNTIME:-iOS 27.0}"
 METRO_PORT="${RNFB_TEST_EXPO_METRO_PORT:-8081}"
 METRO_LOG="${RNFB_TEST_EXPO_METRO_LOG:-${TMP_ROOT}/test-expo-launch-smoke-${REPO_TAG}-metro.log}"
 APP_LOG="${RNFB_TEST_EXPO_LAUNCH_LOG:-${TMP_ROOT}/test-expo-launch-smoke-${REPO_TAG}.log}"
+# Same stem as APP_LOG so a TMP/env override and the CI artifact path stay aligned.
+SCREENSHOT="${APP_LOG%.log}.png"
 XCODEBUILD_LOG="${RNFB_TEST_EXPO_LAUNCH_XCODEBUILD_LOG:-${TMP_ROOT}/test-expo-launch-smoke-${REPO_TAG}-xcodebuild.log}"
 SPM_PACKAGES="${RNFB_TEST_EXPO_SPM_PACKAGES:-${TMP_ROOT}/test-expo-spm-packages-${REPO_TAG}}"
 # Cap for key-window + sceneOfRecord poll after launch (replaces fixed sleep 10).
@@ -258,7 +260,8 @@ fi
 xcrun simctl install "$UDID" "$APP"
 
 : >"$APP_LOG"
-xcrun simctl spawn "$UDID" log stream --level default --style compact \
+# React warning-level os_log (com.facebook.react.log / javascript) is OS_LOG_TYPE_INFO.
+xcrun simctl spawn "$UDID" log stream --level info --style compact \
   --predicate 'process == "testexpo" OR subsystem == "com.apple.runtime-issues" OR eventMessage CONTAINS[c] "EvaluateRuntimeIssueForNoSceneLifecycleAdoption"' \
   >>"$APP_LOG" 2>&1 &
 LOG_PID=$!
@@ -328,6 +331,12 @@ if [[ -n "$scene_ips" ]]; then
   fail "scene lifecycle runtime issue detected — see ${APP_LOG}"
 fi
 if ! grep -Fq 'Window did become application key' "$APP_LOG"; then
+  # Before the EXIT trap terminates the app. A failed screenshot must not replace this error.
+  if ! xcrun simctl io "$UDID" screenshot "$SCREENSHOT"; then
+    log "WARN: screenshot failed (${SCREENSHOT})"
+  else
+    log "screenshot ${SCREENSHOT}"
+  fi
   dump_failure_logs
   fail "app window never became key within ${KEY_WINDOW_WAIT_SEC}s — see ${APP_LOG}"
 fi

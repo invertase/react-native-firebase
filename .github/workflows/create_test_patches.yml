@@ -28,9 +28,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-linux:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   main:
     name: Create patch-package Patches
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-linux.outputs.runs-on) }}
+    needs: route-linux
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

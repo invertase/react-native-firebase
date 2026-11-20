@@ -28,10 +28,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-linux:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   jest:
     name: Jest
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-linux.outputs.runs-on) }}
+    needs: route-linux
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       NX_NO_CLOUD: true
