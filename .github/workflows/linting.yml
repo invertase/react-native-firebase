@@ -18,10 +18,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-linting:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   linting:
     name: Lint
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-linting.outputs.runs-on) }}
+    needs: route-linting
     env:
       NX_NO_CLOUD: true
       NX_CACHE_DIRECTORY: .nx/cache
@@ -100,9 +107,16 @@ jobs:
           path: .nx/cache
           key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
 
+  route-typescript:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   typescript:
     name: TypeScript Build Validation
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-typescript.outputs.runs-on) }}
+    needs: route-typescript
     timeout-minutes: 30
     env:
       NX_NO_CLOUD: true
@@ -164,9 +178,16 @@ jobs:
           path: .nx/cache
           key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
 
+  route-attw:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   attw:
     name: Published Package Types (attw)
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-attw.outputs.runs-on) }}
+    needs: route-attw
     timeout-minutes: 30
     steps:
       # https://github.com/actions/checkout/releases
@@ -206,9 +227,16 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
 
+  route-consumer-types:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   consumer-types:
     name: Consumer Type Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-consumer-types.outputs.runs-on) }}
+    needs: route-consumer-types
     timeout-minutes: 30
     env:
       NX_NO_CLOUD: true
@@ -268,9 +296,16 @@ jobs:
           path: .nx/cache
           key: ${{ runner.os }}-nx-v1-${{ hashFiles('yarn.lock', 'nx.json', 'lerna.json') }}
 
+  route-typedoc:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   typedoc:
     name: TypeDoc Generation
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-typedoc.outputs.runs-on) }}
+    needs: route-typedoc
     timeout-minutes: 30
     env:
       NX_NO_CLOUD: true
