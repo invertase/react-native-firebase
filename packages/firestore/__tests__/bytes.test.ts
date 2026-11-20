@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 
 import { Bytes } from '../lib';
 
-// Every byte value, not in sorted order.
+// Unsorted byte values; any 256 in a row include every value.
 function testBytes(length: number): Uint8Array {
   return Uint8Array.from({ length }, (_, i) => (i * 167 + 13) & 255);
 }
