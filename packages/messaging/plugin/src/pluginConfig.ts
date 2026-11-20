@@ -8,9 +8,29 @@ export interface PluginConfigType {
    */
   installationIdEnabled?: boolean;
   android?: PluginConfigTypeAndroid;
+  ios?: PluginConfigTypeIos;
 }
 
 export interface PluginConfigTypeAndroid {
   notificationIcon?: string;
   notificationColor?: string;
+}
+
+export interface PluginConfigTypeIos {
+  /**
+   * Adds a Notification Service Extension target that displays the image of FCM notifications
+   * (`Messaging.serviceExtension().populateNotificationContent`), linking `FirebaseMessaging`
+   * through Swift Package Manager at the Firebase Apple SDK version of `@react-native-firebase/app`.
+   *
+   * `true` uses the defaults of {@link NotificationServiceExtensionConfig}. Omitted or `false` adds nothing.
+   */
+  notificationServiceExtension?: boolean | NotificationServiceExtensionConfig;
+}
+
+export interface NotificationServiceExtensionConfig {
+  /**
+   * Name of the extension target, also its folder in `ios/` and the last component of its bundle
+   * identifier (`<ios.bundleIdentifier>.<targetName>`). Defaults to `NotificationServiceExtension`.
+   */
+  targetName?: string;
 }
