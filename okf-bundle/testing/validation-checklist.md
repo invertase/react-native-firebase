@@ -78,6 +78,9 @@ yarn tests:jest --watchman=false packages/firestore/__tests__/pipelines.test.ts
 
 Optional: `yarn tests:jest-coverage`.
 
+<a id="jest-collect-coverage-from-order"></a>
+**Focused coverage:** `--collectCoverageFrom` is an array option, so test paths placed after it are swallowed as globs and Jest runs every suite; put the test paths first and pass one brace glob (`yarn tests:jest --watchman=false packages/analytics/plugin packages/auth/plugin --coverage --coverageReporters=text '--collectCoverageFrom=packages/{analytics,auth}/plugin/src/**/*.ts'`).
+
 <a id="jest-unhandled-rejections"></a>
 **Unhandled rejections:** on Node 24 an unhandled promise rejection crashes the Jest process (`triggerUncaughtException`), aborting the file so other tests report nothing; a `process.on('unhandledRejection')` listener in a test cannot reliably observe it (Jest sandboxes `process`). Assert the handler is attached instead: spy the method returning the promise, wrap the returned promise's `then` to capture the derived promise, and assert that resolves (pattern: `packages/app-check/__tests__/initializeAppCheck.test.ts`). When proving such tests fail on old code, run them one at a time (`-t`) so each failure is reported.
 

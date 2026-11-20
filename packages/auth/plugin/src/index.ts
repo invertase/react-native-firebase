@@ -14,9 +14,10 @@ const withRnFirebaseAuth: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withPlugins(config, [
     // iOS
     [withIosCaptchaUrlTypes, props],
-    // The two openURL fixes are mutually exclusive and detect which applies at prebuild time:
-    // app-delegate life cycle patches `AppDelegate.swift`, UIScene life cycle (Expo SDK 58+)
-    // patches `SceneDelegate.swift`.
+    // Each openURL fix detects at prebuild time whether it applies. The app-delegate fix patches an
+    // `application(_:open:options:)` override in `AppDelegate.swift`; the UIScene fix (Expo SDK 58+)
+    // patches `SceneDelegate.swift`. Both apply when a UIScene AppDelegate still has that override,
+    // such as the one the Analytics plugin adds for link attribution.
     [withIosCaptchaOpenUrlFix, props],
     [withIosCaptchaSceneDelegateFix, props],
   ]);

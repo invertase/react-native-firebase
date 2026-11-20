@@ -1,0 +1,220 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Analytics Config Plugin iOS Tests - UIScene link attribution Auth openURL fix compatibility lets Auth patch the openURL override Analytics adds, and both stay idempotent 1`] = `
+"internal import Expo
+import FirebaseAnalytics // @generated @react-native-firebase/analytics-sceneLinkAttribution
+import React
+import ReactAppDependencyProvider
+
+@main
+class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
+// @generated begin @react-native-firebase/analytics-sceneLinkAttribution - expo prebuild (DO NOT MODIFY)
+  // Expo's SceneEventForwarder re-feeds scene URLs and user activities to these AppDelegate
+  // methods with direct Swift calls, which Firebase's app delegate proxy never sees.
+  public override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+// @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY)
+    if url.host?.lowercased() == "firebaseauth" {
+      // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
+      return false
+    }
+// @generated end @react-native-firebase/auth-openURL
+    FirebaseAnalytics.Analytics.handleOpen(url)
+    return super.application(app, open: url, options: options)
+  }
+// @generated end @react-native-firebase/analytics-sceneLinkAttribution
+// @generated begin @react-native-firebase/analytics-sceneLinkAttribution - expo prebuild (DO NOT MODIFY)
+  public override func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    FirebaseAnalytics.Analytics.handleUserActivity(userActivity)
+    return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+  }
+// @generated end @react-native-firebase/analytics-sceneLinkAttribution
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  public override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+
+    // The window is created and React Native is started by \`SceneDelegate\` under the
+    // scene-based life cycle (required by the iOS 27 SDK).
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
+
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+}
+"
+`;
+
+exports[`Analytics Config Plugin iOS Tests - UIScene link attribution modifySwiftAppDelegate adds the import and both overrides to the SDK 58 AppDelegate 1`] = `
+"internal import Expo
+import FirebaseAnalytics // @generated @react-native-firebase/analytics-sceneLinkAttribution
+import React
+import ReactAppDependencyProvider
+
+@main
+class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
+// @generated begin @react-native-firebase/analytics-sceneLinkAttribution - expo prebuild (DO NOT MODIFY)
+  // Expo's SceneEventForwarder re-feeds scene URLs and user activities to these AppDelegate
+  // methods with direct Swift calls, which Firebase's app delegate proxy never sees.
+  public override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    FirebaseAnalytics.Analytics.handleOpen(url)
+    return super.application(app, open: url, options: options)
+  }
+// @generated end @react-native-firebase/analytics-sceneLinkAttribution
+// @generated begin @react-native-firebase/analytics-sceneLinkAttribution - expo prebuild (DO NOT MODIFY)
+  public override func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    FirebaseAnalytics.Analytics.handleUserActivity(userActivity)
+    return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+  }
+// @generated end @react-native-firebase/analytics-sceneLinkAttribution
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  public override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+
+    // The window is created and React Native is started by \`SceneDelegate\` under the
+    // scene-based life cycle (required by the iOS 27 SDK).
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
+
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+}
+"
+`;
+
+exports[`Analytics Config Plugin iOS Tests - UIScene link attribution modifySwiftAppDelegate injects into an existing openURL override instead of adding a second one 1`] = `
+"internal import Expo
+import FirebaseAnalytics // @generated @react-native-firebase/analytics-sceneLinkAttribution
+import React
+import ReactAppDependencyProvider
+
+@main
+class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
+// @generated begin @react-native-firebase/analytics-sceneLinkAttribution - expo prebuild (DO NOT MODIFY)
+  public override func application(
+    _ application: UIApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+  ) -> Bool {
+    FirebaseAnalytics.Analytics.handleUserActivity(userActivity)
+    return super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+  }
+// @generated end @react-native-firebase/analytics-sceneLinkAttribution
+  var window: UIWindow?
+
+  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  public override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+
+    // The window is created and React Native is started by \`SceneDelegate\` under the
+    // scene-based life cycle (required by the iOS 27 SDK).
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  // Linking API
+  public override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+// @generated begin @react-native-firebase/analytics-sceneLinkAttribution - expo prebuild (DO NOT MODIFY)
+    FirebaseAnalytics.Analytics.handleOpen(url)
+// @generated end @react-native-firebase/analytics-sceneLinkAttribution
+    return super.application(app, open: url, options: options) || RCTLinkingManager.application(app, open: url, options: options)
+  }
+}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // Extension point for config-plugins
+
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    // needed to return the correct URL for expo-dev-client.
+    bridge.bundleURL ?? bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+#else
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+}
+"
+`;

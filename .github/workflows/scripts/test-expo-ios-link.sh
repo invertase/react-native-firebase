@@ -108,6 +108,22 @@ if [[ -z "$factory_line" || -z "$configure_line" || "$factory_line" -gt "$config
   log "ERROR: App Check provider factory must be registered before FirebaseApp.configure() (factory line ${factory_line:-missing}, configure line ${configure_line:-missing})"
   exit 1
 fi
+if ! grep -q '@react-native-firebase/analytics-sceneLinkAttribution' "$APP_DELEGATE"; then
+  log "ERROR: missing Analytics UIScene link attribution patch tag in AppDelegate"
+  exit 1
+fi
+for analytics_call in 'FirebaseAnalytics.Analytics.handleOpen(url)' 'FirebaseAnalytics.Analytics.handleUserActivity(userActivity)'; do
+  analytics_call_count="$(grep -cF "$analytics_call" "$APP_DELEGATE" || true)"
+  if [[ "$analytics_call_count" -ne 1 ]]; then
+    log "ERROR: expected exactly one ${analytics_call} in AppDelegate, found ${analytics_call_count}"
+    exit 1
+  fi
+done
+# expo-router is in the fixture, so Auth's openURL fix must also guard the override Analytics added.
+if ! grep -q '@react-native-firebase/auth-openURL' "$APP_DELEGATE"; then
+  log "ERROR: missing Auth reCAPTCHA openURL patch tag in the AppDelegate openURL override"
+  exit 1
+fi
 if ! awk '/UIApplicationSupportsMultipleScenes/{getline; if ($0 ~ /<false\/>/) found=1} END{exit !found}' "$INFO_PLIST"; then
   log "ERROR: UIApplicationSupportsMultipleScenes is not false (single-scene contract)"
   exit 1
@@ -116,7 +132,7 @@ if ! grep -q 'UISceneDelegateClassName' "$INFO_PLIST"; then
   log "ERROR: Info.plist missing UIScene manifest entries"
   exit 1
 fi
-log "PASS: Expo SceneDelegate has Auth reCAPTCHA canHandle callback; AppDelegate owns exactly one configure after App Check; single-scene manifest"
+log "PASS: Expo SceneDelegate has Auth reCAPTCHA canHandle callback; AppDelegate owns exactly one configure after App Check and forwards links to Analytics; single-scene manifest"
 log "--- end Expo 58 UIScene / RNFB plugin contract ---"
 
 # Diagnosis: did #9164's rnfirebase_add_spm_core_to_app_target run during
