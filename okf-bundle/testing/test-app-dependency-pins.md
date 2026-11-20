@@ -34,9 +34,10 @@ Root `package.json` must **not** use blanket `resolutions` for `react-native`, `
 | Package | Pin | Where |
 |---------|-----|--------|
 | `react-native` (mobile) | **`0.88.0-rc.3`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
+| `react-native` (SwiftPM-mode build) | **`0.88.1`** | `RN_VERSION` in `.github/workflows/scripts/test-rn-swiftpm-ios-build.sh` (fresh `@react-native-community/cli init` app, not a workspace) |
 | `react` (mobile) | **`19.3.0`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
 | `engines.node` (mobile fixtures) | **`^22.13.0`** | `tests/package.json`, `test-expo/package.json`, `test-rn-bare/package.json` |
-| `@react-native-community/cli` (+ platform packages) | **`20.2.0`** | `tests/package.json`, `test-rn-bare/package.json` (and root `devDependencies` for tooling convenience) |
+| `@react-native-community/cli` (+ platform packages) | **`20.2.0`** | `tests/package.json`, `test-rn-bare/package.json`, `RN_CLI_VERSION` in `.github/workflows/scripts/test-rn-swiftpm-ios-build.sh` (and root `devDependencies` for tooling convenience) |
 | `@react-native/babel-preset` / `@react-native/metro-config` | **`0.88.0-rc.3`** | `tests/package.json`, `test-rn-bare/package.json` |
 | `@react-native/jest-preset` | **`0.88.0-rc.3`** | `tests/package.json` (and root `devDependencies` for Jest / toolchain lockstep with mobile RN) |
 | `@react-native/codegen` | **`0.88.0-rc.3`** | Resolved with mobile `react-native` from `tests/` (no root resolution) |

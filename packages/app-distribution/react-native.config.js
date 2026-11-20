@@ -7,4 +7,7 @@ module.exports = {
       },
     },
   },
+  spm: {
+    autolinkingPlugin: './spm-autolinking-plugin.js',
+  },
 };

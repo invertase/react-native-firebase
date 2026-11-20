@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node-lts/tsconfig",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+    "declaration": true,
+    "types": ["node"]
+  },
+  "include": ["./src"]
+}

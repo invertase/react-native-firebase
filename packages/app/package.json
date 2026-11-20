@@ -28,9 +28,13 @@
     "build:version": "node ./scripts/genversion-ios && node ./scripts/genversion-android",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
+    "build:spm": "rimraf spm/build && tsc --build spm",
     "lint:plugin": "eslint plugin/src/*",
     "compile": "bob build",
-    "prepare": "npm run build && npm run build:plugin && npm run compile"
+    "prepare": "npm run build && npm run build:plugin && npm run build:spm && npm run compile"
+  },
+  "swiftpmConfig": {
+    "autolinkingPlugin": "./spm/build/index.js"
   },
   "homepage": "https://rnfirebase.io",
   "repository": {
@@ -178,6 +182,7 @@
         "outputs": [
           "{projectRoot}/dist/**",
           "{projectRoot}/plugin/build/**",
+          "{projectRoot}/spm/build/**",
           "{projectRoot}/lib/version.ts",
           "{projectRoot}/ios/RNFBApp/RNFBVersion.m",
           "{projectRoot}/android/src/reactnative/java/io/invertase/firebase/app/ReactNativeFirebaseVersion.java"
