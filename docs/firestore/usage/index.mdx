@@ -943,7 +943,7 @@ updateDoc(doc(db, 'users', 'ABC'), {
 ```
 
 To store raw `Bytes` (for example of a `Base64` image string), provide the string to the static
-`fromBase64String` method on the class (the string must be non-empty), or build the value from a `Uint8Array` with `Bytes.fromUint8Array`. Read it back with `toBase64()` or `toUint8Array()`:
+`fromBase64String` method on the class (the string must be non-empty, valid `Base64`), or build the value from a `Uint8Array` with `Bytes.fromUint8Array`. Read it back with `toBase64()` or `toUint8Array()`:
 
 ```js
 import { Bytes, doc, getFirestore, updateDoc } from '@react-native-firebase/firestore';

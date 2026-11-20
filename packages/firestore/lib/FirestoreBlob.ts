@@ -17,6 +17,26 @@
 
 import { Base64, isString } from '@react-native-firebase/app/dist/module/common';
 
+// Hermes has native atob and btoa, far faster than the Base64 fallback.
+type GlobalWithBase64 = typeof globalThis & {
+  atob?: (data: string) => string;
+  btoa?: (data: string) => string;
+};
+
+// String.fromCharCode.apply takes one argument per byte, so bytes are converted in chunks
+// small enough for every engine's argument limit.
+const FROM_CHAR_CODE_CHUNK_SIZE = 4096;
+
+function base64ToBinaryString(base64: string): string {
+  const { atob } = globalThis as GlobalWithBase64;
+  return typeof atob === 'function' ? atob(base64) : Base64.atob(base64);
+}
+
+function binaryStringToBase64(binaryString: string): string {
+  const { btoa } = globalThis as GlobalWithBase64;
+  return typeof btoa === 'function' ? btoa(binaryString) : Base64.btoa(binaryString);
+}
+
 export class Blob {
   _binaryString: string;
 
@@ -37,7 +57,14 @@ export class Blob {
       );
     }
 
-    return new Blob(true, Base64.atob(base64));
+    let binaryString: string;
+    try {
+      binaryString = base64ToBinaryString(base64);
+    } catch {
+      throw new Error('firestore.Blob.fromBase64String expects a valid base64 string');
+    }
+
+    return new Blob(true, binaryString);
   }
 
   static fromUint8Array(array: Uint8Array): Blob {
@@ -45,10 +72,16 @@ export class Blob {
       throw new Error('firestore.Blob.fromUint8Array expects an instance of Uint8Array');
     }
 
-    return new Blob(
-      true,
-      Array.prototype.map.call(array, (byte: number) => String.fromCharCode(byte)).join(''),
-    );
+    let binaryString = '';
+    for (let i = 0; i < array.length; i += FROM_CHAR_CODE_CHUNK_SIZE) {
+      // apply accepts any array-like; the cast is only for TypeScript.
+      binaryString += String.fromCharCode.apply(
+        null,
+        array.subarray(i, i + FROM_CHAR_CODE_CHUNK_SIZE) as unknown as number[],
+      );
+    }
+
+    return new Blob(true, binaryString);
   }
 
   isEqual(blob: Blob): boolean {
@@ -60,11 +93,17 @@ export class Blob {
   }
 
   toBase64(): string {
-    return Base64.btoa(this._binaryString);
+    return binaryStringToBase64(this._binaryString);
   }
 
   toUint8Array(): Uint8Array {
-    return new Uint8Array(this._binaryString.split('').map(char => char.charCodeAt(0)));
+    const binaryString = this._binaryString;
+    const array = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      array[i] = binaryString.charCodeAt(i);
+    }
+
+    return array;
   }
 
   toString(): string {
