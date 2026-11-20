@@ -133,6 +133,10 @@
     "ios": {
       "firebase": "13.1.1",
       "firebaseSpmUrl": "https://github.com/firebase/firebase-ios-sdk.git",
+      "spmDeps": {
+        "appCheck": "12.0.0",
+        "googleUtilities": "8.1.4"
+      },
       "iosTarget": "15.0",
       "macosTarget": "11.0",
       "tvosTarget": "15.0"

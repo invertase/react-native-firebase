@@ -91,10 +91,25 @@ module RNFirebaseSPM
     # correctly regardless of monorepo hoisting layout (hoisted
     # dependencies, pnpm, etc.), with no adjustment needed.
     def url
-      @url ||= begin
+      @url ||= ios_sdk_versions['firebaseSpmUrl']
+    end
+
+    # Lower bound for a package Firebase also depends on, from
+    # `sdkVersions.ios.spmDeps`. The resulting range must overlap Firebase's
+    # own range for that package, or SPM resolution fails.
+    def dep_minimum(name)
+      version = ios_sdk_versions.dig('spmDeps', name)
+      return version if version.is_a?(String) && !version.strip.empty?
+
+      raise Pod::Informative,
+            "[react-native-firebase] sdkVersions.ios.spmDeps.#{name} is missing or empty in " \
+            '@react-native-firebase/app package.json.'
+    end
+
+    def ios_sdk_versions
+      @ios_sdk_versions ||= begin
         app_package_path = File.join(__dir__, 'package.json')
-        app_package = JSON.parse(File.read(app_package_path))
-        app_package['sdkVersions']['ios']['firebaseSpmUrl']
+        JSON.parse(File.read(app_package_path))['sdkVersions']['ios']
       end
     end
 
@@ -171,6 +186,7 @@ module RNFirebaseSPM
       @active = nil
       @version = nil
       @url = nil
+      @ios_sdk_versions = nil
       @mode = nil
     end
   end
@@ -317,11 +333,43 @@ def rnfirebase_declare_shared_google_utilities(spec, app_dir) # rubocop:disable 
   return false unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
   return false unless rnfirebase_gul_sharing_sibling_installed?(app_dir)
 
-  spm_dependency(spec,
-                 url: 'https://github.com/google/GoogleUtilities.git',
-                 requirement: { kind: 'upToNextMajorVersion', minimumVersion: '8.1.3' },
-                 products: %w[GULNetwork GULReachability GULMethodSwizzler])
+  spm_dependency(spec, **rnfirebase_google_utilities_spm)
   true
+end
+
+# Shared by RNFBApp, RNFBMessaging and RNFBAnalytics so all declarers match.
+def rnfirebase_google_utilities_spm
+  {
+    url: 'https://github.com/google/GoogleUtilities.git',
+    requirement: { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.dep_minimum('googleUtilities') },
+    products: %w[GULNetwork GULReachability GULMethodSwizzler]
+  }
+end
+
+# AppCheckRecaptchaProvider depends on the AppCheckCore target, so both
+# products need two declarers (RNFBAppCheck, RNFBApp) for RNFBAppCheck to link
+# the shared frameworks.
+def rnfirebase_app_check_core_spm
+  {
+    url: 'https://github.com/google/app-check.git',
+    requirement: { kind: 'upToNextMajorVersion', minimumVersion: RNFirebaseSPM.dep_minimum('appCheck') },
+    products: %w[AppCheckCore AppCheckRecaptchaProvider]
+  }
+end
+
+def rnfirebase_declare_app_check_core(spec) # rubocop:disable Naming/PredicateMethod
+  return false unless defined?(spm_dependency) && !rnfirebase_spm_disabled?
+
+  spm_dependency(spec, **rnfirebase_app_check_core_spm)
+  true
+end
+
+# RNFBApp's half of the pair: only when App Check is installed, using the same
+# sibling lookup (and pnpm gap) as the GoogleUtilities declarer above.
+def rnfirebase_declare_shared_app_check_core(spec, app_dir)
+  return false unless File.exist?(File.join(app_dir, '..', 'app-check', 'package.json'))
+
+  rnfirebase_declare_app_check_core(spec)
 end
 
 # Xcodeproj assigns a fresh random UUID on every `project.new`. The dynamic

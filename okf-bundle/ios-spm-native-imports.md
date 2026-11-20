@@ -300,15 +300,24 @@ One declarer is not enough. With only `RNFBMessaging` or only
 privately into that pod's framework. `RNFBApp.podspec` is therefore the
 second declarer: `rnfirebase_declare_shared_google_utilities` in
 `packages/app/firebase_spm.rb` makes the same `spm_dependency` call
-(same URL, `upToNextMajorVersion` from `8.1.3`, same three products) when
+(same URL, `upToNextMajorVersion` from `sdkVersions.ios.spmDeps.googleUtilities`,
+same three products) when
 SPM is active (`spm_dependency` defined and `rnfirebase_spm_disabled?`
 false) **and** `@react-native-firebase/messaging` or
 `@react-native-firebase/analytics` is installed. Installed means a
 `package.json` in the sibling directory of the `app` package
 (`<app>/../messaging`, `<app>/../analytics`): the monorepo `packages/`
 layout and a consumer `node_modules/@react-native-firebase/` layout both
-match. Without either sibling, RNFBApp declares nothing extra. Keep the
-three declarations identical; `firebase_spm_test.rb` compares them.
+match. Without either sibling, RNFBApp declares nothing extra. All three
+declarers build the call from `rnfirebase_google_utilities_spm`;
+`firebase_spm_test.rb` fails if a podspec declares GoogleUtilities inline.
+
+`sdkVersions.ios.spmDeps` in `packages/app/package.json` holds the lower
+bounds for the packages RNFB declares next to Firebase (`googleUtilities`,
+`appCheck`). Each `upToNextMajorVersion` range must overlap the range
+`firebase-ios-sdk`'s `Package.swift` requires at `sdkVersions.ios.firebase`,
+or SPM resolution fails. Recheck both bounds when `firebase-ios-sdk` moves
+either package to a new major version.
 
 Known gaps:
 
@@ -350,6 +359,48 @@ Firebase probe): RNFBApp always declares the three products there. The
 An app-only fixture (`--modules ""`) is not a clean zero baseline:
 `FirebaseCore` / `GULLogger` classes are privately duplicated in `RNFBApp`
 there.
+
+### AppCheckCore: share it when another SPM package also uses it
+
+`RNFBAppCheck.podspec` only needs `FirebaseAppCheck`, which pulls in
+`AppCheckCore` and `AppCheckRecaptchaProvider` from `google/app-check`. In an
+RNFB-only graph nothing else uses them and there is no duplicate. When
+another SPM package also uses `AppCheckCore` (GoogleSignIn-iOS 10.1.0 does,
+for example through `@react-native-google-signin/google-signin` with
+`iosDependencyManager: 'spm'`), Xcode builds a shared
+`AppCheckCore_…_PackageProduct` framework for it but still links a private
+copy into `RNFBAppCheck`: 32 `GAC*` / AppCheckCore Swift classes load twice
+(GitHub [#9419](https://github.com/invertase/react-native-firebase/issues/9419)).
+
+The private copy comes in through `AppCheckRecaptchaProvider`, whose target
+depends on the `AppCheckCore` *target* in the same package. Xcode merges
+`AppCheckRecaptchaProvider.o` into `RNFBAppCheck` and `AppCheckCore.o` with
+it, so declaring `AppCheckCore` alone changes nothing. The fix declares both
+products (`rnfirebase_declare_app_check_core` in
+`packages/app/firebase_spm.rb`, `upToNextMajorVersion` from
+`sdkVersions.ios.spmDeps.appCheck`) from `RNFBAppCheck.podspec` and, through
+`rnfirebase_declare_shared_app_check_core`, from `RNFBApp.podspec` when
+`@react-native-firebase/app-check` is installed (same sibling lookup, pnpm
+gap and installed-but-not-autolinked gap as the GoogleUtilities declarer).
+Both declarers are needed, as for GoogleUtilities.
+
+Measured on a generated `app-check,auth` Expo fixture plus
+`@react-native-google-signin/google-signin` 17.0.0 in SPM mode (Firebase iOS
+SDK 13.1.1, app-check 12.1.0, Release simulator build, empty DerivedData).
+The fixture runner cannot add non-RNFB packages, so this was a one-off build,
+with `EXPO_USE_PRECOMPILED_MODULES=0`, because in precompiled mode Expo
+builds pods that depend on `React-Core`, `RNGoogleSignin` included, as static
+libraries (`expo-modules-autolinking` `scripts/ios/precompiled_modules.rb`).
+CI does not build this graph, so nothing enforces the 0 below; rerun it by
+hand when changing these declarations.
+
+| Declarations | Duplicate classes |
+| --- | --- |
+| none (before) | 32, `RNFBAppCheck` vs `AppCheckCore_…_PackageProduct` |
+| `AppCheckCore` + `AppCheckRecaptchaProvider` from `RNFBAppCheck` only | 32 |
+| `AppCheckCore` only, from `RNFBAppCheck` and `RNFBApp` | 32 |
+| both products from `RNFBAppCheck` and `RNFBApp` | 0 (one shared `AppCheckCore.framework`) |
+| `app-check,auth` without GoogleSignIn (`yarn test-expo-fixture:ios:dupes`, precompiled modules on) | 0 with the fix; the app embeds `AppCheckCore.framework` and an `AppCheckRecaptchaProvider_…_PackageProduct` framework instead of linking them into `RNFBAppCheck` |
 
 ## App target FirebaseCore link: package dependency alone is not enough
 
