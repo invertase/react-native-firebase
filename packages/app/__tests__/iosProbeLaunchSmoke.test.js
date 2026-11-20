@@ -404,9 +404,9 @@ ${body}
       }
     });
 
-    it('keeps the flag-off launch, log level, and app lookup unchanged', function () {
+    it('keeps the flag-off launch and app lookup, and streams info logs', function () {
       expect(smokeSource).toContain('xcrun simctl launch "$UDID" "$BUNDLE_ID" >/dev/null');
-      expect(smokeSource).toContain('LOG_LEVEL="default"');
+      expect(smokeSource).toContain('LOG_LEVEL="info"');
       expect(smokeSource).toContain(
         '"${HOME}/Library/Developer/Xcode/DerivedData"/testrnbare-*/Build/Products/Debug-iphonesimulator',
       );

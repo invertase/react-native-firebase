@@ -1,0 +1,79 @@
+name: Mellifera runner select
+description: >-
+  Applies the Mellifera GHA placement pool test and outputs the runs-on label JSON
+  for the job (hosted default, overflow spill, or safe default on failure).
+inputs:
+  mode:
+    description: >-
+      off, fixed, or github-app. Empty reads RUNNER_SELECT_MODE. Empty, off, or
+      unknown emits the hosted label.
+    required: false
+    default: ''
+  default-runs-on:
+    description: >-
+      Hosted label string or JSON array. Empty reads MELLIFERA_DEFAULT_RUNS_ON_MACOS
+      or MELLIFERA_DEFAULT_RUNS_ON_LINUX by class, then MELLIFERA_DEFAULT_RUNS_ON.
+    required: false
+    default: ''
+  class:
+    description: macos or other
+    required: true
+  placement-url:
+    description: >-
+      Full GET URL for /v1/gha/placement (repo and label query included). Empty
+      reads the full-URL env for the overflow label, then MELLIFERA_PLACEMENT_URL.
+    required: false
+    default: ''
+  placement-token:
+    description: >-
+      Bearer token for placement (never logged). Empty reads MELLIFERA_PLACEMENT_TOKEN.
+    required: false
+    default: ''
+  placement-ca:
+    description: >-
+      Optional PEM text of the CA that signs the placement host certificate. Empty
+      reads MELLIFERA_PLACEMENT_CA, then keeps system trust. When set, curl trusts
+      only this CA. Never logged.
+    required: false
+    default: ''
+  overflow-runs-on:
+    description: >-
+      Overflow label string or JSON array when headroom allows spill. Empty reads
+      MELLIFERA_OVERFLOW_RUNS_ON_MACOS or MELLIFERA_OVERFLOW_RUNS_ON_LINUX when set,
+      otherwise macos-self-hosted or linux-self-hosted by class.
+    required: false
+    default: ''
+outputs:
+  runs-on:
+    description: JSON string or array for fromJSON() in the workflow
+    value: ${{ steps.select.outputs.runs-on }}
+  pool:
+    description: hosted, overflow, or default
+    value: ${{ steps.select.outputs.pool }}
+  reason:
+    description: >-
+      off, hosted, overflow, default, error, missing-token, bad-ca, curl-failed,
+      non-200, or bad-json
+    value: ${{ steps.select.outputs.reason }}
+  summary:
+    description: One-line route decision
+    value: ${{ steps.select.outputs.summary }}
+runs:
+  using: composite
+  steps:
+    - id: select
+      shell: bash
+      env:
+        INPUT_MODE: ${{ inputs.mode }}
+        INPUT_DEFAULT_RUNS_ON: ${{ inputs.default-runs-on }}
+        INPUT_CLASS: ${{ inputs.class }}
+        INPUT_PLACEMENT_URL: ${{ inputs.placement-url }}
+        INPUT_PLACEMENT_TOKEN: ${{ inputs.placement-token }}
+        INPUT_PLACEMENT_CA: ${{ inputs.placement-ca }}
+        INPUT_OVERFLOW_RUNS_ON: ${{ inputs.overflow-runs-on }}
+      run: |
+        set -euo pipefail
+        mapfile -t _lines < <(bash "${{ github.action_path }}/select.sh")
+        for _line in "${_lines[@]}"; do
+          echo "$_line" >> "$GITHUB_OUTPUT"
+        done
