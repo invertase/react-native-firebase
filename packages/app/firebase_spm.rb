@@ -393,10 +393,6 @@ def rnfirebase_spm_embed_script
         framework_name="$(basename "${framework}")"
         destination="${app_frameworks_dir}/${framework_name}"
 
-        if [ -e "${destination}" ]; then
-          continue
-        fi
-
         # Xcode's Archive action writes EVERY SKIP_INSTALL=YES product into
         # ${OBJROOT}/UninstalledProducts/${PLATFORM_NAME} -- not just Swift
         # Package products. With CocoaPods + `use_frameworks!` (required for
@@ -426,13 +422,20 @@ def rnfirebase_spm_embed_script
           continue
         fi
 
-        echo "Embedding Firebase SPM framework ${framework_name} (from ${source_dir})"
-        rsync -av --delete \
-          --filter "- Headers" \
-          --filter "- PrivateHeaders" \
-          --filter "- Modules" \
-          "${framework}" \
-          "${app_frameworks_dir}"
+        # Never overwrite a framework that is already in the bundle, but do
+        # not skip signing it either: an unsigned existing destination makes
+        # device installs fail with "No code signature found" (#9443).
+        if [ -e "${destination}" ]; then
+          echo "Keeping existing ${framework_name} in ${app_frameworks_dir}"
+        else
+          echo "Embedding Firebase SPM framework ${framework_name} (from ${source_dir})"
+          rsync -av --delete \
+            --filter "- Headers" \
+            --filter "- PrivateHeaders" \
+            --filter "- Modules" \
+            "${framework}" \
+            "${app_frameworks_dir}"
+        fi
 
         if [ -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" ] && [ "${CODE_SIGNING_REQUIRED:-}" != "NO" ] && [ "${CODE_SIGNING_ALLOWED:-}" != "NO" ]; then
           /usr/bin/codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY}" ${OTHER_CODE_SIGN_FLAGS:-} --preserve-metadata=identifier,entitlements "${destination}"
