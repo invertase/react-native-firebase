@@ -154,7 +154,7 @@ jobs:
 
       # One sticky cache per module combination; distinct from the test-expo link cache.
       # https://github.com/hendrikmuhs/ccache-action/releases
-      - uses: hendrikmuhs/ccache-action@f09c25b45002a07be2955cbe52e8cee55643f89d # v1.2.24
+      - uses: hendrikmuhs/ccache-action@dbeefd73e8e2ffc1bbc412570072735eb4db3607 # v1.2.25
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-expo-fixture-dupes-ios-v1-xcode27-${{ matrix.slug }}-${{ steps.xcode_cache_key.outputs.key }}
