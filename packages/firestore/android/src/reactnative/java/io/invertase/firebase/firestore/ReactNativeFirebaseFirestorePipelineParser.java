@@ -880,6 +880,19 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return true;
   }
 
+  /** The GeoPoint JS serializes as {@code { __kind: 'geoPoint', latitude, longitude }}. */
+  static com.google.firebase.firestore.GeoPoint serializedGeoPoint(Map<?, ?> map) {
+    Object latitude = map.get("latitude");
+    Object longitude = map.get("longitude");
+    if (!"geoPoint".equals(map.get("__kind"))
+        || !(latitude instanceof Number)
+        || !(longitude instanceof Number)) {
+      return null;
+    }
+    return new com.google.firebase.firestore.GeoPoint(
+        ((Number) latitude).doubleValue(), ((Number) longitude).doubleValue());
+  }
+
   private static final long MIN_TIMESTAMP_SECONDS = -62135596800L;
   private static final long MAX_TIMESTAMP_SECONDS = 253402300799L;
   private static final long MAX_TIMESTAMP_NANOSECONDS = 999999999L;
@@ -1279,6 +1292,12 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
         if (value instanceof Map) {
           Map<?, ?> map = (Map<?, ?>) value;
+          com.google.firebase.firestore.GeoPoint geoPoint = serializedGeoPoint(map);
+          if (geoPoint != null) {
+            enterFrame.box.value = new ParsedPrimitiveValueNode(geoPoint);
+            continue;
+          }
+
           // A PipelineValue is an opaque nested-pipeline subquery (scalar/array).
           // Preserve the raw map verbatim so the node builder can re-parse the
           // nested pipeline via parsePipelineMap. Descending into it here would
