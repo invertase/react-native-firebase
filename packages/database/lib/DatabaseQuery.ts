@@ -18,7 +18,6 @@
 import {
   isBoolean,
   isFunction,
-  isIOS,
   isNull,
   isNumber,
   isObject,
@@ -51,9 +50,11 @@ const INFO_PATH = /^\/?\.info(\/|$)/;
 
 /**
  * True when native/web get already produced an observer-shaped `database/*` code.
- * Android Query.get() non-denial failures use SharedUtils.getExceptionMap → `database/unknown`;
- * those still fall through to `once('value')`. Specific codes mean once already ran (or a
- * denial was mapped to once's code) — do not ask the server again.
+ * Non-denial native get failures reject as `database/unknown` (Android: SharedUtils.getExceptionMap;
+ * iOS: `RNFBDatabaseQueryHelper get:`); those still fall through to `once('value')`. Specific codes
+ * mean once already ran (or a denial was mapped to once's code) — do not ask the server again. An
+ * observer cancellation with a status neither SDK maps also arrives as `database/unknown` and is
+ * read once more.
  */
 function isObserverShapedDatabaseError(error: unknown): boolean {
   const code = (error as { code?: string } | null | undefined)?.code;
@@ -332,19 +333,18 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
   }
 
   /**
-   * One-shot read backing modular `get()`: on Android and web, the SDKs' single request/response
-   * read (`Query.get()`, web `get()`) instead of the listen -> data -> unlisten exchange
-   * `once('value')` performs. On iOS the native `get` is still the single-event observer; see
-   * `RNFBDatabaseQueryHelper get:`.
+   * One-shot read backing modular `get()`: the SDKs' single request/response read
+   * (`Query.get()`, iOS `getData`, web `get()`) instead of the listen -> data -> unlisten exchange
+   * `once('value')` performs.
    *
    * Callers keep `once('value')` semantics, with one exception noted below:
-   * - iOS failures pass straight through (native get already is `once`).
-   * - On Android / web, an error whose code is already a specific `database/*` value (anything
-   *   other than `database/unknown`) passes through: Android maps Query.get() permission denials
-   *   to the same code `once` gives, and when native get already used `addOnceValueEventListener`
-   *   (persistence, logging, keepSynced) its cancellations are those codes too — do not call
-   *   `once('value')` again. Only a plain Query.get() failure is rejected as `database/unknown`
-   *   (SharedUtils.getExceptionMap); that path still retries as `once('value')`.
+   * - An error whose code is already a specific `database/*` value (anything other than
+   *   `database/unknown`) passes through (see `isObserverShapedDatabaseError`). Android and iOS
+   *   map a get() permission denial to the code `once` gives, and when native get already used a
+   *   one-time observer (Android: persistence, logging, keepSynced; iOS: persistence, or an SDK
+   *   before 13.2.0) its cancellations carry `once`'s codes too. A plain native get() failure,
+   *   iOS offline included, rejects as `database/unknown` and is retried as `once('value')`,
+   *   which waits for the connection.
    * - Queries (any orderBy / limit / range modifier) use `once('value')`: `get()` parity for
    *   unindexed queries is unverified.
    * - `.info/*` paths use `once('value')`: the one-shot reads go to the server tree, not the
@@ -364,7 +364,7 @@ export default class DatabaseQuery extends ReferenceBase implements Query {
     return this._database.native.get(this.path, modifiers).then(
       result => new DatabaseDataSnapshot(this.ref, result),
       error => {
-        if (isIOS || isObserverShapedDatabaseError(error)) {
+        if (isObserverShapedDatabaseError(error)) {
           return Promise.reject(error);
         }
         return this.once('value');

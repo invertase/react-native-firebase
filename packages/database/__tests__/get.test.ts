@@ -14,8 +14,9 @@ const nativeSnapshot = {
 };
 
 /**
- * Loads DatabaseQuery with `Platform.OS` fixed, because `isIOS` is read once at import. Asserts
- * the platform took, so a no-op override cannot silently run every case as the same platform.
+ * Loads DatabaseQuery with `Platform.OS` fixed: get() follows one rule on every platform, and each
+ * case runs as iOS and as Android to keep it that way. Asserts the platform took, so a no-op
+ * override cannot silently run every case as the same platform.
  */
 function loadDatabaseQuery(os: 'ios' | 'android'): DatabaseQueryModule {
   let loaded: DatabaseQueryModule | undefined;
@@ -61,66 +62,56 @@ describe('get() (DatabaseQuery._get)', function () {
       expect(snapshot.val()).toBe(42);
     });
 
-    if (os === 'ios') {
-      it("rejects with the native error, which already is the observer's", async function () {
-        const denied = new Error('permission-denied');
-        const { self, once } = fakeQuery(() => Promise.reject(denied));
+    it('passes a permission denial straight through', async function () {
+      const denied = Object.assign(new Error('denied'), { code: 'database/permission-denied' });
+      const { self, once } = fakeQuery(() => Promise.reject(denied));
 
-        await expect(run(self)).rejects.toBe(denied);
-        expect(once).not.toHaveBeenCalled();
+      await expect(run(self)).rejects.toBe(denied);
+      expect(once).not.toHaveBeenCalled();
+    });
+
+    it('does not retry once when native get already used the observer path', async function () {
+      // Android addOnceValueEventListener cancellations are UniversalDatabaseException codes
+      // (e.g. disconnected), not Query.get()'s database/unknown ExceptionMap path.
+      const cancelled = Object.assign(new Error('disconnected'), {
+        code: 'database/disconnected',
       });
-    } else {
-      it('passes a permission denial straight through', async function () {
-        const denied = Object.assign(new Error('denied'), { code: 'database/permission-denied' });
-        const { self, once } = fakeQuery(() => Promise.reject(denied));
+      const { self, once } = fakeQuery(() => Promise.reject(cancelled));
 
-        await expect(run(self)).rejects.toBe(denied);
-        expect(once).not.toHaveBeenCalled();
-      });
+      await expect(run(self)).rejects.toBe(cancelled);
+      expect(once).not.toHaveBeenCalled();
+    });
 
-      it('does not retry once when native get already used the observer path', async function () {
-        // Android addOnceValueEventListener cancellations are UniversalDatabaseException codes
-        // (e.g. disconnected), not Query.get()'s database/unknown ExceptionMap path.
-        const cancelled = Object.assign(new Error('disconnected'), {
-          code: 'database/disconnected',
-        });
-        const { self, once } = fakeQuery(() => Promise.reject(cancelled));
+    it("retries as once('value') when Query.get() fails without an observer code", async function () {
+      const { self, once } = fakeQuery(() => Promise.reject(new Error('Internal error')));
 
-        await expect(run(self)).rejects.toBe(cancelled);
-        expect(once).not.toHaveBeenCalled();
-      });
+      await expect(run(self)).resolves.toBe('once-snapshot');
+      expect(once).toHaveBeenCalledWith('value');
+    });
 
-      it("retries as once('value') when Query.get() fails without an observer code", async function () {
-        const { self, once } = fakeQuery(() => Promise.reject(new Error('Internal error')));
+    it("retries as once('value') when the native rejection is not an error object", async function () {
+      const { self, once } = fakeQuery(() => Promise.reject(null));
 
-        await expect(run(self)).resolves.toBe('once-snapshot');
-        expect(once).toHaveBeenCalledWith('value');
-      });
+      await expect(run(self)).resolves.toBe('once-snapshot');
+      expect(once).toHaveBeenCalledWith('value');
+    });
 
-      it("retries as once('value') when the native rejection is not an error object", async function () {
-        const { self, once } = fakeQuery(() => Promise.reject(null));
+    it("retries as once('value') when Query.get() fails as database/unknown", async function () {
+      // SharedUtils.getExceptionMap marks plain Query.get() failures as code "unknown".
+      const unknown = Object.assign(new Error('Internal error'), { code: 'database/unknown' });
+      const { self, once } = fakeQuery(() => Promise.reject(unknown));
 
-        await expect(run(self)).resolves.toBe('once-snapshot');
-        expect(once).toHaveBeenCalledWith('value');
-      });
+      await expect(run(self)).resolves.toBe('once-snapshot');
+      expect(once).toHaveBeenCalledWith('value');
+    });
 
-      it("retries as once('value') when Query.get() fails as database/unknown", async function () {
-        // SharedUtils.getExceptionMap marks plain Query.get() failures as code "unknown".
-        const unknown = Object.assign(new Error('Internal error'), { code: 'database/unknown' });
-        const { self, once } = fakeQuery(() => Promise.reject(unknown));
+    it("surfaces once('value')'s error when the retry fails too", async function () {
+      const { self, once } = fakeQuery(() => Promise.reject(new Error('Internal error')));
+      const denied = new Error('permission-denied');
+      once.mockImplementation(() => Promise.reject(denied));
 
-        await expect(run(self)).resolves.toBe('once-snapshot');
-        expect(once).toHaveBeenCalledWith('value');
-      });
-
-      it("surfaces once('value')'s error when the retry fails too", async function () {
-        const { self, once } = fakeQuery(() => Promise.reject(new Error('Internal error')));
-        const denied = new Error('permission-denied');
-        once.mockImplementation(() => Promise.reject(denied));
-
-        await expect(run(self)).rejects.toBe(denied);
-      });
-    }
+      await expect(run(self)).rejects.toBe(denied);
+    });
 
     it("uses once('value') for queries without calling the native get", async function () {
       const { self, once } = fakeQuery(() => Promise.resolve(nativeSnapshot), {
