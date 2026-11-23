@@ -57,7 +57,8 @@ concurrency:
 jobs:
   route-macos:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27

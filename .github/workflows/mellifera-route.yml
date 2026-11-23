@@ -15,6 +15,10 @@ on:
         required: false
         type: string
         default: ''
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN:
+        description: Bearer token for the placement read. Without it the hosted label is used
+        required: false
     outputs:
       runs-on:
         description: JSON for fromJSON()

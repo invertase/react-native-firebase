@@ -39,7 +39,8 @@ jobs:
   route-nested:
     needs: matrix_prep
     uses: ./.github/workflows/mellifera-route-matrix.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest

@@ -70,7 +70,8 @@ concurrency:
 jobs:
   route-bare:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27
@@ -163,7 +164,8 @@ jobs:
   # instead of direct firebase-ios-sdk. Flag off job above stays the shipped path.
   route-bare-dynamic:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27

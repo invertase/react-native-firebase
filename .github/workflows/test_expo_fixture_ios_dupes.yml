@@ -87,7 +87,8 @@ concurrency:
 jobs:
   route-expo-dupes:
     uses: ./.github/workflows/mellifera-route-matrix.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27

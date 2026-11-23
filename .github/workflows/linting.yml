@@ -20,7 +20,8 @@ concurrency:
 jobs:
   route-linting:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest
@@ -109,7 +110,8 @@ jobs:
 
   route-typescript:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest
@@ -180,7 +182,8 @@ jobs:
 
   route-attw:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest
@@ -229,7 +232,8 @@ jobs:
 
   route-consumer-types:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest
@@ -298,7 +302,8 @@ jobs:
 
   route-typedoc:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest

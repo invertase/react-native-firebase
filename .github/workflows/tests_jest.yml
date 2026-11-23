@@ -30,7 +30,8 @@ concurrency:
 jobs:
   route-linux:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest

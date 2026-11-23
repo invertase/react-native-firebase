@@ -51,7 +51,8 @@ jobs:
   route-ios:
     needs: matrix_prep
     uses: ./.github/workflows/mellifera-route-matrix.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27
@@ -626,7 +627,8 @@ jobs:
   # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
   route-ios-archive:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27
