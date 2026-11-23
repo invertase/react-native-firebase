@@ -26,6 +26,9 @@ on:
       summary:
         description: One-line route decision
         value: ${{ jobs.route.outputs.summary }}
+# The route job only reads this repository, it never writes with the job token.
+permissions:
+  contents: read
 jobs:
   route:
     runs-on: ubuntu-latest

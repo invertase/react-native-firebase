@@ -38,6 +38,9 @@ on:
       fallback:
         description: JSON hosted label used when a cell read fails
         value: ${{ jobs.route.outputs.fallback }}
+# The route job only reads this repository, it never writes with the job token.
+permissions:
+  contents: read
 jobs:
   route:
     runs-on: ubuntu-latest
