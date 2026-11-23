@@ -5,7 +5,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class UIWindow;
+@class UIScene;
+
 @protocol UIApplicationDelegate <NSObject>
+@optional
+@property(nonatomic, strong) UIWindow *window;
 @end
 
 typedef NS_ENUM(NSInteger, UIApplicationState) {
@@ -30,6 +35,7 @@ static NSString *const UIApplicationLaunchOptionsRemoteNotificationKey =
 + (UIApplication *)sharedApplication;
 @property(nonatomic, weak) id<UIApplicationDelegate> delegate;
 @property(nonatomic, assign) UIApplicationState applicationState;
+@property(nonatomic, copy) NSSet<UIScene *> *connectedScenes;
 @property(nonatomic, assign, getter=isRegisteredForRemoteNotifications)
     BOOL registeredForRemoteNotifications;
 @property(nonatomic, assign) NSUInteger unregisterForRemoteNotificationsCallCountForTesting;
@@ -37,4 +43,29 @@ static NSString *const UIApplicationLaunchOptionsRemoteNotificationKey =
 - (void)unregisterForRemoteNotifications;
 - (void)endBackgroundTask:(UIBackgroundTaskIdentifier)identifier;
 - (void)resetForTesting;
+@end
+
+static NSString *const UIApplicationDidFinishLaunchingNotification =
+    @"UIApplicationDidFinishLaunchingNotification";
+static NSString *const UIApplicationWillEnterForegroundNotification =
+    @"UIApplicationWillEnterForegroundNotification";
+
+@interface UIView : NSObject
+@end
+
+@interface UIViewController : NSObject
+@property(nonatomic, strong) UIView *viewIfLoaded;
+@property(nonatomic, copy) NSArray<UIViewController *> *childViewControllers;
+@property(nonatomic, strong) UIViewController *presentedViewController;
+@end
+
+@interface UIWindow : UIView
+@property(nonatomic, strong) UIViewController *rootViewController;
+@end
+
+@interface UIScene : NSObject
+@end
+
+@interface UIWindowScene : UIScene
+@property(nonatomic, copy) NSArray<UIWindow *> *windows;
 @end

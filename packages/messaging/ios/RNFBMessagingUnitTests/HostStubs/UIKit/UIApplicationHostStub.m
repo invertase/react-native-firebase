@@ -29,6 +29,8 @@
 
 - (void)resetForTesting {
   self.applicationState = UIApplicationStateActive;
+  self.delegate = nil;
+  self.connectedScenes = [NSSet set];
   self.registeredForRemoteNotifications = NO;
   self.unregisterForRemoteNotificationsCallCountForTesting = 0;
 }

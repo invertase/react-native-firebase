@@ -27,7 +27,6 @@
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTConvert.h>
-#import <React/RCTRootView.h>
 
 #import "RNFBMessaging+AppDelegatePrivate.h"
 #import "RNFBMessaging+FIRMessagingDelegate.h"
