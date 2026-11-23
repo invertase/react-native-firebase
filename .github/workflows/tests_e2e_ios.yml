@@ -175,6 +175,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50
+          persist-credentials: false
 
       - name: Configure Apple CI (Xcode 27 + iOS 27 runtime)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
@@ -657,6 +658,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50
+          persist-credentials: false
 
       - name: Configure Apple CI (Xcode 27)
         run: bash .github/workflows/scripts/configure-apple-ci.sh
