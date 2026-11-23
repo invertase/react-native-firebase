@@ -29,9 +29,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-linux:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
   compare-types:
     name: Compare Types with Firebase JS SDK
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(needs.route-linux.outputs.runs-on) }}
+    needs: route-linux
     timeout-minutes: 30
 
     steps:

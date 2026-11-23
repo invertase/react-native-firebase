@@ -46,6 +46,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # One placement read per matrix cell. The route job waits for matrix_prep
+  # and records a hold for each buildmode and iteration.
+  route-ios:
+    needs: matrix_prep
+    uses: ./.github/workflows/mellifera-route-matrix.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
+      matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      key-fields: buildmode,iteration
   # We want to generate our matrix dynamically
   # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
   matrix_prep:
@@ -102,8 +113,8 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   ios:
     name: iOS (${{ matrix.buildmode }}, ${{ matrix.iteration }})
-    runs-on: xcode-27
-    needs: matrix_prep
+    runs-on: ${{ fromJSON(needs.route-ios.outputs.choices)[format('{0}-{1}', matrix.buildmode, matrix.iteration)] || fromJSON(needs.route-ios.outputs.fallback) }}
+    needs: [matrix_prep, route-ios]
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 107
     env:
@@ -366,7 +377,7 @@ jobs:
           # Pinned so the Metro log upload below finds it whatever TMPDIR the runner sets.
           RNFB_METRO_LOG: /tmp/rnfb-metro-8081.log
         run: |
-          nohup yarn tests:packager:jet-ci > metro.log 2>&1 &
+          nohup yarn tests:packager:jet-ci --client-logs > metro.log 2>&1 &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
@@ -613,9 +624,16 @@ jobs:
   # identity/provisioning profile needed) and verifies the resulting app
   # bundle is actually loadable. See .github/workflows/scripts/verify-ios-release-archive.sh
   # and okf-bundle/ios-spm-native-imports.md "Runtime framework embedding".
+  route-ios-archive:
+    uses: ./.github/workflows/mellifera-route.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
   ios-release-archive:
     name: iOS Release Archive
-    runs-on: xcode-27
+    runs-on: ${{ fromJSON(needs.route-ios-archive.outputs.runs-on) }}
+    needs: route-ios-archive
     timeout-minutes: 45
     env:
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros

@@ -36,6 +36,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-nested:
+    needs: matrix_prep
+    uses: ./.github/workflows/mellifera-route-matrix.yml
+    secrets: inherit
+    with:
+      class: other
+      default-runs-on: ubuntu-latest
+      overflow-runs-on: linux-nested-virt-self-hosted
+      matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      key-fields: api-level,arch,target,iteration
   # We want to generate our matrix dynamically
   # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
   matrix_prep:
@@ -98,8 +108,8 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   android:
     name: Android (${{ matrix.api-level }}, ${{ matrix.arch }}, ${{ matrix.target }}, ${{ matrix.iteration }})
-    runs-on: ubuntu-latest
-    needs: matrix_prep
+    runs-on: ${{ fromJSON(needs.route-nested.outputs.choices)[format('{0}-{1}-{2}-{3}', matrix.api-level, matrix.arch, matrix.target, matrix.iteration)] || fromJSON(needs.route-nested.outputs.fallback) }}
+    needs: [matrix_prep, route-nested]
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -113,6 +123,8 @@ jobs:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: ${{ matrix.arch }}
     steps:
       - name: Free Disk Space (Ubuntu)
+        # Hosted runners only: self-hosted overflow runners have ample disk and no docker CLI.
+        if: runner.environment == 'github-hosted'
         # https://github.com/AdityaGarg8/remove-unwanted-software/releases
         uses: AdityaGarg8/remove-unwanted-software@36765610732de8ee2e81a5c6c231506e2b5cabcf # v5.1
         with:
@@ -253,7 +265,7 @@ jobs:
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
         run: |
-          nohup yarn tests:packager:jet-ci &
+          nohup yarn tests:packager:jet-ci --client-logs &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'

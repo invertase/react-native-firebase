@@ -36,6 +36,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route-macos:
+    needs: matrix_prep
+    uses: ./.github/workflows/mellifera-route-matrix.yml
+    secrets: inherit
+    with:
+      class: macos
+      default-runs-on: xcode-27
+      matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      key-fields: iteration
   # We want to generate our matrix dynamically
   # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
   matrix_prep:
@@ -87,8 +96,8 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   other:
     name: Other (${{ matrix.iteration }})
-    runs-on: xcode-27
-    needs: matrix_prep
+    runs-on: ${{ fromJSON(needs.route-macos.outputs.choices)[format('{0}', matrix.iteration)] || fromJSON(needs.route-macos.outputs.fallback) }}
+    needs: [matrix_prep, route-macos]
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -295,7 +304,7 @@ jobs:
 
       - name: Pre-fetch Javascript bundle
         run: |
-          nohup sh -c "yarn tests:macos:packager:jet-ci > metro.log 2>&1 &"
+          nohup sh -c "yarn tests:macos:packager:jet-ci --client-logs > metro.log 2>&1 &"
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
