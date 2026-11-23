@@ -17536,12 +17536,13 @@ __metadata:
   linkType: hard
 
 "install-artifact-from-github@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "install-artifact-from-github@npm:1.4.0"
+  version: 1.8.1
+  resolution: "install-artifact-from-github@npm:1.8.1"
   bin:
+    hash-github-cache: bin/hash-github-cache.js
     install-from-cache: bin/install-from-cache.js
     save-to-github-cache: bin/save-to-github-cache.js
-  checksum: 10/04844f8f8f068b978cc09880fe02ce6f0857c357265ac9d778cfae9b748d92f76989de1401ceec3f1337f6f7b237aea7ce9e08c4bc51c68e52c6d7637c70f274
+  checksum: 10/92ab933810455add40b271846c4b947adf152ce7c8446b7193edd68d92ddc3cbf101ea56c06f8f1c22a11125599dd18e8d147bc846b33a39a7ef4d0194c3ffe2
   languageName: node
   linkType: hard
 
