@@ -11,16 +11,22 @@
 #       Fetch the three pages with curl and print versions.
 #   ./scripts/update-firebase-sdk-versions.sh --offline DIR
 #       Read DIR/android.html, DIR/ios.html, DIR/js.html (e.g. saved from a prior
-#       run). No network; fully reproducible for a given snapshot.
+#       run), plus DIR/Package.swift (firebase-ios-sdk at the iOS version) under
+#       --apply when the iOS SDK changes. No network for those reads; fully
+#       reproducible for a given snapshot.
 #   ./scripts/update-firebase-sdk-versions.sh --save-snapshot DIR
 #       Fetch and write the three HTML files to DIR, then print versions (handy
-#       for freezing a release-notes snapshot in CI artifacts).
+#       for freezing a release-notes snapshot in CI artifacts). Also writes
+#       firebase-ios-sdk's Package.swift at the parsed iOS version to DIR.
 #   ./scripts/update-firebase-sdk-versions.sh --apply [same fetch options as above]
 #       Phase 1: extract versions (printed as sorted KEY=value lines).
 #       Phase 2: write them into packages/app/package.json, root/tests/
 #       tests-macos/package.json, .yarnrc.yml (firebase + transitive @firebase/*
 #       age-gate preapprovals), docs (.mdx), Gradle files, and Jest plugin
-#       snapshots; run yarn; when iOS SDK changed, rm tests/ios/Podfile.lock then
+#       snapshots. When the iOS SDK changed, set sdkVersions.ios.spmDeps to the
+#       app-check and GoogleUtilities lower bounds in firebase-ios-sdk's
+#       Package.swift at the new tag (read before any file is written). Run
+#       yarn; when iOS SDK changed, rm tests/ios/Podfile.lock then
 #       yarn tests:ios:pod:install (macOS e2e has no Firebase pods — do not rm that lockfile).
 #       If the JS or any native SDK / Android plugin / App Distribution API
 #       version changed, run yarn compare:types and yarn test:full (expects full
@@ -114,7 +120,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     -h | --help)
-      sed -n '1,40p' "$0"
+      awk 'NR > 1 && !/^#/ { exit } { print }' "$0"
       exit 0
       ;;
     *)
@@ -122,6 +128,15 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+if [[ -n "$OFFLINE_DIR" ]]; then
+  [[ -d "$OFFLINE_DIR" ]] || die "missing offline directory: $OFFLINE_DIR"
+  OFFLINE_DIR="$(cd "$OFFLINE_DIR" && pwd)"
+fi
+if [[ -n "$SAVE_DIR" ]]; then
+  mkdir -p "$SAVE_DIR"
+  SAVE_DIR="$(cd "$SAVE_DIR" && pwd)"
+fi
 
 resolve_source() {
   local which="$1"
@@ -144,7 +159,6 @@ if [[ -n "$OFFLINE_DIR" ]]; then
 fi
 
 if [[ -n "$SAVE_DIR" ]]; then
-  mkdir -p "$SAVE_DIR"
   "${CURL[@]}" "$URL_ANDROID" >"${SAVE_DIR}/android.html"
   "${CURL[@]}" "$URL_IOS" >"${SAVE_DIR}/ios.html"
   "${CURL[@]}" "$URL_JS" >"${SAVE_DIR}/js.html"
@@ -183,6 +197,20 @@ print_sorted_versions() {
     echo "firebase_js_sdk=${FIREBASE_JS_SDK}"
   } | LC_ALL=C sort
 }
+
+URL_IOS_PACKAGE_SWIFT="https://raw.githubusercontent.com/firebase/firebase-ios-sdk/${FIREBASE_IOS_SDK}/Package.swift"
+IOS_PACKAGE_SWIFT=''
+if [[ -n "$OFFLINE_DIR" ]]; then
+  IOS_PACKAGE_SWIFT="${OFFLINE_DIR}/Package.swift"
+elif [[ -n "$SAVE_DIR" ]]; then
+  if "${CURL[@]}" "$URL_IOS_PACKAGE_SWIFT" >"${SAVE_DIR}/Package.swift.partial"; then
+    mv "${SAVE_DIR}/Package.swift.partial" "${SAVE_DIR}/Package.swift"
+    IOS_PACKAGE_SWIFT="${SAVE_DIR}/Package.swift"
+  else
+    rm -f "${SAVE_DIR}/Package.swift" "${SAVE_DIR}/Package.swift.partial"
+    echo "update-firebase-sdk-versions: warning: failed to fetch firebase-ios-sdk ${FIREBASE_IOS_SDK} Package.swift; snapshot has no Package.swift" >&2
+  fi
+fi
 
 print_sorted_versions
 
@@ -235,7 +263,29 @@ native_changed=false
 [[ "$OLD_APPDIST_G" != "$FIREBASE_ANDROID_APPDISTRIBUTION_GRADLE" ]] && native_changed=true
 [[ "$OLD_APPDIST_API" != "$FIREBASE_ANDROID_APPDISTRIBUTION_API" ]] && native_changed=true
 
-export FIREBASE_JS_SDK FIREBASE_IOS_SDK FIREBASE_ANDROID_BOM \
+IOS_SPM_DEPS=''
+if [[ "$OLD_IOS" != "$FIREBASE_IOS_SDK" ]]; then
+  IOS_PACKAGE_SWIFT_TMP=''
+  if [[ -n "$OFFLINE_DIR" ]]; then
+    [[ -f "$IOS_PACKAGE_SWIFT" ]] || die "missing $IOS_PACKAGE_SWIFT (iOS SDK changed)"
+  elif [[ -z "$IOS_PACKAGE_SWIFT" ]]; then
+    IOS_PACKAGE_SWIFT_TMP="$(mktemp "${TMPDIR:-/tmp}/rnfb-firebase-package-swift.XXXXXX")"
+    trap 'rm -f "$IOS_PACKAGE_SWIFT_TMP"' EXIT
+    IOS_PACKAGE_SWIFT="$IOS_PACKAGE_SWIFT_TMP"
+    "${CURL[@]}" "$URL_IOS_PACKAGE_SWIFT" >"$IOS_PACKAGE_SWIFT" ||
+      die "failed to fetch firebase-ios-sdk ${FIREBASE_IOS_SDK} Package.swift; no files were changed"
+    if [[ -n "$SAVE_DIR" ]]; then
+      cp "$IOS_PACKAGE_SWIFT" "${SAVE_DIR}/Package.swift.partial"
+      mv "${SAVE_DIR}/Package.swift.partial" "${SAVE_DIR}/Package.swift"
+    fi
+  fi
+  echo "update-firebase-sdk-versions: reading SPM lower bounds from firebase-ios-sdk ${FIREBASE_IOS_SDK} Package.swift" >&2
+  IOS_SPM_DEPS="$(
+    node .github/workflows/scripts/check-ios-spm-deps.js --bounds "$FIREBASE_IOS_SDK" "$IOS_PACKAGE_SWIFT"
+  )" || die "failed to read SPM lower bounds; no files were changed"
+fi
+
+export IOS_SPM_DEPS FIREBASE_JS_SDK FIREBASE_IOS_SDK FIREBASE_ANDROID_BOM \
   FIREBASE_ANDROID_APPDISTRIBUTION_API FIREBASE_ANDROID_APPDISTRIBUTION_LIB \
   FIREBASE_ANDROID_APPDISTRIBUTION_GRADLE FIREBASE_ANDROID_CRASHLYTICS_GRADLE \
   FIREBASE_ANDROID_PERF_PLUGIN FIREBASE_ANDROID_GOOGLE_SERVICES
@@ -261,6 +311,9 @@ function patchPackageJson(path, { exact = false } = {}) {
 const app = JSON.parse(fs.readFileSync('packages/app/package.json', 'utf8'));
 app.dependencies.firebase = e.FIREBASE_JS_SDK;
 app.sdkVersions.ios.firebase = e.FIREBASE_IOS_SDK;
+if (e.IOS_SPM_DEPS) {
+  app.sdkVersions.ios.spmDeps = { ...app.sdkVersions.ios.spmDeps, ...JSON.parse(e.IOS_SPM_DEPS) };
+}
 app.sdkVersions.android.firebase = e.FIREBASE_ANDROID_BOM;
 app.sdkVersions.android.firebaseCrashlyticsGradle = e.FIREBASE_ANDROID_CRASHLYTICS_GRADLE;
 app.sdkVersions.android.firebasePerfGradle = e.FIREBASE_ANDROID_PERF_PLUGIN;
