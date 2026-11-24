@@ -55,7 +55,7 @@
   "devDependencies": {
     "@react-native-firebase/app": "27.1.1",
     "expo": "^55.0.18",
-    "react-native-builder-bob": "^0.40.13"
+    "react-native-builder-bob": "^0.44.1"
   },
   "peerDependenciesMeta": {
     "expo": {

@@ -110,6 +110,8 @@ cd react-native-firebase
 
 ### Step 2: Install test project dependencies
 
+Use a Node version within the `engines` range of the package build tool, `react-native-builder-bob`, at the version the packages depend on (`npm view react-native-builder-bob@<version> engines`). Yarn does not check it, so an older Node installs without a warning. The test apps also declare their own `engines.node`.
+
 ```bash
 yarn
 bash .github/workflows/scripts/install-homebrew-rnfb.sh applesimutils xcbeautify

@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@react-native-firebase/app": "27.1.1",
-    "react-native-builder-bob": "^0.40.13"
+    "react-native-builder-bob": "^0.44.1"
   },
   "exports": {
     ".": {
