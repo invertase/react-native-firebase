@@ -17,6 +17,7 @@ import {
   withIosSceneLinkAttribution,
 } from '../src/ios/appDelegate';
 import { modifySwiftAppDelegate as authModifySwiftAppDelegate } from '../../../auth/plugin/src/ios/openUrlFix';
+import { modifySceneDelegate } from '../../../auth/plugin/src/ios/sceneDelegate';
 
 jest.mock('@expo/config-plugins/build/ios/utils/getInfoPlistPath', () => ({
   getInfoPlistPathFromPbxproj: jest.fn(),
@@ -68,6 +69,23 @@ const continueOverride =
   /override\s+func\s+application\s*\(\s*_\s+\w+\s*:\s*UIApplication\s*,\s*continue\s/;
 const handleOpen = /FirebaseAnalytics\.Analytics\.handleOpen\(/;
 const handleUserActivity = /FirebaseAnalytics\.Analytics\.handleUserActivity\(/;
+
+const SCENE_DELEGATE_OPEN_URL = `\
+  override func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    URLContexts.forEach { Analytics.handleOpen($0.url) }
+    super.scene(scene, openURLContexts: URLContexts)
+  }
+`;
+const SCENE_DELEGATE_CONTINUE = `\
+  override func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    Analytics.handleUserActivity(userActivity)
+    super.scene(scene, continue: userActivity)
+  }
+`;
+
+function sceneDelegate(members = ''): string {
+  return `internal import Expo\nimport FirebaseAnalytics\n\nclass SceneDelegate: ExpoSceneDelegate {\n${members}}\n`;
+}
 
 describe('Analytics Config Plugin iOS Tests - UIScene link attribution', () => {
   let tmpDir: string;
@@ -433,6 +451,170 @@ describe('Analytics Config Plugin iOS Tests - UIScene link attribution', () => {
     });
   });
 
+  describe('modifySwiftAppDelegate with SceneDelegate.swift calls', () => {
+    function expectSceneDelegateWarning(call: string) {
+      expect(warningSpy).toHaveBeenCalledWith(
+        '@react-native-firebase/analytics',
+        expect.stringContaining(
+          `SceneDelegate.swift already calls FirebaseAnalytics.Analytics.${call}`,
+        ),
+      );
+    }
+
+    it('leaves AppDelegate.swift unchanged when SceneDelegate.swift makes both calls', async () => {
+      const appDelegate = await readFixture('AppDelegate_sdk58.swift');
+
+      const result = modifySwiftAppDelegate(
+        appDelegate,
+        sceneDelegate(`${SCENE_DELEGATE_OPEN_URL}${SCENE_DELEGATE_CONTINUE}`),
+      );
+
+      expect(result).toEqual(appDelegate);
+      expectSceneDelegateWarning('handleOpen');
+      expectSceneDelegateWarning('handleUserActivity');
+    });
+
+    it('adds only the call SceneDelegate.swift does not make', async () => {
+      const appDelegate = await readFixture('AppDelegate_sdk58.swift');
+
+      const result = modifySwiftAppDelegate(appDelegate, sceneDelegate(SCENE_DELEGATE_CONTINUE));
+
+      expect(result).toMatch(handleOpen);
+      expect(result).not.toMatch(handleUserActivity);
+      expect(count(result, continueOverride)).toBe(0);
+      expect(result).toContain(IMPORT);
+      expect(warningSpy).toHaveBeenCalledTimes(1);
+      expectSceneDelegateWarning('handleUserActivity');
+    });
+
+    it.each([
+      ['added overrides', 'AppDelegate_sdk58.swift', '\n'],
+      ['a call injected into a user override', 'AppDelegate_sdk58_openUrl.swift', '\n'],
+      ['added overrides in a CRLF file', 'AppDelegate_sdk58.swift', '\r\n'],
+      ['an injected call in a CRLF file', 'AppDelegate_sdk58_openUrl.swift', '\r\n'],
+    ])(
+      'removes %s an earlier prebuild generated once SceneDelegate.swift makes the calls',
+      async (_label, fixture, newline) => {
+        const original = (await readFixture(fixture)).replace(/\n/g, newline);
+        const both = sceneDelegate(`${SCENE_DELEGATE_OPEN_URL}${SCENE_DELEGATE_CONTINUE}`);
+
+        const result = modifySwiftAppDelegate(modifySwiftAppDelegate(original), both);
+
+        expect(result).toEqual(original);
+        expect(modifySwiftAppDelegate(result, both)).toEqual(original);
+      },
+    );
+
+    it('removes only the generated code for the call SceneDelegate.swift makes', async () => {
+      const appDelegate = await readFixture('AppDelegate_sdk58.swift');
+
+      const result = modifySwiftAppDelegate(
+        modifySwiftAppDelegate(appDelegate),
+        sceneDelegate(SCENE_DELEGATE_OPEN_URL),
+      );
+
+      expect(result).toEqual(
+        modifySwiftAppDelegate(appDelegate, sceneDelegate(SCENE_DELEGATE_OPEN_URL)),
+      );
+      expect(result).not.toMatch(handleOpen);
+      expect(result).toMatch(handleUserActivity);
+      expect(result).toContain(IMPORT);
+    });
+
+    it('removes an added openURL override together with the Auth guard nested in it', async () => {
+      const original = await readFixture('AppDelegate_sdk58.swift');
+      const patched = authModifySwiftAppDelegate(modifySwiftAppDelegate(original)) as string;
+
+      const result = modifySwiftAppDelegate(patched, sceneDelegate(SCENE_DELEGATE_OPEN_URL));
+
+      expect(result).not.toContain('auth-openURL');
+      expect(result).not.toMatch(handleOpen);
+      expect(result).toMatch(handleUserActivity);
+    });
+
+    it('keeps modified generated blocks, with a warning', async () => {
+      const patched = modifySwiftAppDelegate(await readFixture('AppDelegate_sdk58.swift')).replace(
+        '    FirebaseAnalytics.Analytics.handleOpen(url)\n',
+        '    FirebaseAnalytics.Analytics.handleOpen(url)\n    print("opened")\n',
+      );
+
+      const result = modifySwiftAppDelegate(patched, sceneDelegate(SCENE_DELEGATE_OPEN_URL));
+
+      expect(result).toEqual(patched);
+      expect(warningSpy).toHaveBeenCalledWith(
+        '@react-native-firebase/analytics',
+        expect.stringContaining(
+          'Skipping removal of the generated FirebaseAnalytics.Analytics.handleOpen call from AppDelegate.swift',
+        ),
+      );
+    });
+
+    it('keeps every generated block when the block for the other call was modified', async () => {
+      const patched = modifySwiftAppDelegate(await readFixture('AppDelegate_sdk58.swift')).replace(
+        '    FirebaseAnalytics.Analytics.handleUserActivity(userActivity)\n',
+        '    FirebaseAnalytics.Analytics.handleUserActivity(userActivity)\n    print("continued")\n',
+      );
+
+      const result = modifySwiftAppDelegate(patched, sceneDelegate(SCENE_DELEGATE_OPEN_URL));
+
+      expect(result).toEqual(patched);
+      expect(warningSpy).toHaveBeenCalledWith(
+        '@react-native-firebase/analytics',
+        expect.stringContaining('a @react-native-firebase/analytics-sceneLinkAttribution block'),
+      );
+    });
+
+    it('leaves a method to SceneDelegate.swift when it makes the call only for launch links', async () => {
+      const appDelegate = await readFixture('AppDelegate_sdk58.swift');
+      const willConnectOnly = sceneDelegate(`\
+  override func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    super.scene(scene, willConnectTo: session, options: connectionOptions)
+    connectionOptions.urlContexts.forEach { Analytics.handleOpen($0.url) }
+  }
+`);
+
+      const result = modifySwiftAppDelegate(appDelegate, willConnectOnly);
+
+      expect(result).not.toMatch(handleOpen);
+      expect(result).toMatch(handleUserActivity);
+      expect(warningSpy).toHaveBeenCalledWith(
+        '@react-native-firebase/analytics',
+        expect.stringContaining('for links that launch the app and for links that arrive'),
+      );
+    });
+
+    it("is not triggered by the Auth plugin's SceneDelegate.swift patch", async () => {
+      const appDelegate = await readFixture('AppDelegate_sdk58.swift');
+      const authPatched = modifySceneDelegate(
+        'internal import Expo\n\nclass SceneDelegate: ExpoSceneDelegate {\n}\n',
+      ) as string;
+      expect(authPatched).toContain('auth-openURL');
+
+      expect(modifySwiftAppDelegate(appDelegate, authPatched)).toEqual(
+        modifySwiftAppDelegate(appDelegate),
+      );
+      expect(warningSpy).not.toHaveBeenCalled();
+    });
+
+    it('ignores commented-out calls in SceneDelegate.swift', async () => {
+      const appDelegate = await readFixture('AppDelegate_sdk58.swift');
+
+      const result = modifySwiftAppDelegate(
+        appDelegate,
+        sceneDelegate(
+          '  // Analytics.handleOpen(url)\n  /* Analytics.handleUserActivity(activity) */\n',
+        ),
+      );
+
+      expect(result).toEqual(modifySwiftAppDelegate(appDelegate));
+      expect(warningSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('maskSwiftComments', () => {
     it('blanks comments and keeps offsets, line breaks and strings', () => {
       const source = 'a // b\r\n"/* s */" /* c /* d */ e */ f\n// end';
@@ -779,6 +961,23 @@ describe('Analytics Config Plugin iOS Tests - UIScene link attribution', () => {
       await apply();
 
       expect(await fs.readFile(appDelegatePath, 'utf-8')).toEqual(modifySwiftAppDelegate(fixture));
+    });
+
+    it('skips the calls the SceneDelegate.swift next to AppDelegate.swift already makes', async () => {
+      const fixture = await readFixture('AppDelegate_sdk58.swift');
+      const appDelegatePath = await writeProject({ appDelegateContents: fixture });
+      const sceneDelegateContents = sceneDelegate(SCENE_DELEGATE_OPEN_URL);
+      await fs.writeFile(path.join(appDir, 'SceneDelegate.swift'), sceneDelegateContents);
+
+      await apply();
+
+      expect(await fs.readFile(appDelegatePath, 'utf-8')).toEqual(
+        modifySwiftAppDelegate(fixture, sceneDelegateContents),
+      );
+      expect(await fs.readFile(appDelegatePath, 'utf-8')).not.toMatch(handleOpen);
+      expect(await fs.readFile(path.join(appDir, 'SceneDelegate.swift'), 'utf-8')).toEqual(
+        sceneDelegateContents,
+      );
     });
 
     it('does not change AppDelegate.swift without a scene manifest', async () => {

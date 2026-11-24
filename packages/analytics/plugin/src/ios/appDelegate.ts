@@ -247,15 +247,38 @@ const methodPatches: MethodPatch[] = [
 /**
  * Make a Swift `AppDelegate: ExpoAppDelegate` forward opening URLs and user activities to
  * Firebase Analytics. Existing overrides get the call injected at the start of their body;
- * missing overrides are added. Returns the contents unchanged when nothing applies.
+ * missing overrides are added. A method whose call `SceneDelegate.swift` already makes is skipped,
+ * and code an earlier prebuild generated for it is removed, so each link is recorded once.
+ * Returns the contents unchanged when nothing applies.
  */
-export function modifySwiftAppDelegate(contents: string): string {
+export function modifySwiftAppDelegate(
+  contents: string,
+  sceneDelegateContents: string | null = null,
+): string {
   const newline = contents.includes('\r\n') ? '\r\n' : '\n';
   const userCode = maskSwiftComments(contents.replace(generatedBlockMatcher, ''));
+  const sceneDelegateCode =
+    sceneDelegateContents === null ? null : maskSwiftComments(sceneDelegateContents);
   let result = contents;
   let patched = false;
+  let removed = false;
 
   for (const patch of methodPatches) {
+    if (sceneDelegateCode !== null && patch.callMatcher.test(sceneDelegateCode)) {
+      warn(
+        `Skipping UIScene link attribution for ${patch.description} because SceneDelegate.swift already calls ${patch.call}. Remove every such call from SceneDelegate.swift to let this plugin handle it, or make sure SceneDelegate.swift makes it for links that launch the app and for links that arrive while it is running.`,
+      );
+      const withoutCall = removeGeneratedCode(result, patch.call);
+      if (withoutCall === null) {
+        warn(
+          `Skipping removal of the generated ${patch.call} call from AppDelegate.swift because a ${sceneLinkAttributionTag} block in it was modified. Remove the generated ${patch.call} call manually, or each link is recorded twice.`,
+        );
+      } else if (withoutCall !== result) {
+        result = withoutCall;
+        removed = true;
+      }
+      continue;
+    }
     if (patch.callMatcher.test(userCode)) {
       warn(
         `Skipping UIScene link attribution for ${patch.description} because AppDelegate.swift already calls ${patch.call}.`,
@@ -298,7 +321,44 @@ export function modifySwiftAppDelegate(contents: string): string {
     patched = true;
   }
 
-  return patched ? ensureFirebaseAnalyticsImport(result, newline) : result;
+  if (patched) {
+    return ensureFirebaseAnalyticsImport(result, newline);
+  }
+  return removed ? removeGeneratedImportIfUnused(result) : result;
+}
+
+function hasOnlyIntactGeneratedBlocks(contents: string): boolean {
+  const blocks = contents.match(generatedBlockMatcher) ?? [];
+  const beginCount = contents.split(beginMarker).length - 1;
+  const endCount = contents.split(endMarker).length - 1;
+  return (
+    blocks.length === beginCount &&
+    blocks.length === endCount &&
+    blocks.every(isIntactGeneratedBlock)
+  );
+}
+
+// `null` when a generated block was modified, so removing it could take user code with it.
+function removeGeneratedCode(contents: string, call: string): string | null {
+  if (!hasOnlyIntactGeneratedBlocks(contents)) {
+    return null;
+  }
+  return contents.replace(generatedBlockLineMatcher, block =>
+    block.includes(`${call}(`) ? '' : block,
+  );
+}
+
+function removeGeneratedImportIfUnused(contents: string): string {
+  const importMatch = generatedImportLineMatcher.exec(contents);
+  if (!importMatch) {
+    return contents;
+  }
+  const withoutImport = `${contents.slice(0, importMatch.index)}${contents.slice(
+    importMatch.index + importMatch[0].length,
+  )}`;
+  return firebaseAnalyticsUseMatcher.test(maskSwiftComments(withoutImport))
+    ? contents
+    : withoutImport;
 }
 
 /**
@@ -307,31 +367,13 @@ export function modifySwiftAppDelegate(contents: string): string {
  * than Auth's openURL guard, which Auth re-applies afterwards), the file is left alone, with a warning.
  */
 export function removeSceneLinkAttribution(contents: string): string {
-  const blocks = contents.match(generatedBlockMatcher) ?? [];
-  const beginCount = contents.split(beginMarker).length - 1;
-  const endCount = contents.split(endMarker).length - 1;
-  if (
-    blocks.length !== beginCount ||
-    blocks.length !== endCount ||
-    !blocks.every(isIntactGeneratedBlock)
-  ) {
+  if (!hasOnlyIntactGeneratedBlocks(contents)) {
     warn(
       `Skipping removal of UIScene link attribution from AppDelegate.swift because its ${sceneLinkAttributionTag} blocks were modified. Remove them manually: without UIScene, Firebase records links itself.`,
     );
     return contents;
   }
-
-  const withoutBlocks = contents.replace(generatedBlockLineMatcher, '');
-  const importMatch = generatedImportLineMatcher.exec(withoutBlocks);
-  if (!importMatch) {
-    return withoutBlocks;
-  }
-  const withoutImport = `${withoutBlocks.slice(0, importMatch.index)}${withoutBlocks.slice(
-    importMatch.index + importMatch[0].length,
-  )}`;
-  return firebaseAnalyticsUseMatcher.test(maskSwiftComments(withoutImport))
-    ? withoutBlocks
-    : withoutImport;
+  return removeGeneratedImportIfUnused(contents.replace(generatedBlockLineMatcher, ''));
 }
 
 /**
@@ -406,6 +448,15 @@ export function declaresSceneManifest({
   return null;
 }
 
+// Expo SDK 58 prebuild writes `SceneDelegate.swift` next to `AppDelegate.swift`.
+function readSceneDelegate(sceneDelegatePath: string): string | null {
+  try {
+    return fs.readFileSync(sceneDelegatePath, 'utf-8');
+  } catch {
+    return null;
+  }
+}
+
 export async function applySceneLinkAttributionAsync({
   projectRoot,
   platformProjectRoot,
@@ -449,7 +500,10 @@ export async function applySceneLinkAttributionAsync({
   // Without UIScene, UIKit calls the app delegate and Firebase's proxy already records the link,
   // so code left by an earlier prebuild would count it twice.
   const newContents = sceneApp
-    ? modifySwiftAppDelegate(fileInfo.contents)
+    ? modifySwiftAppDelegate(
+        fileInfo.contents,
+        readSceneDelegate(path.join(path.dirname(fileInfo.path), 'SceneDelegate.swift')),
+      )
     : removeSceneLinkAttribution(fileInfo.contents);
   if (newContents !== fileInfo.contents) {
     await fs.promises.writeFile(fileInfo.path, newContents);
