@@ -213,6 +213,43 @@ runtime.
 Static pod linkage is not a sharing workaround under SPM: it fails at link
 time with duplicate symbols (and `pod install` rejects the combination).
 
+## React Native SwiftPM mode
+
+The sections above apply to apps that install native dependencies with
+CocoaPods. React Native can also link native dependencies with SwiftPM itself,
+without CocoaPods. This page calls that React Native SwiftPM mode.
+
+In React Native SwiftPM mode, RNFB links itself automatically. Install the
+`@react-native-firebase/*` packages as usual; no other setup is needed.
+`@react-native-firebase/app` builds every installed RNFB package with native
+iOS code into one local Swift package, `ReactNativeFirebase`, and adds the RNFB
+build phases to the app target.
+
+There is no Podfile in this mode, so Podfile variables have no effect. RNFB
+reads `firebase.json` from your project root instead:
+
+- To use Analytics without Ad Id support, set
+  `analytics_without_ad_id_support` under the `react-native` object. See
+  [Disable Ad Id usage on iOS](/analytics/usage#disable-ad-id-usage-on-ios).
+- To link the `AdSupport` framework, set `analytics_enable_ad_support` under
+  the `react-native` object. This replaces the Podfile variable
+  `$RNFirebaseAnalyticsEnableAdSupport`. See
+  [Device Identification](/analytics/usage#device-identification).
+- To use on-device conversion measurement, set
+  `analytics_google_app_measurement_on_device_conversion` under the
+  `react-native` object. This replaces the Podfile variable
+  `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion`. See
+  [Google Analytics on-device conversion measurement](/analytics/usage#google-analytics-on-device-conversion-measurement).
+
+### Known limits
+
+- On React Native 0.88, a changed RNFB build phase reaches the Xcode project
+  only after `npx react-native spm update`. `npx react-native spm sync` does
+  not apply it.
+- The `ReactNativeFirebase` package declares iOS, macOS and tvOS. With
+  `analytics_google_app_measurement_on_device_conversion` set, RNFB is tested
+  only on iOS; macOS and tvOS builds are not verified.
+
 ## Troubleshooting
 
 - **`pod install` fails with "Firebase Apple SDK is no longer distributed through CocoaPods":**

@@ -23,6 +23,9 @@
       }
     }
   },
+  "swiftpmConfig": {
+    "autolinkingPlugin": "./spm-autolinking-plugin.js"
+  },
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",

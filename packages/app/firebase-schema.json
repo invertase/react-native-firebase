@@ -17,6 +17,18 @@
           "description": "If you wish to disable collection of the IDFV (Identifier for Vendor) in your iOS app.\n This cannot be altered at runtime once set in the config.",
           "type": "boolean"
         },
+        "analytics_without_ad_id_support": {
+          "description": "iOS only, for apps that autolink React Native Firebase with React Native SwiftPM. If true, Analytics links FirebaseAnalyticsCore (no Ad ID support) instead of FirebaseAnalytics.\n Mirrors the Podfile variable $RNFirebaseAnalyticsWithoutAdIdSupport, which applies when building with CocoaPods.",
+          "type": "boolean"
+        },
+        "analytics_enable_ad_support": {
+          "description": "iOS only, for apps that autolink React Native Firebase with React Native SwiftPM. If true, Analytics links the Apple AdSupport framework.\n Mirrors the Podfile variable $RNFirebaseAnalyticsEnableAdSupport, which applies when building with CocoaPods.",
+          "type": "boolean"
+        },
+        "analytics_google_app_measurement_on_device_conversion": {
+          "description": "iOS only, for apps that autolink React Native Firebase with React Native SwiftPM. If true, Analytics links the GoogleAdsOnDeviceConversion SwiftPM package for on-device conversion measurement.\n Mirrors the Podfile variable $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion, which applies when building with CocoaPods.",
+          "type": "boolean"
+        },
         "google_analytics_adid_collection_enabled": {
           "description": " If you wish to disable collection of the Advertising ID in your Android app.\n This cannot be altered at runtime once set in the config.",
           "type": "boolean"

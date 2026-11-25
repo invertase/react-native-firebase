@@ -4,6 +4,8 @@
     "jsSource": [
       "{projectRoot}/lib/**/*",
       "{projectRoot}/plugin/**/*",
+      "{projectRoot}/spm/**/*",
+      "!{projectRoot}/spm/build/**",
       "{projectRoot}/tsconfig.json",
       "{projectRoot}/plugin/tsconfig.json",
       "{projectRoot}/package.json",
@@ -19,6 +21,7 @@
       "outputs": [
         "{projectRoot}/dist/**",
         "{projectRoot}/plugin/build/**",
+        "{projectRoot}/spm/build/**",
         "{projectRoot}/lib/version.ts"
       ]
     }
