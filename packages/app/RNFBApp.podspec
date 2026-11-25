@@ -83,6 +83,8 @@ Pod::Spec.new do |s|
   # Second GoogleUtilities declarer alongside RNFBMessaging / RNFBAnalytics so a
   # graph with only one of them shares one framework per product (#9408).
   rnfirebase_declare_shared_google_utilities(s, __dir__)
+  # Second AppCheckCore declarer alongside RNFBAppCheck (#9419).
+  rnfirebase_declare_shared_app_check_core(s, __dir__)
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
