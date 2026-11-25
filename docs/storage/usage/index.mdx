@@ -38,7 +38,7 @@ cd ios/ && pod install
 | **Platforms** | Android, iOS (native Firebase SDK); macOS via firebase-js-sdk web interop |
 | **New Architecture** | **Required** from v26. See [Migrating to v26](/migrating-to-v26#new-architecture-requirement). |
 
-**Platform notes:** `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Use `FilePath` from `@react-native-firebase/app` for device paths. On the web interop platform they reject because the helper is not supported there. `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime` are Android and iOS helpers (see [Retry times](#retry-times)). `uploadBytes`, `getBlob`, `getBytes`, and `getStream` are exported for API surface parity but always fail with a `not implemented` error on React Native Firebase (`uploadBytes` returns a rejected promise; the other three throw synchronously). Prefer `uploadBytesResumable` / `uploadString` / `putFile` for uploads and `getDownloadURL` / `writeToFile` for downloads. React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime`, plus types `Task`, `TaskSnapshot`, `TaskResult`, `TaskSnapshotObserver`, `Subscribe`, and `NativeFirebaseError`. Each is explained in the section that uses it.
+**Platform notes:** `putFile` and `writeToFile` are **native-only** file-path APIs with no firebase-js-sdk equivalent. Use `FilePath` from `@react-native-firebase/app` for device paths. On the web interop platform they reject because the helper is not supported there. `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime` are Android and iOS helpers (see [Retry times](#retry-times)). `uploadBytes`, `getBlob`, `getBytes`, and `getStream` are exported for API surface parity but always fail with a `not implemented` error on React Native Firebase (`uploadBytes` returns a rejected promise; the other three throw synchronously). Prefer `uploadBytesResumable` / `uploadString` / `putFile` for uploads and `getDownloadURL` / `writeToFile` for downloads. React Native Firebase also exports RN-only helpers such as `SDK_VERSION`, `setMaxOperationRetryTime`, `setMaxUploadRetryTime`, and `setMaxDownloadRetryTime`, plus types `Task`, `TaskSnapshot`, `TaskResult`, `TaskSnapshotObserver`, `Subscribe`, and `NativeFirebaseError`, and the callback types `NextFn`, `CompleteFn`, and `Unsubscribe` re-exported from `@react-native-firebase/app`. Each is explained in the section that uses it.
 
 # What does it do
 
@@ -301,7 +301,7 @@ task.catch(() => {
 
 ### Task errors and completion
 
-Pass an error callback and a completion callback as the third and fourth arguments to `task.on`, or pass a `TaskSnapshotObserver` (`StorageObserver<TaskSnapshot>`, an object with `next`, `error`, and `complete`) as the second argument. `task.on` starts the task but does not attach a rejection handler to the task promise, so also call `task.catch` (or `await` the task in a `try` block) to avoid an unhandled rejection.
+The second argument to `task.on` is the progress callback (`NextFn`). Pass an error callback and a completion callback (`CompleteFn`) as the third and fourth arguments, or pass a `TaskSnapshotObserver` (`StorageObserver<TaskSnapshot>`, an object with `next`, `error`, and `complete`) as the second argument. `task.on` starts the task but does not attach a rejection handler to the task promise, so also call `task.catch` (or `await` the task in a `try` block) to avoid an unhandled rejection.
 
 ```js
 import { FilePath } from '@react-native-firebase/app';
@@ -354,7 +354,7 @@ task.catch(() => {
 });
 ```
 
-The observers are removed after the task fails, and after it succeeds when you passed a completion callback. The function that `task.on` returns removes them earlier. When you call `task.on(event)` with only the event name, the runtime returns a `Subscribe` function (an RN helper type) that attaches the observers later and returns the unsubscribe function. The declared return type of `task.on` is a union, so TypeScript code casts it to `Subscribe<TaskSnapshot>` before calling it:
+The observers are removed after the task fails, and after it succeeds when you passed a completion callback. The function that `task.on` returns (an `Unsubscribe`) removes them earlier. When you call `task.on(event)` with only the event name, the runtime returns a `Subscribe` function (an RN helper type) that attaches the observers later and returns the unsubscribe function. The declared return type of `task.on` is a union, so TypeScript code casts it to `Subscribe<TaskSnapshot>` before calling it:
 
 ```ts
 import { FilePath } from '@react-native-firebase/app';

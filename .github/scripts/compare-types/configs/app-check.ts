@@ -13,11 +13,6 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [
     {
-      name: 'PartialObserver',
-      reason:
-        'RN Firebase re-exports this type from `@react-native-firebase/app` common types rather than mirroring the firebase-js-sdk utility export directly.',
-    },
-    {
       name: 'ReCaptchaEnterpriseProvider',
       reason:
         'Web-only reCAPTCHA Enterprise provider from the firebase-js-sdk. RN Firebase uses `ReactNativeFirebaseAppCheckProvider` to configure native platform providers instead.',
@@ -26,11 +21,6 @@ const config: PackageConfig = {
       name: 'ReCaptchaV3Provider',
       reason:
         'Web-only reCAPTCHA v3 provider from the firebase-js-sdk. RN Firebase uses `ReactNativeFirebaseAppCheckProvider` for cross-platform provider configuration.',
-    },
-    {
-      name: 'Unsubscribe',
-      reason:
-        'RN Firebase re-exports this type from `@react-native-firebase/app` common types rather than mirroring the firebase-js-sdk utility export directly.',
     },
   ],
   extraInRN: [

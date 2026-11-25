@@ -38,6 +38,21 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
+      name: 'CompleteFn',
+      reason:
+        'Re-export of the `@react-native-firebase/app` common type used by `UploadTask.on()` and `StorageObserver`. The firebase-js-sdk does not export it from @firebase/storage.',
+    },
+    {
+      name: 'NextFn',
+      reason:
+        'Re-export of the `@react-native-firebase/app` common type used by `UploadTask.on()` and `StorageObserver`. The firebase-js-sdk does not export it from @firebase/storage.',
+    },
+    {
+      name: 'Unsubscribe',
+      reason:
+        'Re-export of the `@react-native-firebase/app` common type used by `UploadTask.on()` and `StorageObserver`. The firebase-js-sdk does not export it from @firebase/storage.',
+    },
+    {
       name: 'SDK_VERSION',
       reason:
         'RN Firebase package version string exported from the modular entry point. The firebase-js-sdk does not export SDK_VERSION from @firebase/storage.',

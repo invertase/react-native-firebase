@@ -28,12 +28,6 @@
       ],
       "@react-native-firebase/app/dist/module/internal": [
         "./packages/app/dist/typescript/lib/internal"
-      ],
-      "@react-native-firebase/app/dist/module/types/internal": [
-        "./packages/app/dist/typescript/lib/types/internal"
-      ],
-      "@react-native-firebase/app/dist/module/types/common": [
-        "./packages/app/dist/typescript/lib/types/common"
       ]
     }
   },

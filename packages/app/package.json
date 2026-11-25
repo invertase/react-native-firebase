@@ -98,6 +98,11 @@
       "types": "./dist/typescript/lib/common/*.d.ts",
       "default": "./dist/module/common/*.js"
     },
+    "./dist/module/types/*": {
+      "source": "./lib/types/*.ts",
+      "types": "./dist/typescript/lib/types/*.d.ts",
+      "default": "./dist/module/types/*.js"
+    },
     "./app.plugin": {
       "types": "./plugin/build/app.plugin.d.ts",
       "default": "./app.plugin.js"
