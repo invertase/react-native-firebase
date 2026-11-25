@@ -3,7 +3,7 @@ type: Reference
 title: Published types and CI decisions (ADR)
 description: Canonical owner of durable decisions for published-package type checking (attw, consumer tsc, Expo config plugins).
 tags: [testing, types, attw, expo, adr]
-timestamp: 2026-11-24T00:00:00Z
+timestamp: 2026-11-25T00:00:00Z
 ---
 
 # Published types and CI decisions (ADR)
@@ -38,10 +38,10 @@ RNFB published types are validated against the **actual consumer matrix**, not g
 | iOS / Xcode | firebase-ios-sdk 12.12.0+ → Xcode 26.2+ | Drives recent RN only |
 | React Native | New Architecture only (coordinated major) | Metro bundler, not Node `require()` for app JS |
 | Node (app dev) | RN 0.84+ → Node **22.11.0+**; RN 0.81–0.83 → Node **20.19.4+** | See [RN support matrix](https://github.com/reactwg/react-native-releases/blob/main/docs/support.md) |
-| TypeScript (app) | `moduleResolution: "bundler"` | `yarn tsc:compile:consumer` |
-| TypeScript (app) | `moduleResolution: "node16"` / `"nodenext"` (ESM), with `skipLibCheck: true` | `yarn attw:check` (`node16-esm`) |
+| TypeScript (app) | `moduleResolution: "bundler"` (recommended) | `yarn tsc:compile:consumer` |
+| TypeScript (app) | `moduleResolution: "node16"` / `"nodenext"` (ESM), with `skipLibCheck: true`; best effort, see [allowed findings](#types-ad-2-allowed-findings) | `yarn attw:check` (`node16-esm`) |
 
-**Why:** Node 10 is EOL. RN apps resolve `@react-native-firebase/*` through Metro (`bundler`), not through Node10/Node16-CJS `require()`. Apps that type-check with `nodenext` read the same `dist/typescript` output as ESM (`dist/typescript/package.json` is `"type": "module"`), so `node16-esm` is supported, assuming `skipLibCheck: true` (a common default, for example in Expo's base tsconfig). `skipLibCheck: false` is not supported in any resolution mode: published declaration files report library-check errors, such as imports whose target has no declaration (for example firestore's side-effect import of `react-native-url-polyfill/auto`, reported on TypeScript 6+, where `noUncheckedSideEffectImports` is on by default). An import in a published `.d.ts` that does not resolve is silent with `skipLibCheck: true`, and the imported names become `any`. See [known gaps](#types-ad-2-known-gaps) for imports attw does not check. attw `strict` mostly reports resolution modes our consumers never use.
+**Why:** Node 10 is EOL. RN apps resolve `@react-native-firebase/*` through Metro (`bundler`), not through Node10/Node16-CJS `require()`. Apps that type-check with `nodenext` read the same `dist/typescript` output as ESM (`dist/typescript/package.json` is `"type": "module"`), so `node16-esm` is checked, assuming `skipLibCheck: true` (a common default, for example in Expo's base tsconfig). `skipLibCheck: false` is not supported in any resolution mode: published declaration files report library-check errors, such as imports whose target has no declaration (for example firestore's side-effect import of `react-native-url-polyfill/auto`, reported on TypeScript 6+, where `noUncheckedSideEffectImports` is on by default). An import in a published `.d.ts` that does not resolve is silent with `skipLibCheck: true`, and the imported names become `any`. See [known gaps](#types-ad-2-known-gaps) for imports attw does not check. attw `strict` mostly reports resolution modes our consumers never use.
 
 The Node version needed to build the repo itself is in [CONTRIBUTING § Local Setup](../../CONTRIBUTING.md#local-setup).
 
@@ -83,7 +83,9 @@ The Node version needed to build the repo itself is in [CONTRIBUTING § Local Se
 - **Relative module augmentations.** bob rewrites import and export specifiers, not the name in `declare module '../x'`, and attw itself does not check augmentations. Under `nodenext` an augmentation whose name does not resolve is dropped silently, even with `skipLibCheck: false`, so the members it adds disappear. Write relative augmentation names with the `.js` extension in `lib` sources (for example `declare module '../types/firestore.js'`). `yarn attw:check` fails on any relative `declare module` name in a published package's `dist/**/*.d.ts` that does not end in `.js` or has no matching `.d.ts`.
 - **Augmentations of other packages.** Packages augment `@react-native-firebase/app/dist/module/internal/NativeModules`, which resolves only through app's `./dist/module/internal/*` export. Nothing checks that these names resolve; if that export is removed or narrowed, the augmentations are dropped silently under both `bundler` and `nodenext`, and `paths` aliases in `tsconfig.consumer.json` hide it.
 
-**Allowed findings.** Bob deliberately leaves imports of platform-specific modules (a module with platform variants, for example `.ios` / `.android` / `.web`) without an extension, so Metro can pick the platform file at runtime, and the declaration import then fails `node16-esm`. These exact findings are allowed in `ALLOWED_ISSUES` in `.github/scripts/attw/src/index.ts`:
+<a id="types-ad-2-allowed-findings"></a>
+
+**Allowed findings.** Bob deliberately leaves imports of platform-specific modules (a module with platform variants, for example `.ios` / `.android` / `.web`) without an extension, so Metro can pick the platform file at runtime, and the declaration import then fails `node16-esm`. The `.d.ts` import matches the runtime import on purpose: adding `.js` to the declaration alone would make the types resolve where the runtime import cannot. bob's maintainers treat this as intended and say apps that consume React Native libraries need `moduleResolution: "bundler"` ([callstack/react-native-builder-bob#966](https://github.com/callstack/react-native-builder-bob/issues/966), [bob ESM guidelines](https://oss.callstack.com/react-native-builder-bob/esm#guidelines)), so a bob release will not remove these findings. These exact findings are allowed in `ALLOWED_ISSUES` in `.github/scripts/attw/src/index.ts`:
 
 | Package | Entrypoint | Importing file | Import | Why it is accepted |
 |---------|------------|----------------|--------|--------------------|
@@ -96,9 +98,9 @@ Maintaining the list:
 
 - An entry matches package, entrypoint, resolution, problem, importing file and import, not what the import brings in, and absorbs at most one finding. Re-check the reason when either importing file changes (for example if `./nativeModule` starts exporting more names, the existing import still matches but loses more types).
 - The entrypoint is the first one attw reports the finding under. If a new export reaches the file first, the check reports the finding as both enforced and stale; update the entrypoint rather than removing the entry.
-- An entry that no longer occurs (for example after a bob release adds extensions to platform-module declaration imports) fails `yarn attw:check` until it is removed. Add entries only for platform-specific module imports.
+- An entry that no longer occurs (for example after the platform-specific module is replaced with a `Platform.OS` / `Platform.select` check) fails `yarn attw:check` until it is removed. Add entries only for platform-specific module imports. Removing an entry means removing the platform-specific import from published declarations (for example with `Platform.select`), not waiting on bob.
 
-attw has **no Node 22 or bundler-only profile**. This config is the closest match to the RN consumer matrix until upstream adds finer profiles.
+attw has **no Node 22 or bundler-only profile**. This config is the closest match to the RN consumer matrix until attw adds finer profiles.
 
 **Advisory only (not a merge gate):** `attw --profile strict` may be run locally to see the full generic-npm report.
 

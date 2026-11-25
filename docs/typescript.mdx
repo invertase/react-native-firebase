@@ -41,7 +41,7 @@ Historical note: [Migrating to v25](/migrating-to-v25) covers the Auth breaking 
 
 ## Compiler options
 
-The published type definitions support `moduleResolution: "bundler"` and, in projects that use ES modules, `"node16"` or `"nodenext"`. Keep `skipLibCheck: true`, as Expo's base `tsconfig` does: with `skipLibCheck: false`, some published declaration files report library-check errors.
+Use `moduleResolution: "bundler"`, which matches how Metro resolves packages. Projects that use ES modules with `"node16"` or `"nodenext"` also type-check, but some packages ship platform-specific files (for example `.ios.ts` / `.web.ts`) whose imports Node ES module resolution cannot follow, so those settings are best effort: the affected imports resolve to `any`. Keep `skipLibCheck: true`, as Expo's base `tsconfig` does: with `skipLibCheck: false`, some published declaration files report library-check errors.
 
 ## Where definitions live
 
