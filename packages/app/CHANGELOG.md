@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.2.0](https://github.com/invertase/react-native-firebase/compare/v27.1.1...v27.2.0) (2026-11-25)
+
+### Features
+
+- **app, sdk:** bump Firebase Android SDK to 35.2.0 ([#9488](https://github.com/invertase/react-native-firebase/issues/9488)) ([9000dbf](https://github.com/invertase/react-native-firebase/commit/9000dbf0d6e8d59595aaeb87698b5a040ce80861))
+- **app, sdk:** bump Firebase JS SDK to 13.3.0 ([#9489](https://github.com/invertase/react-native-firebase/issues/9489)) ([336ede8](https://github.com/invertase/react-native-firebase/commit/336ede826930709257c764445f7f388852811757))
+
+### Bug Fixes
+
+- **android:** tolerate deprecated JNI invokeJavaMethod on RN 0.89+ ([#9492](https://github.com/invertase/react-native-firebase/issues/9492)) ([4aa429a](https://github.com/invertase/react-native-firebase/commit/4aa429a1c522429de2ee9b47b587b8c2504de4f2))
+- **app, ios:** share GoogleUtilities when only Messaging or Analytics is installed under SPM ([#9451](https://github.com/invertase/react-native-firebase/issues/9451)) ([0d426fe](https://github.com/invertase/react-native-firebase/commit/0d426fe30d3b10a7b00405af72e7cadd3b7c744d))
+- **e2e:** make check BUSY for unrecorded identity AVD on any port ([e99601f](https://github.com/invertase/react-native-firebase/commit/e99601fd527bc8132f4a057382ea0f284072cf77))
+- **e2e:** release Detox-respawned identity AVD qemu ([b9ac2ff](https://github.com/invertase/react-native-firebase/commit/b9ac2fff164922fbe96491aa107e92f9c3b7b54d))
+- **messaging, ios:** make the AppDelegate forwarding header public again ([904f7d4](https://github.com/invertase/react-native-firebase/commit/904f7d410e5d70ad26efd70b4a30f5b3c79442b5))
+
 ## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
 
 ### Bug Fixes
