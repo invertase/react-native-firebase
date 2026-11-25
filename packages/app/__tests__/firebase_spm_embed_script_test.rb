@@ -129,6 +129,63 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
       end
     end
 
+    def test_signs_existing_unsigned_destination_framework_when_signing_enabled
+      Dir.mktmpdir('rnfb-spm-embed-') do |root|
+        source_dir = File.join(root, 'source')
+        dest_dir = File.join(root, 'Frameworks')
+        FileUtils.mkdir_p(source_dir)
+
+        build_dynamic_framework(File.join(source_dir, 'AlreadyThere.framework'), 'AlreadyThere')
+        dest_framework = File.join(dest_dir, 'AlreadyThere.framework')
+        build_dynamic_framework(dest_framework, 'AlreadyThere')
+        remove_signature!(File.join(dest_framework, 'AlreadyThere'))
+        refute codesign_valid?(dest_framework), 'fixture destination must start unsigned'
+
+        run_embed_frameworks_from!(source_dir, dest_dir, signing_env)
+
+        assert codesign_valid?(dest_framework),
+               'an existing destination framework must still be signed when signing is enabled (GitHub #9443); ' \
+               'device install fails with "No code signature found" otherwise'
+      end
+    end
+
+    def test_does_not_sign_existing_destination_framework_when_signing_not_allowed
+      Dir.mktmpdir('rnfb-spm-embed-') do |root|
+        source_dir = File.join(root, 'source')
+        dest_dir = File.join(root, 'Frameworks')
+        FileUtils.mkdir_p(source_dir)
+
+        build_dynamic_framework(File.join(source_dir, 'AlreadyThere.framework'), 'AlreadyThere')
+        dest_framework = File.join(dest_dir, 'AlreadyThere.framework')
+        build_dynamic_framework(dest_framework, 'AlreadyThere')
+        remove_signature!(File.join(dest_framework, 'AlreadyThere'))
+
+        run_embed_frameworks_from!(source_dir, dest_dir, signing_env.merge('CODE_SIGNING_ALLOWED' => 'NO'))
+
+        refute codesign_valid?(dest_framework),
+               'CODE_SIGNING_ALLOWED=NO must leave an existing destination unsigned'
+      end
+    end
+
+    def test_does_not_sign_existing_destination_when_source_is_static
+      Dir.mktmpdir('rnfb-spm-embed-') do |root|
+        source_dir = File.join(root, 'source')
+        dest_dir = File.join(root, 'Frameworks')
+        FileUtils.mkdir_p(source_dir)
+
+        build_static_framework(File.join(source_dir, 'StaticPod.framework'), 'StaticPod')
+        dest_framework = File.join(dest_dir, 'StaticPod.framework')
+        FileUtils.mkdir_p(dest_framework)
+        marker_path = File.join(dest_framework, 'StaticPod')
+        File.write(marker_path, 'pre-existing-static-marker')
+
+        run_embed_frameworks_from!(source_dir, dest_dir, signing_env)
+
+        assert_equal 'pre-existing-static-marker', File.read(marker_path),
+                     'static frameworks must never reach codesign, even when the destination exists'
+      end
+    end
+
     private
 
     def extract_embed_frameworks_from(script)
@@ -138,7 +195,7 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
       match[0]
     end
 
-    def run_embed_frameworks_from!(source_dir, dest_dir)
+    def run_embed_frameworks_from!(source_dir, dest_dir, env = {})
       function_body = extract_embed_frameworks_from(rnfirebase_spm_embed_script)
       driver = <<~BASH
         set -euo pipefail
@@ -150,11 +207,29 @@ if RNFIREBASE_SPM_EMBED_SCRIPT_TOOLS_AVAILABLE
         embed_frameworks_from #{shell_quote(source_dir)}
       BASH
 
-      stdout, stderr, status = Open3.capture3('/bin/bash', '-c', driver)
+      stdout, stderr, status = Open3.capture3(env, '/bin/bash', '-c', driver)
       assert status.success?,
              "embed_frameworks_from failed (exit #{status.exitstatus})\n" \
              "stdout:\n#{stdout}\nstderr:\n#{stderr}"
       [stdout, stderr]
+    end
+
+    # Ad-hoc identity: signs without touching the keychain.
+    def signing_env
+      {
+        'EXPANDED_CODE_SIGN_IDENTITY' => '-',
+        'CODE_SIGNING_REQUIRED' => 'YES',
+        'CODE_SIGNING_ALLOWED' => 'YES'
+      }
+    end
+
+    def remove_signature!(binary)
+      ok = system('/usr/bin/codesign', '--remove-signature', binary, out: File::NULL, err: File::NULL)
+      assert ok, "codesign --remove-signature failed for #{binary}"
+    end
+
+    def codesign_valid?(framework_path)
+      system('/usr/bin/codesign', '--verify', '--strict', framework_path, out: File::NULL, err: File::NULL)
     end
 
     def shell_quote(path)
