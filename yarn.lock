@@ -25323,9 +25323,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:0.13.0":
-  version: 0.13.0
-  resolution: "react-native-worklets@npm:0.13.0"
+"react-native-worklets@npm:0.13.1":
+  version: 0.13.1
+  resolution: "react-native-worklets@npm:0.13.1"
   dependencies:
     "@babel/generator": "npm:^7.27.1"
     "@babel/plugin-transform-arrow-functions": "npm:^7.27.1"
@@ -25348,7 +25348,7 @@ __metadata:
     "@react-native/metro-config": "*"
     react: "*"
     react-native: 0.86 - 0.88
-  checksum: 10/655df9d016ee281ac228309196cf93997d7865759d572926da90a5e698a817b1810ce3a4bd680808e8f4d3212ea75c4eb793825e5771feded94406224ce0fa46
+  checksum: 10/08c9b0d5fd2bf3e70dd56dddfbb3bb709e1332e3ec10cf6b9765f15aaff88057bdc4aabc94567c4276769af9519b086314b5fb59ee6115f78eedbe04836174b5
   languageName: node
   linkType: hard
 
@@ -28075,7 +28075,7 @@ __metadata:
     react-native-reanimated: "npm:~4.7.0"
     react-native-safe-area-context: "npm:~5.9.1"
     react-native-screens: "npm:~4.28.0"
-    react-native-worklets: "npm:0.13.0"
+    react-native-worklets: "npm:0.13.1"
   languageName: unknown
   linkType: soft
 
