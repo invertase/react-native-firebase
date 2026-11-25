@@ -392,3 +392,19 @@ fi
 
 "${SCRIPTS_DIR}/check-duplicate-objc-classes.sh" "$APP_DIR" \
   --canary-hint "test-expo/package.json must keep @react-native-firebase/analytics alongside messaging so the GoogleUtilities sharing graph is exercised"
+
+# test-expo enables the messaging plugin's `ios.notificationServiceExtension`: the extension must be embedded
+# in the app and link FirebaseMessaging from Swift Package Manager.
+log "--- notification service extension ---"
+EXTENSION_BINARY="${APP_DIR}/PlugIns/NotificationServiceExtension.appex/NotificationServiceExtension"
+if [[ ! -f "$EXTENSION_BINARY" ]]; then
+  log "ERROR: NotificationServiceExtension.appex is not embedded in $(basename "$APP_DIR") (expected ${EXTENSION_BINARY})"
+  exit 1
+fi
+# Captured rather than piped: under pipefail, `grep -q` exiting at the first match makes `nm` fail on SIGPIPE.
+extension_syms="$(nm "$EXTENSION_BINARY" 2>/dev/null || true)"
+if ! grep -qE '_OBJC_CLASS_\$_FIRMessaging$' <<<"$extension_syms"; then
+  log "ERROR: NotificationServiceExtension does not link FirebaseMessaging (no FIRMessaging class reference)"
+  exit 1
+fi
+log "PASS: NotificationServiceExtension.appex is embedded and links FirebaseMessaging"

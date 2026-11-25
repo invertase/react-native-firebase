@@ -22,11 +22,43 @@ React Native Firebase iOS builds resolve Firebase through Swift Package Manager 
 
 Adding `pod 'Firebase/Messaging'` to a `target 'ImageNotification'` block in the Podfile (with `use_frameworks! :linkage => :static`) is not supported. CocoaPods does not distribute Firebase Apple SDK 13+, and static pod linkage is not allowed with SPM.
 
-This page documents how to create the extension target and the extension code. It does not document how to link `FirebaseMessaging` into the extension target under SPM. React Native Firebase does not verify that setup, so follow the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image) for it and confirm the result on a physical device.
+There are two ways to add the extension:
+
+- **Expo:** the `@react-native-firebase/messaging` config plugin adds the extension target and links `FirebaseMessaging` into it under SPM. React Native Firebase's CI builds this setup and checks that the extension is embedded in the app and links `FirebaseMessaging`. See [Steps with Expo](#steps-with-expo).
+- **Xcode:** the [Steps](#steps) below document how to create the extension target and the extension code. They do not document how to link `FirebaseMessaging` into the extension target under SPM. React Native Firebase does not verify that manual setup, so follow the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image) for it and confirm the result on a physical device.
+
+## Steps with Expo
+
+Let the `@react-native-firebase/messaging` config plugin add the extension:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "@react-native-firebase/messaging",
+        {
+          "ios": {
+            "notificationServiceExtension": true
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+On `npx expo prebuild`, the plugin adds a `NotificationServiceExtension` target embedded in the app, with its source and `Info.plist` in `ios/NotificationServiceExtension/`. The extension links `FirebaseMessaging` through Swift Package Manager at the exact Firebase Apple SDK version of `@react-native-firebase/app`, the same package reference `pod install` links `FirebaseCore` into the app with (see [iOS SPM Support](/ios-spm)). Its bundle identifier is `<ios.bundleIdentifier>.NotificationServiceExtension`, and the plugin declares it to EAS Build (`extra.eas.build.experimental.ios.appExtensions`) so that EAS provisions and signs it.
+
+To name the target differently, pass `{ "targetName": "ImageNotification" }` instead of `true`. The name is also the last component of the bundle identifier, so it may only contain letters, digits and hyphens.
+
+iOS hands an app's notifications to a single notification service extension. If another config plugin already adds one (the OneSignal plugin, for example), don't enable this option as well: only one of the two would handle your notifications. Use that extension, or this one, alone.
+
+After turning the option off, run `npx expo prebuild --clean`: like other config plugins' changes, prebuild without `--clean` only adds to the native project, and leaves the target in it.
 
 ## Steps
 
-Open Xcode and follow the steps below to add a Notification Service Extension target that can populate rich notification content (including images).
+Without the Expo config plugin, open Xcode and follow the steps below to add a Notification Service Extension target that can populate rich notification content (including images).
 
 ### Step 1 - Add a notification service extension
 
