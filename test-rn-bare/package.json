@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@react-native-firebase/app": "27.2.0",
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-native": "0.88.0-rc.3"
   },
   "devDependencies": {

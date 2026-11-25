@@ -35,7 +35,7 @@
     "expo-dev-client": "~58.0.9",
     "expo-linking": "~58.0.9",
     "expo-router": "~58.0.10",
-    "react": "19.3.0",
+    "react": "19.3.1",
     "react-native": "0.88.0-rc.3",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-reanimated": "~4.7.0",

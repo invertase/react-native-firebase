@@ -25035,7 +25035,7 @@ __metadata:
     patch-package: "npm:^8.0.1"
     postinstall-postinstall: "npm:2.1.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:19.0.0"
+    react: "npm:19.3.1"
     react-native: "npm:0.78.3"
     react-native-macos: "npm:0.78.6"
     rimraf: "npm:^6.1.3"
@@ -25094,7 +25094,7 @@ __metadata:
     postinstall-postinstall: "npm:2.1.0"
     prop-types: "npm:^15.8.1"
     qrcode-generator: "npm:^2.0.4"
-    react: "npm:19.3.0"
+    react: "npm:19.3.1"
     react-native: "npm:0.88.0-rc.3"
     react-native-coverage: "npm:0.2.2"
     react-native-device-info: "npm:^15.0.2"
@@ -25502,17 +25502,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:19.0.0":
-  version: 19.0.0
-  resolution: "react@npm:19.0.0"
-  checksum: 10/2490969c503f644703c88990d20e4011fa6119ddeca451e9de48f6d7ab058d670d2852a5fcd3aa3cd90a923ab2815d532637bd4a814add402ae5c0d4f129ee71
-  languageName: node
-  linkType: hard
-
-"react@npm:19.3.0":
-  version: 19.3.0
-  resolution: "react@npm:19.3.0"
-  checksum: 10/e98669f09750c41abb1bf020af67cc847e018c91a8c5413d3f40ddd737e3daef6e419bcd1521b113fda73fd667ae82d5f0e9d9e3ff462faeb82059c09e7f04b1
+"react@npm:19.3.1":
+  version: 19.3.1
+  resolution: "react@npm:19.3.1"
+  checksum: 10/8305f553520125f1b202998d403bf5b69de732d3e9d6ac3d42c53eeabc1c612a4f2ee68f5f9d17277258fc880252b0d5073750317a5c8801c83d9a4382e4b322
   languageName: node
   linkType: hard
 
@@ -28069,7 +28062,7 @@ __metadata:
     expo-dev-client: "npm:~58.0.9"
     expo-linking: "npm:~58.0.9"
     expo-router: "npm:~58.0.10"
-    react: "npm:19.3.0"
+    react: "npm:19.3.1"
     react-native: "npm:0.88.0-rc.3"
     react-native-gesture-handler: "npm:~3.2.1"
     react-native-reanimated: "npm:~4.7.0"
@@ -28089,7 +28082,7 @@ __metadata:
     "@react-native-firebase/app": "npm:27.2.0"
     "@react-native/babel-preset": "npm:0.88.0-rc.3"
     "@react-native/metro-config": "npm:0.88.0-rc.3"
-    react: "npm:19.3.0"
+    react: "npm:19.3.1"
     react-native: "npm:0.88.0-rc.3"
   languageName: unknown
   linkType: soft
