@@ -470,6 +470,101 @@ async function startOnDeviceConversion() {
 }
 ```
 
+# iOS UIScene life cycle: link attribution
+
+Firebase Analytics records campaign attribution from the URLs and Universal Links that open your app. Firebase's `FIRAnalytics+AppDelegate.h` header says this handling is automatic only "if neither SwiftUI nor UIScene lifecycle is adopted". When an app adopts the UIScene life cycle (its `Info.plist` declares `UIApplicationSceneManifest`, as apps created from the React Native 0.88+ or Expo SDK 58+ templates do), the header asks you to call `handleOpenURL` from `scene(_:willConnectTo:options:)` and `scene(_:openURLContexts:)`, and `handleUserActivity` from `scene(_:willConnectTo:options:)` and `scene(_:continue:)`.
+
+In a bare React Native app, add the calls to your `SceneDelegate` next to the existing `RCTLinkingManager` calls:
+
+```swift
+import FirebaseAnalytics
+
+// In your SceneDelegate class:
+
+func scene(
+  _ scene: UIScene,
+  willConnectTo session: UISceneSession,
+  options connectionOptions: UIScene.ConnectionOptions
+) {
+  // ... existing window and React Native setup ...
+
+  for context in connectionOptions.urlContexts {
+    Analytics.handleOpen(context.url)
+  }
+  for userActivity in connectionOptions.userActivities {
+    Analytics.handleUserActivity(userActivity)
+  }
+}
+
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+  for context in URLContexts {
+    Analytics.handleOpen(context.url)
+  }
+  RCTLinkingManager.scene(scene, openURLContexts: URLContexts)
+}
+
+func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+  Analytics.handleUserActivity(userActivity)
+  RCTLinkingManager.scene(scene, continue: userActivity)
+}
+```
+
+The Objective-C equivalent, in a `SceneDelegate.m` that already has `#import <React/RCTLinkingManager.h>` for its existing `RCTLinkingManager` calls:
+
+```objectivec
+#import <FirebaseAnalytics/FirebaseAnalytics.h>
+
+// In your SceneDelegate implementation:
+
+- (void)scene:(UIScene *)scene
+    willConnectToSession:(UISceneSession *)session
+                 options:(UISceneConnectionOptions *)connectionOptions
+{
+  // ... existing window and React Native setup ...
+
+  for (UIOpenURLContext *context in connectionOptions.URLContexts) {
+    [FIRAnalytics handleOpenURL:context.URL];
+  }
+  for (NSUserActivity *userActivity in connectionOptions.userActivities) {
+    [FIRAnalytics handleUserActivity:userActivity];
+  }
+}
+
+- (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
+{
+  for (UIOpenURLContext *context in URLContexts) {
+    [FIRAnalytics handleOpenURL:context.URL];
+  }
+  [RCTLinkingManager scene:scene openURLContexts:URLContexts];
+}
+
+- (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity
+{
+  [FIRAnalytics handleUserActivity:userActivity];
+  [RCTLinkingManager scene:scene continueUserActivity:userActivity];
+}
+```
+
+If you use Expo SDK 58+, including EAS Build, add the Analytics config plugin to your `app.json` / `app.config.js` instead of editing `AppDelegate.swift` or `SceneDelegate.swift` manually, then re-run prebuild:
+
+```json
+{
+  "expo": {
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/analytics"]
+  }
+}
+```
+
+Expo's scene delegate forwards scene URLs and user activities to the `application(_:open:options:)` and `application(_:continue:restorationHandler:)` methods of your `AppDelegate`. When the app target's `Info.plist` declares `UIApplicationSceneManifest`, the plugin adds those overrides to `AppDelegate.swift` during prebuild, with `FirebaseAnalytics.Analytics.handleOpen(_:)` and `FirebaseAnalytics.Analytics.handleUserActivity(_:)` calls. If your `AppDelegate` already overrides one of those methods, the plugin adds the call at the start of it. If your `AppDelegate` already calls one of those Analytics methods, the plugin leaves that method alone and prints a warning.
+
+When you use the plugin, let it make these calls: do not also add the scene delegate calls shown above to the `SceneDelegate.swift` that Expo SDK 58 prebuild generates, or a link can be recorded twice. The scene delegate calls are for apps where the plugin does not add them, such as bare React Native apps or an Objective-C `AppDelegate`. If `SceneDelegate.swift` calls `handleOpen` or `handleUserActivity` anywhere when the plugin runs, the plugin leaves that method to `SceneDelegate.swift`, removes the code it added for it to `AppDelegate.swift` unless you edited that code, and prints a warning. `SceneDelegate.swift` then has to make the call for links that launch the app and for links that arrive while it is running, as in the snippet above.
+
+If your `AppDelegate` is Objective-C, the plugin prints a warning and leaves it unchanged. Expo's scene delegate forwards only to a Swift `AppDelegate` that inherits from `ExpoAppDelegate`, which an Objective-C class cannot subclass, so convert your `AppDelegate` to Swift as in Expo's template and re-run prebuild.
+
+On Expo SDK 57 with the `expo-build-properties` `ios.enableSceneSupport` option, the scene delegate is Expo's `EXExpoAppSceneDelegate` and the scene manifest is added by an `Info.plist` mod that runs after this plugin. The plugin therefore does not reliably add link attribution, and never does on a clean prebuild such as EAS Build. Upgrade to Expo SDK 58 for automatic link attribution.
+
+Apps that do not use the UIScene life cycle keep the automatic handling and need no changes. If a later prebuild finds an `Info.plist` without `UIApplicationSceneManifest`, the plugin removes the code it added to `AppDelegate.swift`, so links are not counted twice. If the plugin cannot read the app target's `Info.plist`, it prints a warning and leaves `AppDelegate.swift` unchanged.
+
 # Device Identification
 
 If you would like to enable Firebase Analytics to generate automatic audience metrics for iOS (as it does by default in Android), you must link additional iOS libraries, [as documented by the Google Firebase team](https://support.google.com/firebase/answer/6318039). Specifically you need to link in `AdSupport.framework`.

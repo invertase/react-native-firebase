@@ -102,7 +102,7 @@ Place `google-services.json` and `GoogleService-Info.plist` at the paths referen
 
 > Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins"` entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g.`node_modules/@react-native-firebase/app/app.plugin.js`).
 
-If you use `@react-native-firebase/analytics` with Expo, including EAS Build, and want to configure iOS Analytics Podfile flags, add the Analytics config plugin to the same `expo.plugins` array in `app.json` / `app.config.js` (after `@react-native-firebase/app`), then re-run prebuild:
+If you use `@react-native-firebase/analytics` with Expo, including EAS Build, add the Analytics config plugin to the same `expo.plugins` array in `app.json` / `app.config.js` (after `@react-native-firebase/app`), then re-run prebuild. On Expo SDK 58+ (iOS UIScene life cycle) the plugin is required for campaign attribution from the URLs and Universal Links that open your app: it adds the Firebase Analytics link handling calls to `AppDelegate.swift` (see [iOS UIScene life cycle: link attribution](/analytics/usage#ios-uiscene-life-cycle-link-attribution)). The plugin also configures the optional iOS Analytics `Podfile` flags:
 
 ```json
 // File: app.json — one entry inside expo.plugins[]. Add after @react-native-firebase/app; re-run prebuild after editing.
@@ -124,7 +124,7 @@ If you use `@react-native-firebase/analytics` with Expo, including EAS Build, an
 }
 ```
 
-The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to opt out of iOS Ad ID support. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to include Google Analytics on-device conversion measurement support. You may omit either option if it is not needed. Merge this Analytics plugin entry into your existing `plugins` list rather than replacing unrelated plugins.
+The `withoutAdIdSupport` option adds `$RNFirebaseAnalyticsWithoutAdIdSupport = true` to opt out of iOS Ad ID support. The `googleAppMeasurementOnDeviceConversion` option adds `$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true` to include Google Analytics on-device conversion measurement support. You may omit either option if it is not needed; with neither option, list the plugin as a plain `"@react-native-firebase/analytics"` string. Merge this Analytics plugin entry into your existing `plugins` list rather than replacing unrelated plugins.
 
 #### Dynamic frameworks (required)
 
