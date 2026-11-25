@@ -23,7 +23,9 @@
 #endif
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
+#import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBDatabaseCommon.h"
+#import "RNFBDatabaseGetErrors.h"
 #import "RNFBDatabaseQuery.h"
 #import "RNFBDatabaseQueryHelper.h"
 #import "RNFBDatabaseQueryRegistry.h"
@@ -174,6 +176,17 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
   }
 }
 
++ (RNFBDatabaseQuery *)databaseQueryForApp:(NSString *)app
+                                     dbURL:(NSString *)dbURL
+                                      path:(NSString *)path
+                                 modifiers:(NSArray *)modifiers {
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
+  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  return [self getDatabaseQueryInstance:firDatabaseReference modifiers:modifiers];
+}
+
 + (void)once:(NSString *)app
         dbURL:(NSString *)dbURL
          path:(NSString *)path
@@ -181,14 +194,26 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
     eventType:(NSString *)eventType
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject {
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:app];
-  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference =
-      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
-  RNFBDatabaseQuery *databaseQuery = [self getDatabaseQueryInstance:firDatabaseReference
-                                                          modifiers:modifiers];
-
+  RNFBDatabaseQuery *databaseQuery = [self databaseQueryForApp:app
+                                                         dbURL:dbURL
+                                                          path:path
+                                                     modifiers:modifiers];
   [self addOnceEventListener:databaseQuery eventType:eventType resolve:resolve reject:reject];
+}
+
+// Before FirebaseDatabase 13.2.0, getData returns a covering ancestor's whole node for a child path
+// (firebase/firebase-ios-sdk#12168), never completes a get in flight when the socket drops
+// (firebase/firebase-ios-sdk#16717) and fails a rejected read without the server's reason, which
+// RNFBDatabaseGetErrors needs to tell a denial apart. An app can still pin an older SDK with
+// $FirebaseSDKVersion.
++ (BOOL)isGetDataReliable {
+  static BOOL reliable;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    reliable = [FIRFirebaseVersion() compare:@"13.2.0"
+                                     options:NSNumericSearch] != NSOrderedAscending;
+  });
+  return reliable;
 }
 
 + (void)get:(NSString *)app
@@ -197,18 +222,41 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
     modifiers:(NSArray *)modifiers
       resolve:(RCTPromiseResolveBlock)resolve
        reject:(RCTPromiseRejectBlock)reject {
-  // A single-event observer, not getDataWithCompletionBlock:. FirebaseDatabase's getData
-  // returns a covering ancestor's whole node for a child path (firebase/firebase-ios-sdk#12168),
-  // never completes a get in flight when the socket drops (firebase/firebase-ios-sdk#16717)
-  // and crashes on an error reply without a reason (firebase/firebase-ios-sdk#16718).
-  // Switch this to getData once the SDK RNFB depends on fixes all three.
-  [self once:app
-          dbURL:dbURL
-           path:path
-      modifiers:modifiers
-      eventType:@"value"
-        resolve:resolve
-         reject:reject];
+  // Single request/response read backing modular get(). JS routes queries and .info paths to
+  // once() before this.
+  RNFBDatabaseQuery *databaseQuery = [self databaseQueryForApp:app
+                                                         dbURL:dbURL
+                                                          path:path
+                                                     modifiers:modifiers];
+
+  // Read through once() on an SDK whose getData is unreliable, or with disk persistence on: getData
+  // then answers an offline read from disk only after its 3s connect timeout, where once() answers
+  // from disk at once (Android's native get uses once() with persistence on too).
+  if (![self isGetDataReliable] || databaseQuery.query.ref.database.persistenceEnabled) {
+    [self addOnceEventListener:databaseQuery eventType:@"value" resolve:resolve reject:reject];
+    return;
+  }
+
+  [databaseQuery.query
+      getDataWithCompletionBlock:^(NSError *_Nullable error, FIRDataSnapshot *_Nullable snapshot) {
+        if (error == nil && snapshot != nil) {
+          resolve([RNFBDatabaseCommon snapshotToDictionary:snapshot]);
+          return;
+        }
+        // A denial rejects as once() would; anything else, "Client is offline." after getData's 3s
+        // connect timeout included, rejects as database/unknown, which DatabaseQuery._get retries
+        // as once('value'), the same rule as Android's Query.get() failures.
+        if ([RNFBDatabaseGetErrors isPermissionDenied:error]) {
+          [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+          return;
+        }
+        NSString *message = error.localizedDescription ?: @"An unknown error has occurred.";
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                          userInfo:[@{
+                                            @"code" : @"unknown",
+                                            @"message" : message,
+                                          } mutableCopy]];
+      }];
 }
 
 + (void)on:(NSString *)app dbURL:(NSString *)dbURL props:(NSDictionary *)props {
