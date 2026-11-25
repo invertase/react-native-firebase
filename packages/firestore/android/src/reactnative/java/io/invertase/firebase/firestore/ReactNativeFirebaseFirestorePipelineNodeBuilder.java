@@ -2497,6 +2497,13 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         if (currentValue instanceof Map) {
           @SuppressWarnings("unchecked")
           Map<String, Object> map = (Map<String, Object>) currentValue;
+          com.google.firebase.firestore.GeoPoint geoPoint =
+              ReactNativeFirebaseFirestorePipelineParser.serializedGeoPoint(map);
+          if (geoPoint != null) {
+            enterFrame.box.value = geoPoint;
+            continue;
+          }
+
           if (isSerializedExpressionLike(map)) {
             enterFrame.box.value = coerceExpression(map, currentFieldName);
             continue;
@@ -2689,6 +2696,13 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     Object value = map.get("value");
     if (Boolean.TRUE.equals(map.get("integerLiteral"))) {
       return coerceIntegerLiteralConstantValue(value);
+    }
+    if (value instanceof Map) {
+      com.google.firebase.firestore.GeoPoint geoPoint =
+          ReactNativeFirebaseFirestorePipelineParser.serializedGeoPoint((Map<?, ?>) value);
+      if (geoPoint != null) {
+        return geoPoint;
+      }
     }
     return value;
   }

@@ -112,7 +112,15 @@ const config = {
         };
       }
       if (moduleName === '@react-native-firebase/firestore/pipelines') {
-        const filePath = join(rootDir, 'packages', 'firestore', 'lib', 'pipelines', 'index.ts');
+        const filePath = join(
+          rootDir,
+          'packages',
+          'firestore',
+          'dist',
+          'module',
+          'pipelines',
+          'index.js',
+        );
         return { type: 'sourceFile', filePath };
       }
       return context.resolveRequest(context, moduleName, platform);

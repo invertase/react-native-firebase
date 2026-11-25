@@ -46,6 +46,7 @@ import {
   MIN_TIMESTAMP_SECONDS,
   Timestamp as FirestoreTimestamp,
 } from '../FirestoreTimestamp';
+import { GeoPoint } from '../FirestoreGeoPoint';
 import DocumentReferenceClass from '../FirestoreDocumentReference';
 import { FieldPath, fromDotSeparatedString } from '../FieldPath';
 import { extractFieldPathData } from '../utils';
@@ -318,6 +319,12 @@ function serializeValue(value: unknown, visiting: WeakSet<object>): unknown {
 
   if (value instanceof FieldPath) {
     return { segments: value._toArray() };
+  }
+
+  // Tagged so native can rebuild a GeoPoint: its own fields would arrive as a
+  // plain map, which the backend rejects in geoDistance with an INTERNAL error.
+  if (value instanceof GeoPoint) {
+    return { __kind: 'geoPoint', latitude: value.latitude, longitude: value.longitude };
   }
 
   if (isRuntimePipeline(value)) {
