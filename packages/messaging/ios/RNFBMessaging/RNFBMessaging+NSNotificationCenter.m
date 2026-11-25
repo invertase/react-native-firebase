@@ -27,7 +27,6 @@
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTConvert.h>
-#import <React/RCTRootView.h>
 
 #import "RNFBMessaging+AppDelegatePrivate.h"
 #import "RNFBMessaging+FIRMessagingDelegate.h"
@@ -85,19 +84,6 @@
   [[RNFBMessagingUNUserNotificationCenter sharedInstance] observe];
   [[RNFBMessagingFIRMessagingDelegate sharedInstance] observe];
 
-  RCTRootView *rctRootView;
-  // `window` is optional on UIApplicationDelegate; scene-based apps may not implement it.
-  if ([UIApplication sharedApplication].delegate != nil &&
-      [[UIApplication sharedApplication].delegate respondsToSelector:@selector(window)] &&
-      [UIApplication sharedApplication].delegate.window != nil &&
-      [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
-      [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
-      [[UIApplication sharedApplication].delegate.window.rootViewController.view
-          isKindOfClass:[RCTRootView class]]) {
-    rctRootView =
-        (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
-  }
-
   if ([[RNFBJSON shared] getBooleanValue:@"messaging_ios_auto_register_for_remote_messages"
                             defaultValue:YES]) {
 #if TARGET_IPHONE_SIMULATOR && TARGET_CPU_ARM64
@@ -114,16 +100,7 @@
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       isHeadless = YES;
-      if (rctRootView != nil) {
-        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
-                                                     ? [rctRootView.appProperties mutableCopy]
-                                                     : [NSMutableDictionary dictionary];
-        if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
-            [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
-          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
-          rctRootView.appProperties = appPropertiesDict;
-        }
-      }
+      [self syncRootViewHeadlessProperty];
 
       // When an app launches in the background (BG mode) and is launched with the notification
       // launch option the app delegate method
@@ -141,54 +118,66 @@
 #endif
     } else {
       isHeadless = NO;
-      if (rctRootView != nil) {
-        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
-                                                     ? [rctRootView.appProperties mutableCopy]
-                                                     : [NSMutableDictionary dictionary];
-        if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
-            [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
-          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
-          rctRootView.appProperties = appPropertiesDict;
-        }
-      }
+      [self syncRootViewHeadlessProperty];
     }
   } else {
     isHeadless = NO;
-    if (rctRootView != nil) {
-      NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
-                                                   ? [rctRootView.appProperties mutableCopy]
-                                                   : [NSMutableDictionary dictionary];
-      if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
-          [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
-        rctRootView.appProperties = appPropertiesDict;
-      }
-    }
+    [self syncRootViewHeadlessProperty];
   }
 }
 
 - (void)application_onDidEnterForeground {
   isHeadless = NO;
-  if ([UIApplication sharedApplication].delegate != nil &&
-      [[UIApplication sharedApplication].delegate respondsToSelector:@selector(window)] &&
-      [UIApplication sharedApplication].delegate.window != nil &&
-      [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
-      [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
-      [[UIApplication sharedApplication].delegate.window.rootViewController.view
-          isKindOfClass:[RCTRootView class]]) {
-    RCTRootView *rctRootView =
-        (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
+  [self syncRootViewHeadlessProperty];
+}
 
-    if (rctRootView.appProperties != nil &&
-        [rctRootView.appProperties[@"isHeadless"] isEqual:@(YES)]) {
-      NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
-      if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
-          [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
-        rctRootView.appProperties = appPropertiesDict;
-      }
+// RCTRootView or RCTSurfaceHostingProxyRootView (bridgeless), in the app delegate window and
+// in every connected window scene, also behind container and presented view controllers
+- (void)syncRootViewHeadlessProperty {
+  NSMutableArray<UIWindow *> *windows = [NSMutableArray array];
+  id<UIApplicationDelegate> delegate = [UIApplication sharedApplication].delegate;
+  // `window` is optional on UIApplicationDelegate; scene-based apps may not implement it.
+  if ([delegate respondsToSelector:@selector(window)] && delegate.window != nil) {
+    [windows addObject:delegate.window];
+  }
+  for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+    if ([scene isKindOfClass:[UIWindowScene class]]) {
+      [windows addObjectsFromArray:((UIWindowScene *)scene).windows];
     }
   }
+  NSMutableArray<UIView *> *views = [NSMutableArray array];
+  for (UIWindow *window in windows) {
+    [self collectLoadedViewsOfViewController:window.rootViewController into:views];
+  }
+  NSNumber *value = @([RCTConvert BOOL:@(isHeadless)]);
+  for (UIView *view in views) {
+    if (![view respondsToSelector:@selector(appProperties)] ||
+        ![view respondsToSelector:@selector(setAppProperties:)]) {
+      continue;
+    }
+    NSDictionary *appProperties = [view valueForKey:@"appProperties"];
+    if (![appProperties isKindOfClass:[NSDictionary class]] ||
+        appProperties[@"isHeadless"] == nil || [appProperties[@"isHeadless"] isEqual:value]) {
+      continue;
+    }
+    NSMutableDictionary *appPropertiesDict = [appProperties mutableCopy];
+    appPropertiesDict[@"isHeadless"] = value;
+    [view setValue:appPropertiesDict forKey:@"appProperties"];
+  }
+}
+
+- (void)collectLoadedViewsOfViewController:(UIViewController *)controller
+                                      into:(NSMutableArray<UIView *> *)views {
+  if (controller == nil) {
+    return;
+  }
+  if (controller.viewIfLoaded != nil) {
+    [views addObject:controller.viewIfLoaded];
+  }
+  for (UIViewController *child in controller.childViewControllers) {
+    [self collectLoadedViewsOfViewController:child into:views];
+  }
+  [self collectLoadedViewsOfViewController:controller.presentedViewController into:views];
 }
 
 @end

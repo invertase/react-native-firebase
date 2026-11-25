@@ -16,3 +16,6 @@
 @property(nonatomic, strong) UNNotificationRequest *request;
 - (instancetype)initWithUserInfo:(NSDictionary *)userInfo;
 @end
+
+@protocol UNUserNotificationCenterDelegate <NSObject>
+@end

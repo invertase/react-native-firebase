@@ -27,6 +27,11 @@
 		M10000000000000000000042 /* UIApplicationHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000043 /* UIApplicationHostStub.m */; };
 		M10000000000000000000044 /* GULAppDelegateSwizzlerHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000045 /* GULAppDelegateSwizzlerHostStub.m */; };
 		M10000000000000000000046 /* RNFBRCTEventEmitterHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000047 /* RNFBRCTEventEmitterHostStub.m */; };
+		M10000000000000000000048 /* UIWindowHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000049 /* UIWindowHostStub.m */; };
+		M1000000000000000000004A /* RNFBMessagingHeadlessRootViewSyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = M1000000000000000000004B /* RNFBMessagingHeadlessRootViewSyncTests.m */; };
+		M1000000000000000000004C /* RNFBMessaging+NSNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = M1000000000000000000004D /* RNFBMessaging+NSNotificationCenter.m */; };
+		M1000000000000000000004E /* RNFBJSONHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M1000000000000000000004F /* RNFBJSONHostStub.m */; };
+		M10000000000000000000050 /* RNFBMessagingCollaboratorsHostStub.m in Sources */ = {isa = PBXBuildFile; fileRef = M10000000000000000000051 /* RNFBMessagingCollaboratorsHostStub.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +60,11 @@
 		M10000000000000000000043 /* UIApplicationHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIApplicationHostStub.m; path = HostStubs/UIKit/UIApplicationHostStub.m; sourceTree = "<group>"; };
 		M10000000000000000000045 /* GULAppDelegateSwizzlerHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = GULAppDelegateSwizzlerHostStub.m; path = HostStubs/GoogleUtilities/GULAppDelegateSwizzlerHostStub.m; sourceTree = "<group>"; };
 		M10000000000000000000047 /* RNFBRCTEventEmitterHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBRCTEventEmitterHostStub.m; path = HostStubs/RNFBApp/RNFBRCTEventEmitterHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000049 /* UIWindowHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = UIWindowHostStub.m; path = HostStubs/UIKit/UIWindowHostStub.m; sourceTree = "<group>"; };
+		M1000000000000000000004B /* RNFBMessagingHeadlessRootViewSyncTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingHeadlessRootViewSyncTests.m; sourceTree = "<group>"; };
+		M1000000000000000000004D /* RNFBMessaging+NSNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RNFBMessaging+NSNotificationCenter.m"; path = "../RNFBMessaging/RNFBMessaging+NSNotificationCenter.m"; sourceTree = SOURCE_ROOT; };
+		M1000000000000000000004F /* RNFBJSONHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBJSONHostStub.m; path = HostStubs/RNFBApp/RNFBJSONHostStub.m; sourceTree = "<group>"; };
+		M10000000000000000000051 /* RNFBMessagingCollaboratorsHostStub.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingCollaboratorsHostStub.m; path = HostStubs/RNFBMessaging/RNFBMessagingCollaboratorsHostStub.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +115,11 @@
 				C10000000000000000000016 /* RNFBMessagingFIRMessagingDelegateTests.m */,
 				C10000000000000000000018 /* RNFBMessagingModuleInstallationIdTests.m */,
 				M10000000000000000000041 /* RNFBMessagingWindowSelectorGuardTests.m */,
+				M1000000000000000000004B /* RNFBMessagingHeadlessRootViewSyncTests.m */,
+				M1000000000000000000004D /* RNFBMessaging+NSNotificationCenter.m */,
+				M1000000000000000000004F /* RNFBJSONHostStub.m */,
+				M10000000000000000000051 /* RNFBMessagingCollaboratorsHostStub.m */,
+				M10000000000000000000049 /* UIWindowHostStub.m */,
 				M10000000000000000000025 /* FIRMessagingHostStub.m */,
 				M10000000000000000000027 /* RNFBSharedUtilsHostStub.m */,
 				M10000000000000000000047 /* RNFBRCTEventEmitterHostStub.m */,
@@ -189,6 +204,11 @@
 				C10000000000000000000017 /* RNFBMessagingModuleInstallationIdTests.m in Sources */,
 				M10000000000000000000022 /* RNFBMessagingHelperHostStubTests.m in Sources */,
 				M10000000000000000000040 /* RNFBMessagingWindowSelectorGuardTests.m in Sources */,
+				M10000000000000000000048 /* UIWindowHostStub.m in Sources */,
+				M1000000000000000000004A /* RNFBMessagingHeadlessRootViewSyncTests.m in Sources */,
+				M1000000000000000000004C /* RNFBMessaging+NSNotificationCenter.m in Sources */,
+				M1000000000000000000004E /* RNFBJSONHostStub.m in Sources */,
+				M10000000000000000000050 /* RNFBMessagingCollaboratorsHostStub.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,6 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (_Nonnull instancetype)sharedInstance;
 @property(nonatomic) BOOL isHeadless;
 
+// Writes `isHeadless` to the `isHeadless` app property of the React root views in the app
+// delegate window and in every connected window scene. Only an existing key with a different
+// value is updated.
+- (void)syncRootViewHeadlessProperty;
+
 @end
 
 NS_ASSUME_NONNULL_END
