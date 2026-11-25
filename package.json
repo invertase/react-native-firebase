@@ -118,7 +118,7 @@
     "@firebase/rules-unit-testing": "^5.0.0",
     "@inquirer/prompts": "^8.4.2",
     "@octokit/core": "^7.0.6",
-    "@react-native-community/cli": "20.2.0",
+    "@react-native-community/cli": "21.0.0",
     "@react-native/jest-preset": "0.88.0-rc.3",
     "@tsconfig/node-lts": "^24.0.0",
     "@types/react": "~19.3.0",
