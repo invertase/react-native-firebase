@@ -14483,15 +14483,15 @@ __metadata:
   linkType: hard
 
 "expo-build-properties@npm:~58.0.9":
-  version: 58.0.9
-  resolution: "expo-build-properties@npm:58.0.9"
+  version: 58.0.12
+  resolution: "expo-build-properties@npm:58.0.12"
   dependencies:
-    "@expo/schema-utils": "npm:^58.0.1"
+    "@expo/schema-utils": "npm:^58.0.3"
     resolve-from: "npm:^5.0.0"
-    semver: "npm:^7.6.0"
+    semver: "npm:^7.7.4"
   peerDependencies:
     expo: "*"
-  checksum: 10/5932aceddf089f3e54674a42f9124da5617119c68efa8ca7549ccaa7102bd0443a2408747d95f9317bb3e691d291fb76e167b0573e0697134046024108ba0f9e
+  checksum: 10/526c75b2ffc95069d14bb0b72486ea15aada1492b5298cf5d84e787fabc1042e2770fd9ed18ecdebae932a57ac8b82ccc1aa13866cb267db30ba9f75f4033c28
   languageName: node
   linkType: hard
 
