@@ -27,6 +27,10 @@ on:
         description: Comma-separated matrix fields, joined with '-' as the choice key
         required: true
         type: string
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN:
+        description: Bearer token for the placement read. Without it the hosted label is used
+        required: false
     outputs:
       choices:
         description: JSON object of cell key to runs-on JSON
@@ -34,6 +38,9 @@ on:
       fallback:
         description: JSON hosted label used when a cell read fails
         value: ${{ jobs.route.outputs.fallback }}
+# The route job only reads this repository, it never writes with the job token.
+permissions:
+  contents: read
 jobs:
   route:
     runs-on: ubuntu-latest

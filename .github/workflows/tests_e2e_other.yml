@@ -39,7 +39,8 @@ jobs:
   route-macos:
     needs: matrix_prep
     uses: ./.github/workflows/mellifera-route-matrix.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: macos
       default-runs-on: xcode-27
@@ -120,7 +121,7 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         # https://github.com/guidepup/setup-action/releases
-        uses: guidepup/setup-action@5d19b1151e972898cae0f0cc44e239127953bd90 # v0.21.0
+        uses: guidepup/setup-action@acf1a64cc26292ebe0db6a28d1341bd1bae93c65 # v0.21.0
         continue-on-error: true
         with:
           record: true
@@ -155,6 +156,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 50
+          persist-credentials: false
 
       - name: Configure Apple CI (Xcode 27)
         run: bash .github/workflows/scripts/configure-apple-ci.sh

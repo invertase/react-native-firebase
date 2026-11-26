@@ -30,7 +30,8 @@ concurrency:
 jobs:
   route-linux:
     uses: ./.github/workflows/mellifera-route.yml
-    secrets: inherit
+    secrets:
+      MELLIFERA_PLACEMENT_TOKEN: ${{ secrets.MELLIFERA_PLACEMENT_TOKEN }}
     with:
       class: other
       default-runs-on: ubuntu-latest
@@ -41,6 +42,8 @@ jobs:
     steps:
       # https://github.com/actions/checkout/releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       # Future ideas:
       # - make into an action, parameterize directories to pack, and package names to install
