@@ -136,22 +136,13 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
-      # Set up tool versions
-      # Node comes first, the screen recording setup below runs through npx.
-      # https://github.com/actions/setup-node/releases
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24
-
       - name: Setup Environment for Screen Recording
-        # guidepup/setup-action is archived and its README points at this CLI.
-        # 0.23.0 is the CLI release that action v0.21.0 shipped with.
-        # The CLI exits 1 when it cannot finish the setup. `|| true` keeps
-        # that out of the run annotations, as it was with the action.
-        # https://github.com/guidepup/setup/releases
+        # https://github.com/guidepup/setup-action/releases
+        uses: guidepup/setup-action@5d19b1151e972898cae0f0cc44e239127953bd90 # v0.21.0
         continue-on-error: true
         if: env.RNFB_RECORD_SCREENS == '1'
-        run: npx --yes @guidepup/setup@0.23.0 --ci --record || true
+        with:
+          record: true
 
       - name: Upload Screen Recording Environment Setup
         # https://github.com/actions/upload-artifact/releases
@@ -161,6 +152,12 @@ jobs:
         with:
           name: screenrecording-setup-${{ matrix.buildmode }}-${{ matrix.iteration }}.mov
           path: ./recordings/
+
+      # Set up tool versions
+      # https://github.com/actions/setup-node/releases
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
 
       - name: Configure JDK
         # https://github.com/actions/setup-java/releases
