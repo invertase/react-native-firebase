@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.2.0](https://github.com/invertase/react-native-firebase/compare/v27.1.1...v27.2.0) (2026-11-25)
+
+### Features
+
+- **app, sdk:** bump Firebase Android SDK to 35.2.0 ([#9488](https://github.com/invertase/react-native-firebase/issues/9488)) ([9000dbf](https://github.com/invertase/react-native-firebase/commit/9000dbf0d6e8d59595aaeb87698b5a040ce80861))
+- **app, sdk:** bump Firebase JS SDK to 13.3.0 ([#9489](https://github.com/invertase/react-native-firebase/issues/9489)) ([336ede8](https://github.com/invertase/react-native-firebase/commit/336ede826930709257c764445f7f388852811757))
+
+### Bug Fixes
+
+- **android:** tolerate deprecated JNI invokeJavaMethod on RN 0.89+ ([#9492](https://github.com/invertase/react-native-firebase/issues/9492)) ([4aa429a](https://github.com/invertase/react-native-firebase/commit/4aa429a1c522429de2ee9b47b587b8c2504de4f2))
+- **app, ios:** share GoogleUtilities when only Messaging or Analytics is installed under SPM ([#9451](https://github.com/invertase/react-native-firebase/issues/9451)) ([0d426fe](https://github.com/invertase/react-native-firebase/commit/0d426fe30d3b10a7b00405af72e7cadd3b7c744d))
+- **attw:** pack staged packages with repo Yarn Berry ([b33c962](https://github.com/invertase/react-native-firebase/commit/b33c962c0b69920faf84a861d8e5f759502b7c3d))
+- **e2e:** make check BUSY for unrecorded identity AVD on any port ([e99601f](https://github.com/invertase/react-native-firebase/commit/e99601fd527bc8132f4a057382ea0f284072cf77))
+- **e2e:** release Detox-respawned identity AVD qemu ([b9ac2ff](https://github.com/invertase/react-native-firebase/commit/b9ac2fff164922fbe96491aa107e92f9c3b7b54d))
+- **firestore:** align updateDoc, onSnapshot and initializeFirestore error handling with firebase-js-sdk ([#9392](https://github.com/invertase/react-native-firebase/issues/9392)) ([3edcab9](https://github.com/invertase/react-native-firebase/commit/3edcab953c9e4fe8a1bf2c03b0ec6024a9f6e83b))
+- **functions:** map network and auth token errors to callable error codes ([#9422](https://github.com/invertase/react-native-firebase/issues/9422)) ([b278991](https://github.com/invertase/react-native-firebase/commit/b278991e22ab327d6012bbedb21fadb5d14d43f5))
+- **messaging, ios:** make the AppDelegate forwarding header public again ([904f7d4](https://github.com/invertase/react-native-firebase/commit/904f7d410e5d70ad26efd70b4a30f5b3c79442b5))
+- **messaging, ios:** refresh the Podfile.lock checksum for the public header ([66f977c](https://github.com/invertase/react-native-firebase/commit/66f977c319e0be7d7e5be4d0f2cc5be49650e77d))
+- **perf:** remove the frame metrics listener when a screen trace stops ([#9482](https://github.com/invertase/react-native-firebase/issues/9482)) ([439611d](https://github.com/invertase/react-native-firebase/commit/439611d7e85b73e8f4397a172f918b30a9422375))
+
 ## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
 
 ### Bug Fixes
