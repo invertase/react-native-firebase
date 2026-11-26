@@ -204,6 +204,7 @@ This can be done throughout the app with a simple method call to `setCrashlytics
 
 - `setCrashlyticsCollectionEnabled(crashlytics, enabled)` throws if `enabled` is not a boolean and returns a `Promise`.
 - The module stores the value on the device, so it is used on later launches and takes priority over the `crashlytics_auto_collection_enabled` value in `firebase.json`.
+- The native Crashlytics SDK applies the change at once, so a crash later in the same run is sent or kept on the device according to the new value.
 - `crashlytics.isCrashlyticsCollectionEnabled` is a read-only property that reflects the last value you set, or the startup value if you have not set one.
 - In a debug build without `crashlytics_debug_enabled`, native collection stays disabled even after you call `setCrashlyticsCollectionEnabled(crashlytics, true)`, although the property then reads `true`.
 

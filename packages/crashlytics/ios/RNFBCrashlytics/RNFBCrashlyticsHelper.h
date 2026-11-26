@@ -34,6 +34,8 @@
 
 + (void)deleteUnsentReports;
 
++ (void)setCrashlyticsCollectionEnabled:(BOOL)enabled;
+
 + (BOOL)didCrashDuringPreviousExecution;
 
 + (void)log:(NSString *)message;

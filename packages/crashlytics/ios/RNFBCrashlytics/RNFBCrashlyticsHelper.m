@@ -57,6 +57,10 @@
   [[FIRCrashlytics crashlytics] deleteUnsentReports];
 }
 
++ (void)setCrashlyticsCollectionEnabled:(BOOL)enabled {
+  [[FIRCrashlytics crashlytics] setCrashlyticsCollectionEnabled:enabled];
+}
+
 + (BOOL)didCrashDuringPreviousExecution {
   return [[FIRCrashlytics crashlytics] didCrashDuringPreviousExecution];
 }
