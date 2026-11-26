@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.2.0](https://github.com/invertase/react-native-firebase/compare/v27.1.1...v27.2.0) (2026-11-25)
+
+### Bug Fixes
+
+- **e2e:** release Detox-respawned identity AVD qemu ([b9ac2ff](https://github.com/invertase/react-native-firebase/commit/b9ac2fff164922fbe96491aa107e92f9c3b7b54d))
+- **messaging, ios:** refresh the Podfile.lock checksum for the public header ([66f977c](https://github.com/invertase/react-native-firebase/commit/66f977c319e0be7d7e5be4d0f2cc5be49650e77d))
+
 ## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
 
 ### Bug Fixes

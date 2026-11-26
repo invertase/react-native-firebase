@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [27.2.0](https://github.com/invertase/react-native-firebase/compare/v27.1.1...v27.2.0) (2026-11-25)
+
+### Bug Fixes
+
+- **android:** tolerate deprecated JNI invokeJavaMethod on RN 0.89+ ([#9492](https://github.com/invertase/react-native-firebase/issues/9492)) ([4aa429a](https://github.com/invertase/react-native-firebase/commit/4aa429a1c522429de2ee9b47b587b8c2504de4f2))
+- **firestore:** align updateDoc, onSnapshot and initializeFirestore error handling with firebase-js-sdk ([#9392](https://github.com/invertase/react-native-firebase/issues/9392)) ([3edcab9](https://github.com/invertase/react-native-firebase/commit/3edcab953c9e4fe8a1bf2c03b0ec6024a9f6e83b))
+
 ## [27.1.1](https://github.com/invertase/react-native-firebase/compare/v27.1.0...v27.1.1) (2026-11-10)
 
 ### Bug Fixes
