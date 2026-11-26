@@ -49,7 +49,7 @@
   "devDependencies": {
     "@react-native-firebase/app": "27.2.0",
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
-    "react-native-builder-bob": "^0.41.0",
+    "react-native-builder-bob": "^0.44.1",
     "typescript": "^6.0.3"
   },
   "publishConfig": {

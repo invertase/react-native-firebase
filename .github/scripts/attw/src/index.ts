@@ -4,8 +4,8 @@
  * Usage (from repo root):
  *   yarn attw:check
  *
- * Scope is defined in okf-bundle/testing/architecture-decisions.md (Types-AD-1..4)
- * and repo-root .attw.json (profile esm-only + ignored rules).
+ * Scope is defined in okf-bundle/testing/architecture-decisions.md (Types-AD-1..5),
+ * repo-root .attw.json (profile esm-only + ignored rules) and ALLOWED_ISSUES below.
  *
  * Also smoke-tests Expo config plugins the way Expo prebuild loads them:
  *   app.plugin.js -> require('./plugin/build/app.plugin') under Node CJS with peers installed.
@@ -15,7 +15,8 @@
  *
  * Exit codes:
  *   0 — all checks pass
- *   1 — attw failures and/or Expo plugin smoke failures
+ *   1 — attw failures, allowed findings that no longer occur, relative module augmentations
+ *       that do not end in `.js` or do not resolve, and/or Expo plugin smoke failures
  */
 
 import { spawnSync } from 'node:child_process';
@@ -113,6 +114,7 @@ type IssueRow = {
   entrypoint: string;
   resolution: string;
   problem: string;
+  file: string;
   detail: string;
 };
 
@@ -146,6 +148,49 @@ const PROFILE_SKIPPED_RESOLUTIONS: Record<NonNullable<AttwConfig['profile']>, st
   node16: ['node10'],
   'esm-only': ['node10', 'node16-cjs'],
 };
+
+/**
+ * Exact findings accepted under Types-AD-2, which records why each is accepted. Each
+ * entry must still occur, so a fixed finding fails the check until its entry is removed.
+ */
+const ALLOWED_ISSUES: IssueRow[] = [
+  {
+    package: '@react-native-firebase/ai',
+    entrypoint: '.',
+    resolution: 'node16-esm',
+    problem: 'InternalResolutionError',
+    file: 'dist/typescript/lib/index.d.ts',
+    detail: './polyfills',
+  },
+  {
+    package: '@react-native-firebase/app',
+    entrypoint: './dist/module/internal',
+    resolution: 'node16-esm',
+    problem: 'InternalResolutionError',
+    file: 'dist/typescript/lib/internal/index.d.ts',
+    detail: './nativeModule',
+  },
+];
+
+function isSameIssue(row: IssueRow, allowed: IssueRow): boolean {
+  return (
+    row.package === allowed.package &&
+    row.entrypoint === allowed.entrypoint &&
+    row.resolution === allowed.resolution &&
+    row.problem === allowed.problem &&
+    row.file === allowed.file &&
+    row.detail === allowed.detail
+  );
+}
+
+/** attw reports files as `/node_modules/<package>/<path>`; keep only `<path>`. */
+function toPackagePath(fileName: string | undefined, packageName: string): string {
+  if (!fileName) {
+    return '';
+  }
+  const prefix = `/node_modules/${packageName}/`;
+  return fileName.startsWith(prefix) ? fileName.slice(prefix.length) : fileName;
+}
 
 function readAttwConfig(): AttwConfig {
   return JSON.parse(fs.readFileSync(attwConfigPath, 'utf8')) as AttwConfig;
@@ -299,6 +344,7 @@ function extractEnforcedIssues(data: AttwResult, config: AttwConfig): IssueRow[]
           entrypoint: problem.entrypoint || entrypoint,
           resolution: problem.resolutionKind || resolutionKind,
           problem: problem.kind,
+          file: toPackagePath(problem.fileName, packageName),
           detail: problem.moduleSpecifier || problem.message || problem.fileName || '',
         });
       }
@@ -322,6 +368,7 @@ function extractLegacyIssues(data: AttwResult): IssueRow[] {
         entrypoint: item.entrypoint || item.fileName || '.',
         resolution: item.resolutionKind || item.resolutionOption || '',
         problem: kind,
+        file: toPackagePath(item.fileName, packageName),
         detail: item.moduleSpecifier || item.message || '',
       });
     }
@@ -427,13 +474,13 @@ function checkExpoPlugins(): ExpoPluginFailure[] {
 
 function printAttwReport(rows: IssueRow[]): void {
   if (rows.length === 0) {
-    console.log('\n✅ attw: all published packages pass scoped analysis (.attw.json).\n');
+    console.log('\n✅ attw: no enforced problems under .attw.json scope.\n');
     return;
   }
 
   console.log(`\n❌ attw: ${rows.length} enforced problem(s) under .attw.json scope:\n`);
-  console.log('| # | Package | Entrypoint | Resolution | Problem | Detail |');
-  console.log('|---:|---|---|---|---|---|');
+  console.log('| # | Package | Entrypoint | Resolution | Problem | File | Detail |');
+  console.log('|---:|---|---|---|---|---|---|');
   rows.forEach((row, index) => {
     const cells = [
       String(index + 1),
@@ -441,9 +488,70 @@ function printAttwReport(rows: IssueRow[]): void {
       row.entrypoint,
       row.resolution,
       row.problem,
+      row.file,
       row.detail,
     ].map(value => value.replace(/\|/g, '\\|'));
     console.log(`| ${cells.join(' | ')} |`);
+  });
+  console.log('');
+}
+
+function printAllowedReport(matchedCount: number, stale: IssueRow[]): void {
+  if (matchedCount > 0) {
+    console.log(`ℹ️  attw: ${matchedCount} allowed finding(s) matched (Types-AD-2).\n`);
+  }
+  if (stale.length === 0) {
+    return;
+  }
+  console.log(
+    `❌ attw: ${stale.length} allowed finding(s) no longer occur — remove or update them (Types-AD-2):\n`,
+  );
+  stale.forEach((allowed, index) => {
+    console.log(
+      `${index + 1}. ${allowed.package} ${allowed.entrypoint} ${allowed.resolution} ${allowed.problem} ${allowed.file} ${allowed.detail}`,
+    );
+  });
+  console.log('');
+}
+
+const RELATIVE_AUGMENTATION = /declare\s+module\s+(['"])(\.{1,2}(?:\/[^'"]*)?)\1/g;
+
+/**
+ * Relative `declare module` names must end in `.js` and name an emitted `.d.ts`
+ * (Types-AD-2 known gaps): bob does not rewrite them, attw does not check them, and
+ * node16-esm drops an augmentation that does not resolve without reporting it.
+ */
+function checkRelativeAugmentations(packageDirs: string[]): string[] {
+  const failures: string[] = [];
+  for (const dir of packageDirs) {
+    const distDir = path.join(packagesDir, dir, 'dist');
+    if (!fs.existsSync(distDir)) {
+      continue;
+    }
+    const files = fs.readdirSync(distDir, { recursive: true, encoding: 'utf8' });
+    for (const file of files.filter(name => name.endsWith('.d.ts')).sort()) {
+      const source = fs.readFileSync(path.join(distDir, file), 'utf8');
+      for (const match of source.matchAll(RELATIVE_AUGMENTATION)) {
+        const name = match[2];
+        const target = path.resolve(path.dirname(path.join(distDir, file)), name);
+        const declaration = target.replace(/\.js$/, '.d.ts');
+        if (!name.endsWith('.js') || !fs.existsSync(declaration)) {
+          failures.push(`${dir}/dist/${file}: declare module '${name}'`);
+        }
+      }
+    }
+  }
+  return failures;
+}
+
+function printAugmentationReport(failures: string[]): void {
+  if (failures.length === 0) {
+    console.log('✅ Relative module augmentations: all names end in .js and resolve.\n');
+    return;
+  }
+  console.log('❌ Relative module augmentations without .js or with no .d.ts (Types-AD-2):\n');
+  failures.forEach((failure, index) => {
+    console.log(`${index + 1}. ${failure}`);
   });
   console.log('');
 }
@@ -473,20 +581,42 @@ function main(): void {
   }
 
   const config = readAttwConfig();
+  const packageDirs = listPublishedPackages();
   const allRows: IssueRow[] = [];
-  for (const dir of listPublishedPackages()) {
+  for (const dir of packageDirs) {
     const result = runAttw(path.join(packagesDir, dir), dir, config);
     if (!result.passed) {
       allRows.push(...result.issues);
     }
   }
 
+  // Each allowed entry absorbs at most one finding, so a second identical import is enforced.
+  const usedAllowed = new Set<IssueRow>();
+  const enforcedRows = allRows.filter(row => {
+    const allowed = ALLOWED_ISSUES.find(
+      entry => !usedAllowed.has(entry) && isSameIssue(row, entry),
+    );
+    if (allowed) {
+      usedAllowed.add(allowed);
+      return false;
+    }
+    return true;
+  });
+  const staleAllowed = ALLOWED_ISSUES.filter(entry => !usedAllowed.has(entry));
+
+  const augmentationFailures = checkRelativeAugmentations(packageDirs);
   const expoFailures = checkExpoPlugins();
 
-  printAttwReport(allRows);
+  printAttwReport(enforcedRows);
+  printAllowedReport(ALLOWED_ISSUES.length - staleAllowed.length, staleAllowed);
+  printAugmentationReport(augmentationFailures);
   printExpoPluginReport(expoFailures);
 
-  const hasFailures = allRows.length > 0 || expoFailures.length > 0;
+  const hasFailures =
+    enforcedRows.length > 0 ||
+    staleAllowed.length > 0 ||
+    augmentationFailures.length > 0 ||
+    expoFailures.length > 0;
   process.exit(hasFailures ? 1 : 0);
 }
 

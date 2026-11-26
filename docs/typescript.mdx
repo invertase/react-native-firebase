@@ -39,6 +39,10 @@ function App() {
 
 Historical note: [Migrating to v25](/migrating-to-v25) covers the Auth breaking changes made in v25 (the `FirebaseAuthTypes` deprecation, provider helpers, async `isSignInWithEmailLink`, and other firebase-js-sdk alignment updates). The `FirebaseAuthTypes` namespace was then removed in v26; import `User`, `Auth`, and the other modular types from `@react-native-firebase/auth` instead.
 
+## Compiler options
+
+Use `moduleResolution: "bundler"`, which matches how Metro resolves packages. Projects that use ES modules with `"node16"` or `"nodenext"` also type-check, but some packages ship platform-specific files (for example `.ios.ts` / `.web.ts`) whose imports Node ES module resolution cannot follow, so those settings are best effort: the affected imports resolve to `any`. Keep `skipLibCheck: true`, as Expo's base `tsconfig` does: with `skipLibCheck: false`, some published declaration files report library-check errors.
+
 ## Where definitions live
 
 Published types are built to `packages/<module>/dist/typescript/` (for example `packages/auth/dist/typescript/lib/index.d.ts`). Source lives under `packages/<module>/lib/` as TypeScript (`.ts`) since the v25 package migrations.

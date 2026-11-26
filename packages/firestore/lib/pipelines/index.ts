@@ -218,7 +218,7 @@ export { pipelineResultEqual } from './pipeline-result';
 
 registerPipelineRuntimeInstaller();
 
-declare module '../types/firestore' {
+declare module '../types/firestore.js' {
   /**
    * @beta
    * Creates and returns a new PipelineSource, which allows specifying the source stage of a `Pipeline`.

@@ -100,7 +100,7 @@ export interface RNFBUtilsModuleInterface {
 }
 
 // Augment the base interface with app package's native modules
-declare module './NativeModules' {
+declare module './NativeModules.js' {
   interface ReactNativeFirebaseNativeModules {
     RNFBUtilsModule: RNFBUtilsModuleInterface;
     RNFBAppModule: RNFBAppModuleInterface;
