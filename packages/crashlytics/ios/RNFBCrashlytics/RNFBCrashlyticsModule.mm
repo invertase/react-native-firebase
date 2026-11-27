@@ -194,7 +194,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
   (void)reject;
   [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled"
                                   boolValue:enabled];
-  // Apply the change in this run too; the preference alone is only read at the next start.
+  // Also tell the SDK now: it saves the value, so the next start already has it.
   // The effective value still honours crashlytics_debug_enabled in debug builds.
   [RNFBCrashlyticsHelper
       setCrashlyticsCollectionEnabled:[RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]];

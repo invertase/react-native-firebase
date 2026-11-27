@@ -108,6 +108,9 @@ export interface Crashlytics extends ReactNativeFirebase.FirebaseModule {
    *
    * Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.
    *
+   * The value is saved on the device and passed to the native Crashlytics SDK at once. The SDK applies it from the
+   * next run of the app, so it does not stop collection in the current run.
+   *
    * @param enabled A boolean value representing whether to enable Crashlytics error collection.
    */
   setCrashlyticsCollectionEnabled(enabled: boolean): Promise<null>;
