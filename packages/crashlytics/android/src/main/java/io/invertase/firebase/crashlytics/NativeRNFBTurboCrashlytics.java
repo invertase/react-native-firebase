@@ -182,9 +182,21 @@ public class NativeRNFBTurboCrashlytics extends NativeRNFBTurboCrashlyticsSpec {
 
   @Override
   public void setCrashlyticsCollectionEnabled(boolean enabled, Promise promise) {
+    saveAndApplyCollectionEnabled(enabled);
+    promise.resolve(null);
+  }
+
+  /**
+   * Saves the value for later launches and passes the native SDK the effective value straight away.
+   * The effective value still honours crashlytics_debug_enabled in debug builds. Firebase
+   * guarantees the change from the next app launch.
+   */
+  static void saveAndApplyCollectionEnabled(boolean enabled) {
     ReactNativeFirebasePreferences.getSharedInstance()
         .setBooleanValue(Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, enabled);
-    promise.resolve(null);
+    FirebaseCrashlytics.getInstance()
+        .setCrashlyticsCollectionEnabled(
+            ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled());
   }
 
   @Override
