@@ -194,7 +194,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboCrashlytics)
   (void)reject;
   [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled"
                                   boolValue:enabled];
-  // Also tell the SDK now: it saves the value, so the next start already has it.
+  // Also pass the SDK the value straight away. Firebase guarantees it from the next app launch.
   // The effective value still honours crashlytics_debug_enabled in debug builds.
   [RNFBCrashlyticsHelper
       setCrashlyticsCollectionEnabled:[RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]];
